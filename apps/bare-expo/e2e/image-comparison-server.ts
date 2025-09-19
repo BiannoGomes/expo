@@ -6,19 +6,19 @@ import { compareImages, type ComparisonResult } from '../scripts/compare-images'
 
 const PORT = process.env.PORT || 3000;
 
-// @ts-ignore bun types
+// @ts-ignore bun types are missing
 Bun.serve({
   port: PORT,
   hostname: '127.0.0.1', // Only bind to localhost for security
   async fetch(req) {
     const url = new URL(req.url);
 
-    // CORS headers
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     };
+    const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
 
     if (req.method === 'POST' && url.pathname === '/compare') {
       try {
@@ -35,7 +35,7 @@ Bun.serve({
             }),
             {
               status: 400,
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              headers: jsonHeaders,
             }
           );
         }
@@ -53,7 +53,7 @@ Bun.serve({
             }),
             {
               status: 403,
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              headers: jsonHeaders,
             }
           );
         }
@@ -75,7 +75,7 @@ Bun.serve({
             }),
             {
               status: 404,
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              headers: jsonHeaders,
             }
           );
         }
@@ -90,7 +90,7 @@ Bun.serve({
         !result.success && console.error('Comparison result:', result);
         return new Response(JSON.stringify(result), {
           status: result.success ? 200 : 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: jsonHeaders,
         });
       } catch (error) {
         console.error('Error processing image comparison:', error);
@@ -102,7 +102,7 @@ Bun.serve({
           }),
           {
             status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            headers: jsonHeaders,
           }
         );
       }
@@ -118,5 +118,5 @@ Bun.serve({
 console.log(`🚀 Image Comparison Server running on http://localhost:${PORT}`);
 console.log('Available endpoints:');
 console.log(
-  '  POST /compare    - Compare two images by path (JSON body: {"image1": "path", "image2": "path", "outputPath": "optional/comparison-diff", "similarityThreshold": 5})'
+  '  POST /compare    - Compare two images by path (JSON body: {"image1": "path", "image2": "path", "outputPath": "optional/comparison-diff-image.png", "similarityThreshold": 5})'
 );

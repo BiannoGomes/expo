@@ -4,7 +4,7 @@ import { useTheme } from 'ThemeProvider';
 import * as React from 'react';
 
 import getStackNavWithConfig from './StackConfig';
-import { optionalRequire, routeFilterForE2e } from './routeBuilder';
+import { optionalRequire } from './routeBuilder';
 import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
@@ -175,7 +175,6 @@ const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/Image/ImageScreen'));
     },
     name: 'Image',
-    e2e: true,
   },
   {
     getComponent() {
@@ -301,7 +300,7 @@ const ScreensList: ScreenConfig[] = [
     },
     name: 'MeshGradient',
   },
-].filter(routeFilterForE2e);
+];
 
 export const Screens: ScreenConfig[] = [
   ...ScreensList,
@@ -313,7 +312,7 @@ export const Screens: ScreenConfig[] = [
   ...UIScreens,
   ...SVGScreens,
   ...MapsScreens,
-].filter(routeFilterForE2e);
+];
 
 export const screenApiItems: ScreenApiItem[] = ScreensList.map(({ name, route }) => ({
   name,

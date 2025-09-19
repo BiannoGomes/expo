@@ -11,21 +11,15 @@ export interface ComparisonResult {
   totalPixels: number;
   diffPixels: number;
   message: string;
-  error?: string;
 }
 
-function createErrorResult(
-  message: string,
-  error: string,
-  totalPixels: number = 0
-): ComparisonResult {
+function createErrorResult(message: string, totalPixels: number = 0): ComparisonResult {
   return {
     success: false,
     diffPercentage: 0,
     totalPixels,
     diffPixels: 0,
     message,
-    error,
   };
 }
 
@@ -33,7 +27,7 @@ function createSuccessResult(
   diffPixels: number,
   totalPixels: number,
   diffPercentage: number,
-  similarityThreshold: number = 5
+  similarityThreshold: number
 ): ComparisonResult {
   console.log({
     diffPixels,
@@ -46,11 +40,11 @@ function createSuccessResult(
   let message: string;
 
   if (diffPixels === 0) {
-    message = 'Images are identical';
+    message = '✅ Images are identical';
   } else if (success) {
-    message = `Images are very similar (${diffPercentageFormatted}% difference)`;
+    message = `✅ Images are very similar (${diffPercentageFormatted}% difference)`;
   } else {
-    message = `Images are significantly different (${diffPercentageFormatted}% difference)`;
+    message = `❌ Images are significantly different (${diffPercentageFormatted}% difference)`;
   }
 
   return {
@@ -73,11 +67,11 @@ export function compareImages(options: CompareImagesOptions): ComparisonResult {
   const { image1Path, image2Path, outputPath, similarityThreshold = 5 } = options;
   try {
     if (!fs.existsSync(image1Path)) {
-      return createErrorResult('Image 1 not found', `Image 1 not found: ${image1Path}`);
+      return createErrorResult(`Image 1 not found: ${image1Path}`);
     }
 
     if (!fs.existsSync(image2Path)) {
-      return createErrorResult('Image 2 not found', `Image 2 not found: ${image2Path}`);
+      return createErrorResult(`Image 2 not found: ${image2Path}`);
     }
 
     const img1 = PNG.sync.read(fs.readFileSync(image1Path));
@@ -87,7 +81,6 @@ export function compareImages(options: CompareImagesOptions): ComparisonResult {
 
     if (img2.width !== width || img2.height !== height) {
       return createErrorResult(
-        "Image dimensions don't match",
         `Image dimensions don't match: ${width}x${height} vs ${img2.width}x${img2.height}`,
         width * height
       );
@@ -111,37 +104,18 @@ export function compareImages(options: CompareImagesOptions): ComparisonResult {
 
     return createSuccessResult(numDiffPixels, totalPixels, diffPercentage, similarityThreshold);
   } catch (error) {
-    return createErrorResult(
-      'Image comparison failed',
-      error instanceof Error ? error.message : 'Unknown error occurred'
-    );
-  }
-}
-
-function getExitMessage(result: ComparisonResult): { message: string; exitCode: number } {
-  if (result.error) {
-    return { message: result.error, exitCode: 1 };
-  }
-
-  if (result.diffPixels === 0) {
-    return { message: '✅ Images are identical', exitCode: 0 };
-  } else if (result.success) {
-    return { message: `⚠️  ${result.message}`, exitCode: 0 };
-  } else {
-    return { message: '❌ Images are significantly different', exitCode: 1 };
+    return createErrorResult(error instanceof Error ? error.message : 'Unknown error occurred');
   }
 }
 
 export function compareImagesSync(options: CompareImagesOptions): void {
-  const result = compareImages(options);
-  const { message, exitCode } = getExitMessage(result);
+  const { message, success } = compareImages(options);
+  const exitCode = success ? 0 : 1;
 
-  console.log(`Difference: ${result.diffPercentage}%`);
-
-  if (result.error) {
-    console.error(message);
-  } else {
+  if (success) {
     console.log(message);
+  } else {
+    console.error(message);
   }
 
   process.exit(exitCode);
