@@ -72,6 +72,15 @@ export default function TodayScreen() {
           Your evolution today
         </Text>
 
+        {plan.reentryGapDays !== undefined && (
+          <View style={styles.reentry}>
+            <Text style={theme.type.body}>
+              Welcome back. Nothing is broken — your campaign paused itself and
+              resumes whenever you do. Today is a light day.
+            </Text>
+          </View>
+        )}
+
         {plan.restDay ? (
           <View style={styles.card}>
             <Text style={theme.type.body}>
@@ -118,6 +127,14 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing(1.5),
   },
   cardDone: { opacity: 0.45 },
+  reentry: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.accent,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 14,
+    padding: theme.spacing(2.5),
+    marginBottom: theme.spacing(1.5),
+  },
   slotText: { marginVertical: theme.spacing(1) },
   question: {
     marginTop: theme.spacing(3),

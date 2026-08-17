@@ -1,40 +1,93 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCallback, useState } from "react";
+import {
+  Alert,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import type { AssertionConfidence } from "@becoming/core";
+import { Link, useFocusEffect } from "expo-router";
+import {
+  disputeAssertion,
+  fetchAssertions,
+  type AssertionView,
+} from "@/lib/api";
 import { theme } from "@/lib/theme";
 
 /**
  * The Personal Model surface: what the system believes, how sure it is, and
- * why (spec 02 §6 — inspect / dispute / edit). Placeholder data until the
- * assertions endpoint exists.
+ * why (spec 02 §6 — inspect / dispute / correct). Hedging is mechanical:
+ * driven by the confidence field, decided server-side.
  */
-const SAMPLE: {
-  statement: string;
-  confidence: AssertionConfidence;
-  why: string;
-}[] = [
-  {
-    statement: "Adventure and challenge are core values for you.",
-    confidence: "established",
-    why: "Stated in onboarding and confirmed by 4 experiences you recorded.",
-  },
-  {
-    statement: "Your consistency drops when you run several projects at once.",
-    confidence: "probable",
-    why: "Seen in 3 reflections across 2 weeks.",
-  },
-];
-
-const CONFIDENCE_LABEL: Record<AssertionConfidence, string> = {
+const CONFIDENCE_LABEL: Record<AssertionView["confidence"], string> = {
   hypothesis: "A guess",
   probable: "Probably true",
   established: "Well established",
 };
 
 export default function YouScreen() {
+  const [assertions, setAssertions] = useState<AssertionView[] | null>(null);
+  const [offline, setOffline] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      setAssertions(await fetchAssertions());
+      setOffline(false);
+    } catch {
+      setOffline(true);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load]),
+  );
+
+  async function onDispute(assertion: AssertionView) {
+    Alert.alert(
+      "That's not right?",
+      "I'll set this aside immediately. Your corrections always outrank my inferences.",
+      [
+        { text: "Keep it", style: "cancel" },
+        {
+          text: "Set it aside",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await disputeAssertion(assertion.id);
+              await load();
+            } catch {
+              // Silent retry on next focus; never guilt-loop the user.
+            }
+          },
+        },
+      ],
+    );
+  }
+
+  const empty = assertions !== null && assertions.length === 0;
+
   return (
     <SafeAreaView style={styles.screen} edges={["top"]}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true);
+              await load();
+              setRefreshing(false);
+            }}
+            tintColor={theme.colors.textDim}
+          />
+        }
+      >
         <Text style={theme.type.label}>Personal model</Text>
         <Text style={[theme.type.title, styles.title]}>
           What I understand about you
@@ -45,15 +98,46 @@ export default function YouScreen() {
           inferences, always.
         </Text>
 
-        {SAMPLE.map((a) => (
-          <View key={a.statement} style={styles.card}>
+        {(empty || assertions === null) && (
+          <Link href="/onboarding" asChild>
+            <Pressable style={styles.cta}>
+              <Text style={theme.type.label}>Begin</Text>
+              <Text style={[theme.type.body, styles.ctaText]}>
+                Who are you becoming?
+              </Text>
+              <Text style={theme.type.dim}>
+                Seven short chapters. Self-paced. Then you meet your Future
+                Self — and the first 90 days toward them.
+              </Text>
+            </Pressable>
+          </Link>
+        )}
+
+        {offline && (
+          <Text style={[theme.type.dim, { marginTop: theme.spacing(2) }]}>
+            Can't reach the server right now — pull to retry.
+          </Text>
+        )}
+
+        {assertions?.map((a) => (
+          <View
+            key={a.id}
+            style={[styles.card, a.status === "disputed" && { opacity: 0.5 }]}
+          >
             <Text style={[theme.type.label, styles.confidence]}>
-              {CONFIDENCE_LABEL[a.confidence]}
+              {a.status === "disputed"
+                ? "Set aside — you disputed this"
+                : CONFIDENCE_LABEL[a.confidence]}
             </Text>
             <Text style={[theme.type.body, styles.statement]}>
               {a.statement}
             </Text>
             <Text style={theme.type.dim}>Why I think this: {a.why}</Text>
+            {a.status !== "disputed" && (
+              <Pressable onPress={() => onDispute(a)} hitSlop={8}>
+                <Text style={styles.dispute}>That's not right</Text>
+              </Pressable>
+            )}
           </View>
         ))}
       </ScrollView>
@@ -65,6 +149,19 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.colors.background },
   content: { padding: theme.spacing(3), paddingBottom: theme.spacing(6) },
   title: { marginTop: theme.spacing(1), marginBottom: theme.spacing(1.5) },
+  cta: {
+    marginTop: theme.spacing(3),
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.accent,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 14,
+    padding: theme.spacing(2.5),
+  },
+  ctaText: {
+    fontSize: 20,
+    color: theme.colors.accent,
+    marginVertical: theme.spacing(1),
+  },
   card: {
     marginTop: theme.spacing(2),
     backgroundColor: theme.colors.surface,
@@ -75,4 +172,9 @@ const styles = StyleSheet.create({
   },
   confidence: { color: theme.colors.accent },
   statement: { marginVertical: theme.spacing(1) },
+  dispute: {
+    marginTop: theme.spacing(1.5),
+    color: theme.colors.danger,
+    fontSize: 13,
+  },
 });

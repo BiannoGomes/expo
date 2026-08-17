@@ -60,8 +60,16 @@ npm run mobile                        # Expo dev server (press w for web)
 
 ## Status
 
-Pre-MVP scaffold. Implemented: schema (spec 02), taxonomy (spec 01), daily
-loop endpoints with safety triage (specs 03–04), three app screens.
-Not yet: onboarding chapters, nightly integration pipeline, model summary
-maintenance, campaign generation, auth. See `docs/specs/05-cost-model-
-acceptance.md` §4 for what "MVP done" means.
+Pre-MVP, core loop implemented end to end: schema with immutability and
+deletion propagation (spec 02), taxonomy (spec 01), seven-chapter
+conversational onboarding with Opus synthesis into Future Self + bottleneck +
+90-day campaign (spec 03 §5), daily plan with load guard, re-entry tiers and
+confront gating (specs 03–04), evening debrief with safety-triage-first
+pipeline, nightly integration job with deterministic confidence rules, decay
+and model-summary rebuild, and the correction loop (inspect / dispute /
+correct) surfaced in the app. 15 unit tests; all workspaces typecheck; the
+app exports cleanly for web.
+
+Not yet: auth (dev bootstrap only), voice debriefs, campaign day-14 revision
+flow, weekly deep pass, eval harness fixtures. See
+`docs/specs/05-cost-model-acceptance.md` §4 for what "MVP done" means.
