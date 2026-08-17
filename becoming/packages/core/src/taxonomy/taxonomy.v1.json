@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "domains": [
+    {
+      "id": "physical",
+      "label": "Physical",
+      "facets": ["strength", "endurance", "mobility", "energy", "sleep", "nutrition", "health-behaviour", "physical-competence"]
+    },
+    {
+      "id": "mental",
+      "label": "Mental",
+      "facets": ["focus", "reasoning", "learning", "memory", "intellectual-range", "curiosity"]
+    },
+    {
+      "id": "emotional",
+      "label": "Emotional",
+      "facets": ["self-regulation", "resilience", "courage", "emotional-literacy", "stress-response"]
+    },
+    {
+      "id": "character",
+      "label": "Character",
+      "facets": ["discipline", "integrity", "responsibility", "humility", "consistency", "honesty"]
+    },
+    {
+      "id": "relationships",
+      "label": "Relationships",
+      "facets": ["family", "friendship", "love", "communication", "social-intelligence", "boundaries"]
+    },
+    {
+      "id": "career",
+      "label": "Career",
+      "facets": ["craft", "leadership", "expertise", "reputation", "opportunity", "execution"]
+    },
+    {
+      "id": "wealth",
+      "label": "Wealth",
+      "facets": ["financial-intelligence", "income", "assets", "ownership", "freedom", "security"]
+    },
+    {
+      "id": "creativity",
+      "label": "Creativity",
+      "facets": ["writing", "music", "art", "invention", "experimentation", "expression"]
+    },
+    {
+      "id": "adventure",
+      "label": "Adventure",
+      "facets": ["travel", "exploration", "challenge", "novelty", "physical-courage", "spontaneity"]
+    },
+    {
+      "id": "meaning",
+      "label": "Meaning",
+      "facets": ["purpose", "philosophy", "spirituality", "contribution", "gratitude"]
+    },
+    {
+      "id": "environment",
+      "label": "Environment",
+      "facets": ["living-space", "location", "people-around-you", "digital-environment", "routines-context"]
+    },
+    {
+      "id": "legacy",
+      "label": "Legacy",
+      "facets": ["building", "teaching", "family-legacy", "lasting-work", "story"]
+    }
+  ],
+  "bottleneckClasses": [
+    { "id": "focus-dilution", "signal": "Many concurrent goals/campaigns; low completion; starts far exceed finishes" },
+    { "id": "energy-deficit", "signal": "Physical facets (sleep, energy) weak while ambition is high" },
+    { "id": "avoidance", "signal": "A named fear or postponed confrontation recurs across reflections" },
+    { "id": "environment-friction", "signal": "Environment facets contradict stated goals (place, people, digital)" },
+    { "id": "skill-gap", "signal": "A single missing capability blocks multiple goals" },
+    { "id": "identity-conflict", "signal": "Stated values contradict stated goals or observed behaviour" },
+    { "id": "relationship-drag", "signal": "Relationship stressors recur across otherwise unrelated domains" },
+    { "id": "overload", "signal": "Total committed load exceeds stated available time/energy" },
+    { "id": "no-evidence-loop", "signal": "Effort happens but is never converted to evidence or completion" },
+    { "id": "direction-unclear", "signal": "Future Self statements are vague or conflicting in the blocked domain" }
+  ]
+}

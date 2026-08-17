@@ -1,6 +1,6 @@
 # BECOMING — Product Brief (Part 1 of 2)
 
-> The original vision document. Part 2 (`becoming/product-brief-part-2.md`,
+> The original vision document. Part 2 (`docs/product-brief-part-2.md`,
 > sections 48–68) is the later, refined specification that supersedes this
 > document where the two conflict. This part is preserved because it contains
 > concrete product experiences and framings the formal spec compresses or

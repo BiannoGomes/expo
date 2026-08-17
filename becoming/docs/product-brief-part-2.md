@@ -1,8 +1,8 @@
 # BECOMING — Product Brief (Part 2 of 2)
 
 > Sections 48–68 of the refined specification. The original vision document
-> is preserved as `becoming/product-brief-part-1.md`; where the two conflict,
-> this document supersedes it. See `becoming/gap-analysis.md` for what each
+> is preserved as `docs/product-brief-part-1.md`; where the two conflict,
+> this document supersedes it. See `docs/gap-analysis.md` for what each
 > covers that the other does not. (Note: this document's numbering implies a
 > formal sections 1–47 that has not been committed here — if it exists, it
 > should be added.)
