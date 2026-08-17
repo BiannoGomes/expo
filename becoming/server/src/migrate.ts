@@ -9,7 +9,7 @@ const migrationsDir = path.join(
   "migrations",
 );
 
-async function migrate() {
+export async function runMigrations() {
   const client = await pool.connect();
   try {
     await client.query(
@@ -39,11 +39,14 @@ async function migrate() {
     console.log("migrations up to date");
   } finally {
     client.release();
-    await pool.end();
   }
 }
 
-migrate().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (process.argv[1]?.endsWith("src/migrate.ts")) {
+  runMigrations()
+    .then(() => pool.end())
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+}

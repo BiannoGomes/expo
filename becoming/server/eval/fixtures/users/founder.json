@@ -1,0 +1,21 @@
+{
+  "description": "Synthetic user fixture: ambitious founder with focus-dilution pattern. Used for structural checks on plan generation and debrief extraction.",
+  "summary": "PERSONAL MODEL (taxonomy v1.0.0)\n\nvalue:\n- Freedom and self-direction matter more to you than status.\n- Adventure and physical challenge are core to who you are.\n\npattern:\n- It looks like you start new projects when current ones get difficult.\n\ngoal_intent:\n- You want to build a product company that funds an adventurous life.\n\nactive campaign: Ship One Thing — Finish and publish one project in 90 days.\n\nunknown domains (no signal — treat as unknown, never as weak): creativity, legacy",
+  "planInput": {
+    "date": "2026-08-18",
+    "availableMinutes": 90,
+    "activeCampaign": "Ship One Thing — Finish and publish one project in 90 days.",
+    "recentDebriefs": [],
+    "yesterdayOutcome": null,
+    "reducedLoad": false
+  },
+  "debrief": {
+    "date": "2026-08-18",
+    "transcript": "Okay so today was mixed. I did do the deep work block on the app, two hours, no phone, which honestly felt great. Then in the afternoon I caught myself sketching a completely new business idea instead of finishing the onboarding flow. Classic me. Skipped the run because it rained and I used that as an excuse. Had a good call with my brother though, we haven't talked in weeks. Energy is decent but I stayed up too late again last night.",
+    "planSlots": [
+      { "slot": "build", "text": "Finish the onboarding flow", "because": "campaign milestone" },
+      { "slot": "train", "text": "45-minute run", "because": "baseline" },
+      { "slot": "learn", "text": "Read 15 pages", "because": "stated curiosity" }
+    ]
+  }
+}

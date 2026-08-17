@@ -1,5 +1,5 @@
 import { query, pool } from "../db.js";
-import { intelligence } from "../intelligence/anthropic.js";
+import { intelligence } from "../intelligence/index.js";
 import {
   confirmAssertion,
   createHypothesis,
@@ -17,7 +17,7 @@ import { rebuildModelSummary } from "../model/summary.js";
  * Emits at most quiet bookkeeping — user-notable change surfacing is a
  * follow-up (morning plan reads the updated summary).
  */
-async function runNightly() {
+export async function runNightly() {
   const users = await query<{ id: string }>("select id from users");
   for (const user of users) {
     try {
@@ -31,7 +31,6 @@ async function runNightly() {
       console.error(`nightly: ${user.id} failed`, err);
     }
   }
-  await pool.end();
 }
 
 async function integrateUser(userId: string) {
@@ -103,7 +102,11 @@ async function decayUser(userId: string) {
   );
 }
 
-runNightly().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (process.argv[1]?.endsWith("jobs/nightly.ts")) {
+  runNightly()
+    .then(() => pool.end())
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+}

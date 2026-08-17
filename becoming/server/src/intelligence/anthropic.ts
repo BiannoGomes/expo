@@ -21,6 +21,12 @@ const MODELS = {
 
 const client = new Anthropic();
 
+const assertionKindEnum = z.enum([
+  "value", "trait", "pattern", "belief", "fear", "preference",
+  "capability_level", "relationship_fact", "bottleneck",
+  "goal_intent", "biographical_fact",
+]);
+
 const triageSchema = z.object({
   level: z.enum(["none", "distress", "crisis"]),
   category: z.string().optional(),
@@ -65,23 +71,14 @@ const extractionSchema = z.object({
   candidateAssertions: z.array(
     z.object({
       statement: z.string(),
-      kind: z.enum([
-        "value", "trait", "pattern", "belief", "fear", "preference",
-        "capability_level", "relationship_fact", "bottleneck",
-        "goal_intent", "biographical_fact",
-      ]),
+      kind: assertionKindEnum,
+      facetIds: z.array(z.string()),
       evidence: z.string(),
     }),
   ),
   unresolved: z.array(z.string()),
   reply: z.string(),
 });
-
-const assertionKindEnum = z.enum([
-  "value", "trait", "pattern", "belief", "fear", "preference",
-  "capability_level", "relationship_fact", "bottleneck",
-  "goal_intent", "biographical_fact",
-]);
 
 const onboardingTurnSchema = z.object({
   reply: z.string(),
@@ -115,6 +112,14 @@ const synthesisSchema = z.object({
     milestones: z.array(z.object({ day: z.number(), title: z.string() })),
   }),
   reveal: z.string(),
+});
+
+const deepReviewSchema = z.object({
+  bottleneckVerdict: z.enum(["confirmed", "revised", "rejected", "insufficient-data"]),
+  revisedStatement: z.string().optional(),
+  revisedClassId: z.string().optional(),
+  basis: z.string(),
+  notableChanges: z.array(z.string()),
 });
 
 const integrationSchema = z.array(
@@ -211,8 +216,8 @@ export const intelligence: Intelligence = {
           "user's reflection and write a short user-facing reply. " +
           "The reply cites today only; never claim a multi-day pattern. " +
           "End the reply with tomorrow's single highest-leverage move. " +
-          "candidateAssertions must each quote verbatim supporting text in `evidence`. " +
-          "facetTags must come from this taxonomy:\n" +
+          "candidateAssertions must each quote verbatim supporting text in `evidence` " +
+          "and carry facetIds. facetTags and facetIds must come from this taxonomy:\n" +
           FACET_LIST +
           "\nRespond with JSON only: the DebriefExtraction fields plus a `reply` string.",
         messages: [{ role: "user", content: JSON.stringify(input) }],
@@ -314,6 +319,27 @@ export const intelligence: Intelligence = {
         messages: [{ role: "user", content: JSON.stringify(input) }],
       },
       synthesisSchema,
+    );
+  },
+
+  async deepReview(input) {
+    return jsonCall(
+      {
+        model: MODELS.deep,
+        max_tokens: 2500,
+        system:
+          "You are the BECOMING weekly deep review. Re-test the current bottleneck hypothesis " +
+          "against the recent reflections — real behaviour outranks onboarding self-report. " +
+          "Verdicts: confirmed (the window's evidence supports it), revised (a different constraint " +
+          "fits the evidence better — provide revisedStatement and revisedClassId from the known " +
+          "bottleneck classes), rejected (the evidence contradicts it), insufficient-data (fewer " +
+          "than ~5 meaningful reflections — say so honestly rather than guessing). " +
+          "notableChanges: up to 3 plain-language observations from the window worth surfacing. " +
+          "Cite reflection content in `basis`. Respond with JSON only: " +
+          '{"bottleneckVerdict","revisedStatement"?,"revisedClassId"?,"basis","notableChanges"}.',
+        messages: [{ role: "user", content: JSON.stringify(input) }],
+      },
+      deepReviewSchema,
     );
   },
 };

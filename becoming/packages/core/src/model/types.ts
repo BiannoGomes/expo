@@ -112,6 +112,8 @@ export interface DebriefExtraction {
   candidateAssertions: {
     statement: string;
     kind: AssertionKind;
+    /** Taxonomy facet ids — required so integration can find related assertions. */
+    facetIds: string[];
     /** Verbatim quote from the reflection supporting it. */
     evidence: string;
   }[];

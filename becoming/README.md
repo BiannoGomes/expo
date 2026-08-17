@@ -66,10 +66,23 @@ conversational onboarding with Opus synthesis into Future Self + bottleneck +
 90-day campaign (spec 03 §5), daily plan with load guard, re-entry tiers and
 confront gating (specs 03–04), evening debrief with safety-triage-first
 pipeline, nightly integration job with deterministic confidence rules, decay
-and model-summary rebuild, and the correction loop (inspect / dispute /
-correct) surfaced in the app. 15 unit tests; all workspaces typecheck; the
-app exports cleanly for web.
+and model-summary rebuild, weekly deep pass with the campaign day-14
+bottleneck revision (spec 01 §6), and the correction loop (inspect / dispute /
+correct) surfaced in the app.
 
-Not yet: auth (dev bootstrap only), voice debriefs, campaign day-14 revision
-flow, weekly deep pass, eval harness fixtures. See
+Verified: 15 unit tests, 14 integration tests covering the full loop against
+a real Postgres (onboarding → synthesis → plan → debrief → nightly → weekly →
+correction → re-entry → crisis paths), all workspaces typecheck, web export
+builds. The eval harness (`npm run eval -w server`, spec 05 §5) checks safety
+triage recall against a red-team fixture set and structural invariants on
+plans and extractions — crisis recall below 100% is a launch blocker.
+
+**Run without an API key:** `MOCK_INTELLIGENCE=1` swaps in the deterministic
+mock intelligence, so the whole stack (server, jobs, app) runs locally with
+just Postgres. The real intelligence layer needs `ANTHROPIC_API_KEY` and has
+not yet been exercised against the live API — expect a prompt-tuning pass on
+first real run, using the eval harness.
+
+Not yet: auth (dev bootstrap only), voice debriefs, weekly user-facing review
+surface, human rubric pass on intelligence quality. See
 `docs/specs/05-cost-model-acceptance.md` §4 for what "MVP done" means.

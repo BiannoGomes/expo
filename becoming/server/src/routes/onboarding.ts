@@ -8,7 +8,7 @@ import {
   type CandidateAssertion,
 } from "@becoming/core";
 import { query } from "../db.js";
-import { intelligence } from "../intelligence/anthropic.js";
+import { intelligence } from "../intelligence/index.js";
 import { crisisResponse } from "../safety/crisis.js";
 import { createHypothesis, linkEvidence } from "../model/integrate.js";
 import { rebuildModelSummary } from "../model/summary.js";

@@ -106,6 +106,32 @@ export interface OnboardingSynthesis {
   reveal: string;
 }
 
+export interface DeepReviewInput {
+  summary: string;
+  /** Extractions from the review window (up to 14 days). */
+  extractions: DebriefExtraction[];
+  bottleneck: { assertionId: string; statement: string; basis: string } | null;
+  campaign: {
+    id: string;
+    title: string;
+    mission: string;
+    startedDaysAgo: number;
+  } | null;
+}
+
+export interface DeepReviewResult {
+  /**
+   * The bottleneck re-test (spec 01 §6): onboarding data never fixes a
+   * diagnosis permanently. insufficient-data is a first-class honest answer.
+   */
+  bottleneckVerdict: "confirmed" | "revised" | "rejected" | "insufficient-data";
+  revisedStatement?: string;
+  revisedClassId?: string;
+  basis: string;
+  /** Candidate notable changes for the user-facing review; code decides what surfaces. */
+  notableChanges: string[];
+}
+
 export interface Intelligence {
   /** Haiku-tier. Runs on every free-text input BEFORE anything else (spec 04 §2). */
   triageSafety(text: string): Promise<SafetyTriage>;
@@ -135,4 +161,7 @@ export interface Intelligence {
   synthesizeOnboarding(
     input: SynthesizeOnboardingInput,
   ): Promise<OnboardingSynthesis>;
+
+  /** Opus-tier, weekly batch + campaign day-14 checkpoint (spec 02 §4 step 4). */
+  deepReview(input: DeepReviewInput): Promise<DeepReviewResult>;
 }

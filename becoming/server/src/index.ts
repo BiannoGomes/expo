@@ -2,17 +2,18 @@ import Fastify from "fastify";
 import { z } from "zod";
 import type { DailyPlan, DebriefExtraction } from "@becoming/core";
 import { query } from "./db.js";
-import { intelligence } from "./intelligence/anthropic.js";
+import { intelligence } from "./intelligence/index.js";
 import { crisisResponse } from "./safety/crisis.js";
 import { registerOnboardingRoutes } from "./routes/onboarding.js";
 import { registerAssertionRoutes } from "./routes/assertions.js";
 
-const app = Fastify({ logger: true });
+export function buildApp() {
+  const app = Fastify({ logger: process.env.NODE_ENV !== "test" });
 
-registerOnboardingRoutes(app);
-registerAssertionRoutes(app);
+  registerOnboardingRoutes(app);
+  registerAssertionRoutes(app);
 
-app.get("/health", async () => ({ ok: true }));
+  app.get("/health", async () => ({ ok: true }));
 
 /** Dev bootstrap — replace with real auth before any external user. */
 app.post("/users", async (request) => {
@@ -200,8 +201,15 @@ app.post("/debrief/:userId", async (request, reply) => {
   }
 });
 
-const port = Number(process.env.PORT ?? 3000);
-app.listen({ port, host: "0.0.0.0" }).catch((err) => {
-  app.log.error(err);
-  process.exit(1);
-});
+  return app;
+}
+
+// Started directly (npm run dev/start) → listen; imported by tests → don't.
+if (process.argv[1]?.endsWith("src/index.ts")) {
+  const app = buildApp();
+  const port = Number(process.env.PORT ?? 3000);
+  app.listen({ port, host: "0.0.0.0" }).catch((err) => {
+    app.log.error(err);
+    process.exit(1);
+  });
+}
