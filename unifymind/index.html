@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bianno Gomes · UnifyMind</title>
+<meta name="description" content="Bianno Gomes writes the UnifyMind books: Self-Mastery, The Invisible Ocean, and The Sealed Codex. Available in ebook, paperback, and hardcover.">
+<meta name="theme-color" content="#0B0A08">
+<meta property="og:title" content="Bianno Gomes · UnifyMind">
+<meta property="og:description" content="Three books on attention, discipline, and the inner ocean.">
+<meta property="og:type" content="profile">
+<style>
+  :root{
+    --ground:#0B0A08;
+    --ground-2:#12100C;
+    --gold:#C9A13B;
+    --gold-lt:#E8C56A;
+    --bone:#E9E2D0;
+    --dim:#8A8170;
+    --rule:rgba(233,226,208,.16);
+    --pad:clamp(20px, 5vw, 76px);
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Times New Roman",serif;
+    --measure:62ch;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+  body{
+    background:var(--ground); color:var(--bone);
+    font-family:var(--serif); font-size:17px; line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* ---------------- realtime ground ---------------- */
+  #gl{position:fixed; inset:0; width:100%; height:100%; display:block; z-index:0}
+  .fallback{position:fixed; inset:0; z-index:0; display:none;
+    background:radial-gradient(115% 85% at 50% 42%, #2A2113 0%, #14110B 48%, #0B0A08 100%)}
+  body.no-gl .fallback{display:block}
+  .veil{position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 45%, rgba(11,10,8,0) 34%, rgba(11,10,8,.62) 100%)}
+  main{position:relative; z-index:2}
+
+  /* ---------------- type ---------------- */
+  .caps{
+    font-size:11px; letter-spacing:.34em; text-transform:uppercase;
+    color:var(--gold); font-weight:400;
+  }
+  .rule{height:1px; background:var(--rule); border:0}
+  h1{
+    font-size:clamp(44px, 7vw, 104px); line-height:.94; font-weight:400;
+    letter-spacing:.01em; text-transform:uppercase;
+  }
+  h2{
+    font-size:clamp(28px, 4.4vw, 50px); line-height:1.08; font-weight:400;
+    letter-spacing:.02em; text-transform:uppercase;
+  }
+  h3{font-size:clamp(20px,2.4vw,27px); font-weight:400; letter-spacing:.03em}
+  .lede{font-size:clamp(19px,2.1vw,24px); line-height:1.62; color:var(--bone)}
+  p{max-width:var(--measure); color:var(--dim)}
+  p strong{color:var(--bone); font-weight:400}
+  em{color:var(--gold-lt); font-style:italic}
+
+  section{padding:clamp(96px,15vh,190px) var(--pad); position:relative}
+  /* anchor targets must clear the fixed header */
+  section[id], #veins{scroll-margin-top:104px}
+  .wrap{max-width:1180px; margin:0 auto}
+
+  /* ---------------- header ---------------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:5;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px var(--pad);
+    background:linear-gradient(180deg, rgba(11,10,8,.86), rgba(11,10,8,0));
+  }
+  header .mark{font-size:13px; letter-spacing:.36em; text-transform:uppercase; color:var(--bone)}
+  header nav{display:flex; gap:26px}
+  header nav a{
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--dim); text-decoration:none; transition:color .25s;
+  }
+  header nav a:hover, header nav a:focus-visible{color:var(--gold-lt)}
+  @media (max-width:720px){ header nav a:not(.buy){display:none} }
+
+  /* ---------------- hero ---------------- */
+  .hero{
+    min-height:100svh; display:flex; flex-direction:column; justify-content:center;
+    padding-top:120px;
+  }
+  .hero .wrap{max-width:600px; margin-left:0}
+  @media (max-width:900px){ .hero .wrap{max-width:none} }
+  .hero .caps{margin-bottom:26px}
+  .hero h1{margin-bottom:30px}
+  .hero .lede{max-width:30ch}
+  .scrollcue{
+    position:absolute; bottom:38px; left:var(--pad);
+    font-size:10px; letter-spacing:.28em; text-transform:uppercase; color:var(--dim);
+    display:flex; align-items:center; gap:12px;
+  }
+  .scrollcue::after{content:""; width:52px; height:1px; background:var(--rule)}
+
+  /* ---------------- veins ---------------- */
+  .vein{
+    min-height:88svh; display:flex; align-items:center;
+    border-top:1px solid var(--rule);
+  }
+  .vein .inner{max-width:1180px; margin:0 auto; width:100%;
+    display:grid; grid-template-columns:120px 1fr; gap:clamp(20px,5vw,64px); align-items:start}
+  .vein .num{
+    font-size:11px; letter-spacing:.24em; color:var(--gold);
+    padding-top:14px;
+  }
+  .vein h2{margin-bottom:22px}
+  .vein p{font-size:clamp(18px,2vw,22px); line-height:1.68}
+  @media (min-width:901px){
+    .vein .inner{max-width:780px; margin-left:0}
+    .vein p{max-width:44ch}
+  }
+  @media (max-width:720px){
+    .vein .inner{grid-template-columns:1fr; gap:14px}
+    .vein .num{padding-top:0}
+  }
+
+  /* ---------------- books ---------------- */
+  .books{background:linear-gradient(180deg, rgba(11,10,8,.80) 0%, rgba(11,10,8,.97) 14%,
+    rgba(11,10,8,.97) 86%, rgba(11,10,8,.82) 100%)}
+  .about{background:linear-gradient(180deg, rgba(11,10,8,.82) 0%, rgba(11,10,8,.96) 12%,
+    rgba(11,10,8,.96) 88%, rgba(11,10,8,.84) 100%)}
+  .contact{background:linear-gradient(180deg, rgba(11,10,8,.86), var(--ground) 40%)}
+  .books-head{display:flex; justify-content:space-between; align-items:flex-end;
+    gap:30px; flex-wrap:wrap; margin-bottom:56px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(272px,1fr)); gap:clamp(24px,3.4vw,44px)}
+
+  .book{display:flex; flex-direction:column}
+  .cover{
+    aspect-ratio:1600/2560; position:relative; overflow:hidden;
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgba(201,161,59,.16), transparent 62%),
+      linear-gradient(170deg, #17140D 0%, #0C0B07 100%);
+    border:1px solid rgba(201,161,59,.34);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:34px 26px; text-align:center; gap:20px;
+    transition:transform .55s cubic-bezier(.2,.8,.2,1), border-color .45s;
+  }
+  .cover img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+  .book:hover .cover{transform:translateY(-8px); border-color:var(--gold)}
+  .cover .ct{
+    font-size:clamp(20px,2.3vw,27px); line-height:1.18; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--bone);
+  }
+  .cover .cd{width:34px; height:1px; background:var(--gold)}
+  .cover .ca{font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold-lt)}
+  .cover .cs{position:absolute; bottom:20px; font-size:9px; letter-spacing:.26em;
+    text-transform:uppercase; color:var(--dim)}
+
+  .book h3{margin:22px 0 6px}
+  .book .pages{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim)}
+  .book .blurb{font-size:15px; line-height:1.66; margin:14px 0 18px; min-height:3em}
+  .formats{list-style:none; margin-top:auto; border-top:1px solid var(--rule)}
+  .formats li{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding:11px 0; border-bottom:1px solid var(--rule);
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  }
+  .formats .fm{color:var(--dim)}
+  .formats .pr{color:var(--bone)}
+  .buy{
+    display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    margin-top:20px; padding:14px 22px;
+    border:1px solid var(--gold); color:var(--gold-lt);
+    font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+    text-decoration:none; background:transparent;
+    transition:background .3s, color .3s;
+  }
+  .buy:hover, .buy:focus-visible{background:var(--gold); color:#0B0A08}
+  header .buy{margin-top:0; padding:9px 16px; font-size:10px}
+
+  /* ---------------- about ---------------- */
+  .about .inner{display:grid; grid-template-columns:minmax(0,340px) minmax(0,1fr);
+    gap:clamp(28px,5vw,72px); align-items:start; max-width:1180px; margin:0 auto}
+  .portrait{
+    aspect-ratio:4/5; border:1px solid var(--rule); position:relative; overflow:hidden;
+    background:linear-gradient(160deg,#15120C,#0B0A08);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .portrait img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+  .portrait .ph{font-size:10px; letter-spacing:.24em; text-transform:uppercase;
+    color:var(--dim); text-align:center; padding:20px; line-height:2}
+  .portrait::after{content:""; position:absolute; inset:12px;
+    border:1px solid rgba(201,161,59,.22); pointer-events:none}
+  .about p + p{margin-top:20px}
+  @media (max-width:820px){ .about .inner{grid-template-columns:1fr} }
+
+  /* ---------------- contact ---------------- */
+  .contact{text-align:center}
+  .contact h2{margin-bottom:20px}
+  .contact p{margin:0 auto 34px}
+  .signup{display:flex; gap:10px; max-width:460px; margin:0 auto; flex-wrap:wrap}
+  .signup input{
+    flex:1 1 220px; background:transparent; border:1px solid var(--rule);
+    color:var(--bone); padding:14px 16px; font-family:var(--serif); font-size:15px;
+  }
+  .signup input:focus{outline:none; border-color:var(--gold)}
+  .signup button{
+    padding:14px 24px; background:var(--gold); border:1px solid var(--gold); color:#0B0A08;
+    font-family:var(--serif); font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+    cursor:pointer; transition:background .3s;
+  }
+  .signup button:hover{background:var(--gold-lt)}
+  .note{font-size:12px; color:var(--dim); margin:18px auto 0; letter-spacing:.04em}
+
+  footer{
+    padding:44px var(--pad); border-top:1px solid var(--rule);
+    display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap;
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim);
+    position:relative; z-index:2; background:var(--ground);
+  }
+  footer a{color:var(--dim); text-decoration:none}
+  footer a:hover{color:var(--gold-lt)}
+
+  /* ---------------- reveal ---------------- */
+  .rise{opacity:0; transform:translateY(26px); transition:opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1)}
+  .rise.in{opacity:1; transform:none}
+  @media (prefers-reduced-motion:reduce){ .rise{opacity:1; transform:none; transition:none} }
+
+  :focus-visible{outline:2px solid var(--gold-lt); outline-offset:3px}
+  .vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+</style>
+</head>
+<body>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="fallback" aria-hidden="true"></div>
+<div class="veil" aria-hidden="true"></div>
+
+<header>
+  <span class="mark">UnifyMind</span>
+  <nav>
+    <a href="#veins">The Veins</a>
+    <a href="#books">The Books</a>
+    <a href="#about">About</a>
+    <a class="buy" href="#books">Read</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero" data-morph="0">
+    <div class="wrap">
+      <p class="caps rise">UnifyMind</p>
+      <h1 class="rise">Bianno<br>Gomes</h1>
+      <p class="lede rise">I write books about attention. Three of them so far.</p>
+    </div>
+    <p class="scrollcue">Scroll</p>
+  </section>
+
+  <div id="veins"></div>
+
+  <section class="vein" data-morph="0">
+    <div class="inner">
+      <p class="num rise">I</p>
+      <div>
+        <h2 class="rise">Cape Town</h2>
+        <p class="rise">Where the childhood happened. The bottom of a continent, and weather
+        that arrives without asking permission.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="vein" data-morph="1">
+    <div class="inner">
+      <p class="num rise">II</p>
+      <div>
+        <h2 class="rise">The Drawing Trance</h2>
+        <p class="rise">Hours that disappear inside a pencil line. The first evidence that
+        attention is a place you can go, not only a thing you spend.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="vein" data-morph="2">
+    <div class="inner">
+      <p class="num rise">III</p>
+      <div>
+        <h2 class="rise">The Sea</h2>
+        <p class="rise">Yachting. Long water, small craft, and the particular discipline of a
+        boat that does not care how you feel about it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="vein" data-morph="3">
+    <div class="inner">
+      <p class="num rise">IV</p>
+      <div>
+        <h2 class="rise">Matroosberg</h2>
+        <p class="rise">A canyon. A night. Fifteen years old. Some doors open once, and only
+        in the dark.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="vein" data-morph="4">
+    <div class="inner">
+      <p class="num rise">V</p>
+      <div>
+        <h2 class="rise">The Mediterranean</h2>
+        <p class="rise">Crossings. The sunrise you only earn by having still been awake
+        for it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="books" id="books" data-morph="2">
+    <div class="wrap">
+      <div class="books-head">
+        <div>
+          <p class="caps rise" style="margin-bottom:18px">The Books</p>
+          <h2 class="rise">Three volumes</h2>
+        </div>
+        <p class="rise" style="max-width:34ch">Each available as ebook, paperback, and
+        hardcover. Printed 6 by 9 inches on cream stock.</p>
+      </div>
+      <div class="grid" id="bookGrid"></div>
+    </div>
+  </section>
+
+  <section class="about" id="about" data-morph="1">
+    <div class="inner">
+      <div class="portrait rise" id="portrait">
+        <p class="ph">Portrait<br>set PORTRAIT in the script</p>
+      </div>
+      <div>
+        <p class="caps rise" style="margin-bottom:22px">About</p>
+        <h2 class="rise" style="margin-bottom:28px">The author</h2>
+        <p class="lede rise" style="color:var(--bone); max-width:46ch; margin-bottom:26px">
+          Bianno Gomes writes the UnifyMind books.</p>
+        <p class="rise">The work comes out of a childhood in <strong>Cape Town</strong>, hours
+        lost in <strong>drawing</strong>, years on the <strong>sea</strong>, a night in the
+        <strong>Matroosberg</strong> canyon at fifteen, and <strong>Mediterranean</strong>
+        crossings watched through to sunrise. Places where attention had nowhere else to go.</p>
+        <p class="rise">Three books so far: <em>Self-Mastery</em>, <em>The Invisible Ocean</em>,
+        and <em>The Sealed Codex</em>. Each one built to be finished, not skimmed.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact">
+    <div class="wrap">
+      <p class="caps rise" style="margin-bottom:20px">Stay close</p>
+      <h2 class="rise">New work, when it lands</h2>
+      <p class="rise">No schedule. No noise. A note when a book is finished.</p>
+      <form class="signup rise" id="signup" novalidate>
+        <label class="vh" for="email">Email address</label>
+        <input id="email" type="email" placeholder="your@email.com" autocomplete="email" required>
+        <button type="submit">Join</button>
+      </form>
+      <p class="note" id="signupNote">This form is not connected to a mailing provider yet.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>&copy; <span id="yr"></span> Bianno Gomes</span>
+  <span>UnifyMind</span>
+</footer>
+
+<script>
+"use strict";
+
+/* ==================================================================
+ * CONTENT . every fact below is confirmed. Book titles, page counts,
+ * and prices come from the UnifyMind production record. The five
+ * veins are the confirmed biographical veins and nothing else.
+ *
+ * TODO before launch: fill in `url` (Amazon/KDP listing) and `blurb`
+ * for each book, and set COVER_IMAGES / PORTRAIT if you have art.
+ * ================================================================== */
+
+const BOOKS = [
+  { title:"Self-Mastery",       pages:178, url:"", cover:"", blurb:"" },
+  { title:"The Invisible Ocean",pages:179, url:"", cover:"", blurb:"" },
+  { title:"The Sealed Codex",   pages:181, url:"", cover:"", blurb:"" },
+];
+const PRICES = [
+  ["Ebook",     "$9.99"],
+  ["Paperback", "$16.99"],
+  ["Hardcover", "$24.99"],
+];
+const PORTRAIT = "";   // e.g. "portrait.jpg"
+
+/* ---------- render books ---------- */
+const grid = document.getElementById("bookGrid");
+BOOKS.forEach((b, i) => {
+  const el = document.createElement("article");
+  el.className = "book rise";
+  el.style.transitionDelay = (i * 90) + "ms";
+
+  const cover = b.cover
+    ? `<div class="cover"><img src="${b.cover}" alt="Cover of ${b.title}"></div>`
+    : `<div class="cover">
+         <span class="ca">Bianno Gomes</span>
+         <span class="cd"></span>
+         <span class="ct">${b.title}</span>
+         <span class="cs">UnifyMind</span>
+       </div>`;
+
+  el.innerHTML = cover +
+    `<h3>${b.title}</h3>
+     <p class="pages">${b.pages} pages</p>
+     <p class="blurb">${b.blurb || ""}</p>
+     <ul class="formats">
+       ${PRICES.map(([f, p]) => `<li><span class="fm">${f}</span><span class="pr">${p}</span></li>`).join("")}
+     </ul>
+     <a class="buy" href="${b.url || "#books"}"${b.url ? ' target="_blank" rel="noopener"' : ""}>
+       ${b.url ? "Get the book" : "Link pending"}
+     </a>`;
+  grid.appendChild(el);
+});
+
+if(PORTRAIT){
+  const p = document.getElementById("portrait");
+  p.innerHTML = `<img src="${PORTRAIT}" alt="Bianno Gomes">`;
+}
+
+document.getElementById("yr").textContent = new Date().getFullYear();
+
+/* ---------- signup: honest until wired ---------- */
+document.getElementById("signup").addEventListener("submit", (e) => {
+  e.preventDefault();
+  document.getElementById("signupNote").textContent =
+    "Not connected yet. Connect a mailing provider to collect this address.";
+});
+
+/* ---------- reveal on scroll ---------- */
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(en => { if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } });
+}, { rootMargin:"0px 0px -12% 0px", threshold:.06 });
+document.querySelectorAll(".rise").forEach(el => reduced ? el.classList.add("in") : io.observe(el));
+
+/* ==================================================================
+ * The realtime ground: a raymarched signed-distance field that morphs
+ * between five forms, one per vein, gilded rather than iridescent.
+ * Scroll position selects the form.
+ * ================================================================== */
+
+const canvas = document.getElementById("gl");
+const gl = canvas.getContext("webgl2", {
+  antialias:false, alpha:false, depth:false, stencil:false, powerPreference:"high-performance",
+});
+
+const COMMON = `
+#define NS 5
+uniform float uTime, uMorph, uShift, uSpin;
+
+float h1f(float p){ p=fract(p*.1031); p*=p+33.33; p*=p+p; return fract(p); }
+vec3  h3(vec3 p){
+  p = vec3(dot(p,vec3(127.1,311.7,74.7)), dot(p,vec3(269.5,183.3,246.1)), dot(p,vec3(113.5,271.9,124.6)));
+  return fract(sin(p)*43758.5453123);
+}
+float vh(vec3 p){ return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453123); }
+float vnoise(vec3 p){
+  vec3 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+  return mix(mix(mix(vh(i+vec3(0,0,0)),vh(i+vec3(1,0,0)),f.x), mix(vh(i+vec3(0,1,0)),vh(i+vec3(1,1,0)),f.x),f.y),
+             mix(mix(vh(i+vec3(0,0,1)),vh(i+vec3(1,0,1)),f.x), mix(vh(i+vec3(0,1,1)),vh(i+vec3(1,1,1)),f.x),f.y),f.z);
+}
+float fbm(vec3 p){ float a=.5,s=0.; for(int i=0;i<3;i++){ s+=a*vnoise(p); p*=2.03; a*=.5; } return s; }
+mat2 r2(float a){ float c=cos(a),s=sin(a); return mat2(c,-s,s,c); }
+vec3 warp(vec3 p){ p.xz*=r2(uSpin); p.xy*=r2(sin(uTime*.13)*.11); return p; }
+
+float sdSphere(vec3 p,float r){ return length(p)-r; }
+float sdTorus(vec3 p,vec2 t){ vec2 q=vec2(length(p.xz)-t.x,p.y); return length(q)-t.y; }
+float sdBox(vec3 p,vec3 b){ vec3 q=abs(p)-b; return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.); }
+float sdOcta(vec3 p,float s){ p=abs(p); return (p.x+p.y+p.z-s)*.5773503; }
+float gyroid(vec3 p,float sc,float th){ p*=sc; return (abs(dot(sin(p),cos(p.zxy)))-th)/sc; }
+
+// I Cape Town (mountain) · II drawing trance (lattice) · III the sea (swell)
+// IV Matroosberg (canyon crystal) · V Mediterranean (sun ring)
+float shape(int i, vec3 p){
+  if(i==0) return sdOcta(p,1.46);
+  if(i==1) return max(sdSphere(p,1.22), gyroid(p,4.4,.60));
+  if(i==2){
+    float w = .20*sin(2.2*p.x+uTime*.7)*sin(2.6*p.y+uTime*.4)*sin(2.0*p.z+uTime*.25);
+    return sdSphere(p,1.04)+w;
+  }
+  if(i==3) return sdBox(p,vec3(.78))-.13;
+  { vec3 q=p; q.yz*=r2(.62); q.xy*=r2(.16); return sdTorus(q,vec2(1.00,.33)); }
+}
+float mapLite(vec3 p){
+  p = warp(p);
+  float m = mod(uMorph, float(NS));
+  float f = fract(m);
+  int a = int(floor(m));
+  int b = int(mod(floor(m)+1., float(NS)));
+  float t = f*f*(3.-2.*f);
+  return mix(shape(a,p), shape(b,p), t);
+}
+float map(vec3 p){
+  float d = mapLite(p);
+  d += uShift * .42 * (fbm(warp(p)*2.2 + uTime*.35) - .5);
+  d -= .02*sin(uTime*.5);
+  return d*.78;
+}
+`;
+
+const VERT_QUAD = `#version 300 es
+void main(){ vec2 v = vec2((gl_VertexID<<1)&2, gl_VertexID&2); gl_Position = vec4(v*2.-1.,0.,1.); }`;
+
+const FRAG = `#version 300 es
+precision highp float;
+out vec4 O;
+uniform vec2 uRes;
+uniform vec3 uRo, uTa;
+uniform float uFade, uOffset;
+${COMMON}
+
+vec3 nrm(vec3 p){
+  vec2 e = vec2(1.,-1.)*.0016;
+  return normalize(e.xyy*map(p+e.xyy)+e.yyx*map(p+e.yyx)+e.yxy*map(p+e.yxy)+e.xxx*map(p+e.xxx));
+}
+
+// gilding, not rainbow: gold to bone, never green or magenta
+vec3 pal(float t){
+  return vec3(.60,.44,.17) + vec3(.40,.34,.22)*cos(6.28318*(t + vec3(.00,.09,.22)));
+}
+
+vec3 env(vec3 rd){
+  float y = rd.y*.5+.5;
+  vec3 c = mix(vec3(.010,.008,.005), vec3(.036,.028,.016), y);
+  c += vec3(.105,.070,.026) * pow(max(0., -rd.y), 3.);
+  c += vec3(.95,.90,.80) * pow(max(0., vnoise(rd*380.)), 54.) * 2.4;
+  float key = pow(max(0., dot(rd, normalize(vec3(.38,.74,-.52)))), 10.);
+  c += vec3(.30,.22,.10) * key;
+  return c;
+}
+
+void main(){
+  vec2 uv = (gl_FragCoord.xy*2. - uRes)/uRes.y;
+  uv.x += uOffset;
+  vec3 f = normalize(uTa-uRo);
+  vec3 r = normalize(cross(f, vec3(0,1,0)));
+  vec3 u = cross(r,f);
+  vec3 rd = normalize(f*1.62 + r*uv.x + u*uv.y);
+
+  vec3 col = env(rd);
+  float t=0., d=0.; bool hit=false; int steps=0;
+  for(int i=0;i<104;i++){
+    vec3 p = uRo + rd*t;
+    d = map(p);
+    if(d < .0013*t + .001){ hit=true; steps=i; break; }
+    if(t > 9.) break;
+    t += d; steps = i;
+  }
+
+  if(hit){
+    vec3 p = uRo + rd*t;
+    vec3 n = nrm(p);
+    float fres = pow(1.-max(0., dot(n,-rd)), 3.1);
+
+    vec3 spec = env(reflect(rd,n));
+    vec3 disp = vec3(env(refract(rd,n,.93)).r, env(refract(rd,n,.955)).g, env(refract(rd,n,.98)).b);
+
+    float film = fres*1.25 + dot(n, normalize(vec3(.3,1.,.2)))*.26 + uTime*.02;
+    vec3 leaf = pal(film);
+
+    float ao = clamp(pow(1.-float(steps)/104., 2.)*1.25, .2, 1.);
+
+    col  = disp*.72;
+    col += spec*.95;
+    col += leaf * pow(fres,1.7) * 2.15;
+
+    float vein = fbm(warp(p)*3.2 + uTime*.10);
+    col *= .50 + 1.02*vein;
+    col *= ao;
+
+    float sss = fbm(warp(p)*2.5 - uTime*.16);
+    col += pal(film+.4) * pow(max(0.,sss),2.4) * .5 * (1.-fres);
+
+    col += leaf * pow(fres,5.) * 3.4;
+    col += pal(film+.3) * uShift * pow(max(0., fbm(p*6.5+uTime*1.8)-.44),1.6) * 4.5;
+    col = mix(col, env(rd), smoothstep(6.2, 9.0, t));
+  }
+
+  float halo = 1.-smoothstep(.0,1.05,length(uv)*.62);
+  col += vec3(.55,.44,.22) * halo * .030;
+
+  col *= uFade;
+  col = (col*(2.51*col+.03))/(col*(2.43*col+.59)+.14);
+  col = pow(max(col,0.), vec3(.4545));
+  col *= 1.-.55*pow(length(uv)*.55, 2.2);
+  col += (h1f(gl_FragCoord.x + gl_FragCoord.y*1234. + uTime*60.)-.5)*.02;
+  O = vec4(col,1.);
+}`;
+
+const VERT_PTS = `#version 300 es
+precision highp float;
+uniform vec2 uRes; uniform vec3 uRo, uTa; uniform float uFade, uOffset;
+out float vSeed; out float vHeat;
+${COMMON}
+vec3 grad(vec3 p){
+  vec2 e = vec2(1.,-1.)*.004;
+  return normalize(e.xyy*mapLite(p+e.xyy)+e.yyx*mapLite(p+e.yyx)+e.yxy*mapLite(p+e.yxy)+e.xxx*mapLite(p+e.xxx));
+}
+void main(){
+  float id = float(gl_VertexID);
+  vec3 rnd = h3(vec3(id*.017, id*.0031, 7.13));
+  vSeed = rnd.x;
+  float z = rnd.x*2.-1.; float a = rnd.y*6.28318; float s = sqrt(max(0.,1.-z*z));
+  vec3 p = vec3(s*cos(a), z, s*sin(a))*2.0;
+  for(int i=0;i<6;i++){ p -= grad(p)*mapLite(p)*.85; }
+  float burst = uShift*(.42+rnd.z*1.25);
+  p += normalize(p + (h3(p*3.1+rnd)-.5)*1.4) * burst;
+  p += (h3(vec3(id*.11, uTime*.08, 3.7))-.5)*.05;
+  vHeat = burst;
+  vec3 rel = p-uRo;
+  vec3 f = normalize(uTa-uRo);
+  vec3 r = normalize(cross(f, vec3(0,1,0)));
+  vec3 u = cross(r,f);
+  vec3 v = vec3(dot(rel,r), dot(rel,u), dot(rel,f));
+  if(v.z < .05){ gl_Position = vec4(2.,2.,2.,1.); gl_PointSize = 0.; return; }
+  vec2 sp = v.xy*1.62/v.z; sp.x -= uOffset;
+  gl_Position = vec4(sp.x*uRes.y/uRes.x, sp.y, 0., 1.);
+  gl_PointSize = clamp((1.5+rnd.z*2.4)*(uRes.y/900.)/v.z*1.5, 1., 6.5);
+}`;
+
+const FRAG_PTS = `#version 300 es
+precision highp float;
+in float vSeed; in float vHeat;
+out vec4 O;
+uniform float uShift, uTime, uFade;
+vec3 pal(float t){ return vec3(.60,.44,.17) + vec3(.40,.34,.22)*cos(6.28318*(t + vec3(.00,.09,.22))); }
+void main(){
+  vec2 c = gl_PointCoord-.5;
+  float m = 1.-smoothstep(.16,.5,length(c));
+  if(m <= .001) discard;
+  vec3 col = pal(vSeed*.7 + uTime*.03 + vHeat*.35);
+  float amp = (.14 + uShift*1.7)*(.4+vSeed*.9);
+  O = vec4(col*m*amp*uFade, m);
+}`;
+
+function compile(src, type){
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+function program(vs, fs){
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(vs, gl.VERTEX_SHADER));
+  gl.attachShader(p, compile(fs, gl.FRAGMENT_SHADER));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  return p;
+}
+const U = (p, n) => Object.fromEntries(n.map(k => [k, gl.getUniformLocation(p, k)]));
+
+let progScene, progPts, uScene, uPts, vao, PARTICLES = 0;
+const state = {
+  morph:0, morphTarget:0, shift:0, spin:0,
+  fade:0, quality:1, camA:0, camY:.28,
+};
+
+function resize(){
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const base = (innerWidth*innerHeight > 1600*1000) ? .58 : .74;
+  const sc = base * state.quality;
+  const w = Math.max(1, Math.round(innerWidth*dpr*sc));
+  const h = Math.max(1, Math.round(innerHeight*dpr*sc));
+  if(canvas.width !== w || canvas.height !== h){ canvas.width = w; canvas.height = h; }
+}
+
+/* scroll selects the form */
+const sections = [...document.querySelectorAll("[data-morph]")];
+let activeMorph = 0;
+const sectionIO = new IntersectionObserver((entries) => {
+  entries.forEach(en => {
+    if(!en.isIntersecting) return;
+    const want = +en.target.dataset.morph;
+    if(want === activeMorph) return;
+    let delta = want - ((activeMorph % 5) + 5) % 5;
+    if(delta >  2.5) delta -= 5;
+    if(delta < -2.5) delta += 5;
+    state.morphTarget += delta;
+    activeMorph = want;
+    if(!reduced) state.shift = 1;
+  });
+}, { threshold:.34 });
+sections.forEach(s => sectionIO.observe(s));
+
+let t0 = null, lastT = 0, frames = 0, acc = 0;
+function frame(now){
+  requestAnimationFrame(frame);
+  if(t0 === null){ t0 = now; lastT = now; }
+  const dt = Math.max(0, Math.min(.05, (now-lastT)/1000));
+  lastT = now;
+  const time = (now-t0)/1000;
+
+  frames++; acc += dt;
+  if(acc > .5){
+    const fps = frames/acc;
+    if(fps < 44 && state.quality > .5)     state.quality = Math.max(.5, state.quality-.09);
+    else if(fps > 57 && state.quality < 1) state.quality = Math.min(1, state.quality+.04);
+    frames = 0; acc = 0;
+  }
+
+  state.morph = state.morph + (state.morphTarget - state.morph)*(1-Math.pow(.0022, dt));
+  state.shift = Math.max(0, state.shift - dt*(reduced ? 6 : 1.2));
+  state.spin += reduced ? 0 : dt*.13;
+  state.fade  = state.fade + (1-state.fade)*(1-Math.pow(.15, dt));
+
+  const R = 4.15;
+  const drift = reduced ? 0 : Math.sin(time*.19)*.09;
+  const ro = [Math.sin(state.camA)*R, state.camY+drift, Math.cos(state.camA)*R];
+
+  resize();
+  gl.viewport(0,0,canvas.width,canvas.height);
+  const setAll = (u) => {
+    gl.uniform2f(u.uRes, canvas.width, canvas.height);
+    gl.uniform1f(u.uTime, reduced ? 0 : time);
+    gl.uniform1f(u.uMorph, state.morph);
+    gl.uniform1f(u.uShift, state.shift);
+    gl.uniform1f(u.uSpin, state.spin);
+    gl.uniform3f(u.uRo, ro[0], ro[1], ro[2]);
+    gl.uniform3f(u.uTa, 0,0,0);
+    gl.uniform1f(u.uFade, state.fade);
+    gl.uniform1f(u.uOffset, innerWidth > 900 ? -0.58 : 0.0);
+  };
+
+  gl.bindVertexArray(vao);
+  gl.disable(gl.BLEND);
+  gl.useProgram(progScene); setAll(uScene);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  gl.useProgram(progPts); setAll(uPts);
+  gl.drawArrays(gl.POINTS, 0, PARTICLES);
+}
+
+try{
+  if(!gl) throw new Error("WebGL2 unavailable");
+  progScene = program(VERT_QUAD, FRAG);
+  progPts   = program(VERT_PTS, FRAG_PTS);
+  const names = ["uRes","uTime","uMorph","uShift","uSpin","uRo","uTa","uFade","uOffset"];
+  uScene = U(progScene, names); uPts = U(progPts, names);
+  vao = gl.createVertexArray(); gl.bindVertexArray(vao);
+  PARTICLES = Math.min(innerWidth, innerHeight) < 720 ? 3000 : 7500;
+  resize();
+  requestAnimationFrame(frame);
+}catch(err){
+  console.warn("[UnifyMind] WebGL2 unavailable, using static ground.", err);
+  document.body.classList.add("no-gl");
+  canvas.style.display = "none";
+}
+</script>
+</body>
+</html>
