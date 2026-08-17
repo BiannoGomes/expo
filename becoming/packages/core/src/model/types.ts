@@ -92,6 +92,8 @@ export interface DailyPlan {
   question: string;
   /** Rest-day mode replaces slots with a recovery instruction. */
   restDay: boolean;
+  /** Set on re-entry after ≥3 silent days (spec 03 §4). Never lists missed days. */
+  reentryGapDays?: number;
 }
 
 export type SlotStatus = "done" | "partial" | "skipped" | "not_mentioned";

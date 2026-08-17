@@ -77,6 +77,46 @@ const extractionSchema = z.object({
   reply: z.string(),
 });
 
+const assertionKindEnum = z.enum([
+  "value", "trait", "pattern", "belief", "fear", "preference",
+  "capability_level", "relationship_fact", "bottleneck",
+  "goal_intent", "biographical_fact",
+]);
+
+const onboardingTurnSchema = z.object({
+  reply: z.string(),
+  chapterComplete: z.boolean(),
+});
+
+const chapterExtractionSchema = z.array(
+  z.object({
+    statement: z.string(),
+    kind: assertionKindEnum,
+    facetIds: z.array(z.string()),
+    evidence: z.string(),
+  }),
+);
+
+const synthesisSchema = z.object({
+  futureSelf: z.record(z.string(), z.string()),
+  gaps: z.array(z.object({ domainId: z.string(), note: z.string() })),
+  bottleneck: z.object({
+    classId: z.string(),
+    statement: z.string(),
+    basis: z.string(),
+    evidenceQuotes: z.array(z.string()),
+  }),
+  campaign: z.object({
+    title: z.string(),
+    mission: z.string(),
+    why: z.string(),
+    primaryDomain: z.string(),
+    secondaryDomains: z.array(z.string()),
+    milestones: z.array(z.object({ day: z.number(), title: z.string() })),
+  }),
+  reveal: z.string(),
+});
+
 const integrationSchema = z.array(
   z.object({
     action: z.enum(["confirm", "contradict", "create"]),
@@ -199,5 +239,81 @@ export const intelligence: Intelligence = {
       integrationSchema,
     );
     return proposals as IntegrationProposal[];
+  },
+
+  async onboardingTurn(input) {
+    return jsonCall(
+      {
+        model: MODELS.workhorse,
+        max_tokens: 800,
+        system:
+          "You are guiding one chapter of the BECOMING onboarding — a conversation, never a form. " +
+          `Chapter: "${input.chapterTitle}". Aims (internal, never listed to the user): ${input.aims.join("; ")}. ` +
+          "Ask one question at a time. Follow what the user actually says rather than a script. " +
+          "Warm, direct, unhurried; no flattery, no therapy-speak, no bullet lists. " +
+          "Set chapterComplete true once the aims are substantially met or the user signals they're done — " +
+          "aim for 10-15 minutes of conversation, never drag it out. When completing, close with a short " +
+          "reflected-back insight: something true you heard underneath their answers, framed tentatively. " +
+          (input.soften
+            ? "The user may be under strain: keep it gentle, do not probe fears or push. "
+            : "") +
+          'Respond with JSON only: {"reply": string, "chapterComplete": boolean}.',
+        messages: [
+          ...input.history.map((m) => ({
+            role: m.role === "user" ? ("user" as const) : ("assistant" as const),
+            content: m.text,
+          })),
+          { role: "user", content: input.message },
+        ],
+      },
+      onboardingTurnSchema,
+    );
+  },
+
+  async extractChapter(input) {
+    return jsonCall(
+      {
+        model: MODELS.workhorse,
+        max_tokens: 2000,
+        system:
+          "Extract candidate assertions from this completed BECOMING onboarding chapter transcript. " +
+          "Each assertion: one plain-language sentence about the user, a kind, facetIds from the taxonomy, " +
+          "and a verbatim supporting quote in `evidence`. Only what the transcript supports — no guessing. " +
+          "Taxonomy:\n" +
+          FACET_LIST +
+          '\nRespond with JSON only: [{"statement","kind","facetIds","evidence"}].',
+        messages: [{ role: "user", content: JSON.stringify(input) }],
+      },
+      chapterExtractionSchema,
+    );
+  },
+
+  async synthesizeOnboarding(input) {
+    const bottleneckList = TAXONOMY.bottleneckClasses
+      .map((b) => `${b.id}: ${b.signal}`)
+      .join("\n");
+    return jsonCall(
+      {
+        model: MODELS.deep,
+        max_tokens: 4000,
+        system:
+          "You are the BECOMING onboarding synthesis. From the candidate assertions, produce:\n" +
+          "1. futureSelf — per-domain narrative statements in second person, only for domains with signal. " +
+          "Domains listed in uncoveredDomains are UNKNOWN: omit them entirely, never invent.\n" +
+          "2. gaps — per-domain notes on missing capabilities, evidence, experiences. Never scores or percentages.\n" +
+          "3. bottleneck — choose 1 class from this fixed list (never invent a class):\n" +
+          bottleneckList +
+          "\nCite evidenceQuotes verbatim from the candidates. This is a hypothesis from thin data — " +
+          "the basis must say so.\n" +
+          "4. campaign — a 90-day campaign aimed at the bottleneck, milestones at days 14/30/60/90, " +
+          "day 14 is always 'Revise this diagnosis together'. Fit the user's availableMinutesDaily.\n" +
+          "5. reveal — the message shown to the user: the person being built, the bottleneck (hedged, with its " +
+          "evidence), and the campaign. Explicitly frame everything as a first draft to be revised at day 14. " +
+          "Cinematic but plain; no hype.\n" +
+          "Respond with JSON only matching the OnboardingSynthesis shape.",
+        messages: [{ role: "user", content: JSON.stringify(input) }],
+      },
+      synthesisSchema,
+    );
   },
 };

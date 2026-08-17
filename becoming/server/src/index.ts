@@ -1,11 +1,16 @@
 import Fastify from "fastify";
 import { z } from "zod";
-import type { DailyPlan } from "@becoming/core";
+import type { DailyPlan, DebriefExtraction } from "@becoming/core";
 import { query } from "./db.js";
 import { intelligence } from "./intelligence/anthropic.js";
 import { crisisResponse } from "./safety/crisis.js";
+import { registerOnboardingRoutes } from "./routes/onboarding.js";
+import { registerAssertionRoutes } from "./routes/assertions.js";
 
 const app = Fastify({ logger: true });
+
+registerOnboardingRoutes(app);
+registerAssertionRoutes(app);
 
 app.get("/health", async () => ({ ok: true }));
 
@@ -23,7 +28,30 @@ app.post("/users", async (request) => {
   return user;
 });
 
-/** Morning plan: return today's stored plan or generate one (spec 03 §1). */
+async function hadSafetyEvent(userId: string, hours: number): Promise<boolean> {
+  const rows = await query(
+    `select 1 from safety_events
+      where user_id = $1 and created_at > now() - ($2 || ' hours')::interval
+      limit 1`,
+    [userId, String(hours)],
+  );
+  return rows.length > 0;
+}
+
+async function recentExtractions(
+  userId: string,
+  limit: number,
+): Promise<DebriefExtraction[]> {
+  const rows = await query<{ payload: DebriefExtraction & { extractionOf: string } }>(
+    `select payload from records
+      where user_id = $1 and kind = 'action_event' and payload ? 'extractionOf'
+      order by occurred_at desc limit $2`,
+    [userId, limit],
+  );
+  return rows.map((r) => r.payload);
+}
+
+/** Morning plan: stored plan, or generate with load guard + re-entry (spec 03 §1, §4). */
 app.get("/plan/:userId/:date", async (request, reply) => {
   const { userId, date } = z
     .object({ userId: z.string().uuid(), date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) })
@@ -35,33 +63,76 @@ app.get("/plan/:userId/:date", async (request, reply) => {
   );
   if (existing[0]) return existing[0].plan;
 
-  const [user] = await query<{ available_minutes_daily: number }>(
-    "select available_minutes_daily from users where id = $1",
+  const [user] = await query<{
+    available_minutes_daily: number;
+    challenge_opt_in: boolean;
+  }>(
+    "select available_minutes_daily, challenge_opt_in from users where id = $1",
     [userId],
   );
   if (!user) return reply.code(404).send({ error: "unknown user" });
+
+  // Re-entry tiers (spec 03 §4): ≥3 silent days pauses campaigns; the plan
+  // comes back lighter. Missed days are never listed.
+  const [activity] = await query<{ gap_days: number | null }>(
+    `select extract(day from now() - max(occurred_at))::int as gap_days
+       from records where user_id = $1`,
+    [userId],
+  );
+  const gapDays = activity?.gap_days ?? 0;
+  if (gapDays >= 3) {
+    await query(
+      `update campaigns set status = 'paused', paused_at = now()
+        where user_id = $1 and status = 'active'`,
+      [userId],
+    );
+  }
+
+  const extractions = await recentExtractions(userId, 3);
+  const yesterdayOutcome = extractions[0] ?? null;
+
+  // Load guard (spec 03 §1): exhaustion, distress, or a long gap shrinks today.
+  const distressRecently = await hadSafetyEvent(userId, 72);
+  const reducedLoad =
+    gapDays >= 3 || distressRecently || yesterdayOutcome?.energy === "low";
 
   const [summary] = await query<{ content: string }>(
     "select content from model_summaries where user_id = $1",
     [userId],
   );
+  const [campaign] = await query<{ title: string; mission: string }>(
+    `select title, mission from campaigns
+      where user_id = $1 and status = 'active' order by created_at limit 1`,
+    [userId],
+  );
 
   const plan = await intelligence.generatePlan({
     date,
-    summary: summary?.content ?? "New user; model not yet built. Keep the plan generic but sensible.",
+    summary:
+      summary?.content ??
+      "New user; model not yet built. Keep the plan generic but sensible.",
     availableMinutes: user.available_minutes_daily,
-    activeCampaign: null, // TODO: load active campaign mission
-    recentDebriefs: [], // TODO: last 3 extractions (spec 02 §5 recipe)
-    yesterdayOutcome: null,
-    reducedLoad: false, // TODO: load guard from yesterday's energy flag
+    activeCampaign: campaign ? `${campaign.title} — ${campaign.mission}` : null,
+    recentDebriefs: extractions,
+    yesterdayOutcome,
+    reducedLoad,
   });
+
+  // Deterministic guardrails on top of whatever the model produced:
+  // confront requires opt-in and no recent distress (spec 04 §2).
+  const confrontAllowed = user.challenge_opt_in && !distressRecently;
+  const finalPlan: DailyPlan = {
+    ...plan,
+    slots: plan.slots.filter((s) => s.slot !== "confront" || confrontAllowed),
+    ...(gapDays >= 3 ? { reentryGapDays: gapDays } : {}),
+  };
 
   await query(
     `insert into daily_plans (user_id, plan_date, plan) values ($1, $2, $3)
      on conflict (user_id, plan_date) do nothing`,
-    [userId, date, JSON.stringify(plan)],
+    [userId, date, JSON.stringify(finalPlan)],
   );
-  return plan;
+  return finalPlan;
 });
 
 /** Evening debrief: safety triage FIRST, then extraction (spec 04 §2, 03 §3). */
@@ -91,8 +162,8 @@ app.post("/debrief/:userId", async (request, reply) => {
       "insert into safety_events (user_id, level) values ($1, 'distress')",
       [userId],
     );
-    // Processing continues, softened: TODO thread a `soften` flag into
-    // extraction reply + tomorrow's load guard (no confront slot).
+    // Processing continues; tomorrow's plan route reads safety_events and
+    // softens (reduced load, no confront slot).
   }
 
   // 2. Capture the record verbatim.
