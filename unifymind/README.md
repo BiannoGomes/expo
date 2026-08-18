@@ -53,21 +53,49 @@ const FAMILY = ["Tiago", "Rafael", "Gunther Komnick"];
 
 All of it sits in one `const` block at the top of the script.
 
-| Field | What to add | Consequence if left |
-|---|---|---|
-| `BOOKS[].url` | Amazon/KDP listing link | Button reads "Link pending" and goes nowhere |
-| `BOOKS[].blurb` | One or two sentences per book | Blank space under the title |
-| `BOOKS[].cover` | Path to the 1600x2560 ebook cover | Falls back to a typographic cover |
-| `PORTRAIT` | Path to a portrait image | Currently unused; no photo is on the page |
+| Field | Status |
+|---|---|
+| `BOOKS[0].url` | Set. Shortlink supplied by Bianno, **unverified** (tr.ee is egress-blocked here) |
+| `BOOKS[1].url` | Set. Same caveat |
+| `BOOKS[2].url` | **Missing.** The Sealed Codex button reads "Link pending" |
+| `BOOKS[0..1].blurb` | **Draft.** Written from Bianno's own sentences. Needs his approval |
+| `BOOKS[2].blurb` | Empty. No source material for this title |
+| `BOOKS[].cover` | Empty. Falls back to the designed typographic cover |
+| `PORTRAIT` | Empty. No photograph is on the page |
+
+**On the buy links:** both are `tr.ee` shortlinks and could not be resolved from
+the build environment, so their destinations are unverified. Click both before
+launch. Direct Amazon URLs are better on a sales page: they survive a shortener
+outage and read as more trustworthy.
+
+**On the blurbs:** books one and two carry draft copy assembled from sentences
+Bianno wrote about self-mastery and about The Invisible Ocean. They describe the
+themes, not the contents, because the manuscripts were not available. Read them
+before launch. The third book has none, because there was no source to draw on.
 
 The buy buttons say **"Link pending"** rather than linking to `#`, so a missing
 link is visible instead of silently broken. The newsletter form is **not wired to
 any provider**; it says so on the page and again on submit.
 
-**No photographs are on this site.** They could not be retrieved: Drive is
-egress-blocked in the build environment, and the connector only returns files as
-base64 into context, which is not viable for multi-megabyte images. Drop image
-files beside this HTML and set the fields above.
+**No photographs are on this site.** They could not be retrieved. Drive is
+egress-blocked in the build environment and the connector only returns files as
+base64 into context, which is not viable for multi-megabyte images. The Jarvis
+folder on the Windows desktop is likewise unreachable: this builds in an isolated
+cloud container with no path to local disk. Drop image files beside this HTML and
+set the fields above.
+
+## Book covers
+
+With no cover art available, each book renders a designed typographic cover in
+the series look: a double gold rule, the volume numeral, a logarithmic spiral
+generated from its equation rather than hand-authored path data, the title, and
+the author line. Supplying `BOOKS[].cover` replaces it with the real 1600x2560 art.
+
+## Structured data
+
+A JSON-LD block describes the Person and all three Books with page counts and
+offers, so search and answer engines can cite the work accurately. It contains
+only confirmed facts.
 
 ## Design
 

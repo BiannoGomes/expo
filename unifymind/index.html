@@ -110,12 +110,20 @@
     transition:transform .55s cubic-bezier(.2,.8,.2,1), border-color .45s}
   .cover img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
   .book:hover .cover{transform:translateY(-8px); border-color:var(--gold)}
-  .cover .ct{font-size:clamp(19px,2.2vw,26px); line-height:1.18; letter-spacing:.06em;
-    text-transform:uppercase; color:var(--bone)}
-  .cover .cd{width:34px; height:1px; background:var(--gold)}
+  .cover .frame{position:absolute; inset:14px; border:1px solid rgba(201,161,59,.30); pointer-events:none}
+  .cover .frame::after{content:""; position:absolute; inset:5px; border:1px solid rgba(201,161,59,.14)}
+  .cover .num{position:absolute; top:30px; left:0; right:0; text-align:center;
+    font-size:10px; letter-spacing:.42em; color:var(--gold); text-indent:.42em}
+  .cover .orn{width:clamp(70px,26%,104px); height:auto; opacity:.62; margin-bottom:4px}
+  .cover .orn path{fill:none; stroke:var(--gold); stroke-width:.9; stroke-linecap:round;
+    vector-effect:non-scaling-stroke}
+  .cover .ct{font-size:clamp(19px,2.2vw,26px); line-height:1.16; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--bone); text-wrap:balance}
+  .cover .cd{width:30px; height:1px; background:var(--gold); opacity:.75}
   .cover .ca{font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold-lt)}
-  .cover .cs{position:absolute; bottom:20px; font-size:9px; letter-spacing:.26em;
-    text-transform:uppercase; color:var(--dim)}
+  .cover .cs{position:absolute; bottom:30px; left:0; right:0; text-align:center;
+    font-size:9px; letter-spacing:.32em; text-transform:uppercase; color:var(--dim); text-indent:.32em}
+  .book:hover .cover .orn{opacity:.9; transition:opacity .5s}
   .book h3{margin:20px 0 6px}
   .book .pages{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim)}
   .book .blurb{font-size:15px; line-height:1.66; margin:13px 0 16px; color:var(--dim)}
@@ -265,8 +273,9 @@
           <p class="caps rise" style="margin-bottom:18px">The books</p>
           <h2 class="rise">Three volumes</h2>
         </div>
-        <p class="rise" style="max-width:34ch">Each available as ebook, paperback, and
-        hardcover. Printed 6 by 9 inches on cream stock.</p>
+        <p class="rise" style="max-width:36ch">Three volumes of the UnifyMind series.
+        Each in ebook, paperback, and hardcover, printed 6 by 9 inches on cream stock.
+        <strong>Start with Self-Mastery.</strong></p>
       </div>
       <div class="grid" id="bookGrid"></div>
     </div>
@@ -321,6 +330,28 @@
 
 </main>
 
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Person",
+  "name":"Bianno Gomes",
+  "jobTitle":"Author",
+  "description":"Author of the UnifyMind books. Analyst, marketer, artist, sailor, writer.",
+  "knowsAbout":["Self-mastery","Consciousness","Intuition","Artificial intelligence","Creative technology"],
+  "author":[
+    {"@type":"Book","name":"Self-Mastery","numberOfPages":178,"author":{"@type":"Person","name":"Bianno Gomes"},
+     "bookFormat":"https://schema.org/Paperback","inLanguage":"en",
+     "offers":{"@type":"Offer","price":"16.99","priceCurrency":"USD","availability":"https://schema.org/InStock"}},
+    {"@type":"Book","name":"The Invisible Ocean","numberOfPages":179,"author":{"@type":"Person","name":"Bianno Gomes"},
+     "bookFormat":"https://schema.org/Paperback","inLanguage":"en",
+     "offers":{"@type":"Offer","price":"16.99","priceCurrency":"USD","availability":"https://schema.org/InStock"}},
+    {"@type":"Book","name":"The Sealed Codex","numberOfPages":181,"author":{"@type":"Person","name":"Bianno Gomes"},
+     "bookFormat":"https://schema.org/Paperback","inLanguage":"en",
+     "offers":{"@type":"Offer","price":"16.99","priceCurrency":"USD","availability":"https://schema.org/InStock"}}
+  ]
+}
+</script>
+
 <footer>
   <span>&copy; <span id="yr"></span> Bianno Gomes</span>
   <span>UnifyMind</span>
@@ -341,9 +372,15 @@
  * ================================================================== */
 
 const BOOKS = [
-  { title:"Self-Mastery",        pages:178, url:"", cover:"", blurb:"" },
-  { title:"The Invisible Ocean", pages:179, url:"", cover:"", blurb:"" },
-  { title:"The Sealed Codex",    pages:181, url:"", cover:"", blurb:"" },
+  { title:"Self-Mastery", num:"I", pages:178, cover:"",
+    url:"https://tr.ee/geODrk1dTh",
+    // DRAFT, from Bianno's own words on self-mastery. Approve or replace.
+    blurb:"External success is not the finish line. A book about mastering the mind, the emotions, the habits, and the potential most people never train." },
+  { title:"The Invisible Ocean", num:"II", pages:179, cover:"",
+    url:"https://tr.ee/0mBkdE87wx",
+    // DRAFT, from Bianno's own description of the book. Approve or replace.
+    blurb:"Beneath ordinary perception there is an enormous internal world that most people never learn to navigate. On intuition, consciousness, and the distance between what we know and what we somehow feel." },
+  { title:"The Sealed Codex", num:"III", pages:181, cover:"", url:"", blurb:"" },
 ];
 const PRICES = [["Ebook","$9.99"],["Paperback","$16.99"],["Hardcover","$24.99"]];
 
@@ -388,6 +425,19 @@ const VALUES = [
 const PORTRAIT = "";
 const FAMILY = [];   // add names here only if you want them public
 
+/* A logarithmic spiral, drawn rather than hand-authored as path data.
+   The series device: growth that keeps its shape at every scale. */
+function spiral(){
+  const pts = [];
+  for(let i = 0; i <= 260; i++){
+    const t = i * 0.075;
+    const r = 1.9 * Math.exp(0.163 * t);
+    pts.push([(60 + r * Math.cos(t)).toFixed(2), (60 + r * Math.sin(t)).toFixed(2)]);
+  }
+  return `<svg class="orn" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M${pts.map(p => p.join(",")).join("L")}"/></svg>`;
+}
+
 /* ---------- render ---------- */
 const el = (t, c, h) => { const n = document.createElement(t); if(c) n.className = c; if(h != null) n.innerHTML = h; return n; };
 
@@ -428,8 +478,15 @@ BOOKS.forEach((b, i) => {
   a.style.transitionDelay = (i*90) + "ms";
   const cover = b.cover
     ? `<div class="cover"><img src="${b.cover}" alt="Cover of ${b.title}"></div>`
-    : `<div class="cover"><span class="ca">Bianno Gomes</span><span class="cd"></span>
-         <span class="ct">${b.title}</span><span class="cs">UnifyMind</span></div>`;
+    : `<div class="cover">
+         <span class="frame"></span>
+         <span class="num">${b.num}</span>
+         ${spiral()}
+         <span class="ct">${b.title}</span>
+         <span class="cd"></span>
+         <span class="ca">Bianno Gomes</span>
+         <span class="cs">UnifyMind</span>
+       </div>`;
   a.innerHTML = cover +
     `<h3>${b.title}</h3><p class="pages">${b.pages} pages</p>
      <p class="blurb">${b.blurb || ""}</p>
