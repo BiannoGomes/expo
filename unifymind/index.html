@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bianno Gomes</title>
-<meta name="description" content="Bianno Gomes. Analyst, marketer, artist, sailor, writer. Author of the UnifyMind books: Self-Mastery, The Invisible Ocean, and The Sealed Codex.">
+<meta name="description" content="Bianno Gomes writes the UnifyMind books. Self-Mastery: the no-excuses system for discipline, focus, and confidence. The Invisible Ocean. The Sealed Codex.">
 <meta name="theme-color" content="#0B0A08">
 <meta property="og:title" content="Bianno Gomes">
 <meta property="og:description" content="A restless creator. Three books on self-mastery, consciousness, and what stays human.">
@@ -137,6 +137,31 @@
     transition:background .3s, color .3s}
   .buy:hover, .buy:focus-visible{background:var(--gold); color:#0B0A08}
   header .buy{margin-top:0; padding:9px 16px; font-size:10px}
+
+  /* hooks */
+  .hooks .wrap{max-width:900px}
+  .hooklist{list-style:none; margin:clamp(34px,5vh,54px) 0 6px; border-top:1px solid var(--rule)}
+  .hooklist li{padding:clamp(17px,2.6vh,26px) 0 clamp(17px,2.6vh,26px) 30px;
+    border-bottom:1px solid var(--rule);
+    font-size:clamp(17px,2vw,23px); line-height:1.5; color:var(--bone);
+    position:relative}
+  .hooklist li span{display:block; max-width:46ch}
+  .hooklist li::before{content:""; position:absolute; left:0; top:calc(clamp(17px,2.6vh,26px) + .62em);
+    width:14px; height:1px; background:var(--gold)}
+  .hooks .buy{margin-top:34px}
+
+  /* codex */
+  .keys{list-style:none; display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
+    gap:clamp(24px,3.2vw,44px)}
+  .keys li{border-top:1px solid var(--rule); padding-top:20px}
+  .keys .kn{font-size:10px; letter-spacing:.28em; color:var(--gold); display:block; margin-bottom:11px}
+  .keys h3{color:var(--bone); margin-bottom:9px}
+  .keys p{font-size:15px; line-height:1.7}
+
+  .book .sub{font-size:13px; line-height:1.62; color:var(--dim); font-style:italic;
+    margin:0 0 16px; opacity:.88}
+  .nameline{margin-top:34px; color:var(--gold-lt); font-size:clamp(16px,1.8vw,20px);
+    letter-spacing:.05em; font-style:italic}
 
   /* duality */
   .duo{text-align:center}
@@ -281,6 +306,26 @@
     </div>
   </section>
 
+  <section class="hooks" data-morph="3">
+    <div class="wrap">
+      <p class="caps rise" style="margin-bottom:22px">From Self-Mastery</p>
+      <h2 class="rise">Two versions of you<br>woke up this morning</h2>
+      <p class="lede rise" style="margin-top:22px">Only one of them reads this book.</p>
+      <ul class="hooklist" id="hookList"></ul>
+      <a class="buy rise" id="hookBuy" href="#books">Get Self-Mastery</a>
+    </div>
+  </section>
+
+  <section class="codex solid" data-morph="1">
+    <div class="wrap">
+      <div class="head">
+        <p class="caps rise">From The Sealed Codex</p>
+        <h2 class="rise">Thirty-three keys</h2>
+      </div>
+      <ul class="keys" id="keyList"></ul>
+    </div>
+  </section>
+
   <section class="duo" data-morph="4">
     <div class="wrap">
       <p class="caps rise" style="margin-bottom:22px">The duality</p>
@@ -311,6 +356,7 @@
       <p class="pull rise">What can I leave behind that proves I was here, that I loved
       deeply, explored boldly, made something meaningful, and helped one person see the
       world differently?</p>
+      <p class="nameline rise">Bianno. From the Latin: lively, alive.</p>
     </div>
   </section>
 
@@ -340,12 +386,15 @@
   "knowsAbout":["Self-mastery","Consciousness","Intuition","Artificial intelligence","Creative technology"],
   "author":[
     {"@type":"Book","name":"Self-Mastery","numberOfPages":178,"author":{"@type":"Person","name":"Bianno Gomes"},
+     "description":"The no-excuses system to master discipline, focus, and confidence, written for ambitious young men.",
      "bookFormat":"https://schema.org/Paperback","inLanguage":"en",
      "offers":{"@type":"Offer","price":"16.99","priceCurrency":"USD","availability":"https://schema.org/InStock"}},
     {"@type":"Book","name":"The Invisible Ocean","numberOfPages":179,"author":{"@type":"Person","name":"Bianno Gomes"},
+     "description":"On intuition, consciousness, and the world beneath ordinary perception.",
      "bookFormat":"https://schema.org/Paperback","inLanguage":"en",
      "offers":{"@type":"Offer","price":"16.99","priceCurrency":"USD","availability":"https://schema.org/InStock"}},
     {"@type":"Book","name":"The Sealed Codex","numberOfPages":181,"author":{"@type":"Person","name":"Bianno Gomes"},
+     "description":"Thirty-three keys to the hidden architecture of language.",
      "bookFormat":"https://schema.org/Paperback","inLanguage":"en",
      "offers":{"@type":"Offer","price":"16.99","priceCurrency":"USD","availability":"https://schema.org/InStock"}}
   ]
@@ -374,13 +423,19 @@
 const BOOKS = [
   { title:"Self-Mastery", num:"I", pages:178, cover:"",
     url:"https://tr.ee/geODrk1dTh",
-    // DRAFT, from Bianno's own words on self-mastery. Approve or replace.
-    blurb:"External success is not the finish line. A book about mastering the mind, the emotions, the habits, and the potential most people never train." },
+    sub:"The no-excuses system to master discipline, focus, and confidence, and build the life, body, and money most men only talk about.",
+    // From the Self-Mastery print flyer.
+    blurb:"Two versions of you woke up this morning. Only one of them reads this book.",
+    for:"For ambitious young men" },
   { title:"The Invisible Ocean", num:"II", pages:179, cover:"",
     url:"https://tr.ee/0mBkdE87wx",
+    sub:"On intuition, consciousness, and the world beneath ordinary perception.",
     // DRAFT, from Bianno's own description of the book. Approve or replace.
-    blurb:"Beneath ordinary perception there is an enormous internal world that most people never learn to navigate. On intuition, consciousness, and the distance between what we know and what we somehow feel." },
-  { title:"The Sealed Codex", num:"III", pages:181, cover:"", url:"", blurb:"" },
+    blurb:"Beneath ordinary perception there is an enormous internal world that most people never learn to navigate." },
+  { title:"The Sealed Codex", num:"III", pages:181, cover:"", url:"",
+    sub:"Thirty-three keys to the hidden architecture of language.",
+    // From the 33 Codex Keys map.
+    blurb:"Word as seed. The spell of spelling. The forgotten tongue. How language shapes what becomes real." },
 ];
 const PRICES = [["Ebook","$9.99"],["Paperback","$16.99"],["Hardcover","$24.99"]];
 
@@ -420,6 +475,23 @@ const VALUES = [
   ["Beauty",      "Music, photography, nature, food, landscapes. How a thing feels is not a secondary concern."],
   ["Growth",      "Finance, marketing, AI, art, yachting, writing. Each one a wider perimeter."],
   ["Humanity",    "I want the future. I want the soul to come with it."],
+];
+
+const HOOKS = [
+  "A wrestler carried the same animal every morning. Nobody who watched him understood what they were seeing.",
+  "A president was shot mid-speech. He kept talking for 84 minutes.",
+  "There is one place in your life where you cannot lie.",
+  "One chapter warns about the man this book could accidentally build.",
+  "The last page hands you ten minutes. What you do with them decides which version finishes the year.",
+];
+
+const CODEX = [
+  ["I",     "Word as Seed",        "Every word is a seed planted in the field of human consciousness."],
+  ["III",   "The Spell of Spelling","To spell is literally to cast a spell. Every letter is a shape of consciousness."],
+  ["V",     "Silence as Language", "What is not spoken often speaks louder."],
+  ["VII",   "Television",          "Tele-vision. Programming a vision from afar into your mind."],
+  ["XXXI",  "Etymological Fire",   "Words hold their root fires."],
+  ["XXXIII","The Logos",           "Speak as if the universe itself listens."],
 ];
 
 const PORTRAIT = "";
@@ -488,8 +560,10 @@ BOOKS.forEach((b, i) => {
          <span class="cs">UnifyMind</span>
        </div>`;
   a.innerHTML = cover +
-    `<h3>${b.title}</h3><p class="pages">${b.pages} pages</p>
+    `<h3>${b.title}</h3>
+     <p class="pages">${b.pages} pages${b.for ? " · " + b.for : ""}</p>
      <p class="blurb">${b.blurb || ""}</p>
+     ${b.sub ? `<p class="sub">${b.sub}</p>` : ""}
      <ul class="formats">${PRICES.map(([f,p]) =>
         `<li><span class="fm">${f}</span><span class="pr">${p}</span></li>`).join("")}</ul>
      <a class="buy" href="${b.url || "#books"}"${b.url ? ' target="_blank" rel="noopener"' : ""}>
@@ -502,6 +576,25 @@ if(FAMILY.length){
   p.style.marginTop = "26px";
   document.querySelector(".legacy .wrap").appendChild(p);
 }
+
+const hookList = document.getElementById("hookList");
+HOOKS.forEach((h, i) => {
+  const li = el("li", "rise", `<span>${h}</span>`);
+  li.style.transitionDelay = (i*80) + "ms";
+  hookList.appendChild(li);
+});
+document.getElementById("hookBuy").href = BOOKS[0].url || "#books";
+if(BOOKS[0].url){
+  const hb = document.getElementById("hookBuy");
+  hb.target = "_blank"; hb.rel = "noopener";
+}
+
+const keyList = document.getElementById("keyList");
+CODEX.forEach(([n, name, line], i) => {
+  const li = el("li", "rise", `<span class="kn">${n}</span><h3>${name}</h3><p>${line}</p>`);
+  li.style.transitionDelay = (i*60) + "ms";
+  keyList.appendChild(li);
+});
 
 document.getElementById("yr").textContent = new Date().getFullYear();
 document.getElementById("signup").addEventListener("submit", (e) => {

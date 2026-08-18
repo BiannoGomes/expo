@@ -7,6 +7,8 @@ no dependencies, no build step. Open `index.html`.
 
 | Section | Job |
 |---|---|
+| From Self-Mastery | The flyer hooks. The strongest selling copy on the page |
+| From The Sealed Codex | Six of the thirty-three keys |
 | Hero | The one sentence: what the whole life is aimed at |
 | The through-line | Not one career, not one country |
 | The many lives | Seven reinventions. Hovering a row morphs the sculpture |
@@ -68,10 +70,19 @@ the build environment, so their destinations are unverified. Click both before
 launch. Direct Amazon URLs are better on a sales page: they survive a shortener
 outage and read as more trustworthy.
 
-**On the blurbs:** books one and two carry draft copy assembled from sentences
-Bianno wrote about self-mastery and about The Invisible Ocean. They describe the
-themes, not the contents, because the manuscripts were not available. Read them
-before launch. The third book has none, because there was no source to draw on.
+**On the blurbs:** books one and three now come from real source documents found
+in Drive, not from inference.
+
+- *Self-Mastery*: subtitle, audience, blurb, and the five hooks are quoted from
+  `SelfMastery FLYER print_copy.pdf`. One OCR artifact was corrected: the flyer
+  extracted as "Mast Men Only Talk About", set here as "most men only talk about".
+- *The Sealed Codex*: subtitle, blurb, and the six keys are quoted from
+  `⚡ The 33 Codex Keys (High-Level Map)`. That document is the presumed source for
+  the book. If it is not, this section needs rewriting.
+- *The Invisible Ocean*: still a **draft** built from Bianno's own description of
+  the book. No marketing document for it exists in Drive. Approve or replace.
+
+The closing line, "Bianno. From the Latin: lively, alive", is quoted from Codex 4.
 
 The buy buttons say **"Link pending"** rather than linking to `#`, so a missing
 link is visible instead of silently broken. The newsletter form is **not wired to
