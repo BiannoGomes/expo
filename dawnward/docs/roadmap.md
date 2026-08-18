@@ -1,10 +1,10 @@
 # Dawnward — Build Roadmap
 
-> What Claude builds autonomously, in order, before the owner checklist is
+> What Claude builds autonomously, in order, before the launch checklist is
 > touched. Every phase follows the design direction (`design-direction.md`)
 > and the craft loop; every phase ends with tests passing, screenshots taken,
 > and a push. Nothing here publishes, sends, or pays — those live in the
-> owner checklist.
+> launch checklist (`launch-checklist.md`).
 
 ## Phase A — Deepen the daily magic
 The loop works; make it feel inevitable.
@@ -27,7 +27,7 @@ The loop works; make it feel inevitable.
 ## Phase B — Trust infrastructure
 1. **Device auth.** Replace the dev bootstrap: device-token registration,
    signed session tokens, per-user scoping on every route. (Email
-   magic-codes activate later with owner item 4.)
+   magic-codes activate later with launch item 6.)
 2. **Consent screens.** Onboarding gains the unbundled Article-9 consent
    step and the challenge opt-in question (spec 04 §3), stored in the
    consent ledger.
@@ -54,6 +54,6 @@ The loop works; make it feel inevitable.
    landing page will use.
 3. **Landing page draft.** One page in the Dawnward visual language: the
    promise, the four surfaces, the philosophy, a waitlist form (form goes
-   live only after owner items 5 and 9).
+   live only after launch items 5 and 9).
 
-Then: the owner checklist (`owner-checklist.md`), top to bottom, together.
+Then: the launch checklist (`launch-checklist.md`), top to bottom, together.

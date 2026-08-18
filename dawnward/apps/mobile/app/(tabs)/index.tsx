@@ -25,8 +25,9 @@ import {
 } from "@/lib/api";
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky, skyModeForNow } from "@/lib/sky";
-import { useReducedMotion } from "@/lib/motion";
+import { Press, useReducedMotion } from "@/lib/motion";
 import { Constellation } from "@/lib/constellation";
+import { syncPresence } from "@/lib/presence";
 
 const SLOT_LABELS: Record<PlanSlot["slot"], string> = {
   build: "One thing to build",
@@ -177,9 +178,9 @@ function WeeklyReveal({
             {line}
           </Text>
         ))}
-        <Pressable onPress={onDone} hitSlop={12} style={styles.revealButton}>
+        <Press onPress={onDone} hitSlop={12} style={styles.revealButton}>
           <Text style={styles.revealButtonText}>Continue</Text>
-        </Pressable>
+        </Press>
       </Animated.View>
     </View>
   );
@@ -199,9 +200,9 @@ function Invitation() {
         starts here, written for you.
       </Text>
       <Link href="/onboarding" asChild>
-        <Pressable style={styles.invitationButton}>
+        <Press style={styles.invitationButton}>
           <Text style={styles.invitationButtonText}>Begin your story</Text>
-        </Pressable>
+        </Press>
       </Link>
     </View>
   );
@@ -226,6 +227,11 @@ export default function TodayScreen() {
 
     const onboarded = current === "unreachable" || current.onboardingComplete;
     if (!onboarded) return;
+
+    if (current !== "unreachable") {
+      // Keep the two daily touchpoints in step with settings; never prompts here.
+      syncPresence(current.touchpoints).catch(() => {});
+    }
 
     try {
       setPlan(await fetchPlan(today()));

@@ -22,6 +22,7 @@ import {
 } from "@/lib/api";
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky, skyModeForNow } from "@/lib/sky";
+import { syncPresence } from "@/lib/presence";
 
 /**
  * Settings (roadmap B3): presence controls, the challenge switch, and real
@@ -74,6 +75,10 @@ export default function SettingsScreen() {
     setMe((m) => (m ? { ...m, ...next } : m));
     try {
       await updateMe(patch);
+      if (patch.touchpoints) {
+        // The user is actively choosing their times, so asking is welcome here.
+        syncPresence(patch.touchpoints, { ask: true }).catch(() => {});
+      }
     } catch {
       setStatus("That change didn't reach the server. It will catch up next time.");
     }

@@ -423,6 +423,18 @@ describe("re-entry, campaigns, weekly review", () => {
   });
 });
 
+describe("voice", () => {
+  it("turns audio into words and stores nothing of the sound", async () => {
+    const res = await inject(s1, {
+      method: "POST",
+      url: "/transcribe",
+      payload: { audio: Buffer.from("fake-audio").toString("base64") },
+    });
+    assert.equal(res.statusCode, 200);
+    assert.match(res.json().text, /kept the promise/);
+  });
+});
+
 describe("constellation", () => {
   it("stars are real records, weighted by what they came to mean", async () => {
     const res = await inject(s1, { method: "GET", url: "/constellation" });

@@ -12,9 +12,13 @@ import { registerEventRoutes } from "./routes/events.js";
 import { registerAccountRoutes } from "./routes/account.js";
 import { registerConstellationRoutes } from "./routes/constellation.js";
 import { registerAuthRoutes, requireAuth } from "./auth.js";
+import { transcription } from "./intelligence/transcription.js";
 
 export function buildApp() {
-  const app = Fastify({ logger: process.env.NODE_ENV !== "test" });
+  const app = Fastify({
+    logger: process.env.NODE_ENV !== "test",
+    bodyLimit: 26_214_400, // voice notes arrive as base64 JSON
+  });
 
   // Browser clients (Expo web) call cross-origin in development.
   app.register(cors, { origin: true });
@@ -135,6 +139,28 @@ app.get("/plan/:date", { preHandler: requireAuth }, async (request, reply) => {
     [userId, date, JSON.stringify(finalPlan)],
   );
   return finalPlan;
+});
+
+/** Voice becomes words; the audio itself is never stored (spec 04 §5). */
+app.post("/transcribe", { preHandler: requireAuth }, async (request, reply) => {
+  const body = z
+    .object({
+      audio: z.string().min(1),
+      mimeType: z.string().default("audio/m4a"),
+    })
+    .parse(request.body);
+  try {
+    const text = await transcription.transcribe(
+      Buffer.from(body.audio, "base64"),
+      body.mimeType,
+    );
+    return { text };
+  } catch (err) {
+    request.log.error({ err }, "transcription unavailable");
+    return reply
+      .code(503)
+      .send({ error: "I couldn't hear that just now. Typing still works." });
+  }
 });
 
 /** Marking a slot done survives restarts; the plan document carries it. */

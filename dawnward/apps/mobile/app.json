@@ -25,6 +25,13 @@
     "plugins": [
       "expo-router",
       [
+        "expo-audio",
+        {
+          "microphonePermission": "Dawnward listens only while you speak your evening debrief, and keeps the words, not the audio."
+        }
+      ],
+      "expo-notifications",
+      [
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",

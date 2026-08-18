@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Animated,
+  Easing,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -11,14 +13,78 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { submitDebrief, today } from "@/lib/api";
+import {
+  RecordingPresets,
+  requestRecordingPermissionsAsync,
+  setAudioModeAsync,
+  useAudioRecorder,
+} from "expo-audio";
+import { File } from "expo-file-system";
+import { submitDebrief, today, transcribe } from "@/lib/api";
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky } from "@/lib/sky";
+import { Press } from "@/lib/motion";
+
+/** Read the finished recording back as base64, wherever it landed. */
+async function recordingToBase64(uri: string): Promise<string> {
+  if (Platform.OS === "web") {
+    const blob = await (await fetch(uri)).blob();
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(reader.error);
+      reader.onloadend = () => {
+        const dataUrl = String(reader.result ?? "");
+        resolve(dataUrl.slice(dataUrl.indexOf(",") + 1));
+      };
+      reader.readAsDataURL(blob);
+    });
+  }
+  return new File(uri).base64();
+}
+
+/** A quiet gold pulse that only exists while Dawnward is listening. */
+function ListeningDot() {
+  const pulse = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, {
+          toValue: 1,
+          duration: 900,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulse, {
+          toValue: 0,
+          duration: 900,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [pulse]);
+  return (
+    <Animated.View
+      style={[
+        styles.listeningDot,
+        { opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.35, 1] }) },
+      ]}
+    />
+  );
+}
 
 export default function DebriefScreen() {
   const [text, setText] = useState("");
   const [reply, setReply] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [voiceState, setVoiceState] = useState<
+    "idle" | "recording" | "transcribing"
+  >("idle");
+  const [voiceNote, setVoiceNote] = useState<string | null>(null);
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
 
   async function send() {
     if (!text.trim() || sending) return;
@@ -33,6 +99,46 @@ export default function DebriefScreen() {
       );
     } finally {
       setSending(false);
+    }
+  }
+
+  async function startListening() {
+    setVoiceNote(null);
+    try {
+      const { granted } = await requestRecordingPermissionsAsync();
+      if (!granted) {
+        setVoiceNote("The microphone stays off until you allow it. Typing works too.");
+        return;
+      }
+      await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+      await recorder.prepareToRecordAsync();
+      recorder.record();
+      setVoiceState("recording");
+    } catch {
+      setVoiceNote("I couldn't start listening on this device. Typing still works.");
+      setVoiceState("idle");
+    }
+  }
+
+  async function finishListening() {
+    setVoiceState("transcribing");
+    try {
+      await recorder.stop();
+      await setAudioModeAsync({ allowsRecording: false });
+      const uri = recorder.uri;
+      if (!uri) throw new Error("no recording");
+      const base64 = await recordingToBase64(uri);
+      const mimeType = Platform.OS === "web" ? "audio/webm" : "audio/m4a";
+      const words = await transcribe(base64, mimeType);
+      if (words.trim()) {
+        setText((t) => (t.trim() ? `${t.trim()} ${words.trim()}` : words.trim()));
+      } else {
+        setVoiceNote("I didn't catch any words in that. Try again, or type it.");
+      }
+    } catch {
+      setVoiceNote("I couldn't hear that just now. Typing still works.");
+    } finally {
+      setVoiceState("idle");
     }
   }
 
@@ -52,15 +158,42 @@ export default function DebriefScreen() {
           </Text>
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, focused && styles.inputFocused]}
             multiline
             placeholder="Today I…"
             placeholderTextColor={theme.colors.textDim}
             value={text}
             onChangeText={setText}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
           />
 
-          <Pressable
+          <View style={styles.voiceRow}>
+            {voiceState === "idle" && (
+              <Pressable onPress={startListening} hitSlop={8}>
+                <Text style={styles.voiceAction}>Speak it instead</Text>
+              </Pressable>
+            )}
+            {voiceState === "recording" && (
+              <Pressable onPress={finishListening} hitSlop={8} style={styles.listeningRow}>
+                <ListeningDot />
+                <Text style={styles.voiceListening}>
+                  Listening. Tap when you're done.
+                </Text>
+              </Pressable>
+            )}
+            {voiceState === "transcribing" && (
+              <View style={styles.listeningRow}>
+                <ActivityIndicator size="small" color={theme.colors.accent} />
+                <Text style={styles.voiceListening}>Writing your words down…</Text>
+              </View>
+            )}
+          </View>
+          {voiceNote && (
+            <Text style={[theme.type.dim, styles.voiceNote]}>{voiceNote}</Text>
+          )}
+
+          <Press
             style={[styles.button, !text.trim() && styles.buttonDisabled]}
             onPress={send}
             disabled={!text.trim() || sending}
@@ -70,7 +203,7 @@ export default function DebriefScreen() {
             ) : (
               <Text style={styles.buttonText}>Reflect</Text>
             )}
-          </Pressable>
+          </Press>
 
           {reply && (
             <View style={styles.reply}>
@@ -104,6 +237,30 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlignVertical: "top",
   },
+  inputFocused: { borderColor: theme.colors.accent, borderWidth: 1 },
+  voiceRow: {
+    marginTop: theme.spacing(1.5),
+    minHeight: 24,
+    alignItems: "flex-start",
+  },
+  voiceAction: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 15,
+    color: theme.colors.accent,
+  },
+  listeningRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  listeningDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: theme.colors.accent,
+  },
+  voiceListening: {
+    fontFamily: fonts.body,
+    fontSize: 15,
+    color: theme.colors.text,
+  },
+  voiceNote: { marginTop: theme.spacing(1) },
   button: {
     marginTop: theme.spacing(2),
     backgroundColor: theme.colors.accent,

@@ -128,3 +128,37 @@ When any choice is uncertain, choose: quieter, warmer, slower, fewer.
 The user's life is the content. The app is the room it's seen in.
 Build the room so beautiful that people come back just to stand in it —
 and so honest that they trust what they see there.
+
+## THE SOURCEBOOK (where the bar comes from)
+
+The standard this app is held to was not invented here. It comes from the
+places serious product designers actually study, surveyed 2026-08-18:
+
+- **Rauno Freiberg, "Invisible Details of Interaction Design"**
+  (rauno.me/craft) and **Devouring Details** (devouringdetails.com):
+  interfaces borrow from physics. Every animation interruptible, momentum
+  respected, big touch targets (Fitts), surfaces that reward idle touch.
+  Encoded here as the `Press` primitive: every tappable surface settles
+  under the finger and springs home, transform-only, reduced-motion aware.
+- **Emil Kowalski's animation standards** (animations.dev): UI animation
+  under 300ms, ease-out never ease-in, custom curves over browser defaults,
+  animate transforms not layout. Our motion doctrine already complied; the
+  press feedback follows the same rules (110ms out-curve down, 180ms home).
+- **Family's design principles** (benji.org/family-values): simplicity,
+  fluidity, delight — continuity of experience over screens-as-pages.
+- **The Linear Method** (linear.app/method): opinionated software; craft
+  quality as a first-class feature, not a coat of paint.
+- **Endel**: proof that a monochrome, time-adaptive environment can carry an
+  entire product. Validates the Living Sky as the signature system.
+- **Opal's commitment moment**: their "fist bump" screen shows that one
+  deliberate ritual beats ten notifications. Ours is "Begin your story" and
+  the gold completion breath.
+- **How We Feel**: guided emotional check-ins with warm, precise language.
+  The debrief's tone owes it a debt.
+- **Reference libraries** for ongoing critique: Mobbin (mobbin.com),
+  60fps.design, screensdesign.com, Godly (godly.website). When a screen is
+  in doubt, pull the ten best examples of its pattern from these and stand
+  ours next to them.
+
+The rule that survives all of these: the best products feel like one
+person's taste applied everywhere, not a committee's features stacked up.

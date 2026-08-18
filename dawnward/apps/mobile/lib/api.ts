@@ -148,6 +148,19 @@ export async function markSlot(
   return res.json();
 }
 
+export async function transcribe(
+  audioBase64: string,
+  mimeType: string,
+): Promise<string> {
+  const res = await api("/transcribe", {
+    method: "POST",
+    body: JSON.stringify({ audio: audioBase64, mimeType }),
+  });
+  if (!res.ok) throw new Error(`transcription failed: ${res.status}`);
+  const { text } = (await res.json()) as { text: string };
+  return text;
+}
+
 export async function submitDebrief(
   date: string,
   transcript: string,
