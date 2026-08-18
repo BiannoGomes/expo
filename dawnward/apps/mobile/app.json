@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Dawnward",
+    "slug": "dawnward",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "dawnward",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0B0E12",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "output": "static"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
