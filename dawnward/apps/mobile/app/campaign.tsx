@@ -16,7 +16,6 @@ import {
 } from "@/lib/api";
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky, skyModeForNow } from "@/lib/sky";
-import { Constellation } from "@/lib/constellation";
 
 // Realistic fixture shown when the server is unreachable — never lorem.
 const PLACEHOLDER: CampaignView = {
@@ -66,7 +65,6 @@ export default function CampaignScreen() {
   return (
     <View style={styles.root}>
       <LivingSky mode={skyModeForNow()} />
-      <Constellation />
       <SafeAreaView style={styles.screen} edges={["top", "bottom"]}>
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={theme.type.label}>

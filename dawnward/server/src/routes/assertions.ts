@@ -3,6 +3,7 @@ import { z } from "zod";
 import { TAXONOMY_VERSION } from "@dawnward/core";
 import { query } from "../db.js";
 import { rebuildModelSummary } from "../model/summary.js";
+import { humanizeBasis } from "../model/voice.js";
 import { requireAuth } from "../auth.js";
 
 /**
@@ -43,8 +44,8 @@ export function registerAssertionRoutes(app: FastifyInstance) {
       source: r.source,
       confidence: r.confidence,
       status: r.status,
-      // "Why I think this" — the inspectability surface.
-      why: `${r.confidence_basis} (${r.evidence_count} supporting records)`,
+      // "Why I think this" speaks like a person; the raw basis stays stored.
+      why: humanizeBasis(r.confidence_basis, Number(r.evidence_count)),
       lastConfirmedAt: r.last_confirmed_at,
     }));
   });

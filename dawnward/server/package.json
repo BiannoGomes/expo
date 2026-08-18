@@ -9,6 +9,7 @@
     "migrate": "tsx src/migrate.ts",
     "nightly": "tsx src/jobs/nightly.ts",
     "weekly": "tsx src/jobs/weekly.ts",
+    "seed": "tsx src/jobs/seed.ts",
     "test:integration": "MOCK_INTELLIGENCE=1 NODE_ENV=test tsx --test test/integration/*.test.ts",
     "test": "tsx --test test/*.test.ts",
     "eval": "tsx eval/run.ts",

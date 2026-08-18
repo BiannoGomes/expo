@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, useWindowDimensions } from "react-native";
-import Svg, { Circle } from "react-native-svg";
+import Svg, { Circle, Line } from "react-native-svg";
 import { fetchConstellation, type Star } from "./api";
 import { theme } from "./theme";
 import { useReducedMotion } from "./motion";
@@ -51,14 +51,15 @@ function place(stars: Star[], width: number, height: number): PlacedStar[] {
       : Math.floor(h1 * 12);
     const sectorStart = (Math.max(sector, 0) / 12) * width;
     const x = sectorStart + h1 * (width / 12);
-    // Older moments sit higher in the sky; recent ones near the horizon.
+    // Recent moments sit low in the band; older ones drift higher. The
+    // whole sky stays in the top of the screen so it never crosses content.
     const age = (now - new Date(star.occurredAt).getTime()) / oldest;
-    const y = height * (0.08 + age * 0.62 + (h2 - 0.5) * 0.08);
+    const y = height * (0.26 - age * 0.2 + (h2 - 0.5) * 0.05);
     return {
       x,
-      y: Math.min(Math.max(y, height * 0.05), height * 0.75),
-      r: 1 + star.weight * 1.6,
-      opacity: 0.22 + star.weight * 0.6,
+      y: Math.min(Math.max(y, height * 0.03), height * 0.3),
+      r: 0.8 + star.weight * 1.4,
+      opacity: 0.16 + star.weight * 0.42,
       gold: star.weight >= 0.7,
     };
   });
@@ -73,6 +74,8 @@ const PREVIEW: Star[] = Array.from({ length: 26 }, (_, i) => ({
   weight: i % 6 === 0 ? 0.7 : i % 4 === 0 ? 0.55 : 0.4,
 }));
 
+const MIN_STARS = 14;
+
 export function Constellation() {
   const { width, height } = useWindowDimensions();
   const [stars, setStars] = useState<Star[]>(PREVIEW);
@@ -81,9 +84,7 @@ export function Constellation() {
 
   useEffect(() => {
     fetchConstellation()
-      .then((s) => {
-        if (s.length >= 3) setStars(s);
-      })
+      .then((s) => setStars(s))
       .catch(() => {});
   }, []);
 
@@ -99,7 +100,29 @@ export function Constellation() {
     return () => loop.stop();
   }, [drift, reduced]);
 
-  const placed = place(stars, width, height);
+  const isPreview = Boolean(stars[0]?.id.startsWith("preview"));
+  if (!isPreview && stars.length < MIN_STARS) {
+    return null;
+  }
+
+  const placed = place(stars.slice(0, 22), width, height);
+  const byDomain = new Map<string, number[]>();
+  stars.forEach((star, i) => {
+    const key = star.domain ?? "";
+    byDomain.set(key, [...(byDomain.get(key) ?? []), i]);
+  });
+  const edges: { x1: number; y1: number; x2: number; y2: number }[] = [];
+  for (const idxs of byDomain.values()) {
+    for (let k = 0; k + 1 < idxs.length && k < 4; k++) {
+      const a = placed[idxs[k]!];
+      const b = placed[idxs[k + 1]!];
+      if (!a || !b) continue;
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d > 10 && d < width * 0.3) {
+        edges.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y });
+      }
+    }
+  }
 
   return (
     <Animated.View
@@ -114,6 +137,18 @@ export function Constellation() {
       ]}
     >
       <Svg width={width} height={height}>
+        {edges.map((e, i) => (
+          <Line
+            key={`e${i}`}
+            x1={e.x1}
+            y1={e.y1}
+            x2={e.x2}
+            y2={e.y2}
+            stroke={theme.colors.ink}
+            strokeWidth={0.5}
+            opacity={0.07}
+          />
+        ))}
         {placed.map((s, i) => (
           <Circle
             key={i}

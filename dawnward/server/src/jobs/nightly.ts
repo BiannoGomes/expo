@@ -10,6 +10,7 @@ import {
 } from "../model/integrate.js";
 import { DECAY_AFTER_DAYS } from "../model/promotion.js";
 import { rebuildModelSummary } from "../model/summary.js";
+import { humanizeBasis } from "../model/voice.js";
 
 /**
  * The nightly pass (spec 02 §4 step 3): integration → decay → prune →
@@ -83,7 +84,7 @@ async function integrateUser(userId: string) {
                   JSON.stringify({
                     assertionId: proposal.targetAssertionId,
                     statement: result.statement,
-                    basis: result.basis,
+                    basis: humanizeBasis(result.basis ?? ""),
                   }),
                 ],
               );

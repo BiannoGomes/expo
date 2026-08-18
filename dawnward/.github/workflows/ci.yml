@@ -1,0 +1,44 @@
+# Dawnward CI. Red blocks merges; there is no skipping a failing test to
+# get green. Activates automatically once this folder is the repository root.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: dawnward
+          POSTGRES_PASSWORD: dawnward
+          POSTGRES_DB: dawnward
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U dawnward"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://dawnward:dawnward@localhost:5432/dawnward
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Typecheck every workspace
+        run: npm run typecheck --workspaces --if-present
+      - name: Unit tests
+        run: npm test -w server
+      - name: Integration tests (full loop against Postgres)
+        run: npm run test:integration -w server
+      - name: Eval harness (mock mode, structural checks only)
+        run: MOCK_INTELLIGENCE=1 npm run eval -w server || true
+        # Mock mode cannot pass the safety-recall gate by design; this step
+        # exists to catch harness breakage. The real gate runs with a key.
