@@ -94,6 +94,8 @@ export interface DailyPlan {
   restDay: boolean;
   /** Set on re-entry after ≥3 silent days (spec 03 §4). Never lists missed days. */
   reentryGapDays?: number;
+  /** Which slots the person marked done. Persisted with the plan. */
+  done?: Partial<Record<SlotName, boolean>>;
 }
 
 export type SlotStatus = "done" | "partial" | "skipped" | "not_mentioned";

@@ -237,7 +237,7 @@ export default function OnboardingScreen() {
         </ScrollView>
 
         {finished ? (
-          <Pressable style={styles.button} onPress={() => router.back()}>
+          <Pressable style={styles.button} onPress={() => router.replace("/")}>
             <Text style={styles.buttonText}>Begin your evolution</Text>
           </Pressable>
         ) : (

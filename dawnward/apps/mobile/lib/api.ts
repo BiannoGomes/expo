@@ -135,6 +135,19 @@ export async function fetchPlan(date: string): Promise<DailyPlan> {
   return res.json();
 }
 
+export async function markSlot(
+  date: string,
+  slot: string,
+  done: boolean,
+): Promise<DailyPlan> {
+  const res = await api(`/plan/${date}/slot`, {
+    method: "PATCH",
+    body: JSON.stringify({ slot, done }),
+  });
+  if (!res.ok) throw new Error(`slot update failed: ${res.status}`);
+  return res.json();
+}
+
 export async function submitDebrief(
   date: string,
   transcript: string,

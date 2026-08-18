@@ -211,6 +211,18 @@ describe("daily loop", () => {
     assert.deepEqual(second.json(), plan);
   });
 
+  it("marking a slot done survives across fetches", async () => {
+    const res = await inject(s1, {
+      method: "PATCH",
+      url: "/plan/2026-08-18/slot",
+      payload: { slot: "train", done: true },
+    });
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.json().done.train, true);
+    const again = await inject(s1, { method: "GET", url: "/plan/2026-08-18" });
+    assert.equal(again.json().done.train, true);
+  });
+
   it("debrief captures a record and an extraction", async () => {
     const res = await inject(s1, {
       method: "POST",

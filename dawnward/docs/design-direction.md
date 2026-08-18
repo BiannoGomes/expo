@@ -40,7 +40,8 @@ never competes with it.
 ## TOKENS (exact — never improvise new values)
 
 Ground `#0B0E12` · Surface `#12161D` · Raised `#171C25` · Line `#232A34`
-Ink `#ECE9E2` (warm ivory, never pure white) · Dim `#9AA0A9` · Faint `#6E7480`
+Ink `#ECE9E2` (warm ivory, never pure white) · Dim `#9AA0A9` · Faint `#79818F`
+(Faint revised 2026-08-18 from #6E7480 for small-label contrast)
 Gold `#C9A96A` (the only accent; it means "meaning" — future self, insight,
 the one question; never buttons-in-general, never decoration)
 Dawn `#E8A87C` and Indigo `#23283D` exist ONLY inside the living-sky

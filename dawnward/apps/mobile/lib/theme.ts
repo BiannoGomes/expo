@@ -21,7 +21,7 @@ export const theme = {
     line: "#232A34",
     ink: "#ECE9E2",
     dim: "#9AA0A9",
-    faint: "#6E7480",
+    faint: "#79818F",
     gold: "#C9A96A",
     danger: "#B4655F",
     // Living-sky gradient stops ONLY — never used on components.
@@ -50,7 +50,7 @@ export const theme = {
       fontSize: 11,
       letterSpacing: 11 * 0.22,
       textTransform: "uppercase" as const,
-      color: "#6E7480",
+      color: "#79818F",
     },
     title: {
       fontFamily: fonts.display,

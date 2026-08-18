@@ -137,6 +137,31 @@ app.get("/plan/:date", { preHandler: requireAuth }, async (request, reply) => {
   return finalPlan;
 });
 
+/** Marking a slot done survives restarts; the plan document carries it. */
+app.patch("/plan/:date/slot", { preHandler: requireAuth }, async (request, reply) => {
+  const userId = request.userId;
+  const { date } = z
+    .object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) })
+    .parse(request.params);
+  const body = z
+    .object({
+      slot: z.enum(["build", "train", "learn", "confront", "experience"]),
+      done: z.boolean(),
+    })
+    .parse(request.body);
+  const [row] = await query<{ plan: DailyPlan }>(
+    `update daily_plans
+        set plan = jsonb_set(
+              jsonb_set(plan, '{done}', coalesce(plan->'done', '{}'::jsonb)),
+              array['done', $3], to_jsonb($4::boolean), true)
+      where user_id = $1 and plan_date = $2
+      returning plan`,
+    [userId, date, body.slot, body.done],
+  );
+  if (!row) return reply.code(404).send({ error: "no plan for that day yet" });
+  return row.plan;
+});
+
 /** Evening debrief: safety triage FIRST, then extraction (spec 04 §2, 03 §3). */
 app.post("/debrief", { preHandler: requireAuth }, async (request, reply) => {
   const userId = request.userId;

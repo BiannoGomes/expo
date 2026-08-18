@@ -27,6 +27,38 @@ import { LivingSky, skyModeForNow } from "@/lib/sky";
  * Settings (roadmap B3): presence controls, the challenge switch, and real
  * data rights. Quiet by design — this is the room's fuse box, not a feature.
  */
+function normalizeTime(raw: string): string | null {
+  const m = raw.trim().match(/^([01]?\d|2[0-3])[:.h]?([0-5]\d)?$/);
+  if (!m) return null;
+  const h = String(m[1]).padStart(2, "0");
+  const mm = m[2] ?? "00";
+  return `${h}:${mm}`;
+}
+
+function TimeField({
+  value,
+  onCommit,
+}: {
+  value: string;
+  onCommit: (v: string) => void;
+}) {
+  const [draft, setDraft] = useState(value);
+  useEffect(() => setDraft(value), [value]);
+  return (
+    <TextInput
+      style={styles.timeInput}
+      value={draft}
+      onChangeText={setDraft}
+      onEndEditing={() => {
+        const normal = normalizeTime(draft);
+        if (normal) onCommit(normal);
+        else setDraft(value);
+      }}
+      keyboardType="numbers-and-punctuation"
+    />
+  );
+}
+
 export default function SettingsScreen() {
   const [me, setMe] = useState<Me | null>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -98,10 +130,9 @@ export default function SettingsScreen() {
             </Text>
             <View style={styles.row}>
               <Text style={theme.type.body}>Morning plan</Text>
-              <TextInput
-                style={styles.timeInput}
+              <TimeField
                 value={me?.touchpoints.morning ?? "07:30"}
-                onChangeText={(morning) =>
+                onCommit={(morning) =>
                   me &&
                   save(
                     { touchpoints: { ...me.touchpoints, morning } },
@@ -112,10 +143,9 @@ export default function SettingsScreen() {
             </View>
             <View style={styles.row}>
               <Text style={theme.type.body}>Evening debrief</Text>
-              <TextInput
-                style={styles.timeInput}
+              <TimeField
                 value={me?.touchpoints.evening ?? "21:00"}
-                onChangeText={(evening) =>
+                onCommit={(evening) =>
                   me &&
                   save(
                     { touchpoints: { ...me.touchpoints, evening } },
