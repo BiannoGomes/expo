@@ -29,7 +29,7 @@ export default function DebriefScreen() {
       setText("");
     } catch {
       setReply(
-        "I couldn't reach the server — nothing was lost. Try again when you're connected.",
+        "I couldn't reach the server just now. Nothing was lost. Try again in a moment.",
       );
     } finally {
       setSending(false);
@@ -48,7 +48,7 @@ export default function DebriefScreen() {
           <Text style={theme.type.label}>Evening debrief</Text>
           <Text style={[theme.type.title, styles.title]}>What happened?</Text>
           <Text style={theme.type.dim}>
-            Say it how it was — and skipping tonight is fine too.
+            Say it how it was. Skipping tonight is fine too.
           </Text>
 
           <TextInput

@@ -101,6 +101,14 @@ Confidence is honest in the words themselves: guesses sound like guesses.
 Buttons say what happens: "Reflect", "Begin", "Set it aside". Max one
 sentence of interface copy anywhere; if it needs two, redesign the screen.
 
+THE HUMAN LAW: never an em dash in anything the user reads. Use a period, a
+comma, a colon, or rewrite the sentence. Nothing may smell of machinery:
+no mention of AI, models, systems, data, or processing in user-facing words.
+No coach cliches (journey, unlock, empower, elevate, thrive). The test for
+every line: would a caring person say this out loud to a friend? If not,
+it does not ship. This law binds the interface, the generated replies, and
+the prompts that produce them.
+
 ## THE CRAFT LOOP (mandatory, every screen, no exceptions)
 
 1. Build the screen with real content from a real user fixture — never

@@ -21,6 +21,7 @@ import {
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky, skyModeForNow } from "@/lib/sky";
 import { useReducedMotion } from "@/lib/motion";
+import { Constellation } from "@/lib/constellation";
 
 const SLOT_LABELS: Record<PlanSlot["slot"], string> = {
   build: "One thing to build",
@@ -35,7 +36,7 @@ const PLACEHOLDER: DailyPlan = {
   date: today(),
   restDay: false,
   slots: [
-    { slot: "build", text: "Finish the onboarding flow you postponed yesterday.", because: "Ship One Thing, day 12 — one project, finished" },
+    { slot: "build", text: "Finish the onboarding flow you postponed yesterday.", because: "day 12 of Ship One Thing. One project, finished." },
     { slot: "train", text: "Move for 30 minutes, any way you like.", because: "a body in motion carries the rest" },
     { slot: "learn", text: "Read 15 pages of something that stretches you.", because: "you said curiosity matters to you" },
     { slot: "experience", text: "Take a different route than usual today.", because: "novelty is data" },
@@ -152,9 +153,10 @@ function WeeklyReveal({
       ? "The diagnosis holds. Two weeks of your life agree with it."
       : event.payload.verdict === "revised"
         ? "I was partly wrong about what's holding you back. Here's the truer version."
-        : "I was wrong about what's holding you back — and that's good news.";
+        : "I was wrong about what was holding you back. That is good news.";
   return (
     <View style={styles.revealRoot}>
+      <Constellation />
       <Animated.View style={{ opacity: words, gap: 16, maxWidth: 320 }}>
         <Text style={theme.type.label}>
           {event.payload.day14 ? "Day 14 · the revision" : "Weekly review"}
@@ -231,16 +233,20 @@ export default function TodayScreen() {
             />
           }
         >
-          <Text style={theme.type.label}>{greetingForNow()}</Text>
-          <Text style={[theme.type.title, styles.title]}>
-            Your evolution today
-          </Text>
-
-          {plan.reentryGapDays !== undefined && (
-            <View style={styles.reentry}>
-              <Text style={theme.type.body}>
-                Welcome back. Nothing is broken — your campaign paused itself
-                and resumes whenever you do. Today is a light day.
+          {plan.reentryGapDays === undefined ? (
+            <>
+              <Text style={theme.type.label}>{greetingForNow()}</Text>
+              <Text style={[theme.type.title, styles.title]}>
+                Your evolution today
+              </Text>
+            </>
+          ) : (
+            <View style={styles.reentryHero}>
+              <Text style={theme.type.label}>{greetingForNow()}</Text>
+              <Text style={[theme.type.title, styles.title]}>Welcome back</Text>
+              <Text style={[theme.type.body, styles.reentryBody]}>
+                Nothing is broken. Your campaign kept your seat warm, and it
+                starts again whenever you do. Today is a light one.
               </Text>
             </View>
           )}
@@ -263,9 +269,14 @@ export default function TodayScreen() {
           )}
 
           {plan.restDay ? (
-            <View style={styles.card}>
-              <Text style={theme.type.body}>
-                Today is for recovery. No plan is the plan.
+            <View style={styles.restDay}>
+              <Text style={theme.type.label}>A rest day</Text>
+              <Text style={[theme.type.epigraph, styles.restLine]}>
+                No plan is the plan.
+              </Text>
+              <Text style={theme.type.dim}>
+                Sleep. Walk. Eat well. Look up. The work will still know you
+                tomorrow.
               </Text>
             </View>
           ) : (
@@ -385,12 +396,16 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     color: theme.colors.ink,
   },
-  reentry: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.gold,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: theme.radius.card,
-    padding: theme.spacing(2.5),
-    marginBottom: theme.spacing(1.5),
+  reentryHero: { marginBottom: theme.spacing(1) },
+  reentryBody: {
+    marginTop: -theme.spacing(1),
+    marginBottom: theme.spacing(2),
+    color: theme.colors.dim,
   },
+  restDay: {
+    paddingVertical: theme.spacing(8),
+    alignItems: "center",
+    gap: theme.spacing(2),
+  },
+  restLine: { fontSize: 30, lineHeight: 40 },
 });

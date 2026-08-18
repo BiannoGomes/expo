@@ -43,12 +43,12 @@ export default function SettingsScreen() {
     try {
       await updateMe(patch);
     } catch {
-      setStatus("That change didn't reach the server — it will retry next time.");
+      setStatus("That change didn't reach the server. It will catch up next time.");
     }
   }
 
   async function onExport() {
-    setStatus("Preparing your export…");
+    setStatus("Gathering everything now…");
     try {
       const json = await exportData();
       if (Platform.OS === "web") {
@@ -65,9 +65,9 @@ export default function SettingsScreen() {
         file.write(json);
         await Sharing.shareAsync(file.uri, { mimeType: "application/json" });
       }
-      setStatus("Export ready — everything, with its evidence.");
+      setStatus("Your export is ready. Everything, with its evidence.");
     } catch {
-      setStatus("Export failed — check your connection and try again.");
+      setStatus("The export didn't go through. Check your connection and try again.");
     }
   }
 
@@ -77,7 +77,7 @@ export default function SettingsScreen() {
       setStatus(null);
       router.back();
     } catch {
-      setStatus("Deletion failed — check your connection and try again.");
+      setStatus("That didn't go through. Check your connection and try again.");
       setConfirmingDelete(false);
     }
   }
@@ -94,7 +94,7 @@ export default function SettingsScreen() {
             <Text style={theme.type.label}>Presence</Text>
             <Text style={[theme.type.dim, styles.cardNote]}>
               Dawnward reaches out twice a day, at your times, and never
-              otherwise. No streaks, no nagging — ever.
+              otherwise. No streaks. No nagging. Ever.
             </Text>
             <View style={styles.row}>
               <Text style={theme.type.body}>Morning plan</Text>

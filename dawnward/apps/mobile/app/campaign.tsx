@@ -16,6 +16,7 @@ import {
 } from "@/lib/api";
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky, skyModeForNow } from "@/lib/sky";
+import { Constellation } from "@/lib/constellation";
 
 // Realistic fixture shown when the server is unreachable — never lorem.
 const PLACEHOLDER: CampaignView = {
@@ -65,6 +66,7 @@ export default function CampaignScreen() {
   return (
     <View style={styles.root}>
       <LivingSky mode={skyModeForNow()} />
+      <Constellation />
       <SafeAreaView style={styles.screen} edges={["top", "bottom"]}>
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={theme.type.label}>
@@ -87,7 +89,7 @@ export default function CampaignScreen() {
                     <Text style={theme.type.body}>{m.title}</Text>
                     {isDay14 && !campaign.day14RevisionDone && (
                       <Text style={[theme.type.dim, styles.promise]}>
-                        A promise, not a checkpoint — if the diagnosis is wrong,
+                        A promise, not a checkpoint. If the diagnosis is wrong,
                         this is where we change it.
                       </Text>
                     )}
@@ -105,8 +107,8 @@ export default function CampaignScreen() {
             <View style={styles.exitCard}>
               <Text style={theme.type.body}>
                 Campaigns end for good reasons too. If you want, say what
-                changed — it helps me understand you. Or just go; no
-                explanation owed.
+                changed. It helps me understand you. Or just go. You owe no
+                explanation.
               </Text>
               <TextInput
                 style={styles.exitInput}

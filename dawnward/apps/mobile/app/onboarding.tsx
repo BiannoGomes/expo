@@ -49,15 +49,15 @@ function ConsentStep({ onDone }: { onDone: (challenge: boolean) => void }) {
         What you share stays yours
       </Text>
       <Text style={theme.type.body}>
-        Your reflections will hold real things — fears, health, people you
+        Your reflections will hold real things: fears, health, people you
         love. Everything is held privately, cites its evidence, can be
         corrected by you, and can be erased completely at any time. Nothing is
         sold, and nothing trains anyone else's model.
       </Text>
       <Text style={[theme.type.dim, consentStyles.legal]}>
-        By continuing you consent to Dawnward processing what you choose to
-        share — including sensitive topics — solely to build your own
-        Personal Model. You can withdraw this at any time in Settings.
+        By continuing you agree that Dawnward may work with what you choose
+        to share, including sensitive things, for one purpose only: building
+        your own Personal Model. You can withdraw this any time in Settings.
       </Text>
       <View style={consentStyles.optRow}>
         <View style={{ flex: 1, paddingRight: 16 }}>
@@ -79,7 +79,7 @@ function ConsentStep({ onDone }: { onDone: (challenge: boolean) => void }) {
         onPress={begin}
         disabled={saving}
       >
-        <Text style={consentStyles.beginText}>I understand — begin</Text>
+        <Text style={consentStyles.beginText}>I understand. Begin</Text>
       </Pressable>
     </ScrollView>
   );
@@ -116,7 +116,7 @@ export default function OnboardingScreen() {
         setBubbles([
           {
             role: "assistant",
-            text: "I couldn't reach the server. Check your connection and come back — nothing is lost.",
+            text: "I couldn't reach the server. Come back when you're connected. Nothing is lost.",
           },
         ]);
       }
@@ -139,7 +139,7 @@ export default function OnboardingScreen() {
       if (result.chapterComplete && result.nextOpening) {
         additions.push({
           role: "assistant",
-          text: `— ${result.nextChapterTitle} —`,
+          text: `${result.nextChapterTitle}`,
           emphasis: true,
         });
         additions.push({ role: "assistant", text: result.nextOpening });
@@ -158,7 +158,7 @@ export default function OnboardingScreen() {
         ...b,
         {
           role: "assistant",
-          text: "That didn't reach me — your words weren't lost on your side. Try once more.",
+          text: "That didn't reach me, but nothing you wrote is lost. Try once more.",
         },
       ]);
     } finally {

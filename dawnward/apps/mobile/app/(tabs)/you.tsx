@@ -53,7 +53,7 @@ function AssertionCard({
   return (
     <View style={[styles.card, disputed && { opacity: 0.5 }]}>
       <Text style={[theme.type.label, styles.confidence]}>
-        {disputed ? "Set aside — you disputed this" : CONFIDENCE_LABEL[assertion.confidence]}
+        {disputed ? "Set aside, at your word" : CONFIDENCE_LABEL[assertion.confidence]}
       </Text>
       <Text style={[theme.type.body, styles.statement]}>
         {assertion.statement}
@@ -69,7 +69,7 @@ function AssertionCard({
       {mode === "options" && (
         <View style={styles.options}>
           <Text style={theme.type.dim}>
-            Your word outranks my inference — always.
+            Your word outranks mine here, always.
           </Text>
           <View style={styles.optionRow}>
             <Pressable onPress={() => setAside()} hitSlop={8}>
@@ -165,9 +165,9 @@ export default function YouScreen() {
             What I understand about you
           </Text>
           <Text style={theme.type.dim}>
-            Everything here cites its evidence, and everything here can be
-            corrected. If something is wrong, tell me — corrections outrank my
-            inferences, always.
+            Each belief here shows where it came from, and you can correct
+            any of it. If something reads wrong, tell me. Your word wins,
+            every time.
           </Text>
 
           {(empty || assertions === null) && (
@@ -176,8 +176,8 @@ export default function YouScreen() {
                 <Text style={theme.type.label}>Begin</Text>
                 <Text style={styles.ctaText}>Who are you becoming?</Text>
                 <Text style={theme.type.dim}>
-                  Seven short chapters. Self-paced. Then you meet your Future
-                  Self — and the first 90 days toward them.
+                  Seven short chapters, at your own pace. At the end you meet
+                  your Future Self, and the first 90 days toward them.
                 </Text>
               </Pressable>
             </Link>
@@ -185,7 +185,7 @@ export default function YouScreen() {
 
           {offline && (
             <Text style={[theme.type.dim, { marginTop: theme.spacing(2) }]}>
-              Can't reach the server right now — pull to retry.
+              Can't reach the server right now. Pull down to try again.
             </Text>
           )}
 

@@ -21,6 +21,15 @@ const MODELS = {
 
 const client = new Anthropic();
 
+/** Applied to everything a user reads (design-direction.md, COPY). */
+const VOICE =
+  "Voice rules for anything the user will read: write like a caring, " +
+  "plain-spoken person. Short sentences. Warm, specific, unhurried. " +
+  "Never use an em dash anywhere. Never mention AI, a model, a system, " +
+  "data, or processing. No coach words: journey, unlock, empower, elevate, " +
+  "thrive, dive in. If a person would not say the line out loud to a " +
+  "friend, rewrite it until they would. ";
+
 const assertionKindEnum = z.enum([
   "value", "trait", "pattern", "belief", "fear", "preference",
   "capability_level", "relationship_fact", "bottleneck",
@@ -191,6 +200,7 @@ export const intelligence: Intelligence = {
         model: MODELS.workhorse,
         max_tokens: 1500,
         system:
+          VOICE +
           "You generate the Dawnward morning plan: at most five slots " +
           "(build, train, learn, confront, experience) plus one question. " +
           "Rules: leave out any slot you cannot fill well — three good slots beat five mediocre ones. " +
@@ -212,6 +222,7 @@ export const intelligence: Intelligence = {
         model: MODELS.workhorse,
         max_tokens: 2500,
         system:
+          VOICE +
           "You process the Dawnward evening debrief. Extract structured data from the " +
           "user's reflection and write a short user-facing reply. " +
           "The reply cites today only; never claim a multi-day pattern. " +
@@ -252,6 +263,7 @@ export const intelligence: Intelligence = {
         model: MODELS.workhorse,
         max_tokens: 800,
         system:
+          VOICE +
           "You are guiding one chapter of the Dawnward onboarding — a conversation, never a form. " +
           `Chapter: "${input.chapterTitle}". Aims (internal, never listed to the user): ${input.aims.join("; ")}. ` +
           "Ask one question at a time. Follow what the user actually says rather than a script. " +
@@ -302,6 +314,7 @@ export const intelligence: Intelligence = {
         model: MODELS.deep,
         max_tokens: 4000,
         system:
+          VOICE +
           "You are the Dawnward onboarding synthesis. From the candidate assertions, produce:\n" +
           "1. futureSelf — per-domain narrative statements in second person, only for domains with signal. " +
           "Domains listed in uncoveredDomains are UNKNOWN: omit them entirely, never invent.\n" +
@@ -328,6 +341,7 @@ export const intelligence: Intelligence = {
         model: MODELS.deep,
         max_tokens: 2500,
         system:
+          VOICE +
           "You are the Dawnward weekly deep review. Re-test the current bottleneck hypothesis " +
           "against the recent reflections — real behaviour outranks onboarding self-report. " +
           "Verdicts: confirmed (the window's evidence supports it), revised (a different constraint " +

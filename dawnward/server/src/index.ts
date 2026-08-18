@@ -10,6 +10,7 @@ import { registerAssertionRoutes } from "./routes/assertions.js";
 import { registerCampaignRoutes } from "./routes/campaign.js";
 import { registerEventRoutes } from "./routes/events.js";
 import { registerAccountRoutes } from "./routes/account.js";
+import { registerConstellationRoutes } from "./routes/constellation.js";
 import { registerAuthRoutes, requireAuth } from "./auth.js";
 
 export function buildApp() {
@@ -24,6 +25,7 @@ export function buildApp() {
   registerAssertionRoutes(app);
   registerCampaignRoutes(app);
   registerEventRoutes(app);
+  registerConstellationRoutes(app);
 
   app.get("/health", async () => ({ ok: true }));
 

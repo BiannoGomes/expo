@@ -272,3 +272,18 @@ export async function markEventSeen(eventId: string): Promise<void> {
   const res = await api(`/events/${eventId}/seen`, { method: "POST" });
   if (!res.ok) throw new Error(`mark seen failed: ${res.status}`);
 }
+
+// ---------- Constellation (milestone screens only) ----------
+
+export interface Star {
+  id: string;
+  occurredAt: string;
+  domain: string | null;
+  weight: number;
+}
+
+export async function fetchConstellation(): Promise<Star[]> {
+  const res = await api("/constellation");
+  if (!res.ok) throw new Error(`constellation fetch failed: ${res.status}`);
+  return res.json();
+}

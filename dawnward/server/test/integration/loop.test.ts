@@ -411,6 +411,41 @@ describe("re-entry, campaigns, weekly review", () => {
   });
 });
 
+describe("constellation", () => {
+  it("stars are real records, weighted by what they came to mean", async () => {
+    const res = await inject(s1, { method: "GET", url: "/constellation" });
+    const stars = res.json();
+    assert.ok(stars.length >= 9, String(stars.length));
+    for (const star of stars) {
+      assert.ok(star.id && star.occurredAt);
+      assert.ok(star.weight > 0 && star.weight <= 1);
+    }
+    // A record cited by an active probable belief burns brighter.
+    const [bright] = await query<{ id: string }>(
+      `insert into records (user_id, kind, payload, occurred_at)
+       values ($1, 'evidence', '{"description":"finished the talk"}', now())
+       returning id`,
+      [s1.userId],
+    );
+    const [belief] = await query<{ id: string }>(
+      `insert into assertions
+         (user_id, kind, statement, domain_ids, facet_ids, source, method,
+          confidence, confidence_basis, taxonomy_version)
+       values ($1, 'capability_level', 'You can hold a room.', '{career}', '{}',
+               'observed', 'test', 'probable', 'test', '1.0.0')
+       returning id`,
+      [s1.userId],
+    );
+    await query(
+      "insert into assertion_evidence (assertion_id, record_id) values ($1, $2)",
+      [belief?.id, bright?.id],
+    );
+    const again = await inject(s1, { method: "GET", url: "/constellation" });
+    const star = again.json().find((x: { id: string }) => x.id === bright?.id);
+    assert.equal(star?.weight, 0.7);
+  });
+});
+
 describe("data rights", () => {
   it("export is complete and carries provenance", async () => {
     const res = await inject(s1, { method: "GET", url: "/export" });
