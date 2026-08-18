@@ -69,7 +69,25 @@ async function integrateUser(userId: string) {
           break;
         case "confirm":
           if (proposal.targetAssertionId) {
-            await confirmAssertion(proposal.targetAssertionId, sourceRecordId);
+            const result = await confirmAssertion(
+              proposal.targetAssertionId,
+              sourceRecordId,
+            );
+            if (result.promoted) {
+              // The model visibly learns — surfaced once, gently (roadmap A3).
+              await query(
+                `insert into model_events (user_id, kind, payload)
+                 values ($1, 'promotion', $2)`,
+                [
+                  userId,
+                  JSON.stringify({
+                    assertionId: proposal.targetAssertionId,
+                    statement: result.statement,
+                    basis: result.basis,
+                  }),
+                ],
+              );
+            }
           }
           break;
         case "contradict":

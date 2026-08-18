@@ -101,6 +101,13 @@ describe("onboarding", () => {
     assert.equal(campaign?.status, "active");
     assert.equal(campaign?.title, "Ship One Thing");
 
+    const [withMilestones] = await query<{ milestones: { day: number }[] }>(
+      "select milestones from campaigns where user_id = $1",
+      [user1],
+    );
+    assert.equal(withMilestones?.milestones.length, 4);
+    assert.equal(withMilestones?.milestones[0]?.day, 14);
+
     const [summary] = await query<{ content: string }>(
       "select content from model_summaries where user_id = $1",
       [user1],
@@ -244,6 +251,59 @@ describe("nightly integration", () => {
     );
     assert.match(summary?.content ?? "", /It looks like you keep commitments/);
   });
+
+  it("promotion emits a one-time model event, seen is permanent", async () => {
+    const events = await app.inject({ method: "GET", url: `/events/${user1}` });
+    const promotions = events
+      .json()
+      .filter((e: { kind: string }) => e.kind === "promotion");
+    assert.equal(promotions.length, 1);
+    assert.match(promotions[0].payload.statement, /commitments/);
+
+    const seen = await app.inject({
+      method: "POST",
+      url: `/events/${user1}/${promotions[0].id}/seen`,
+    });
+    assert.equal(seen.statusCode, 200);
+
+    const again = await app.inject({ method: "GET", url: `/events/${user1}` });
+    assert.equal(
+      again.json().filter((e: { kind: string }) => e.kind === "promotion").length,
+      0,
+    );
+  });
+
+  it("campaign surface serves milestones; abandon is graceful and recorded", async () => {
+    const res = await app.inject({ method: "GET", url: `/campaign/${user1}` });
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.json().title, "Ship One Thing");
+    assert.equal(res.json().milestones.length, 4);
+
+    const userX = await createUser("abandon@test.dev");
+    const [c] = await query<{ id: string }>(
+      `insert into campaigns (user_id, title, mission, why, primary_domain, status, starts_on)
+       values ($1, 'Short-lived', 'm', 'w', 'career', 'active', current_date)
+       returning id`,
+      [userX],
+    );
+    const abandon = await app.inject({
+      method: "POST",
+      url: `/campaign/${userX}/${c?.id}/abandon`,
+      payload: { reflection: "It stopped mattering once I started the new job." },
+    });
+    assert.equal(abandon.statusCode, 200);
+    const [after] = await query<{ status: string }>(
+      "select status from campaigns where id = $1",
+      [c?.id],
+    );
+    assert.equal(after?.status, "abandoned");
+    const exitReflections = await query(
+      `select 1 from records where user_id = $1 and kind = 'reflection'
+        and payload->>'context' = 'campaign-exit'`,
+      [userX],
+    );
+    assert.equal(exitReflections.length, 1);
+  });
 });
 
 describe("correction loop", () => {
@@ -349,6 +409,14 @@ describe("weekly deep review", () => {
       [user1],
     );
     assert.match(bottleneck?.confidence_basis ?? "", /records across/);
+
+    const eventRes = await app.inject({ method: "GET", url: `/events/${user1}` });
+    const reviews = eventRes
+      .json()
+      .filter((e: { kind: string }) => e.kind === "weekly_review");
+    assert.equal(reviews.length, 1);
+    assert.equal(reviews[0].payload.verdict, "confirmed");
+    assert.equal(reviews[0].payload.day14, true);
   });
 
   it("a revised verdict supersedes the bottleneck, never overwrites", async () => {

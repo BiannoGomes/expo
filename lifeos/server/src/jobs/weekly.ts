@@ -159,6 +159,24 @@ async function reviewUser(userId: string) {
     );
   }
 
+  if (review.bottleneckVerdict !== "insufficient-data") {
+    // The reveal (sacred moment #3): the deep pass has something to say.
+    await query(
+      `insert into model_events (user_id, kind, payload)
+       values ($1, 'weekly_review', $2)`,
+      [
+        userId,
+        JSON.stringify({
+          verdict: review.bottleneckVerdict,
+          basis: review.basis,
+          notableChanges: review.notableChanges.slice(0, 3),
+          campaignTitle: campaign?.title ?? null,
+          day14: day14Due,
+        }),
+      ],
+    );
+  }
+
   await rebuildModelSummary(userId);
   console.log(`weekly: ${userId} → ${review.bottleneckVerdict}`);
 }

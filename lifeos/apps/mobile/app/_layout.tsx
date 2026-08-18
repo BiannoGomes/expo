@@ -46,6 +46,7 @@ export default function RootLayout() {
       >
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="onboarding" options={{ presentation: "modal" }} />
+        <Stack.Screen name="campaign" options={{ presentation: "modal" }} />
       </Stack>
     </>
   );

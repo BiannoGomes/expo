@@ -99,3 +99,68 @@ export async function disputeAssertion(
   );
   if (!res.ok) throw new Error(`dispute failed: ${res.status}`);
 }
+
+// ---------- Campaign ----------
+
+export interface CampaignView {
+  id: string;
+  title: string;
+  mission: string;
+  why: string;
+  primaryDomain: string;
+  status: "active" | "paused";
+  dayNumber: number | null;
+  day14RevisionDone: boolean;
+  milestones: { day: number; title: string }[];
+}
+
+export async function fetchCampaign(): Promise<CampaignView | null> {
+  const res = await fetch(`${BASE_URL}/campaign/${DEV_USER_ID}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`campaign fetch failed: ${res.status}`);
+  return res.json();
+}
+
+export async function abandonCampaign(
+  campaignId: string,
+  reflection?: string,
+): Promise<void> {
+  const res = await fetch(
+    `${BASE_URL}/campaign/${DEV_USER_ID}/${campaignId}/abandon`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(reflection ? { reflection } : {}),
+    },
+  );
+  if (!res.ok) throw new Error(`abandon failed: ${res.status}`);
+}
+
+// ---------- Model events (shown once, dismissible forever) ----------
+
+export interface ModelEvent {
+  id: string;
+  kind: "promotion" | "weekly_review";
+  payload: {
+    statement?: string;
+    basis?: string;
+    verdict?: string;
+    notableChanges?: string[];
+    campaignTitle?: string | null;
+    day14?: boolean;
+  };
+  createdAt: string;
+}
+
+export async function fetchEvents(): Promise<ModelEvent[]> {
+  const res = await fetch(`${BASE_URL}/events/${DEV_USER_ID}`);
+  if (!res.ok) throw new Error(`events fetch failed: ${res.status}`);
+  return res.json();
+}
+
+export async function markEventSeen(eventId: string): Promise<void> {
+  const res = await fetch(`${BASE_URL}/events/${DEV_USER_ID}/${eventId}/seen`, {
+    method: "POST",
+  });
+  if (!res.ok) throw new Error(`mark seen failed: ${res.status}`);
+}

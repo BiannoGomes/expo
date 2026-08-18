@@ -240,8 +240,8 @@ async function synthesize(userId: string): Promise<string> {
   await query(
     `insert into campaigns
        (user_id, title, mission, why, primary_domain, secondary_domains,
-        status, starts_on)
-     values ($1, $2, $3, $4, $5, $6, 'active', current_date)`,
+        status, starts_on, milestones)
+     values ($1, $2, $3, $4, $5, $6, 'active', current_date, $7)`,
     [
       userId,
       synthesis.campaign.title,
@@ -249,6 +249,7 @@ async function synthesize(userId: string): Promise<string> {
       synthesis.campaign.why,
       synthesis.campaign.primaryDomain,
       synthesis.campaign.secondaryDomains,
+      JSON.stringify(synthesis.campaign.milestones),
     ],
   );
 

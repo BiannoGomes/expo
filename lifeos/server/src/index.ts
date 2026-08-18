@@ -6,12 +6,16 @@ import { intelligence } from "./intelligence/index.js";
 import { crisisResponse } from "./safety/crisis.js";
 import { registerOnboardingRoutes } from "./routes/onboarding.js";
 import { registerAssertionRoutes } from "./routes/assertions.js";
+import { registerCampaignRoutes } from "./routes/campaign.js";
+import { registerEventRoutes } from "./routes/events.js";
 
 export function buildApp() {
   const app = Fastify({ logger: process.env.NODE_ENV !== "test" });
 
   registerOnboardingRoutes(app);
   registerAssertionRoutes(app);
+  registerCampaignRoutes(app);
+  registerEventRoutes(app);
 
   app.get("/health", async () => ({ ok: true }));
 

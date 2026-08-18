@@ -113,11 +113,13 @@ export async function linkEvidence(assertionId: string, recordId: string): Promi
   );
 }
 
-/** Confirm: link evidence, then recompute confidence from actual stats. */
+/** Confirm: link evidence, then recompute confidence from actual stats.
+ * Returns promotion info so callers can surface "the model visibly learns"
+ * (roadmap A3) — a promotion is worth exactly one gentle mention. */
 export async function confirmAssertion(
   assertionId: string,
   recordId: string,
-): Promise<void> {
+): Promise<{ promoted: boolean; statement?: string; basis?: string }> {
   await linkEvidence(assertionId, recordId);
   const [stats] = await query<{
     evidence_count: string;
@@ -125,22 +127,24 @@ export async function confirmAssertion(
     span_days: string;
     source: string;
     status: string;
+    confidence: string;
+    statement: string;
   }>(
     `select count(distinct e.record_id) as evidence_count,
             count(distinct date(r.occurred_at)) as distinct_days,
             coalesce(extract(day from max(r.occurred_at) - min(r.occurred_at)), 0) as span_days,
-            a.source, a.status
+            a.source, a.status, a.confidence, a.statement
        from assertions a
        join assertion_evidence e on e.assertion_id = a.id
        join records r on r.id = e.record_id
       where a.id = $1
-      group by a.source, a.status`,
+      group by a.source, a.status, a.confidence, a.statement`,
     [assertionId],
   );
   if (!stats || stats.source === "corrected" || stats.status !== "active") {
     // Corrected assertions only change via user correction (spec 02 §6);
     // disputed ones wait for resolution.
-    return;
+    return { promoted: false };
   }
   const evidence: EvidenceStats = {
     evidenceCount: Number(stats.evidence_count),
@@ -149,18 +153,20 @@ export async function confirmAssertion(
     userConfirmed: false,
   };
   const confidence = decideConfidence(evidence);
+  const basis = `${evidence.evidenceCount} records across ${evidence.distinctDays} days (span ${evidence.spanDays}d)`;
   await query(
     `update assertions
         set confidence = $2,
             confidence_basis = $3,
             last_confirmed_at = now()
       where id = $1`,
-    [
-      assertionId,
-      confidence,
-      `${evidence.evidenceCount} records across ${evidence.distinctDays} days (span ${evidence.spanDays}d)`,
-    ],
+    [assertionId, confidence, basis],
   );
+  return {
+    promoted: stats.confidence === "hypothesis" && confidence !== "hypothesis",
+    statement: stats.statement,
+    basis,
+  };
 }
 
 /** Contradict: dispute, never overwrite. Corrected assertions are untouchable. */
