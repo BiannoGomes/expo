@@ -1,0 +1,30 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "migrate": "tsx src/migrate.ts",
+    "nightly": "tsx src/jobs/nightly.ts",
+    "weekly": "tsx src/jobs/weekly.ts",
+    "test:integration": "MOCK_INTELLIGENCE=1 NODE_ENV=test tsx --test test/integration/*.test.ts",
+    "test": "tsx --test test/*.test.ts",
+    "eval": "tsx eval/run.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.0",
+    "@lifeos/core": "*",
+    "fastify": "^5.2.0",
+    "pg": "^8.13.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.11.0",
+    "tsx": "^4.19.0",
+    "typescript": "~5.9.2"
+  }
+}
