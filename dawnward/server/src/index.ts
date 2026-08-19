@@ -248,7 +248,7 @@ app.post("/debrief", { preHandler: requireAuth }, async (request, reply) => {
     request.log.error({ err }, "extraction failed; record parked unprocessed");
     return {
       crisis: false,
-      reply: "Noted — I've saved everything you said and will make sense of it tonight.",
+      reply: "Noted. I've saved everything you said and will make sense of it tonight.",
     };
   }
 });
