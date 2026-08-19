@@ -18,7 +18,6 @@ no dependencies, no build step. Open `index.html`.
 | The duality | The spreadsheet and the sunset |
 | The pillars | Eight values |
 | Legacy | Things meant to outlive the moment |
-| The seal | Sealed 19 August 2026, addressed to 19 August 2116, counting live |
 | Contact | Mailing list signup |
 
 ## Where the content came from
@@ -126,18 +125,32 @@ Google Fonts with `display=swap` and a full Georgia-led fallback stack. This is
 the one external request on the page; everything else remains self-contained.
 To remove it, self-host both faces and delete the three link tags.
 
-## The legacy layer
+## The motion layer
 
-- **The Seal**: the page timestamps its own creation (19 August 2026) and counts,
-  from the visitor's clock, the days since sealing and the days until opening on
-  19 August 2116. Ninety years is 32,872 days; both numerals update forever.
-- **The sky**: at dawn and dusk in the visitor's local time, a warm band rises in
-  the rendered environment. The footer says so only when the engine is running.
+All of it respects `prefers-reduced-motion`, which freezes or removes every item
+below while keeping all content visible.
+
+- **Hero letters** rise in one by one with a staggered delay on load.
+- **A kinetic ticker** of the eight pillars runs between the through-line and the
+  lives, set in outlined Cinzel. Under reduced motion it becomes a static line.
+- **Scroll drives the camera**: the view orbits the sculpture almost a full turn
+  over the length of the page, on top of pointer parallax on fine pointers.
+- **A comet** arcs across the environment every eleven seconds, and because the
+  form's material reflects the environment, the gold catches it.
 - **The galaxy**: a third of the particle swarm forms a two-armed logarithmic
   golden spiral around the sculpture, distributed evenly by area, with
-  differential rotation so the arms slowly wind. The brand device, made of light.
-- **Parallax**: on fine pointers the camera eases toward the cursor. Off under
-  reduced motion and on touch.
+  differential rotation. The brand device, made of light.
+- **The sky**: at dawn and dusk in the visitor's local time a warm band rises in
+  the rendered environment. The footer notes it only while the engine runs.
+- **Section titles** wipe in with a clip reveal; **book covers** tilt in 3D
+  toward the pointer; **buy buttons** carry a gold shimmer on hover; a
+  **progress rail** on the left tracks scroll; **film grain** overlays the scene.
+- **Mobile**: the camera sits further back and the veil is stronger, so copy
+  stays legible over the form on small screens.
+
+The Seal section (a 90-year time capsule with live counters) was built, shipped,
+and removed at Bianno's direction. It lives in git history at a188eb50 if ever
+wanted again.
 
 ## Verified
 

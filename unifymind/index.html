@@ -33,10 +33,15 @@
   body.no-gl .fallback{display:block}
   .veil{position:fixed; inset:0; z-index:1; pointer-events:none;
     background:radial-gradient(120% 90% at 50% 45%, rgba(11,10,8,0) 34%, rgba(11,10,8,.62) 100%)}
+  @media (max-width:780px){
+    .veil{background:
+      linear-gradient(rgba(11,10,8,.46), rgba(11,10,8,.46)),
+      radial-gradient(120% 90% at 50% 45%, rgba(11,10,8,0) 30%, rgba(11,10,8,.72) 100%)}
+  }
   main{position:relative; z-index:2}
 
   .caps{font-size:11px; letter-spacing:.34em; text-transform:uppercase; color:var(--gold)}
-  h1,h2,h3,.mark,.role,.cover .ct,.pairs .a,.pairs .b,.buy,.cnum{font-family:var(--display)}
+  h1,h2,h3,.mark,.role,.cover .ct,.pairs .a,.pairs .b,.buy,.tk{font-family:var(--display)}
   h1{line-height:1.02}
   h1{font-size:clamp(44px,7vw,104px); line-height:.94; font-weight:400; letter-spacing:.01em; text-transform:uppercase}
   h2{font-size:clamp(27px,4.2vw,48px); line-height:1.1; font-weight:400; letter-spacing:.02em; text-transform:uppercase}
@@ -71,6 +76,50 @@
   .scrollcue{position:absolute; bottom:36px; left:var(--pad); font-size:10px;
     letter-spacing:.28em; text-transform:uppercase; color:var(--dim); display:flex; align-items:center; gap:12px}
   .scrollcue::after{content:""; width:52px; height:1px; background:var(--rule)}
+
+  /* grain: still cinema */
+  .grain{position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.4;
+    background-image:radial-gradient(rgba(255,255,255,.05) .5px, transparent .5px);
+    background-size:3px 3px; mix-blend-mode:overlay}
+
+  /* progress rail */
+  .rail{position:fixed; left:calc(var(--pad)*.45); top:50%; transform:translateY(-50%);
+    width:1px; height:38vh; background:var(--rule); z-index:4}
+  .rail i{display:block; width:100%; height:0%;
+    background:linear-gradient(var(--gold-lt), var(--gold))}
+  @media (max-width:900px){ .rail{display:none} }
+
+  /* hero letter reveal */
+  .hero h1 .w{display:inline-block; white-space:nowrap}
+  .hero h1 .lt{display:inline-block; opacity:0;
+    transform:translateY(.55em) rotate(3deg);
+    animation:ltin .8s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes ltin{to{opacity:1; transform:none}}
+  @media (prefers-reduced-motion:reduce){ .hero h1 .lt{animation:none; opacity:1; transform:none} }
+
+  /* kinetic ticker: the eight pillars in outline, forever passing */
+  .ticker{display:flex; overflow:hidden; padding:clamp(18px,3vh,30px) 0;
+    border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+    position:relative; z-index:2; background:rgba(11,10,8,.55)}
+  .tk{flex:none; white-space:nowrap; animation:tick 42s linear infinite;
+    font-size:clamp(20px,3.2vw,36px); letter-spacing:.16em; text-transform:uppercase;
+    color:transparent; -webkit-text-stroke:1px rgba(201,161,59,.55); padding-right:.5em}
+  @keyframes tick{to{transform:translateX(-100%)}}
+  @media (prefers-reduced-motion:reduce){ .tk{animation:none; color:var(--dim);
+    -webkit-text-stroke:0} .tk + .tk{display:none} }
+
+  /* wipe reveal on section titles */
+  .head h2.rise{clip-path:inset(0 0 102% 0)}
+  .head h2.rise.in{clip-path:inset(-8% 0 -10% 0);
+    transition:opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1), clip-path 1s cubic-bezier(.2,.8,.2,1)}
+  @media (prefers-reduced-motion:reduce){ .head h2.rise{clip-path:none} }
+
+  /* buy shimmer */
+  .buy{position:relative; overflow:hidden}
+  .buy::after{content:""; position:absolute; inset:0;
+    background:linear-gradient(110deg, transparent 32%, rgba(232,197,106,.32) 50%, transparent 68%);
+    transform:translateX(-130%); transition:transform .7s ease}
+  .buy:hover::after, .buy:focus-visible::after{transform:translateX(130%)}
 
   /* through-line */
   .thread .wrap{max-width:760px}
@@ -114,7 +163,7 @@
       linear-gradient(170deg,#17140D,#0C0B07);
     border:1px solid rgba(201,161,59,.34); display:flex; flex-direction:column;
     align-items:center; justify-content:center; padding:34px 26px; text-align:center; gap:18px;
-    transition:transform .55s cubic-bezier(.2,.8,.2,1), border-color .45s}
+    transition:transform .22s ease-out, border-color .45s; will-change:transform}
   .cover img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
   .book:hover .cover{transform:translateY(-8px); border-color:var(--gold)}
   .cover .frame{position:absolute; inset:14px; border:1px solid rgba(201,161,59,.30); pointer-events:none}
@@ -169,14 +218,6 @@
     margin:0 0 16px; opacity:.88}
   .nameline{margin-top:34px; color:var(--gold-lt); font-size:clamp(16px,1.8vw,20px);
     letter-spacing:.05em; font-style:italic}
-
-  /* the seal */
-  .seal .wrap{max-width:860px}
-  .counts{display:flex; gap:clamp(34px,8vw,100px); margin:clamp(32px,5vh,52px) 0 8px; flex-wrap:wrap}
-  .cnum{display:block; font-size:clamp(42px,6.6vw,92px); color:var(--bone); line-height:1;
-    font-variant-numeric:tabular-nums; letter-spacing:.02em}
-  .clab{display:block; margin-top:12px; font-size:10px; letter-spacing:.3em;
-    text-transform:uppercase; color:var(--gold)}
 
   /* duality */
   .duo{text-align:center}
@@ -238,6 +279,8 @@
 <canvas id="gl" aria-hidden="true"></canvas>
 <div class="fallback" aria-hidden="true"></div>
 <div class="veil" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="rail" aria-hidden="true"><i id="railBar"></i></div>
 
 <header>
   <span class="mark">Bianno Gomes</span>
@@ -245,7 +288,6 @@
     <a href="#lives">Lives</a>
     <a href="#record">Record</a>
     <a href="#books">Books</a>
-    <a href="#seal">2116</a>
     <a class="buy" href="#books">Read</a>
   </nav>
 </header>
@@ -270,6 +312,10 @@
       <span>The thread is curiosity, creation, freedom, and self-mastery.</span></p>
     </div>
   </section>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="tk"></div><div class="tk"></div>
+  </div>
 
   <section class="lives solid" id="lives" data-morph="1">
     <div class="wrap">
@@ -376,20 +422,6 @@
     </div>
   </section>
 
-  <section class="seal" id="seal" data-morph="4">
-    <div class="wrap">
-      <p class="caps rise" style="margin-bottom:22px">The seal</p>
-      <h2 class="rise" style="margin-bottom:26px">Sealed in 2026.<br>Addressed to 2116.</h2>
-      <p class="rise">Everything above is true as of the day this page was sealed:
-      19 August 2026. Three books exist. The record stands. The rest is still being written.</p>
-      <div class="counts rise">
-        <div><span class="cnum" id="cSince">0</span><span class="clab">days since the seal</span></div>
-        <div><span class="cnum" id="cUntil">32,872</span><span class="clab">days until opening</span></div>
-      </div>
-      <p class="pull rise" id="sealPull">Ninety years is 32,872 days. This page is counting.</p>
-    </div>
-  </section>
-
   <section class="contact solid" id="contact" data-morph="2">
     <div class="wrap">
       <p class="caps rise" style="margin-bottom:20px">Stay close</p>
@@ -439,6 +471,8 @@
 
 <script>
 "use strict";
+
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ==================================================================
  * CONTENT
@@ -627,27 +661,56 @@ CODEX.forEach(([n, name, line], i) => {
   keyList.appendChild(li);
 });
 
+/* hero letters rise in one by one */
+{
+  const h = document.querySelector(".hero h1");
+  if(!reduced && h){
+    const words = h.innerHTML.split(/<br\s*\/?\s*>/i).map(w => w.trim());
+    h.innerHTML = words.map((w, wi) =>
+      '<span class="w">' + [...w].map((ch, i) =>
+        `<span class="lt" style="animation-delay:${180 + wi*300 + i*55}ms">${ch}</span>`).join("") +
+      '</span>').join("<br>");
+  }
+}
+
+/* the ticker carries the eight pillars */
+{
+  const line = VALUES.map(v => v[0]).join(" \u00B7 ") + " \u00B7 ";
+  document.querySelectorAll(".tk").forEach(t => t.textContent = line.repeat(3));
+}
+
+/* progress rail */
+const railBar = document.getElementById("railBar");
+const setRail = () => {
+  const m = document.documentElement.scrollHeight - innerHeight;
+  railBar.style.height = (m > 0 ? (scrollY / m) * 100 : 0) + "%";
+};
+addEventListener("scroll", setRail, {passive:true});
+setRail();
+
+/* book covers tilt toward the pointer */
+if(matchMedia("(pointer: fine)").matches && !reduced){
+  document.querySelectorAll(".book").forEach(card => {
+    const cov = card.querySelector(".cover");
+    card.addEventListener("pointermove", (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - .5;
+      const y = (e.clientY - r.top)  / r.height - .5;
+      cov.style.transform =
+        `perspective(900px) rotateY(${(x*9).toFixed(2)}deg) rotateX(${(-y*8).toFixed(2)}deg) translateY(-6px)`;
+    });
+    card.addEventListener("pointerleave", () => { cov.style.transform = ""; });
+  });
+}
+
 document.getElementById("yr").textContent = new Date().getFullYear();
 
-/* The Seal. Sealed 19 August 2026, addressed to 19 August 2116. */
-{
-  const DAY = 864e5;
-  const SEAL = Date.UTC(2026, 7, 19);
-  const OPEN = Date.UTC(2116, 7, 19);
-  const now = Date.now();
-  const fmt = n => n.toLocaleString("en-US");
-  document.getElementById("cSince").textContent = fmt(Math.max(0, Math.floor((now - SEAL) / DAY)));
-  document.getElementById("cUntil").textContent = fmt(Math.max(0, Math.ceil((OPEN - now) / DAY)));
-  document.getElementById("sealPull").textContent =
-    "Ninety years is " + fmt(Math.round((OPEN - SEAL) / DAY)) + " days. This page is counting.";
-}
 document.getElementById("signup").addEventListener("submit", (e) => {
   e.preventDefault();
   document.getElementById("signupNote").textContent =
     "Not connected yet. Connect a mailing provider to collect this address.";
 });
 
-const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const io = new IntersectionObserver((es) => {
   es.forEach(e => { if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
 }, { rootMargin:"0px 0px -10% 0px", threshold:.05 });
@@ -743,6 +806,15 @@ vec3 env(vec3 rd){
   // the visitor's own sky: at dawn and dusk a warm band rises on the horizon
   c *= mix(vec3(1.), vec3(1.10,1.00,.88), uSky*.55);
   c += vec3(.16,.07,.02) * uSky * pow(max(0., dot(rd, normalize(vec3(.25,.10,-.95)))), 4.);
+  // every eleven seconds a comet arcs across, and the gold catches it
+  float cph = fract(uTime/11.);
+  float ck = smoothstep(0., .03, cph) * (1. - smoothstep(.13, .16, cph)) * step(.01, uTime);
+  if(ck > 0.){
+    float ck2 = (cph - .0) * 6.25;
+    vec3 cdir = normalize(vec3(mix(-.95,.85,ck2), mix(.82,.28,ck2), -.58));
+    float dd = max(0., dot(rd, cdir));
+    c += vec3(1.,.86,.60) * (pow(dd,1400.)*3.2 + pow(dd,220.)*.32) * ck;
+  }
   return c;
 }
 
@@ -954,9 +1026,11 @@ function frame(now){
   state.spin += reduced ? 0 : dt*.13;
   state.fade  = state.fade + (1-state.fade)*(1-Math.pow(.15, dt));
 
-  state.camA += (state.pA - state.camA) * (1 - Math.pow(.02, dt));
+  const scm = document.documentElement.scrollHeight - innerHeight;
+  const scProg = scm > 0 ? scrollY / scm : 0;
+  state.camA += ((state.pA + (reduced ? 0 : scProg * .9)) - state.camA) * (1 - Math.pow(.02, dt));
   state.camY += (state.pY - state.camY) * (1 - Math.pow(.02, dt));
-  const R = 4.15;
+  const R = innerWidth < 780 ? 5.4 : 4.15;
   const drift = reduced ? 0 : Math.sin(time*.19)*.09;
   const ro = [Math.sin(state.camA)*R, state.camY+drift, Math.cos(state.camA)*R];
 
