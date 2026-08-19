@@ -9,12 +9,17 @@
 <meta property="og:title" content="Bianno Gomes">
 <meta property="og:description" content="A restless creator. Three books on self-mastery, consciousness, and what stays human.">
 <meta property="og:type" content="profile">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E%F0%9F%9C%82%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <style>
   :root{
     --ground:#0B0A08; --gold:#C9A13B; --gold-lt:#E8C56A; --bone:#E9E2D0; --dim:#8A8170;
     --rule:rgba(233,226,208,.15);
     --pad:clamp(20px, 5vw, 76px);
-    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Times New Roman",serif;
+    --serif:"EB Garamond",Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Times New Roman",serif;
+    --display:"Cinzel",Georgia,"Times New Roman",serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
@@ -31,6 +36,8 @@
   main{position:relative; z-index:2}
 
   .caps{font-size:11px; letter-spacing:.34em; text-transform:uppercase; color:var(--gold)}
+  h1,h2,h3,.mark,.role,.cover .ct,.pairs .a,.pairs .b,.buy,.cnum{font-family:var(--display)}
+  h1{line-height:1.02}
   h1{font-size:clamp(44px,7vw,104px); line-height:.94; font-weight:400; letter-spacing:.01em; text-transform:uppercase}
   h2{font-size:clamp(27px,4.2vw,48px); line-height:1.1; font-weight:400; letter-spacing:.02em; text-transform:uppercase}
   h3{font-size:clamp(19px,2.3vw,26px); font-weight:400; letter-spacing:.03em}
@@ -163,6 +170,14 @@
   .nameline{margin-top:34px; color:var(--gold-lt); font-size:clamp(16px,1.8vw,20px);
     letter-spacing:.05em; font-style:italic}
 
+  /* the seal */
+  .seal .wrap{max-width:860px}
+  .counts{display:flex; gap:clamp(34px,8vw,100px); margin:clamp(32px,5vh,52px) 0 8px; flex-wrap:wrap}
+  .cnum{display:block; font-size:clamp(42px,6.6vw,92px); color:var(--bone); line-height:1;
+    font-variant-numeric:tabular-nums; letter-spacing:.02em}
+  .clab{display:block; margin-top:12px; font-size:10px; letter-spacing:.3em;
+    text-transform:uppercase; color:var(--gold)}
+
   /* duality */
   .duo{text-align:center}
   .duo .wrap{max-width:900px}
@@ -230,6 +245,7 @@
     <a href="#lives">Lives</a>
     <a href="#record">Record</a>
     <a href="#books">Books</a>
+    <a href="#seal">2116</a>
     <a class="buy" href="#books">Read</a>
   </nav>
 </header>
@@ -360,6 +376,20 @@
     </div>
   </section>
 
+  <section class="seal" id="seal" data-morph="4">
+    <div class="wrap">
+      <p class="caps rise" style="margin-bottom:22px">The seal</p>
+      <h2 class="rise" style="margin-bottom:26px">Sealed in 2026.<br>Addressed to 2116.</h2>
+      <p class="rise">Everything above is true as of the day this page was sealed:
+      19 August 2026. Three books exist. The record stands. The rest is still being written.</p>
+      <div class="counts rise">
+        <div><span class="cnum" id="cSince">0</span><span class="clab">days since the seal</span></div>
+        <div><span class="cnum" id="cUntil">32,872</span><span class="clab">days until opening</span></div>
+      </div>
+      <p class="pull rise" id="sealPull">Ninety years is 32,872 days. This page is counting.</p>
+    </div>
+  </section>
+
   <section class="contact solid" id="contact" data-morph="2">
     <div class="wrap">
       <p class="caps rise" style="margin-bottom:20px">Stay close</p>
@@ -403,6 +433,7 @@
 
 <footer>
   <span>&copy; <span id="yr"></span> Bianno Gomes</span>
+  <span id="skyNote" hidden>The light in this page follows your local sky</span>
   <span>UnifyMind</span>
 </footer>
 
@@ -597,6 +628,19 @@ CODEX.forEach(([n, name, line], i) => {
 });
 
 document.getElementById("yr").textContent = new Date().getFullYear();
+
+/* The Seal. Sealed 19 August 2026, addressed to 19 August 2116. */
+{
+  const DAY = 864e5;
+  const SEAL = Date.UTC(2026, 7, 19);
+  const OPEN = Date.UTC(2116, 7, 19);
+  const now = Date.now();
+  const fmt = n => n.toLocaleString("en-US");
+  document.getElementById("cSince").textContent = fmt(Math.max(0, Math.floor((now - SEAL) / DAY)));
+  document.getElementById("cUntil").textContent = fmt(Math.max(0, Math.ceil((OPEN - now) / DAY)));
+  document.getElementById("sealPull").textContent =
+    "Ninety years is " + fmt(Math.round((OPEN - SEAL) / DAY)) + " days. This page is counting.";
+}
 document.getElementById("signup").addEventListener("submit", (e) => {
   e.preventDefault();
   document.getElementById("signupNote").textContent =
@@ -676,7 +720,7 @@ precision highp float;
 out vec4 O;
 uniform vec2 uRes;
 uniform vec3 uRo, uTa;
-uniform float uFade, uOffset;
+uniform float uFade, uOffset, uSky;
 ${COMMON}
 
 vec3 nrm(vec3 p){
@@ -696,6 +740,9 @@ vec3 env(vec3 rd){
   c += vec3(.95,.90,.80) * pow(max(0., vnoise(rd*380.)), 54.) * 2.4;
   float key = pow(max(0., dot(rd, normalize(vec3(.38,.74,-.52)))), 10.);
   c += vec3(.30,.22,.10) * key;
+  // the visitor's own sky: at dawn and dusk a warm band rises on the horizon
+  c *= mix(vec3(1.), vec3(1.10,1.00,.88), uSky*.55);
+  c += vec3(.16,.07,.02) * uSky * pow(max(0., dot(rd, normalize(vec3(.25,.10,-.95)))), 4.);
   return c;
 }
 
@@ -760,7 +807,7 @@ void main(){
 const VERT_PTS = `#version 300 es
 precision highp float;
 uniform vec2 uRes; uniform vec3 uRo, uTa; uniform float uFade, uOffset;
-out float vSeed; out float vHeat;
+out float vSeed; out float vHeat; out float vKind;
 ${COMMON}
 vec3 grad(vec3 p){
   vec2 e = vec2(1.,-1.)*.004;
@@ -770,13 +817,29 @@ void main(){
   float id = float(gl_VertexID);
   vec3 rnd = h3(vec3(id*.017, id*.0031, 7.13));
   vSeed = rnd.x;
-  float z = rnd.x*2.-1.; float a = rnd.y*6.28318; float s = sqrt(max(0.,1.-z*z));
-  vec3 p = vec3(s*cos(a), z, s*sin(a))*2.0;
-  for(int i=0;i<6;i++){ p -= grad(p)*mapLite(p)*.85; }
-  float burst = uShift*(.42+rnd.z*1.25);
-  p += normalize(p + (h3(p*3.1+rnd)-.5)*1.4) * burst;
-  p += (h3(vec3(id*.11, uTime*.08, 3.7))-.5)*.05;
-  vHeat = burst;
+  vec3 p;
+  if(mod(id, 3.) < 1.){
+    // one third of the swarm is a two-armed golden spiral galaxy around the form,
+    // r = a*e^(b*theta), with differential rotation so the arms slowly wind
+    // even coverage by area, angle derived from radius so the spiral holds
+    float r = sqrt(mix(.55, 10.2, rnd.y));
+    float th = log(r/.16)/.30;
+    float arm = (mod(id, 2.) < 1.) ? 0. : 3.14159;
+    float a2 = th + arm + uTime*.05 - r*.09 + uSpin*.35;
+    p = vec3(cos(a2)*r, (h1f(id*.71)-.5)*.11*r, sin(a2)*r);
+    p.yz *= r2(.88);
+    p += (h3(vec3(id, 3.1, 7.7))-.5)*.05*r;
+    p += normalize(p)*uShift*.30;
+    vHeat = 0.; vKind = 1.;
+  } else {
+    float z = rnd.x*2.-1.; float a = rnd.y*6.28318; float s = sqrt(max(0.,1.-z*z));
+    p = vec3(s*cos(a), z, s*sin(a))*2.0;
+    for(int i=0;i<6;i++){ p -= grad(p)*mapLite(p)*.85; }
+    float burst = uShift*(.42+rnd.z*1.25);
+    p += normalize(p + (h3(p*3.1+rnd)-.5)*1.4) * burst;
+    p += (h3(vec3(id*.11, uTime*.08, 3.7))-.5)*.05;
+    vHeat = burst; vKind = 0.;
+  }
   vec3 rel = p-uRo;
   vec3 f = normalize(uTa-uRo);
   vec3 r = normalize(cross(f, vec3(0,1,0)));
@@ -785,12 +848,12 @@ void main(){
   if(v.z < .05){ gl_Position = vec4(2.,2.,2.,1.); gl_PointSize = 0.; return; }
   vec2 sp = v.xy*1.62/v.z; sp.x -= uOffset;
   gl_Position = vec4(sp.x*uRes.y/uRes.x, sp.y, 0., 1.);
-  gl_PointSize = clamp((1.5+rnd.z*2.4)*(uRes.y/900.)/v.z*1.5, 1., 6.5);
+  gl_PointSize = clamp((1.5+rnd.z*2.4+vKind*1.1)*(uRes.y/900.)/v.z*1.5, 1., 7.5);
 }`;
 
 const FRAG_PTS = `#version 300 es
 precision highp float;
-in float vSeed; in float vHeat;
+in float vSeed; in float vHeat; in float vKind;
 out vec4 O;
 uniform float uShift, uTime, uFade;
 vec3 pal(float t){ return vec3(.60,.44,.17) + vec3(.40,.34,.22)*cos(6.28318*(t + vec3(.00,.09,.22))); }
@@ -800,6 +863,7 @@ void main(){
   if(m <= .001) discard;
   vec3 col = pal(vSeed*.7 + uTime*.03 + vHeat*.35);
   float amp = (.14 + uShift*1.7)*(.4+vSeed*.9);
+  amp += vKind * (.26 + .14*sin(uTime*.7 + vSeed*40.));
   O = vec4(col*m*amp*uFade, m);
 }`;
 
@@ -822,8 +886,25 @@ const U = (p, n) => Object.fromEntries(n.map(k => [k, gl.getUniformLocation(p, k
 let progScene, progPts, uScene, uPts, vao, PARTICLES = 0;
 const state = {
   morph:0, morphTarget:0, shift:0, spin:0,
-  fade:0, quality:1, camA:0, camY:.28,
+  fade:0, quality:1, camA:0, camY:.28, pA:0, pY:.28,
 };
+
+/* dawn and dusk in the visitor's own clock drive a warm band in the env */
+function skyNow(){
+  const d = new Date();
+  const h = d.getHours() + d.getMinutes()/60;
+  const dawn = Math.exp(-Math.pow(h - 6.7, 2) / 1.8);
+  const dusk = Math.exp(-Math.pow(h - 18.8, 2) / 2.2);
+  return Math.min(1, dawn + dusk);
+}
+
+/* pointer parallax, fine pointers only, still under reduced motion */
+if(matchMedia("(pointer: fine)").matches && !reduced){
+  addEventListener("pointermove", (e) => {
+    state.pA = (e.clientX / innerWidth  - .5) * .16;
+    state.pY = .28 + (e.clientY / innerHeight - .5) * .10;
+  }, {passive:true});
+}
 
 function resize(){
   const dpr = Math.min(devicePixelRatio || 1, 2);
@@ -873,6 +954,8 @@ function frame(now){
   state.spin += reduced ? 0 : dt*.13;
   state.fade  = state.fade + (1-state.fade)*(1-Math.pow(.15, dt));
 
+  state.camA += (state.pA - state.camA) * (1 - Math.pow(.02, dt));
+  state.camY += (state.pY - state.camY) * (1 - Math.pow(.02, dt));
   const R = 4.15;
   const drift = reduced ? 0 : Math.sin(time*.19)*.09;
   const ro = [Math.sin(state.camA)*R, state.camY+drift, Math.cos(state.camA)*R];
@@ -889,6 +972,7 @@ function frame(now){
     gl.uniform3f(u.uTa, 0,0,0);
     gl.uniform1f(u.uFade, state.fade);
     gl.uniform1f(u.uOffset, innerWidth > 900 ? -0.58 : 0.0);
+    gl.uniform1f(u.uSky, skyNow());
   };
 
   gl.bindVertexArray(vao);
@@ -906,11 +990,12 @@ try{
   if(!gl) throw new Error("WebGL2 unavailable");
   progScene = program(VERT_QUAD, FRAG);
   progPts   = program(VERT_PTS, FRAG_PTS);
-  const names = ["uRes","uTime","uMorph","uShift","uSpin","uRo","uTa","uFade","uOffset"];
+  const names = ["uRes","uTime","uMorph","uShift","uSpin","uRo","uTa","uFade","uOffset","uSky"];
   uScene = U(progScene, names); uPts = U(progPts, names);
   vao = gl.createVertexArray(); gl.bindVertexArray(vao);
   PARTICLES = Math.min(innerWidth, innerHeight) < 720 ? 3000 : 7500;
   resize();
+  document.getElementById("skyNote").hidden = false;
   requestAnimationFrame(frame);
 }catch(err){
   console.warn("[UnifyMind] WebGL2 unavailable, using static ground.", err);

@@ -18,6 +18,7 @@ no dependencies, no build step. Open `index.html`.
 | The duality | The spreadsheet and the sunset |
 | The pillars | Eight values |
 | Legacy | Things meant to outlive the moment |
+| The seal | Sealed 19 August 2026, addressed to 19 August 2116, counting live |
 | Contact | Mailing list signup |
 
 ## Where the content came from
@@ -119,9 +120,24 @@ The hero, through-line, ocean, duality, and legacy sections let it show. Lives,
 record, books, pillars, and contact sit on a near-opaque ground, because a page
 that sells has to be readable before it is impressive.
 
-**Typography is a stand-in.** The series faces are EB Garamond and Cinzel. This
-file makes no external requests by design, so it uses a Georgia-led system serif
-stack. To match the books exactly, self-host both faces and add them to `--serif`.
+**Typography is now the real series pair.** Cinzel carries display (headings,
+roles, covers, the seal numerals) and EB Garamond carries body, loaded from
+Google Fonts with `display=swap` and a full Georgia-led fallback stack. This is
+the one external request on the page; everything else remains self-contained.
+To remove it, self-host both faces and delete the three link tags.
+
+## The legacy layer
+
+- **The Seal**: the page timestamps its own creation (19 August 2026) and counts,
+  from the visitor's clock, the days since sealing and the days until opening on
+  19 August 2116. Ninety years is 32,872 days; both numerals update forever.
+- **The sky**: at dawn and dusk in the visitor's local time, a warm band rises in
+  the rendered environment. The footer says so only when the engine is running.
+- **The galaxy**: a third of the particle swarm forms a two-armed logarithmic
+  golden spiral around the sculpture, distributed evenly by area, with
+  differential rotation so the arms slowly wind. The brand device, made of light.
+- **Parallax**: on fine pointers the camera eases toward the cursor. Off under
+  reduced motion and on touch.
 
 ## Verified
 
