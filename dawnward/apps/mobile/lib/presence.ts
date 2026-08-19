@@ -12,6 +12,7 @@ function morningContent(name?: string | null) {
   return {
     title: name ? `Good morning, ${name}.` : "Good morning.",
     body: "Your plan is ready when you are.",
+    data: { screen: "/" },
   };
 }
 function eveningContent(name?: string | null) {
@@ -20,7 +21,23 @@ function eveningContent(name?: string | null) {
     body: name
       ? `When you're ready, ${name}, tell me about it.`
       : "When you're ready, tell me about it.",
+    data: { screen: "/debrief" },
   };
+}
+
+/**
+ * Tapping a touchpoint lands in the right room: the morning note opens
+ * Today, the evening note opens the debrief. Returns the unsubscribe.
+ */
+export function listenForPresenceTaps(
+  navigate: (path: string) => void,
+): () => void {
+  if (Platform.OS === "web") return () => {};
+  const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+    const screen = response.notification.request.content.data?.screen;
+    if (typeof screen === "string") navigate(screen);
+  });
+  return () => sub.remove();
 }
 
 function parseTime(value: string): { hour: number; minute: number } | null {

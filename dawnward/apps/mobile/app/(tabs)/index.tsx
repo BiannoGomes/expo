@@ -118,7 +118,14 @@ function SlotCard({
     }
   };
   return (
-    <Pressable style={[styles.card, done && styles.cardDone]} onPress={press}>
+    <Pressable
+      style={[styles.card, done && styles.cardDone]}
+      onPress={press}
+      accessibilityRole="button"
+      accessibilityLabel={`${SLOT_LABELS[slot.slot]}: ${slot.text}`}
+      accessibilityState={{ selected: done }}
+      accessibilityHint={done ? "Tap to mark not done" : "Tap to mark done"}
+    >
       <View>
         <Text style={theme.type.label}>{SLOT_LABELS[slot.slot]}</Text>
         <Animated.Text

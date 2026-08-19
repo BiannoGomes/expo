@@ -36,12 +36,14 @@ export function Press({
   disabled,
   style,
   hitSlop,
+  accessibilityLabel,
   children,
 }: {
   onPress?: () => void;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   hitSlop?: number;
+  accessibilityLabel?: string;
   children: ReactNode;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
@@ -61,6 +63,9 @@ export function Press({
       onPress={onPress}
       disabled={disabled}
       hitSlop={hitSlop}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ disabled: Boolean(disabled) }}
       onPressIn={() => !reduced && to(0.97, 110)}
       onPressOut={() => !reduced && to(1, 180)}
     >

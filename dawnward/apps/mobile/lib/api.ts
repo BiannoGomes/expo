@@ -76,7 +76,12 @@ async function api(path: string, init?: RequestInit): Promise<Response> {
 }
 
 export function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  // The user's day, not Greenwich's: an evening debrief in São Paulo or a
+  // morning plan in Sydney must land on the date the person is living.
+  const d = new Date();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mm}-${dd}`;
 }
 
 // ---------- Me / consent / preferences (roadmap B2–B3) ----------

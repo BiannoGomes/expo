@@ -1,6 +1,8 @@
-import { Stack } from "expo-router";
+import { useEffect } from "react";
+import { router, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
+import { listenForPresenceTaps } from "@/lib/presence";
 import {
   CormorantGaramond_300Light,
   CormorantGaramond_400Regular,
@@ -73,6 +75,10 @@ export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
 }
 
 export default function RootLayout() {
+  useEffect(
+    () => listenForPresenceTaps((path) => router.navigate(path as never)),
+    [],
+  );
   const [loaded] = useFonts({
     CormorantGaramond_300Light,
     CormorantGaramond_400Regular,

@@ -20,7 +20,8 @@ import {
   useAudioRecorder,
 } from "expo-audio";
 import { File } from "expo-file-system";
-import { submitDebrief, today, transcribe } from "@/lib/api";
+import { fetchMe, fetchPlan, submitDebrief, today, transcribe } from "@/lib/api";
+import { clearDraft, loadDraft, saveDraft } from "@/lib/draft";
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky } from "@/lib/sky";
 import { Press } from "@/lib/motion";
@@ -77,9 +78,30 @@ function ListeningDot() {
 
 export default function DebriefScreen() {
   const [text, setText] = useState("");
+  const [question, setQuestion] = useState<string | null>(null);
   const [reply, setReply] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [focused, setFocused] = useState(false);
+
+  // The morning asked one question; the evening answers it. And a
+  // half-written reflection survives the app being closed mid-thought.
+  useEffect(() => {
+    const draft = loadDraft();
+    if (draft) setText(draft);
+    fetchMe()
+      .then((me) => {
+        // Never generate a plan for someone whose story hasn't begun.
+        if (!me.onboardingComplete) return;
+        return fetchPlan(today()).then(
+          (plan) => plan.question && setQuestion(plan.question),
+        );
+      })
+      .catch(() => {});
+  }, []);
+  useEffect(() => {
+    const id = setTimeout(() => saveDraft(text), 400);
+    return () => clearTimeout(id);
+  }, [text]);
   const [voiceState, setVoiceState] = useState<
     "idle" | "recording" | "transcribing"
   >("idle");
@@ -93,6 +115,7 @@ export default function DebriefScreen() {
       const result = await submitDebrief(today(), text.trim());
       setReply(result.reply);
       setText("");
+      clearDraft();
     } catch {
       setReply(
         "I couldn't reach the server just now. Nothing was lost. Try again in a moment.",
@@ -154,7 +177,7 @@ export default function DebriefScreen() {
           <Text style={theme.type.label}>Evening debrief</Text>
           <Text style={[theme.type.title, styles.title]}>What happened?</Text>
           <Text style={theme.type.dim}>
-            Say it how it was. Skipping tonight is fine too.
+            {question ?? "Say it how it was. Skipping tonight is fine too."}
           </Text>
 
           <TextInput
@@ -170,12 +193,23 @@ export default function DebriefScreen() {
 
           <View style={styles.voiceRow}>
             {voiceState === "idle" && (
-              <Pressable onPress={startListening} hitSlop={8}>
+              <Pressable
+                onPress={startListening}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Speak your debrief instead of typing"
+              >
                 <Text style={styles.voiceAction}>Speak it instead</Text>
               </Pressable>
             )}
             {voiceState === "recording" && (
-              <Pressable onPress={finishListening} hitSlop={8} style={styles.listeningRow}>
+              <Pressable
+                onPress={finishListening}
+                hitSlop={8}
+                style={styles.listeningRow}
+                accessibilityRole="button"
+                accessibilityLabel="Finish speaking"
+              >
                 <ListeningDot />
                 <Text style={styles.voiceListening}>
                   Listening. Tap when you're done.
@@ -197,6 +231,7 @@ export default function DebriefScreen() {
             style={[styles.button, !text.trim() && styles.buttonDisabled]}
             onPress={send}
             disabled={!text.trim() || sending}
+            accessibilityLabel="Send tonight's reflection"
           >
             {sending ? (
               <ActivityIndicator color={theme.colors.background} />
