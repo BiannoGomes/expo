@@ -13,7 +13,9 @@ import { Link, useFocusEffect } from "expo-router";
 import {
   disputeAssertion,
   fetchAssertions,
+  fetchFutureSelf,
   type AssertionView,
+  type FutureSelfView,
 } from "@/lib/api";
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky, skyModeForNow } from "@/lib/sky";
@@ -28,6 +30,51 @@ const CONFIDENCE_LABEL: Record<AssertionView["confidence"], string> = {
   probable: "Probably true",
   established: "Well established",
 };
+
+// Inlined (Metro can't take runtime values from core's ESM build).
+const DOMAIN_LABELS: Record<string, string> = {
+  physical: "Physical",
+  mental: "Mental",
+  emotional: "Emotional",
+  character: "Character",
+  relationships: "Relationships",
+  career: "Career",
+  wealth: "Wealth",
+  creativity: "Creativity",
+  adventure: "Adventure",
+  meaning: "Meaning",
+  environment: "Environment",
+  legacy: "Legacy",
+};
+
+/**
+ * The Future Self, always within reach. Written once at the end of
+ * onboarding, revised as life disagrees — and re-readable on the days
+ * it feels far away, which are exactly the days it matters.
+ */
+function FutureSelfCard({ futureSelf }: { futureSelf: FutureSelfView }) {
+  const entries = Object.entries(futureSelf.domains).filter(([, text]) => text);
+  if (entries.length === 0) return null;
+  return (
+    <View style={styles.futureCard}>
+      <Text style={[theme.type.label, { color: theme.colors.gold }]}>
+        The person you're becoming · {futureSelf.horizonYear}
+      </Text>
+      {entries.map(([domainId, text]) => (
+        <View key={domainId} style={styles.futureEntry}>
+          <Text style={theme.type.label}>
+            {DOMAIN_LABELS[domainId] ?? domainId}
+          </Text>
+          <Text style={[theme.type.epigraph, styles.futureText]}>{text}</Text>
+        </View>
+      ))}
+      <Text style={theme.type.dim}>
+        Written from your own words, at your pace. Come back to this on the
+        days it feels far away. That's what it's for.
+      </Text>
+    </View>
+  );
+}
 
 function AssertionCard({
   assertion,
@@ -115,6 +162,7 @@ function AssertionCard({
 
 export default function YouScreen() {
   const [assertions, setAssertions] = useState<AssertionView[] | null>(null);
+  const [futureSelf, setFutureSelf] = useState<FutureSelfView | null>(null);
   const [offline, setOffline] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -124,6 +172,11 @@ export default function YouScreen() {
       setOffline(false);
     } catch {
       setOffline(true);
+    }
+    try {
+      setFutureSelf(await fetchFutureSelf());
+    } catch {
+      // A grace note: absence never becomes an error state.
     }
   }, []);
 
@@ -169,6 +222,8 @@ export default function YouScreen() {
             any of it. If something reads wrong, tell me. Your word wins,
             every time.
           </Text>
+
+          {futureSelf && <FutureSelfCard futureSelf={futureSelf} />}
 
           {(empty || assertions === null) && (
             <Link href="/onboarding" asChild>
@@ -239,6 +294,17 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.card,
     padding: theme.spacing(2.5),
   },
+  futureCard: {
+    marginTop: theme.spacing(3),
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.gold,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: theme.radius.card,
+    padding: theme.spacing(2.5),
+    gap: theme.spacing(1.5),
+  },
+  futureEntry: { gap: theme.spacing(0.5) },
+  futureText: { marginTop: 2 },
   confidence: { color: theme.colors.gold },
   statement: { marginVertical: theme.spacing(1) },
   dispute: {

@@ -435,6 +435,39 @@ describe("voice", () => {
   });
 });
 
+describe("the person", () => {
+  it("keeps a chosen name, and lets it be cleared", async () => {
+    const set = await inject(s1, {
+      method: "PATCH",
+      url: "/me",
+      payload: { preferredName: "Bianno" },
+    });
+    assert.equal(set.statusCode, 200);
+    let me = await inject(s1, { method: "GET", url: "/me" });
+    assert.equal(me.json().preferredName, "Bianno");
+
+    const clear = await inject(s1, {
+      method: "PATCH",
+      url: "/me",
+      payload: { preferredName: null },
+    });
+    assert.equal(clear.statusCode, 200);
+    me = await inject(s1, { method: "GET", url: "/me" });
+    assert.equal(me.json().preferredName, null);
+  });
+
+  it("the future self stays re-readable after the reveal", async () => {
+    const res = await inject(s1, { method: "GET", url: "/future-self" });
+    assert.equal(res.statusCode, 200);
+    assert.ok(res.json().horizonYear >= new Date().getFullYear());
+    assert.ok(Object.keys(res.json().domains).length > 0);
+
+    const fresh = await createSession();
+    const none = await inject(fresh, { method: "GET", url: "/future-self" });
+    assert.equal(none.statusCode, 404);
+  });
+});
+
 describe("constellation", () => {
   it("stars are real records, weighted by what they came to mean", async () => {
     const res = await inject(s1, { method: "GET", url: "/constellation" });

@@ -209,6 +209,10 @@ export default function DebriefScreen() {
             <View style={styles.reply}>
               <Text style={theme.type.label}>Today's evolution</Text>
               <Text style={[theme.type.body, styles.replyText]}>{reply}</Text>
+              <Text style={[theme.type.dim, styles.goodnight]}>
+                That's the day, witnessed. Sleep well. Tomorrow starts from
+                here.
+              </Text>
             </View>
           )}
         </ScrollView>
@@ -283,4 +287,5 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   replyText: { marginTop: theme.spacing(1) },
+  goodnight: { marginTop: theme.spacing(2), fontStyle: "italic" },
 });

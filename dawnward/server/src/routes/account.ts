@@ -19,8 +19,10 @@ export function registerAccountRoutes(app: FastifyInstance) {
       challenge_opt_in: boolean;
       available_minutes_daily: number;
       touchpoints: Record<string, unknown>;
+      preferred_name: string | null;
     }>(
-      `select consent, challenge_opt_in, available_minutes_daily, touchpoints
+      `select consent, challenge_opt_in, available_minutes_daily, touchpoints,
+              preferred_name
          from users where id = $1`,
       [request.userId],
     );
@@ -33,6 +35,7 @@ export function registerAccountRoutes(app: FastifyInstance) {
       challengeOptIn: user?.challenge_opt_in ?? false,
       availableMinutesDaily: user?.available_minutes_daily ?? 90,
       touchpoints: user?.touchpoints ?? {},
+      preferredName: user?.preferred_name ?? null,
       onboardingComplete: Boolean(onboarding?.completed_at),
     };
   });
@@ -41,6 +44,7 @@ export function registerAccountRoutes(app: FastifyInstance) {
     const body = z
       .object({
         challengeOptIn: z.boolean().optional(),
+        preferredName: z.string().trim().max(40).nullable().optional(),
         availableMinutesDaily: z.number().int().min(15).max(600).optional(),
         touchpoints: z
           .object({
@@ -55,6 +59,13 @@ export function registerAccountRoutes(app: FastifyInstance) {
       await query("update users set challenge_opt_in = $2 where id = $1", [
         request.userId,
         body.challengeOptIn,
+      ]);
+    }
+    if (body.preferredName !== undefined) {
+      // Empty string clears, same as null: no one is forced to be named.
+      await query("update users set preferred_name = $2 where id = $1", [
+        request.userId,
+        body.preferredName || null,
       ]);
     }
     if (body.availableMinutesDaily !== undefined) {
@@ -98,6 +109,26 @@ export function registerAccountRoutes(app: FastifyInstance) {
       ],
     );
     return { ok: true };
+  });
+
+  /**
+   * The Future Self, re-readable. Onboarding synthesis writes this once and
+   * people deserve to return to it — especially on the days it feels far.
+   */
+  app.get("/future-self", { preHandler: requireAuth }, async (request, reply) => {
+    const [row] = await query<{
+      horizon_year: number;
+      narrative: { domains?: Record<string, string> };
+    }>(
+      `select horizon_year, narrative from future_selves
+        where user_id = $1 order by created_at desc limit 1`,
+      [request.userId],
+    );
+    if (!row) return reply.code(404).send({ error: "not written yet" });
+    return {
+      horizonYear: row.horizon_year,
+      domains: row.narrative?.domains ?? {},
+    };
   });
 
   /** Complete, self-serve export (spec 04 §5): everything, with provenance. */

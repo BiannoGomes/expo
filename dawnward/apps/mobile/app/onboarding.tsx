@@ -18,9 +18,10 @@ import {
   fetchOnboarding,
   giveConsent,
   sendOnboardingMessage,
+  updateMe,
   type OnboardingState,
 } from "@/lib/api";
-import { theme } from "@/lib/theme";
+import { fonts, theme } from "@/lib/theme";
 import { LivingSky, skyModeForNow } from "@/lib/sky";
 
 interface Bubble {
@@ -32,11 +33,17 @@ interface Bubble {
 /** Unbundled Article-9 consent (spec 04 §3) — the door into the story. */
 function ConsentStep({ onDone }: { onDone: (challenge: boolean) => void }) {
   const [challenge, setChallenge] = useState(false);
+  const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
   async function begin() {
     setSaving(true);
     try {
       await giveConsent(true, challenge);
+      const trimmed = name.trim().slice(0, 40);
+      if (trimmed) {
+        // A missing name never blocks the door; it can be set later too.
+        await updateMe({ preferredName: trimmed }).catch(() => {});
+      }
       onDone(challenge);
     } catch {
       setSaving(false);
@@ -59,6 +66,18 @@ function ConsentStep({ onDone }: { onDone: (challenge: boolean) => void }) {
         to share, including sensitive things, for one purpose only: building
         your own Personal Model. You can withdraw this any time in Settings.
       </Text>
+      <View style={consentStyles.nameBlock}>
+        <Text style={theme.type.body}>And what should I call you?</Text>
+        <TextInput
+          style={consentStyles.nameInput}
+          value={name}
+          onChangeText={setName}
+          placeholder="Your name, or skip this"
+          placeholderTextColor={theme.colors.faint}
+          autoCapitalize="words"
+          autoComplete="name"
+        />
+      </View>
       <View style={consentStyles.optRow}>
         <View style={{ flex: 1, paddingRight: 16 }}>
           <Text style={theme.type.body}>May I challenge you?</Text>
@@ -336,6 +355,18 @@ const consentStyles = StyleSheet.create({
   wrap: { padding: theme.spacing(3), gap: theme.spacing(2) },
   title: { marginBottom: theme.spacing(0.5) },
   legal: { fontStyle: "italic" },
+  nameBlock: { gap: theme.spacing(1) },
+  nameInput: {
+    fontFamily: fonts.body,
+    fontSize: 16,
+    color: theme.colors.ink,
+    backgroundColor: theme.colors.raised,
+    borderColor: theme.colors.line,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 10,
+    paddingHorizontal: theme.spacing(1.5),
+    paddingVertical: theme.spacing(1.25),
+  },
   optRow: {
     flexDirection: "row",
     alignItems: "center",

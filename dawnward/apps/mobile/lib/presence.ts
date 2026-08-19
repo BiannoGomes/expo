@@ -8,14 +8,20 @@ import type { Me } from "@/lib/api";
  * nothing about the user leaves the device to make them happen.
  */
 
-const MORNING = {
-  title: "Good morning.",
-  body: "Your plan is ready when you are.",
-};
-const EVENING = {
-  title: "How was today?",
-  body: "When you're ready, tell me about it.",
-};
+function morningContent(name?: string | null) {
+  return {
+    title: name ? `Good morning, ${name}.` : "Good morning.",
+    body: "Your plan is ready when you are.",
+  };
+}
+function eveningContent(name?: string | null) {
+  return {
+    title: "How was today?",
+    body: name
+      ? `When you're ready, ${name}, tell me about it.`
+      : "When you're ready, tell me about it.",
+  };
+}
 
 function parseTime(value: string): { hour: number; minute: number } | null {
   const m = value.match(/^(\d{2}):(\d{2})$/);
@@ -31,7 +37,7 @@ function parseTime(value: string): { hour: number; minute: number } | null {
  */
 export async function syncPresence(
   touchpoints: Me["touchpoints"],
-  { ask = false }: { ask?: boolean } = {},
+  { ask = false, name }: { ask?: boolean; name?: string | null } = {},
 ): Promise<void> {
   if (Platform.OS === "web") return;
 
@@ -64,13 +70,13 @@ export async function syncPresence(
 
   if (morning) {
     await Notifications.scheduleNotificationAsync({
-      content: MORNING,
+      content: morningContent(name),
       trigger: daily(morning.hour, morning.minute),
     });
   }
   if (evening) {
     await Notifications.scheduleNotificationAsync({
-      content: EVENING,
+      content: eveningContent(name),
       trigger: daily(evening.hour, evening.minute),
     });
   }

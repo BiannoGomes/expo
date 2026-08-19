@@ -86,6 +86,7 @@ export interface Me {
   challengeOptIn: boolean;
   availableMinutesDaily: number;
   touchpoints: { morning: string; evening: string; weeklyDigest: boolean };
+  preferredName: string | null;
   onboardingComplete: boolean;
 }
 
@@ -108,6 +109,7 @@ export async function giveConsent(
 
 export async function updateMe(patch: {
   challengeOptIn?: boolean;
+  preferredName?: string | null;
   availableMinutesDaily?: number;
   touchpoints?: Me["touchpoints"];
 }): Promise<void> {
@@ -297,6 +299,20 @@ export async function fetchEvents(): Promise<ModelEvent[]> {
 export async function markEventSeen(eventId: string): Promise<void> {
   const res = await api(`/events/${eventId}/seen`, { method: "POST" });
   if (!res.ok) throw new Error(`mark seen failed: ${res.status}`);
+}
+
+// ---------- Future Self (written once at onboarding, re-readable forever) ----------
+
+export interface FutureSelfView {
+  horizonYear: number;
+  domains: Record<string, string>;
+}
+
+export async function fetchFutureSelf(): Promise<FutureSelfView | null> {
+  const res = await api("/future-self");
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`future self fetch failed: ${res.status}`);
+  return res.json();
 }
 
 // ---------- Constellation (milestone screens only) ----------

@@ -230,7 +230,9 @@ export default function TodayScreen() {
 
     if (current !== "unreachable") {
       // Keep the two daily touchpoints in step with settings; never prompts here.
-      syncPresence(current.touchpoints).catch(() => {});
+      syncPresence(current.touchpoints, { name: current.preferredName }).catch(
+        () => {},
+      );
     }
 
     try {
@@ -282,6 +284,9 @@ export default function TodayScreen() {
   const promotion = events.find((e) => e.kind === "promotion");
   const weeklyReview = events.find((e) => e.kind === "weekly_review");
   const notOnboarded = me !== "loading" && me !== "unreachable" && !me.onboardingComplete;
+  const name =
+    me !== "loading" && me !== "unreachable" ? me.preferredName : null;
+  const greeting = name ? `${greetingForNow()}, ${name}` : greetingForNow();
 
   return (
     <View style={styles.root}>
@@ -303,14 +308,14 @@ export default function TodayScreen() {
             <>
               {plan?.reentryGapDays === undefined ? (
                 <>
-                  <Text style={theme.type.label}>{greetingForNow()}</Text>
+                  <Text style={theme.type.label}>{greeting}</Text>
                   <Text style={[theme.type.title, styles.title]}>
                     Your evolution today
                   </Text>
                 </>
               ) : (
                 <View style={styles.reentryHero}>
-                  <Text style={theme.type.label}>{greetingForNow()}</Text>
+                  <Text style={theme.type.label}>{greeting}</Text>
                   <Text style={[theme.type.title, styles.title]}>Welcome back</Text>
                   <Text style={[theme.type.body, styles.reentryBody]}>
                     Nothing is broken. Your campaign kept your seat warm, and it

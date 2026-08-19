@@ -60,6 +60,32 @@ function TimeField({
   );
 }
 
+function NameField({
+  value,
+  onCommit,
+}: {
+  value: string;
+  onCommit: (v: string) => void;
+}) {
+  const [draft, setDraft] = useState(value);
+  useEffect(() => setDraft(value), [value]);
+  return (
+    <TextInput
+      style={styles.nameInput}
+      value={draft}
+      onChangeText={setDraft}
+      onEndEditing={() => {
+        const trimmed = draft.trim().slice(0, 40);
+        if (trimmed !== value) onCommit(trimmed);
+      }}
+      placeholder="Your name"
+      placeholderTextColor={theme.colors.faint}
+      autoCapitalize="words"
+      autoComplete="name"
+    />
+  );
+}
+
 export default function SettingsScreen() {
   const [me, setMe] = useState<Me | null>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -77,7 +103,10 @@ export default function SettingsScreen() {
       await updateMe(patch);
       if (patch.touchpoints) {
         // The user is actively choosing their times, so asking is welcome here.
-        syncPresence(patch.touchpoints, { ask: true }).catch(() => {});
+        syncPresence(patch.touchpoints, {
+          ask: true,
+          name: me?.preferredName,
+        }).catch(() => {});
       }
     } catch {
       setStatus("That change didn't reach the server. It will catch up next time.");
@@ -126,6 +155,23 @@ export default function SettingsScreen() {
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={theme.type.label}>Settings</Text>
           <Text style={[theme.type.title, styles.title]}>The quiet controls</Text>
+
+          <View style={styles.card}>
+            <Text style={theme.type.label}>Your name</Text>
+            <Text style={[theme.type.dim, styles.cardNote]}>
+              What should I call you? First name, nickname, anything you like.
+              Leave it empty and I simply won't use one.
+            </Text>
+            <NameField
+              value={me?.preferredName ?? ""}
+              onCommit={(preferredName) =>
+                save(
+                  { preferredName: preferredName || null },
+                  { preferredName: preferredName || null },
+                )
+              }
+            />
+          </View>
 
           <View style={styles.card}>
             <Text style={theme.type.label}>Presence</Text>
@@ -251,6 +297,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  nameInput: {
+    fontFamily: fonts.body,
+    fontSize: 16,
+    color: theme.colors.ink,
+    backgroundColor: theme.colors.raised,
+    borderColor: theme.colors.line,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 10,
+    paddingHorizontal: theme.spacing(1.5),
+    paddingVertical: theme.spacing(1),
   },
   timeInput: {
     fontFamily: fonts.labelMedium,
