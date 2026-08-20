@@ -127,6 +127,96 @@ found them), the app keeps the audience, the backend offers monetize the trust.
 
 ---
 
+## 5b. The expert layers most solo operators never learn
+
+This is the "hidden knowledge" — not secrets, but hard-won craft that rarely gets taught
+in one place. Each one plugs a specific gap in v1 of this blueprint.
+
+**Unit economics — the language of scale.** Four numbers run everything: CAC (cost to
+acquire a customer), LTV (lifetime value), payback period, contribution margin.
+Break-even ROAS = 1 ÷ margin. Example: if a R250 paperback nets you R70 after Amazon's
+cut and printing, a R70 CAC is break-even on book one — but if 40% of readers buy book
+two, your true LTV is far higher and you can outbid every competitor who only counts the
+first sale. **Whoever can profitably spend the most to acquire a customer wins — and that
+is decided by LTV math, not ad skill.** The weekly scoreboard must report these four.
+
+**Series read-through — indie publishing's hidden lever.** Book 1 is allowed to break
+even or even lose money; the profit lives in read-through. Track the Book 1 → Book 2
+conversion rate obsessively. Moving it from 30% to 50% changes how much you can spend on
+every ad. A R19 (or free) first-in-series is a strategy, not a discount — it buys readers
+whose next purchases are pure margin.
+
+**Stages of awareness (Eugene Schwartz, 1966 — still the copy bible).** Every prospect is
+at one of five stages: unaware → problem-aware → solution-aware → product-aware →
+most-aware. Each stage needs a different message. Viral top-of-funnel content speaks to
+problem-aware people ("why do mornings feel like this?"); retargeting and email speak to
+product-aware people ("here's what's inside DAWNWARD"). Most brands blast one message at
+everyone — that mismatch, not the creative quality, is usually why ads fail.
+
+**Retention science for DAWNWARD.** Acquisition is rented; retention is owned. Median
+app retention is roughly 25% day-1, 10% day-7, 5% day-30 — habit apps must beat that
+badly. Build the Hook Model loop deliberately: trigger (push notification at the user's
+chosen dawn hour) → action (one small ritual) → variable reward → investment (streaks,
+saved reflections that make leaving costly). A 5% retention improvement compounds harder
+than any ad campaign ever will.
+
+**Positioning (April Dunford's rule).** Don't be a *better* self-help product; be a
+*different thing*. "The mind system built at sea" is a category of one — nobody can
+out-position lived experience. Positioning sets your CAC before a single ad runs, because
+it decides whether you compete on price or on story.
+
+**Pricing psychology.** Anchor high (show the bundle first), use a decoy tier, and have
+the courage to raise prices — doubling a price and losing a third of your buyers still
+increases profit while attracting more committed customers. Cheap prices attract the
+most demanding, least loyal buyers; premium prices fund the ads that find the next reader.
+
+**1,000 true fans math (Kevin Kelly).** You don't need millions of people. 1,000 true
+fans × R1,000/year = R1M/year. The engine's real job is finding and deepening those
+1,000 relationships — reach is a means, never the metric.
+
+**Attention arbitrage.** Platforms over-reward new formats and features for their first
+6–18 months (they need creators to adopt them). Being early to a format is the closest
+thing to legally underpriced attention. Jarvis's morning briefing should flag these.
+
+**The weekly scoreboard — one metric per stage:**
+
+| Stage | Metric | The question it answers |
+|---|---|---|
+| Content | Hook rate + saves | Is the content stopping thumbs? |
+| Website | Email opt-in rate | Is the lead magnet working? |
+| Email | Click-through rate | Does the list trust us? |
+| Books | Sales + Book 1 → 2 read-through | Is the ladder working? |
+| App | Day-7 retention | Is DAWNWARD a habit? |
+| Backend | LTV / average order value | Is trust converting to revenue? |
+| Whole engine | CAC vs LTV, payback period | Can we afford to grow? |
+
+---
+
+## 5c. Testing discipline — where budgets go to die
+
+- **Don't kill ads on feelings.** Judge only after the platform's learning phase and a
+  meaningful sample (roughly 50 conversions per ad set); kill by cost-per-result vs your
+  break-even number, nothing else.
+- **One variable per test.** Hook OR audience OR offer — never two at once, or you learn nothing.
+- **Keep a test log in Notion.** The library of dead hooks is as valuable as the winners;
+  it stops you re-testing failures a year later.
+- **Watch creative fatigue.** Frequency creeping past ~3 with rising CPM means rotate
+  creative *before* performance decays, not after.
+
+---
+
+## 5d. The failure modes that kill eight-figure dreams
+
+1. **Shiny-object switching** before one funnel converges. The 30-day rollout exists to prevent this.
+2. **Launching to nobody.** Audience first, product second — this is why the email list is gap #1.
+3. **Scaling spend before the funnel converts.** Ads pour fuel; make sure there's a fire.
+4. **Ignoring churn and refund signals.** They are the earliest truth-tellers in the data.
+5. **Founder burnout.** You work at sea — energy is the real budget. `sea-mode` is a
+   strategy, not a compromise.
+6. **Fake urgency or fabricated proof.** Short-term lift, permanent brand death. Never.
+
+---
+
 ## 6. Safety rails (non-negotiable, per the Jarvis standard)
 
 - Hard budget caps set **at the platform level**, not just in prompts.
