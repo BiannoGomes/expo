@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bianno Gomes</title>
+<meta name="description" content="Bianno Gomes writes the UnifyMind books. Self-Mastery: the no-excuses system for discipline, focus, and confidence. The Invisible Ocean. The Sealed Codex.">
+<meta name="theme-color" content="#0B0A08">
+<meta property="og:title" content="Bianno Gomes">
+<meta property="og:description" content="A restless creator. Three books on self-mastery, consciousness, and what stays human.">
+<meta property="og:type" content="profile">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E%F0%9F%9C%82%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#0B0A08; --gold:#C9A13B; --gold-lt:#E8C56A; --bone:#E9E2D0; --dim:#8A8170;
+    --rule:rgba(233,226,208,.15);
+    --pad:clamp(20px, 5vw, 76px);
+    --serif:"EB Garamond",Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Times New Roman",serif;
+    --display:"Cinzel",Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+  body{background:var(--ground); color:var(--bone); font-family:var(--serif);
+    font-size:17px; line-height:1.75; -webkit-font-smoothing:antialiased; overflow-x:hidden}
+
+  #gl{position:fixed; inset:0; width:100%; height:100%; display:block; z-index:0}
+  .fallback{position:fixed; inset:0; z-index:0; display:none;
+    background:radial-gradient(115% 85% at 50% 42%, #2A2113 0%, #14110B 48%, #0B0A08 100%)}
+  body.no-gl .fallback{display:block}
+  .veil{position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 45%, rgba(11,10,8,0) 34%, rgba(11,10,8,.62) 100%)}
+  @media (max-width:780px){
+    .veil{background:
+      linear-gradient(rgba(11,10,8,.46), rgba(11,10,8,.46)),
+      radial-gradient(120% 90% at 50% 45%, rgba(11,10,8,0) 30%, rgba(11,10,8,.72) 100%)}
+  }
+  main{position:relative; z-index:2}
+
+  .caps{font-size:11px; letter-spacing:.34em; text-transform:uppercase; color:var(--gold)}
+  h1,h2,h3,.mark,.role,.cover .ct,.pairs .a,.pairs .b,.buy,.tk{font-family:var(--display)}
+  h1{line-height:1.02}
+  h1{font-size:clamp(44px,7vw,104px); line-height:.94; font-weight:400; letter-spacing:.01em; text-transform:uppercase}
+  h2{font-size:clamp(27px,4.2vw,48px); line-height:1.1; font-weight:400; letter-spacing:.02em; text-transform:uppercase}
+  h3{font-size:clamp(19px,2.3vw,26px); font-weight:400; letter-spacing:.03em}
+  .lede{font-size:clamp(19px,2.1vw,24px); line-height:1.6; color:var(--bone)}
+  p{max-width:60ch; color:var(--dim)}
+  p strong{color:var(--bone); font-weight:400}
+  em{color:var(--gold-lt); font-style:italic}
+
+  section{padding:clamp(92px,14vh,180px) var(--pad); position:relative}
+  section[id]{scroll-margin-top:104px}
+  .wrap{max-width:1180px; margin:0 auto}
+  .solid{background:linear-gradient(180deg, rgba(11,10,8,.80) 0%, rgba(11,10,8,.965) 12%,
+    rgba(11,10,8,.965) 88%, rgba(11,10,8,.82) 100%)}
+  .head{margin-bottom:clamp(40px,6vh,68px)}
+  .head .caps{display:block; margin-bottom:20px}
+
+  header{position:fixed; top:0; left:0; right:0; z-index:5; display:flex;
+    justify-content:space-between; align-items:center; padding:20px var(--pad);
+    background:linear-gradient(180deg, rgba(11,10,8,.88), rgba(11,10,8,0))}
+  header .mark{font-size:13px; letter-spacing:.36em; text-transform:uppercase}
+  header nav{display:flex; gap:24px; align-items:center}
+  header nav a{font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--dim); text-decoration:none; transition:color .25s}
+  header nav a:hover, header nav a:focus-visible{color:var(--gold-lt)}
+  @media (max-width:780px){ header nav a:not(.buy){display:none} }
+
+  .hero{min-height:100svh; display:flex; flex-direction:column; justify-content:center; padding-top:118px}
+  .hero .wrap{max-width:620px; margin-left:0}
+  @media (max-width:900px){ .hero .wrap{max-width:none} }
+  .hero h1{margin:24px 0 30px}
+  .scrollcue{position:absolute; bottom:36px; left:var(--pad); font-size:10px;
+    letter-spacing:.28em; text-transform:uppercase; color:var(--dim); display:flex; align-items:center; gap:12px}
+  .scrollcue::after{content:""; width:52px; height:1px; background:var(--rule)}
+
+  /* grain: still cinema */
+  .grain{position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.4;
+    background-image:radial-gradient(rgba(255,255,255,.05) .5px, transparent .5px);
+    background-size:3px 3px; mix-blend-mode:overlay}
+
+  /* progress rail */
+  .rail{position:fixed; left:calc(var(--pad)*.45); top:50%; transform:translateY(-50%);
+    width:1px; height:38vh; background:var(--rule); z-index:4}
+  .rail i{display:block; width:100%; height:0%;
+    background:linear-gradient(var(--gold-lt), var(--gold))}
+  @media (max-width:900px){ .rail{display:none} }
+
+  /* hero letter reveal */
+  .hero h1 .w{display:inline-block; white-space:nowrap}
+  .hero h1 .lt{display:inline-block; opacity:0;
+    transform:translateY(.55em) rotate(3deg);
+    animation:ltin .8s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes ltin{to{opacity:1; transform:none}}
+  @media (prefers-reduced-motion:reduce){ .hero h1 .lt{animation:none; opacity:1; transform:none} }
+
+  /* kinetic ticker: the eight pillars in outline, forever passing */
+  .ticker{display:flex; overflow:hidden; padding:clamp(18px,3vh,30px) 0;
+    border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+    position:relative; z-index:2; background:rgba(11,10,8,.55)}
+  .tk{flex:none; white-space:nowrap; animation:tick 42s linear infinite;
+    font-size:clamp(20px,3.2vw,36px); letter-spacing:.16em; text-transform:uppercase;
+    color:transparent; -webkit-text-stroke:1px rgba(201,161,59,.55); padding-right:.5em}
+  @keyframes tick{to{transform:translateX(-100%)}}
+  @media (prefers-reduced-motion:reduce){ .tk{animation:none; color:var(--dim);
+    -webkit-text-stroke:0} .tk + .tk{display:none} }
+
+  /* wipe reveal on section titles */
+  .head h2.rise{clip-path:inset(0 0 102% 0)}
+  .head h2.rise.in{clip-path:inset(-8% 0 -10% 0);
+    transition:opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1), clip-path 1s cubic-bezier(.2,.8,.2,1)}
+  @media (prefers-reduced-motion:reduce){ .head h2.rise{clip-path:none} }
+
+  /* buy shimmer */
+  .buy{position:relative; overflow:hidden}
+  .buy::after{content:""; position:absolute; inset:0;
+    background:linear-gradient(110deg, transparent 32%, rgba(232,197,106,.32) 50%, transparent 68%);
+    transform:translateX(-130%); transition:transform .7s ease}
+  .buy:hover::after, .buy:focus-visible::after{transform:translateX(130%)}
+
+  /* through-line */
+  .thread .wrap{max-width:760px}
+  .thread .big{font-size:clamp(24px,3.4vw,40px); line-height:1.32; color:var(--bone); max-width:22ch}
+  .thread .big span{color:var(--dim)}
+
+  /* the many lives */
+  .lives{border-top:1px solid var(--rule)}
+  .life{display:grid; grid-template-columns:56px minmax(0,190px) minmax(0,1fr);
+    gap:clamp(14px,3vw,40px); align-items:baseline; width:100%; text-align:left;
+    background:none; border:0; border-bottom:1px solid var(--rule);
+    padding:clamp(20px,3vh,32px) 0; cursor:pointer; color:inherit;
+    font-family:var(--serif); transition:padding-left .5s cubic-bezier(.2,.8,.2,1)}
+  .life:hover, .life:focus-visible{padding-left:14px; outline:none}
+  .life .n{font-size:10px; letter-spacing:.2em; color:var(--gold)}
+  .life .role{font-size:clamp(21px,2.7vw,32px); text-transform:uppercase; letter-spacing:.03em;
+    color:var(--dim); transition:color .35s}
+  .life:hover .role, .life:focus-visible .role, .life[data-on="1"] .role{color:var(--bone)}
+  .life .said{font-size:15px; line-height:1.7; color:var(--dim); max-width:52ch}
+  @media (max-width:820px){
+    .life{grid-template-columns:44px 1fr; row-gap:8px}
+    .life .said{grid-column:2}
+  }
+  .lives .after{margin-top:36px; font-size:clamp(18px,2vw,22px); color:var(--bone); max-width:40ch}
+
+  /* the record */
+  .rec{list-style:none; border-top:1px solid var(--rule)}
+  .rec li{display:grid; grid-template-columns:minmax(0,260px) minmax(0,1fr); gap:clamp(14px,3vw,40px);
+    padding:22px 0; border-bottom:1px solid var(--rule); align-items:baseline}
+  .rec .org{color:var(--bone); font-size:clamp(17px,1.9vw,21px); letter-spacing:.02em}
+  .rec .what{color:var(--dim); font-size:15px; line-height:1.7}
+  @media (max-width:720px){ .rec li{grid-template-columns:1fr; gap:6px} }
+
+  /* books */
+  .books-head{display:flex; justify-content:space-between; align-items:flex-end; gap:30px;
+    flex-wrap:wrap; margin-bottom:52px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(268px,1fr)); gap:clamp(24px,3.4vw,44px)}
+  .book{display:flex; flex-direction:column}
+  .cover{aspect-ratio:1600/2560; position:relative; overflow:hidden;
+    background:radial-gradient(120% 80% at 50% 0%, rgba(201,161,59,.16), transparent 62%),
+      linear-gradient(170deg,#17140D,#0C0B07);
+    border:1px solid rgba(201,161,59,.34); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; padding:34px 26px; text-align:center; gap:18px;
+    transition:transform .22s ease-out, border-color .45s; will-change:transform}
+  .cover img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+  .book:hover .cover{transform:translateY(-8px); border-color:var(--gold)}
+  .cover .frame{position:absolute; inset:14px; border:1px solid rgba(201,161,59,.30); pointer-events:none}
+  .cover .frame::after{content:""; position:absolute; inset:5px; border:1px solid rgba(201,161,59,.14)}
+  .cover .num{position:absolute; top:30px; left:0; right:0; text-align:center;
+    font-size:10px; letter-spacing:.42em; color:var(--gold); text-indent:.42em}
+  .cover .orn{width:clamp(70px,26%,104px); height:auto; opacity:.62; margin-bottom:4px}
+  .cover .orn path{fill:none; stroke:var(--gold); stroke-width:.9; stroke-linecap:round;
+    vector-effect:non-scaling-stroke}
+  .cover .ct{font-size:clamp(19px,2.2vw,26px); line-height:1.16; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--bone); text-wrap:balance}
+  .cover .cd{width:30px; height:1px; background:var(--gold); opacity:.75}
+  .cover .ca{font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold-lt)}
+  .cover .cs{position:absolute; bottom:30px; left:0; right:0; text-align:center;
+    font-size:9px; letter-spacing:.32em; text-transform:uppercase; color:var(--dim); text-indent:.32em}
+  .book:hover .cover .orn{opacity:.9; transition:opacity .5s}
+  .book h3{margin:20px 0 6px}
+  .book .pages{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim)}
+  .book .blurb{font-size:15px; line-height:1.66; margin:13px 0 16px; color:var(--dim)}
+  .formats{list-style:none; margin-top:auto; border-top:1px solid var(--rule)}
+  .formats li{display:flex; justify-content:space-between; gap:12px; padding:11px 0;
+    border-bottom:1px solid var(--rule); font-size:12px; letter-spacing:.14em; text-transform:uppercase}
+  .formats .fm{color:var(--dim)} .formats .pr{color:var(--bone)}
+  .buy{display:inline-flex; align-items:center; justify-content:center; margin-top:20px;
+    padding:14px 22px; border:1px solid var(--gold); color:var(--gold-lt);
+    font-size:11px; letter-spacing:.24em; text-transform:uppercase; text-decoration:none;
+    transition:background .3s, color .3s}
+  .buy:hover, .buy:focus-visible{background:var(--gold); color:#0B0A08}
+  header .buy{margin-top:0; padding:9px 16px; font-size:10px}
+
+  /* hooks */
+  .hooks .wrap{max-width:900px}
+  .hooklist{list-style:none; margin:clamp(34px,5vh,54px) 0 6px; border-top:1px solid var(--rule)}
+  .hooklist li{padding:clamp(17px,2.6vh,26px) 0 clamp(17px,2.6vh,26px) 30px;
+    border-bottom:1px solid var(--rule);
+    font-size:clamp(17px,2vw,23px); line-height:1.5; color:var(--bone);
+    position:relative}
+  .hooklist li span{display:block; max-width:46ch}
+  .hooklist li::before{content:""; position:absolute; left:0; top:calc(clamp(17px,2.6vh,26px) + .62em);
+    width:14px; height:1px; background:var(--gold)}
+  .hooks .buy{margin-top:34px}
+
+  /* codex */
+  .keys{list-style:none; display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
+    gap:clamp(24px,3.2vw,44px)}
+  .keys li{border-top:1px solid var(--rule); padding-top:20px}
+  .keys .kn{font-size:10px; letter-spacing:.28em; color:var(--gold); display:block; margin-bottom:11px}
+  .keys h3{color:var(--bone); margin-bottom:9px}
+  .keys p{font-size:15px; line-height:1.7}
+
+  .book .sub{font-size:13px; line-height:1.62; color:var(--dim); font-style:italic;
+    margin:0 0 16px; opacity:.88}
+  .nameline{margin-top:34px; color:var(--gold-lt); font-size:clamp(16px,1.8vw,20px);
+    letter-spacing:.05em; font-style:italic}
+
+  /* duality */
+  .duo{text-align:center}
+  .duo .wrap{max-width:900px}
+  .pairs{list-style:none; margin-top:clamp(34px,5vh,56px)}
+  .pairs li{display:grid; grid-template-columns:1fr auto 1fr; gap:clamp(14px,3vw,34px);
+    align-items:center; padding:clamp(15px,2.4vh,24px) 0; border-bottom:1px solid var(--rule)}
+  .pairs li:first-child{border-top:1px solid var(--rule)}
+  .pairs .a{text-align:right; color:var(--dim)}
+  .pairs .b{text-align:left; color:var(--bone)}
+  .pairs .a,.pairs .b{font-size:clamp(17px,2.3vw,27px); letter-spacing:.02em; text-transform:uppercase}
+  .pairs .amp{color:var(--gold); font-size:13px}
+  @media (max-width:640px){
+    .pairs li{grid-template-columns:1fr; gap:2px; text-align:center}
+    .pairs .a,.pairs .b{text-align:center}
+    .pairs .amp{font-size:11px}
+  }
+
+  /* values */
+  .vals{list-style:none; display:grid; grid-template-columns:repeat(auto-fit,minmax(238px,1fr));
+    gap:clamp(22px,3vw,40px)}
+  .vals li{border-top:1px solid var(--rule); padding-top:20px}
+  .vals h3{color:var(--bone); margin-bottom:9px}
+  .vals p{font-size:15px; line-height:1.7}
+
+  /* ocean + legacy */
+  .ocean .wrap, .legacy .wrap{max-width:820px}
+  .pull{font-size:clamp(21px,2.9vw,34px); line-height:1.4; color:var(--bone);
+    border-left:1px solid var(--gold); padding-left:clamp(20px,3vw,36px); margin:32px 0; max-width:32ch}
+  .ocean p + p, .legacy p + p{margin-top:20px}
+
+  /* contact */
+  .contact{text-align:center}
+  .contact p{margin:0 auto 32px}
+  .signup{display:flex; gap:10px; max-width:460px; margin:0 auto; flex-wrap:wrap}
+  .signup input{flex:1 1 220px; background:transparent; border:1px solid var(--rule);
+    color:var(--bone); padding:14px 16px; font-family:var(--serif); font-size:15px}
+  .signup input:focus{outline:none; border-color:var(--gold)}
+  .signup button{padding:14px 24px; background:var(--gold); border:1px solid var(--gold);
+    color:#0B0A08; font-family:var(--serif); font-size:11px; letter-spacing:.24em;
+    text-transform:uppercase; cursor:pointer}
+  .note{font-size:12px; color:var(--dim); margin-top:18px}
+
+  footer{padding:44px var(--pad); border-top:1px solid var(--rule); display:flex;
+    justify-content:space-between; gap:20px; flex-wrap:wrap; font-size:11px;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--dim);
+    position:relative; z-index:2; background:var(--ground)}
+
+  .rise{opacity:0; transform:translateY(24px);
+    transition:opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1)}
+  .rise.in{opacity:1; transform:none}
+  @media (prefers-reduced-motion:reduce){ .rise{opacity:1; transform:none; transition:none} }
+  :focus-visible{outline:2px solid var(--gold-lt); outline-offset:3px}
+  .vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%)}
+</style>
+</head>
+<body>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="fallback" aria-hidden="true"></div>
+<div class="veil" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="rail" aria-hidden="true"><i id="railBar"></i></div>
+
+<header>
+  <span class="mark">Bianno Gomes</span>
+  <nav>
+    <a href="#lives">Lives</a>
+    <a href="#record">Record</a>
+    <a href="#books">Books</a>
+    <a class="buy" href="#books">Read</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero" data-morph="0">
+    <div class="wrap">
+      <p class="caps rise">Creator · Author · Sailor</p>
+      <h1 class="rise">Bianno<br>Gomes</h1>
+      <p class="lede rise">I am building a life where freedom, adventure, consciousness,
+      creativity, love, and meaningful achievement stop competing and become
+      different expressions of the same thing.</p>
+    </div>
+    <p class="scrollcue">Scroll</p>
+  </section>
+
+  <section class="thread" data-morph="0">
+    <div class="wrap">
+      <p class="caps rise" style="margin-bottom:24px">The through-line</p>
+      <p class="big rise">Not one career. Not one country.
+      <span>The thread is curiosity, creation, freedom, and self-mastery.</span></p>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="tk"></div><div class="tk"></div>
+  </div>
+
+  <section class="lives solid" id="lives" data-morph="1">
+    <div class="wrap">
+      <div class="head">
+        <p class="caps rise">The many lives</p>
+        <h2 class="rise">Several lives inside one life</h2>
+      </div>
+      <div id="lifeList"></div>
+      <p class="after rise">That is not indecision. It is someone still expanding
+      his own perimeter.</p>
+    </div>
+  </section>
+
+  <section class="record solid" id="record" data-morph="3">
+    <div class="wrap">
+      <div class="head">
+        <p class="caps rise">The record</p>
+        <h2 class="rise">Where the hours went</h2>
+      </div>
+      <ul class="rec" id="recList"></ul>
+    </div>
+  </section>
+
+  <section class="ocean" data-morph="2">
+    <div class="wrap">
+      <p class="caps rise" style="margin-bottom:22px">The inner work</p>
+      <h2 class="rise" style="margin-bottom:28px">The invisible ocean</h2>
+      <p class="rise">Beneath ordinary perception there is an enormous internal world
+      that most people never learn to navigate. Intuition, attention, and the strange
+      relationship between what we consciously know and what we somehow feel.</p>
+      <p class="pull rise">The question is not what I can believe. It is what is actually
+      possible for human consciousness, and how much of ourselves we have never learned
+      to reach.</p>
+      <p class="rise">That question sits underneath everything I make.</p>
+    </div>
+  </section>
+
+  <section class="books solid" id="books" data-morph="1">
+    <div class="wrap">
+      <div class="books-head">
+        <div>
+          <p class="caps rise" style="margin-bottom:18px">The books</p>
+          <h2 class="rise">Three volumes</h2>
+        </div>
+        <p class="rise" style="max-width:36ch">Three volumes of the UnifyMind series.
+        Each in ebook, paperback, and hardcover, printed 6 by 9 inches on cream stock.
+        <strong>Start with Self-Mastery.</strong></p>
+      </div>
+      <div class="grid" id="bookGrid"></div>
+    </div>
+  </section>
+
+  <section class="hooks" data-morph="3">
+    <div class="wrap">
+      <p class="caps rise" style="margin-bottom:22px">From Self-Mastery</p>
+      <h2 class="rise">Two versions of you<br>woke up this morning</h2>
+      <p class="lede rise" style="margin-top:22px">Only one of them reads this book.</p>
+      <ul class="hooklist" id="hookList"></ul>
+      <a class="buy rise" id="hookBuy" href="#books">Get Self-Mastery</a>
+    </div>
+  </section>
+
+  <section class="codex solid" data-morph="1">
+    <div class="wrap">
+      <div class="head">
+        <p class="caps rise">From The Sealed Codex</p>
+        <h2 class="rise">Thirty-three keys</h2>
+      </div>
+      <ul class="keys" id="keyList"></ul>
+    </div>
+  </section>
+
+  <section class="duo" data-morph="4">
+    <div class="wrap">
+      <p class="caps rise" style="margin-bottom:22px">The duality</p>
+      <h2 class="rise" style="margin-bottom:22px">I refuse to choose</h2>
+      <p class="rise" style="margin:0 auto">One side of me thinks in funds, funnels, and
+      business models. The other asks what consciousness actually is. I want both.</p>
+      <ul class="pairs" id="pairList"></ul>
+    </div>
+  </section>
+
+  <section class="values solid" data-morph="0">
+    <div class="wrap">
+      <div class="head">
+        <p class="caps rise">What I value</p>
+        <h2 class="rise">The pillars</h2>
+      </div>
+      <ul class="vals" id="valList"></ul>
+    </div>
+  </section>
+
+  <section class="legacy" data-morph="4">
+    <div class="wrap">
+      <p class="caps rise" style="margin-bottom:22px">Legacy</p>
+      <h2 class="rise" style="margin-bottom:28px">Things meant to outlive the moment</h2>
+      <p class="rise">Books, art, songs, ideas, memories, tributes. I keep turning what
+      mattered into something that can be held later. Not fame. Legacy. Family is the
+      reason most of it exists.</p>
+      <p class="pull rise">What can I leave behind that proves I was here, that I loved
+      deeply, explored boldly, made something meaningful, and helped one person see the
+      world differently?</p>
+      <p class="nameline rise">Bianno. From the Latin: lively, alive.</p>
+    </div>
+  </section>
+
+  <section class="contact solid" id="contact" data-morph="2">
+    <div class="wrap">
+      <p class="caps rise" style="margin-bottom:20px">Stay close</p>
+      <h2 class="rise" style="margin-bottom:20px">New work, when it lands</h2>
+      <p class="rise">No schedule. No noise. A note when a book is finished.</p>
+      <form class="signup rise" id="signup" novalidate>
+        <label class="vh" for="email">Email address</label>
+        <input id="email" type="email" placeholder="your@email.com" autocomplete="email" required>
+        <button type="submit">Join</button>
+      </form>
+      <p class="note" id="signupNote">This form is not connected to a mailing provider yet.</p>
+    </div>
+  </section>
+
+</main>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Person",
+  "name":"Bianno Gomes",
+  "jobTitle":"Author",
+  "description":"Author of the UnifyMind books. Analyst, marketer, artist, sailor, writer.",
+  "knowsAbout":["Self-mastery","Consciousness","Intuition","Artificial intelligence","Creative technology"],
+  "author":[
+    {"@type":"Book","name":"Self-Mastery","numberOfPages":178,"author":{"@type":"Person","name":"Bianno Gomes"},
+     "description":"The no-excuses system to master discipline, focus, and confidence, written for ambitious young men.",
+     "bookFormat":"https://schema.org/Paperback","inLanguage":"en",
+     "offers":{"@type":"Offer","price":"16.99","priceCurrency":"USD","availability":"https://schema.org/InStock"}},
+    {"@type":"Book","name":"The Invisible Ocean","numberOfPages":179,"author":{"@type":"Person","name":"Bianno Gomes"},
+     "description":"On intuition, consciousness, and the world beneath ordinary perception.",
+     "bookFormat":"https://schema.org/Paperback","inLanguage":"en",
+     "offers":{"@type":"Offer","price":"16.99","priceCurrency":"USD","availability":"https://schema.org/InStock"}},
+    {"@type":"Book","name":"The Sealed Codex","numberOfPages":181,"author":{"@type":"Person","name":"Bianno Gomes"},
+     "description":"Thirty-three keys to the hidden architecture of language.",
+     "bookFormat":"https://schema.org/Paperback","inLanguage":"en",
+     "offers":{"@type":"Offer","price":"16.99","priceCurrency":"USD","availability":"https://schema.org/InStock"}}
+  ]
+}
+</script>
+
+<footer>
+  <span>&copy; <span id="yr"></span> Bianno Gomes</span>
+  <span id="skyNote" hidden>The light in this page follows your local sky</span>
+  <span>UnifyMind</span>
+</footer>
+
+<script>
+"use strict";
+
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ==================================================================
+ * CONTENT
+ * Books, page counts, and prices come from the UnifyMind production
+ * record. Everything biographical is supplied by Bianno. Nothing here
+ * is inferred or invented.
+ *
+ * TODO before launch: BOOKS[].url, BOOKS[].blurb, BOOKS[].cover.
+ * FAMILY is intentionally empty. Naming living people publicly is
+ * Bianno's decision, not a default.
+ * ================================================================== */
+
+const BOOKS = [
+  { title:"Self-Mastery", num:"I", pages:178, cover:"",
+    url:"https://tr.ee/geODrk1dTh",
+    sub:"The no-excuses system to master discipline, focus, and confidence, and build the life, body, and money most men only talk about.",
+    // From the Self-Mastery print flyer.
+    blurb:"Two versions of you woke up this morning. Only one of them reads this book.",
+    for:"For ambitious young men" },
+  { title:"The Invisible Ocean", num:"II", pages:179, cover:"",
+    url:"https://tr.ee/0mBkdE87wx",
+    sub:"On intuition, consciousness, and the world beneath ordinary perception.",
+    // DRAFT, from Bianno's own description of the book. Approve or replace.
+    blurb:"Beneath ordinary perception there is an enormous internal world that most people never learn to navigate." },
+  { title:"The Sealed Codex", num:"III", pages:181, cover:"", url:"",
+    sub:"Thirty-three keys to the hidden architecture of language.",
+    // From the 33 Codex Keys map.
+    blurb:"Word as seed. The spell of spelling. The forgotten tongue. How language shapes what becomes real." },
+];
+const PRICES = [["Ebook","$9.99"],["Paperback","$16.99"],["Hardcover","$24.99"]];
+
+const LIVES = [
+  ["Analyst",    2, "Private equity and venture capital. Funds, investors, research, and the machinery that decides which ideas get to exist."],
+  ["Marketer",   3, "Strategy, sales, and digital. Learning how an idea finds the people it was made for."],
+  ["Artist",     1, "BiannoArt. AI art, photography, landscapes, portraiture, and worlds that were never photographed because they were never there."],
+  ["Builder",    3, "AIGLE. Where artificial intelligence meets branding, and the question of what stays human."],
+  ["Sailor",     2, "STCW, Powerboat Level 2, ENG1. Not another job. A different way of living: ocean, mobility, responsibility, camaraderie."],
+  ["Adventurer", 0, "Trail running, hiking, surfing, camping. Lion's Head, Newlands Forest, Lambert's Bay. I do not want to know a thing exists. I want to stand in it."],
+  ["Writer",     1, "Three books, and the beginning of a body of work about consciousness and intuition."],
+];
+
+const RECORD = [
+  ["Moravia Capital",       "Junior Analyst. Private equity and venture capital: funds, investors, LP outreach, research, CRM, SEO, and business development."],
+  ["Climate Fund Managers", "Finance and climate-focused investment."],
+  ["Red and Yellow",        "Marketing Strategy. Sales and Account Management. Digital marketing."],
+  ["Maritime",              "STCW, Powerboat Level 2, ENG1. Qualified toward working internationally."],
+  ["BiannoArt",             "AI-generated art, photography, and digital collectibles."],
+  ["AIGLE",                 "Artificial intelligence, marketing, and branding. Remaining human in the time of AI."],
+];
+
+const PAIRS = [
+  ["The spreadsheet", "The sunset"],
+  ["The yacht", "The philosophy"],
+  ["The business", "The art"],
+  ["The algorithm", "The human being"],
+  ["The outer adventure", "The inner journey"],
+];
+
+const VALUES = [
+  ["Freedom",     "Geographic, financial, creative, and intellectual. A life not dictated by convention."],
+  ["Self-mastery","External success is not enough. The real work is the mind, the emotions, the habits, the intuition."],
+  ["Adventure",   "A life that contains stories worth remembering."],
+  ["Creation",    "I would rather make something than consume what somebody else made."],
+  ["Connection",  "Family, friendship, and love. Without them the achievements do not mean anything."],
+  ["Beauty",      "Music, photography, nature, food, landscapes. How a thing feels is not a secondary concern."],
+  ["Growth",      "Finance, marketing, AI, art, yachting, writing. Each one a wider perimeter."],
+  ["Humanity",    "I want the future. I want the soul to come with it."],
+];
+
+const HOOKS = [
+  "A wrestler carried the same animal every morning. Nobody who watched him understood what they were seeing.",
+  "A president was shot mid-speech. He kept talking for 84 minutes.",
+  "There is one place in your life where you cannot lie.",
+  "One chapter warns about the man this book could accidentally build.",
+  "The last page hands you ten minutes. What you do with them decides which version finishes the year.",
+];
+
+const CODEX = [
+  ["I",     "Word as Seed",        "Every word is a seed planted in the field of human consciousness."],
+  ["III",   "The Spell of Spelling","To spell is literally to cast a spell. Every letter is a shape of consciousness."],
+  ["V",     "Silence as Language", "What is not spoken often speaks louder."],
+  ["VII",   "Television",          "Tele-vision. Programming a vision from afar into your mind."],
+  ["XXXI",  "Etymological Fire",   "Words hold their root fires."],
+  ["XXXIII","The Logos",           "Speak as if the universe itself listens."],
+];
+
+const PORTRAIT = "";
+const FAMILY = [];   // add names here only if you want them public
+
+/* A logarithmic spiral, drawn rather than hand-authored as path data.
+   The series device: growth that keeps its shape at every scale. */
+function spiral(){
+  const pts = [];
+  for(let i = 0; i <= 260; i++){
+    const t = i * 0.075;
+    const r = 1.9 * Math.exp(0.163 * t);
+    pts.push([(60 + r * Math.cos(t)).toFixed(2), (60 + r * Math.sin(t)).toFixed(2)]);
+  }
+  return `<svg class="orn" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M${pts.map(p => p.join(",")).join("L")}"/></svg>`;
+}
+
+/* ---------- render ---------- */
+const el = (t, c, h) => { const n = document.createElement(t); if(c) n.className = c; if(h != null) n.innerHTML = h; return n; };
+
+const lifeList = document.getElementById("lifeList");
+LIVES.forEach(([role, shape, said], i) => {
+  const b = el("button", "life");
+  b.type = "button"; b.dataset.shape = shape;
+  b.innerHTML = `<span class="n">${String(i+1).padStart(2,"0")}</span>
+                 <span class="role">${role}</span><span class="said">${said}</span>`;
+  b.classList.add("rise"); b.style.transitionDelay = (i*70) + "ms";
+  lifeList.appendChild(b);
+});
+
+const recList = document.getElementById("recList");
+RECORD.forEach(([org, what], i) => {
+  const li = el("li", "rise", `<span class="org">${org}</span><span class="what">${what}</span>`);
+  li.style.transitionDelay = (i*60) + "ms";
+  recList.appendChild(li);
+});
+
+const pairList = document.getElementById("pairList");
+PAIRS.forEach(([a, b], i) => {
+  const li = el("li", "rise", `<span class="a">${a}</span><span class="amp">AND</span><span class="b">${b}</span>`);
+  li.style.transitionDelay = (i*70) + "ms";
+  pairList.appendChild(li);
+});
+
+const valList = document.getElementById("valList");
+VALUES.forEach(([name, line], i) => {
+  const li = el("li", "rise", `<h3>${name}</h3><p>${line}</p>`);
+  li.style.transitionDelay = (i*55) + "ms";
+  valList.appendChild(li);
+});
+
+const grid = document.getElementById("bookGrid");
+BOOKS.forEach((b, i) => {
+  const a = el("article", "book rise");
+  a.style.transitionDelay = (i*90) + "ms";
+  const cover = b.cover
+    ? `<div class="cover"><img src="${b.cover}" alt="Cover of ${b.title}"></div>`
+    : `<div class="cover">
+         <span class="frame"></span>
+         <span class="num">${b.num}</span>
+         ${spiral()}
+         <span class="ct">${b.title}</span>
+         <span class="cd"></span>
+         <span class="ca">Bianno Gomes</span>
+         <span class="cs">UnifyMind</span>
+       </div>`;
+  a.innerHTML = cover +
+    `<h3>${b.title}</h3>
+     <p class="pages">${b.pages} pages${b.for ? " · " + b.for : ""}</p>
+     <p class="blurb">${b.blurb || ""}</p>
+     ${b.sub ? `<p class="sub">${b.sub}</p>` : ""}
+     <ul class="formats">${PRICES.map(([f,p]) =>
+        `<li><span class="fm">${f}</span><span class="pr">${p}</span></li>`).join("")}</ul>
+     <a class="buy" href="${b.url || "#books"}"${b.url ? ' target="_blank" rel="noopener"' : ""}>
+       ${b.url ? "Get the book" : "Link pending"}</a>`;
+  grid.appendChild(a);
+});
+
+if(FAMILY.length){
+  const p = el("p", "rise", "For " + FAMILY.join(", ") + ".");
+  p.style.marginTop = "26px";
+  document.querySelector(".legacy .wrap").appendChild(p);
+}
+
+const hookList = document.getElementById("hookList");
+HOOKS.forEach((h, i) => {
+  const li = el("li", "rise", `<span>${h}</span>`);
+  li.style.transitionDelay = (i*80) + "ms";
+  hookList.appendChild(li);
+});
+document.getElementById("hookBuy").href = BOOKS[0].url || "#books";
+if(BOOKS[0].url){
+  const hb = document.getElementById("hookBuy");
+  hb.target = "_blank"; hb.rel = "noopener";
+}
+
+const keyList = document.getElementById("keyList");
+CODEX.forEach(([n, name, line], i) => {
+  const li = el("li", "rise", `<span class="kn">${n}</span><h3>${name}</h3><p>${line}</p>`);
+  li.style.transitionDelay = (i*60) + "ms";
+  keyList.appendChild(li);
+});
+
+/* hero letters rise in one by one */
+{
+  const h = document.querySelector(".hero h1");
+  if(!reduced && h){
+    const words = h.innerHTML.split(/<br\s*\/?\s*>/i).map(w => w.trim());
+    h.innerHTML = words.map((w, wi) =>
+      '<span class="w">' + [...w].map((ch, i) =>
+        `<span class="lt" style="animation-delay:${180 + wi*300 + i*55}ms">${ch}</span>`).join("") +
+      '</span>').join("<br>");
+  }
+}
+
+/* the ticker carries the eight pillars */
+{
+  const line = VALUES.map(v => v[0]).join(" \u00B7 ") + " \u00B7 ";
+  document.querySelectorAll(".tk").forEach(t => t.textContent = line.repeat(3));
+}
+
+/* progress rail */
+const railBar = document.getElementById("railBar");
+const setRail = () => {
+  const m = document.documentElement.scrollHeight - innerHeight;
+  railBar.style.height = (m > 0 ? (scrollY / m) * 100 : 0) + "%";
+};
+addEventListener("scroll", setRail, {passive:true});
+setRail();
+
+/* book covers tilt toward the pointer */
+if(matchMedia("(pointer: fine)").matches && !reduced){
+  document.querySelectorAll(".book").forEach(card => {
+    const cov = card.querySelector(".cover");
+    card.addEventListener("pointermove", (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - .5;
+      const y = (e.clientY - r.top)  / r.height - .5;
+      cov.style.transform =
+        `perspective(900px) rotateY(${(x*9).toFixed(2)}deg) rotateX(${(-y*8).toFixed(2)}deg) translateY(-6px)`;
+    });
+    card.addEventListener("pointerleave", () => { cov.style.transform = ""; });
+  });
+}
+
+document.getElementById("yr").textContent = new Date().getFullYear();
+
+document.getElementById("signup").addEventListener("submit", (e) => {
+  e.preventDefault();
+  document.getElementById("signupNote").textContent =
+    "Not connected yet. Connect a mailing provider to collect this address.";
+});
+
+const io = new IntersectionObserver((es) => {
+  es.forEach(e => { if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+}, { rootMargin:"0px 0px -10% 0px", threshold:.05 });
+document.querySelectorAll(".rise").forEach(n => reduced ? n.classList.add("in") : io.observe(n));
+
+const canvas = document.getElementById("gl");
+const gl = canvas.getContext("webgl2", {
+  antialias:false, alpha:false, depth:false, stencil:false, powerPreference:"high-performance",
+});
+
+const COMMON = `
+#define NS 5
+uniform float uTime, uMorph, uShift, uSpin;
+
+float h1f(float p){ p=fract(p*.1031); p*=p+33.33; p*=p+p; return fract(p); }
+vec3  h3(vec3 p){
+  p = vec3(dot(p,vec3(127.1,311.7,74.7)), dot(p,vec3(269.5,183.3,246.1)), dot(p,vec3(113.5,271.9,124.6)));
+  return fract(sin(p)*43758.5453123);
+}
+float vh(vec3 p){ return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453123); }
+float vnoise(vec3 p){
+  vec3 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+  return mix(mix(mix(vh(i+vec3(0,0,0)),vh(i+vec3(1,0,0)),f.x), mix(vh(i+vec3(0,1,0)),vh(i+vec3(1,1,0)),f.x),f.y),
+             mix(mix(vh(i+vec3(0,0,1)),vh(i+vec3(1,0,1)),f.x), mix(vh(i+vec3(0,1,1)),vh(i+vec3(1,1,1)),f.x),f.y),f.z);
+}
+float fbm(vec3 p){ float a=.5,s=0.; for(int i=0;i<3;i++){ s+=a*vnoise(p); p*=2.03; a*=.5; } return s; }
+mat2 r2(float a){ float c=cos(a),s=sin(a); return mat2(c,-s,s,c); }
+vec3 warp(vec3 p){ p.xz*=r2(uSpin); p.xy*=r2(sin(uTime*.13)*.11); return p; }
+
+float sdSphere(vec3 p,float r){ return length(p)-r; }
+float sdTorus(vec3 p,vec2 t){ vec2 q=vec2(length(p.xz)-t.x,p.y); return length(q)-t.y; }
+float sdBox(vec3 p,vec3 b){ vec3 q=abs(p)-b; return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.); }
+float sdOcta(vec3 p,float s){ p=abs(p); return (p.x+p.y+p.z-s)*.5773503; }
+float gyroid(vec3 p,float sc,float th){ p*=sc; return (abs(dot(sin(p),cos(p.zxy)))-th)/sc; }
+
+// I Cape Town (mountain) · II drawing trance (lattice) · III the sea (swell)
+// IV Matroosberg (canyon crystal) · V Mediterranean (sun ring)
+float shape(int i, vec3 p){
+  if(i==0) return sdOcta(p,1.46);
+  if(i==1) return max(sdSphere(p,1.22), gyroid(p,4.4,.60));
+  if(i==2){
+    float w = .20*sin(2.2*p.x+uTime*.7)*sin(2.6*p.y+uTime*.4)*sin(2.0*p.z+uTime*.25);
+    return sdSphere(p,1.04)+w;
+  }
+  if(i==3) return sdBox(p,vec3(.78))-.13;
+  { vec3 q=p; q.yz*=r2(.62); q.xy*=r2(.16); return sdTorus(q,vec2(1.00,.33)); }
+}
+float mapLite(vec3 p){
+  p = warp(p);
+  float m = mod(uMorph, float(NS));
+  float f = fract(m);
+  int a = int(floor(m));
+  int b = int(mod(floor(m)+1., float(NS)));
+  float t = f*f*(3.-2.*f);
+  return mix(shape(a,p), shape(b,p), t);
+}
+float map(vec3 p){
+  float d = mapLite(p);
+  d += uShift * .42 * (fbm(warp(p)*2.2 + uTime*.35) - .5);
+  d -= .02*sin(uTime*.5);
+  return d*.78;
+}
+`;
+
+const VERT_QUAD = `#version 300 es
+void main(){ vec2 v = vec2((gl_VertexID<<1)&2, gl_VertexID&2); gl_Position = vec4(v*2.-1.,0.,1.); }`;
+
+const FRAG = `#version 300 es
+precision highp float;
+out vec4 O;
+uniform vec2 uRes;
+uniform vec3 uRo, uTa;
+uniform float uFade, uOffset, uSky;
+${COMMON}
+
+vec3 nrm(vec3 p){
+  vec2 e = vec2(1.,-1.)*.0016;
+  return normalize(e.xyy*map(p+e.xyy)+e.yyx*map(p+e.yyx)+e.yxy*map(p+e.yxy)+e.xxx*map(p+e.xxx));
+}
+
+// gilding, not rainbow: gold to bone, never green or magenta
+vec3 pal(float t){
+  return vec3(.60,.44,.17) + vec3(.40,.34,.22)*cos(6.28318*(t + vec3(.00,.09,.22)));
+}
+
+vec3 env(vec3 rd){
+  float y = rd.y*.5+.5;
+  vec3 c = mix(vec3(.010,.008,.005), vec3(.036,.028,.016), y);
+  c += vec3(.105,.070,.026) * pow(max(0., -rd.y), 3.);
+  c += vec3(.95,.90,.80) * pow(max(0., vnoise(rd*380.)), 54.) * 2.4;
+  float key = pow(max(0., dot(rd, normalize(vec3(.38,.74,-.52)))), 10.);
+  c += vec3(.30,.22,.10) * key;
+  // the visitor's own sky: at dawn and dusk a warm band rises on the horizon
+  c *= mix(vec3(1.), vec3(1.10,1.00,.88), uSky*.55);
+  c += vec3(.16,.07,.02) * uSky * pow(max(0., dot(rd, normalize(vec3(.25,.10,-.95)))), 4.);
+  // every eleven seconds a comet arcs across, and the gold catches it
+  float cph = fract(uTime/11.);
+  float ck = smoothstep(0., .03, cph) * (1. - smoothstep(.13, .16, cph)) * step(.01, uTime);
+  if(ck > 0.){
+    float ck2 = (cph - .0) * 6.25;
+    vec3 cdir = normalize(vec3(mix(-.95,.85,ck2), mix(.82,.28,ck2), -.58));
+    float dd = max(0., dot(rd, cdir));
+    c += vec3(1.,.86,.60) * (pow(dd,1400.)*3.2 + pow(dd,220.)*.32) * ck;
+  }
+  return c;
+}
+
+void main(){
+  vec2 uv = (gl_FragCoord.xy*2. - uRes)/uRes.y;
+  uv.x += uOffset;
+  vec3 f = normalize(uTa-uRo);
+  vec3 r = normalize(cross(f, vec3(0,1,0)));
+  vec3 u = cross(r,f);
+  vec3 rd = normalize(f*1.62 + r*uv.x + u*uv.y);
+
+  vec3 col = env(rd);
+  float t=0., d=0.; bool hit=false; int steps=0;
+  for(int i=0;i<104;i++){
+    vec3 p = uRo + rd*t;
+    d = map(p);
+    if(d < .0013*t + .001){ hit=true; steps=i; break; }
+    if(t > 9.) break;
+    t += d; steps = i;
+  }
+
+  if(hit){
+    vec3 p = uRo + rd*t;
+    vec3 n = nrm(p);
+    float fres = pow(1.-max(0., dot(n,-rd)), 3.1);
+
+    vec3 spec = env(reflect(rd,n));
+    vec3 disp = vec3(env(refract(rd,n,.93)).r, env(refract(rd,n,.955)).g, env(refract(rd,n,.98)).b);
+
+    float film = fres*1.25 + dot(n, normalize(vec3(.3,1.,.2)))*.26 + uTime*.02;
+    vec3 leaf = pal(film);
+
+    float ao = clamp(pow(1.-float(steps)/104., 2.)*1.25, .2, 1.);
+
+    col  = disp*.72;
+    col += spec*.95;
+    col += leaf * pow(fres,1.7) * 2.15;
+
+    float vein = fbm(warp(p)*3.2 + uTime*.10);
+    col *= .50 + 1.02*vein;
+    col *= ao;
+
+    float sss = fbm(warp(p)*2.5 - uTime*.16);
+    col += pal(film+.4) * pow(max(0.,sss),2.4) * .5 * (1.-fres);
+
+    col += leaf * pow(fres,5.) * 3.4;
+    col += pal(film+.3) * uShift * pow(max(0., fbm(p*6.5+uTime*1.8)-.44),1.6) * 4.5;
+    col = mix(col, env(rd), smoothstep(6.2, 9.0, t));
+  }
+
+  float halo = 1.-smoothstep(.0,1.05,length(uv)*.62);
+  col += vec3(.55,.44,.22) * halo * .030;
+
+  col *= uFade;
+  col = (col*(2.51*col+.03))/(col*(2.43*col+.59)+.14);
+  col = pow(max(col,0.), vec3(.4545));
+  col *= 1.-.55*pow(length(uv)*.55, 2.2);
+  col += (h1f(gl_FragCoord.x + gl_FragCoord.y*1234. + uTime*60.)-.5)*.02;
+  O = vec4(col,1.);
+}`;
+
+const VERT_PTS = `#version 300 es
+precision highp float;
+uniform vec2 uRes; uniform vec3 uRo, uTa; uniform float uFade, uOffset;
+out float vSeed; out float vHeat; out float vKind;
+${COMMON}
+vec3 grad(vec3 p){
+  vec2 e = vec2(1.,-1.)*.004;
+  return normalize(e.xyy*mapLite(p+e.xyy)+e.yyx*mapLite(p+e.yyx)+e.yxy*mapLite(p+e.yxy)+e.xxx*mapLite(p+e.xxx));
+}
+void main(){
+  float id = float(gl_VertexID);
+  vec3 rnd = h3(vec3(id*.017, id*.0031, 7.13));
+  vSeed = rnd.x;
+  vec3 p;
+  if(mod(id, 3.) < 1.){
+    // one third of the swarm is a two-armed golden spiral galaxy around the form,
+    // r = a*e^(b*theta), with differential rotation so the arms slowly wind
+    // even coverage by area, angle derived from radius so the spiral holds
+    float r = sqrt(mix(.55, 10.2, rnd.y));
+    float th = log(r/.16)/.30;
+    float arm = (mod(id, 2.) < 1.) ? 0. : 3.14159;
+    float a2 = th + arm + uTime*.05 - r*.09 + uSpin*.35;
+    p = vec3(cos(a2)*r, (h1f(id*.71)-.5)*.11*r, sin(a2)*r);
+    p.yz *= r2(.88);
+    p += (h3(vec3(id, 3.1, 7.7))-.5)*.05*r;
+    p += normalize(p)*uShift*.30;
+    vHeat = 0.; vKind = 1.;
+  } else {
+    float z = rnd.x*2.-1.; float a = rnd.y*6.28318; float s = sqrt(max(0.,1.-z*z));
+    p = vec3(s*cos(a), z, s*sin(a))*2.0;
+    for(int i=0;i<6;i++){ p -= grad(p)*mapLite(p)*.85; }
+    float burst = uShift*(.42+rnd.z*1.25);
+    p += normalize(p + (h3(p*3.1+rnd)-.5)*1.4) * burst;
+    p += (h3(vec3(id*.11, uTime*.08, 3.7))-.5)*.05;
+    vHeat = burst; vKind = 0.;
+  }
+  vec3 rel = p-uRo;
+  vec3 f = normalize(uTa-uRo);
+  vec3 r = normalize(cross(f, vec3(0,1,0)));
+  vec3 u = cross(r,f);
+  vec3 v = vec3(dot(rel,r), dot(rel,u), dot(rel,f));
+  if(v.z < .05){ gl_Position = vec4(2.,2.,2.,1.); gl_PointSize = 0.; return; }
+  vec2 sp = v.xy*1.62/v.z; sp.x -= uOffset;
+  gl_Position = vec4(sp.x*uRes.y/uRes.x, sp.y, 0., 1.);
+  gl_PointSize = clamp((1.5+rnd.z*2.4+vKind*1.1)*(uRes.y/900.)/v.z*1.5, 1., 7.5);
+}`;
+
+const FRAG_PTS = `#version 300 es
+precision highp float;
+in float vSeed; in float vHeat; in float vKind;
+out vec4 O;
+uniform float uShift, uTime, uFade;
+vec3 pal(float t){ return vec3(.60,.44,.17) + vec3(.40,.34,.22)*cos(6.28318*(t + vec3(.00,.09,.22))); }
+void main(){
+  vec2 c = gl_PointCoord-.5;
+  float m = 1.-smoothstep(.16,.5,length(c));
+  if(m <= .001) discard;
+  vec3 col = pal(vSeed*.7 + uTime*.03 + vHeat*.35);
+  float amp = (.14 + uShift*1.7)*(.4+vSeed*.9);
+  amp += vKind * (.26 + .14*sin(uTime*.7 + vSeed*40.));
+  O = vec4(col*m*amp*uFade, m);
+}`;
+
+function compile(src, type){
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+function program(vs, fs){
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(vs, gl.VERTEX_SHADER));
+  gl.attachShader(p, compile(fs, gl.FRAGMENT_SHADER));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  return p;
+}
+const U = (p, n) => Object.fromEntries(n.map(k => [k, gl.getUniformLocation(p, k)]));
+
+let progScene, progPts, uScene, uPts, vao, PARTICLES = 0;
+const state = {
+  morph:0, morphTarget:0, shift:0, spin:0,
+  fade:0, quality:1, camA:0, camY:.28, pA:0, pY:.28,
+};
+
+/* dawn and dusk in the visitor's own clock drive a warm band in the env */
+function skyNow(){
+  const d = new Date();
+  const h = d.getHours() + d.getMinutes()/60;
+  const dawn = Math.exp(-Math.pow(h - 6.7, 2) / 1.8);
+  const dusk = Math.exp(-Math.pow(h - 18.8, 2) / 2.2);
+  return Math.min(1, dawn + dusk);
+}
+
+/* pointer parallax, fine pointers only, still under reduced motion */
+if(matchMedia("(pointer: fine)").matches && !reduced){
+  addEventListener("pointermove", (e) => {
+    state.pA = (e.clientX / innerWidth  - .5) * .16;
+    state.pY = .28 + (e.clientY / innerHeight - .5) * .10;
+  }, {passive:true});
+}
+
+function resize(){
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const base = (innerWidth*innerHeight > 1600*1000) ? .58 : .74;
+  const sc = base * state.quality;
+  const w = Math.max(1, Math.round(innerWidth*dpr*sc));
+  const h = Math.max(1, Math.round(innerHeight*dpr*sc));
+  if(canvas.width !== w || canvas.height !== h){ canvas.width = w; canvas.height = h; }
+}
+
+/* scroll selects the form */
+const sections = [...document.querySelectorAll("[data-morph]")];
+let activeMorph = 0;
+const sectionIO = new IntersectionObserver((entries) => {
+  entries.forEach(en => {
+    if(!en.isIntersecting) return;
+    const want = +en.target.dataset.morph;
+    if(want === activeMorph) return;
+    let delta = want - ((activeMorph % 5) + 5) % 5;
+    if(delta >  2.5) delta -= 5;
+    if(delta < -2.5) delta += 5;
+    state.morphTarget += delta;
+    activeMorph = want;
+    if(!reduced) state.shift = 1;
+  });
+}, { threshold:.34 });
+sections.forEach(s => sectionIO.observe(s));
+
+let t0 = null, lastT = 0, frames = 0, acc = 0;
+function frame(now){
+  requestAnimationFrame(frame);
+  if(t0 === null){ t0 = now; lastT = now; }
+  const dt = Math.max(0, Math.min(.05, (now-lastT)/1000));
+  lastT = now;
+  const time = (now-t0)/1000;
+
+  frames++; acc += dt;
+  if(acc > .5){
+    const fps = frames/acc;
+    if(fps < 44 && state.quality > .5)     state.quality = Math.max(.5, state.quality-.09);
+    else if(fps > 57 && state.quality < 1) state.quality = Math.min(1, state.quality+.04);
+    frames = 0; acc = 0;
+  }
+
+  state.morph = state.morph + (state.morphTarget - state.morph)*(1-Math.pow(.0022, dt));
+  state.shift = Math.max(0, state.shift - dt*(reduced ? 6 : 1.2));
+  state.spin += reduced ? 0 : dt*.13;
+  state.fade  = state.fade + (1-state.fade)*(1-Math.pow(.15, dt));
+
+  const scm = document.documentElement.scrollHeight - innerHeight;
+  const scProg = scm > 0 ? scrollY / scm : 0;
+  state.camA += ((state.pA + (reduced ? 0 : scProg * .9)) - state.camA) * (1 - Math.pow(.02, dt));
+  state.camY += (state.pY - state.camY) * (1 - Math.pow(.02, dt));
+  const R = innerWidth < 780 ? 5.4 : 4.15;
+  const drift = reduced ? 0 : Math.sin(time*.19)*.09;
+  const ro = [Math.sin(state.camA)*R, state.camY+drift, Math.cos(state.camA)*R];
+
+  resize();
+  gl.viewport(0,0,canvas.width,canvas.height);
+  const setAll = (u) => {
+    gl.uniform2f(u.uRes, canvas.width, canvas.height);
+    gl.uniform1f(u.uTime, reduced ? 0 : time);
+    gl.uniform1f(u.uMorph, state.morph);
+    gl.uniform1f(u.uShift, state.shift);
+    gl.uniform1f(u.uSpin, state.spin);
+    gl.uniform3f(u.uRo, ro[0], ro[1], ro[2]);
+    gl.uniform3f(u.uTa, 0,0,0);
+    gl.uniform1f(u.uFade, state.fade);
+    gl.uniform1f(u.uOffset, innerWidth > 900 ? -0.58 : 0.0);
+    gl.uniform1f(u.uSky, skyNow());
+  };
+
+  gl.bindVertexArray(vao);
+  gl.disable(gl.BLEND);
+  gl.useProgram(progScene); setAll(uScene);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  gl.useProgram(progPts); setAll(uPts);
+  gl.drawArrays(gl.POINTS, 0, PARTICLES);
+}
+
+try{
+  if(!gl) throw new Error("WebGL2 unavailable");
+  progScene = program(VERT_QUAD, FRAG);
+  progPts   = program(VERT_PTS, FRAG_PTS);
+  const names = ["uRes","uTime","uMorph","uShift","uSpin","uRo","uTa","uFade","uOffset","uSky"];
+  uScene = U(progScene, names); uPts = U(progPts, names);
+  vao = gl.createVertexArray(); gl.bindVertexArray(vao);
+  PARTICLES = Math.min(innerWidth, innerHeight) < 720 ? 3000 : 7500;
+  resize();
+  document.getElementById("skyNote").hidden = false;
+  requestAnimationFrame(frame);
+}catch(err){
+  console.warn("[UnifyMind] WebGL2 unavailable, using static ground.", err);
+  document.body.classList.add("no-gl");
+  canvas.style.display = "none";
+}
+
+/* hovering a life drives the sculpture to that form */
+document.querySelectorAll(".life").forEach(b => {
+  const go = () => {
+    const want = +b.dataset.shape;
+    let d = want - (((activeMorph % 5) + 5) % 5);
+    if(d >  2.5) d -= 5;
+    if(d < -2.5) d += 5;
+    state.morphTarget += d; activeMorph = want;
+    if(!reduced) state.shift = 1;
+    document.querySelectorAll(".life").forEach(o => o.dataset.on = "0");
+    b.dataset.on = "1";
+  };
+  b.addEventListener("mouseenter", go);
+  b.addEventListener("focus", go);
+});
+</script>
+</body>
+</html>
