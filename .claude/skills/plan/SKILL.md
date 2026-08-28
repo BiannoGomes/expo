@@ -43,5 +43,5 @@ type: plan
 > Why these: <one line>
 ```
 
-That path is inside `AI-OS/`, so it's a routine write — just do it and tell me
-the file path. Use checkboxes so I can tick them off in Obsidian through the day.
+That path is inside `Jarvis\AI-OS\`, so it's a routine write — just do it and
+tell me the file path. Use checkboxes so I can tick them off through the day.

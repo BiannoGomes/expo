@@ -19,7 +19,7 @@ One job: gather the numbers and write a short summary. No charts.
 
 | Platform | Source to use |
 | --- | --- |
-| **Amazon KDP** (sales, royalties, KENP page reads) | No public API. Use the KDP dashboard CSV export if one is saved in the vault under `AI-OS/Metrics/_imports/`, otherwise tell me you need the latest KDP report and I'll drop it there. |
+| **Amazon KDP** (sales, royalties, KENP page reads) | No public API. Use the KDP dashboard CSV export if one is saved under `Jarvis\AI-OS\Metrics\_imports\`, otherwise tell me you need the latest KDP report and I'll drop it there. |
 | **Instagram** (followers, reach, engagement) | Instagram Graph API token (see credentials below). If no token is set, ask me for the day's numbers rather than inventing them. |
 | **TikTok** (views, followers) | The connected TikTok account via the Higgsfield tools (`tiktok_accounts`). |
 | **Ad platforms** (Meta/Google spend, ROAS) | Supermetrics (`data_query`) for spend/ROAS; Motion for Meta creative-level performance. |
