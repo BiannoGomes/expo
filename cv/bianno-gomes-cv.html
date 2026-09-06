@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bianno Gomes CV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ink:      #0E2430;   /* deep sea ink */
+    --ink-2:    #3A5563;   /* soft ink */
+    --slate:    #5E7682;   /* captions, meta */
+    --paper:    #FAFBFB;   /* cool paper */
+    --panel:    #EFF4F5;   /* rail panel */
+    --line:     #D3DEE1;   /* hairlines */
+    --accent:   #E4572E;   /* signal orange */
+    --accent-ink:#B93E1C;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --body: "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ background:#E4E9EA; }
+  body{
+    font-family:var(--body);
+    color:var(--ink);
+    background:#E4E9EA;
+    -webkit-font-smoothing:antialiased;
+    padding:40px 16px;
+    font-size:15px;
+    line-height:1.5;
+  }
+
+  /* ---------- sheet ---------- */
+  .sheet{
+    max-width:860px;
+    margin:0 auto;
+    background:var(--paper);
+    box-shadow:0 24px 60px rgba(14,36,48,.18);
+    position:relative;
+  }
+  .sheet::before{            /* signal stripe along the top edge */
+    content:"";
+    display:block;
+    height:6px;
+    background:linear-gradient(90deg, var(--accent) 0 33%, var(--ink) 33% 100%);
+  }
+  .inner{ padding:44px 48px 40px; }
+
+  /* ---------- header ---------- */
+  header{ border-bottom:2px solid var(--ink); padding-bottom:22px; }
+  .spec-line{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.08em;
+    color:var(--slate);
+    display:flex; flex-wrap:wrap; gap:6px 18px;
+    margin-bottom:18px;
+  }
+  .spec-line .doc{ color:var(--accent-ink); }
+  h1{
+    font-family:var(--display);
+    font-weight:900;
+    font-size:clamp(40px, 7vw, 62px);
+    line-height:.95;
+    letter-spacing:-.015em;
+    text-transform:uppercase;
+  }
+  h1 .last{ color:var(--accent); }
+  .role-row{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 20px;
+    margin-top:12px;
+  }
+  .role{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:19px;
+    letter-spacing:.01em;
+  }
+  .role-sub{
+    font-size:14px;
+    color:var(--ink-2);
+  }
+
+  /* ---------- grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:236px 1fr;
+    gap:0 40px;
+    padding-top:26px;
+  }
+  @media (max-width:680px){
+    .grid{ grid-template-columns:1fr; }
+    .inner{ padding:32px 22px 28px; }
+  }
+
+  /* ---------- shared section furniture ---------- */
+  h2{
+    font-family:var(--mono);
+    font-weight:500;
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--accent-ink);
+    display:flex; align-items:center; gap:10px;
+    margin:26px 0 12px;
+  }
+  h2::after{ content:""; flex:1; height:1px; background:var(--line); }
+  .grid section:first-child h2, .rail > h2:first-child{ margin-top:0; }
+
+  /* ---------- left rail ---------- */
+  .rail{ font-size:13.5px; }
+  .contact{ display:flex; flex-direction:column; gap:8px; }
+  .contact div{ display:flex; flex-direction:column; }
+  .contact .k{
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--slate);
+  }
+  .contact .v{ font-weight:500; color:var(--ink); overflow-wrap:anywhere; }
+  .contact a{ color:var(--ink); text-decoration:none; border-bottom:1px solid var(--line); }
+  .slot{ color:var(--slate); border-bottom:1px dotted var(--slate); font-weight:400; }
+
+  .cap-group{ margin-bottom:14px; }
+  .cap-group .cap-h{
+    font-weight:600; font-size:13px; margin-bottom:4px; color:var(--ink);
+  }
+  .cap-group p{ color:var(--ink-2); font-size:13px; line-height:1.55; }
+
+  .lang{ display:flex; justify-content:space-between; gap:12px; padding:4px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .lang:last-child{ border-bottom:none; }
+  .lang .lv{ font-family:var(--mono); font-size:11px; color:var(--slate); }
+
+  .cred{ font-size:13px; color:var(--ink-2); line-height:1.55; }
+  .cred li{ list-style:none; padding:4px 0; border-bottom:1px solid var(--line); }
+  .cred li:last-child{ border-bottom:none; }
+
+  /* ---------- main column ---------- */
+  .profile p{ font-size:15px; line-height:1.6; max-width:60ch; }
+  .profile strong{ font-weight:600; }
+
+  .job{ margin-bottom:18px; }
+  .job:last-child{ margin-bottom:0; }
+  .job-head{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .job-title{ font-family:var(--display); font-weight:700; font-size:16px; }
+  .job-org{ font-size:14px; color:var(--ink-2); }
+  .job-when{
+    margin-left:auto;
+    font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:var(--slate);
+    white-space:nowrap;
+  }
+  .job ul{ margin-top:6px; padding-left:0; }
+  .job li{
+    list-style:none;
+    position:relative;
+    padding-left:16px;
+    font-size:13.5px;
+    line-height:1.55;
+    color:var(--ink-2);
+    margin-bottom:3px;
+  }
+  .job li::before{
+    content:"";
+    position:absolute; left:0; top:.62em;
+    width:7px; height:2px; background:var(--accent);
+  }
+  .job li strong{ color:var(--ink); font-weight:600; }
+
+  /* systems shipped */
+  .systems{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media (max-width:680px){ .systems{ grid-template-columns:1fr; } }
+  .sys{
+    border:1px solid var(--line);
+    background:var(--panel);
+    padding:12px 14px 11px;
+  }
+  .sys .sys-name{
+    font-family:var(--mono); font-size:11.5px; font-weight:500;
+    letter-spacing:.04em; color:var(--ink);
+    display:flex; align-items:center; gap:8px;
+    margin-bottom:4px;
+  }
+  .sys .sys-name::before{ content:"▸"; color:var(--accent); font-size:10px; }
+  .sys p{ font-size:12.5px; line-height:1.5; color:var(--ink-2); }
+
+  /* footer */
+  footer{
+    margin-top:30px;
+    border-top:2px solid var(--ink);
+    padding-top:12px;
+    display:flex; flex-wrap:wrap; gap:6px 20px;
+    justify-content:space-between;
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:.06em;
+    color:var(--slate);
+  }
+  footer .proof{ color:var(--accent-ink); }
+
+  /* ---------- print: single A4 ---------- */
+  @page{ size:A4; margin:0; }
+  @media print{
+    html, body{ background:#FFFFFF; padding:0; }
+    body{ font-size:13px; }
+    .sheet{ max-width:none; box-shadow:none; zoom:.86; }
+    .inner{ padding:26px 36px 18px; }
+    h1{ font-size:46px; }
+    .role{ font-size:16px; }
+    h2{ margin:16px 0 8px; }
+    .profile p{ font-size:12.5px; }
+    .job{ margin-bottom:11px; }
+    .job-title{ font-size:13.5px; }
+    .job-org{ font-size:12px; }
+    .job li{ font-size:11.5px; line-height:1.45; margin-bottom:2px; }
+    .rail{ font-size:11.5px; }
+    .cap-group p, .cred{ font-size:11px; }
+    .lang{ font-size:11px; }
+    .sys{ padding:9px 11px 8px; }
+    .sys p{ font-size:10.8px; }
+    .systems{ gap:8px; }
+    footer{ margin-top:16px; font-size:9px; }
+    a{ color:inherit; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="inner">
+
+    <header>
+      <div class="spec-line">
+        <span class="doc">DOC / CURRICULUM VITAE</span>
+        <span>REV 2026.09</span>
+        <span>PALMA DE MALLORCA — 39.5696° N, 2.6502° E</span>
+      </div>
+      <h1>Bianno <span class="last">Gomes</span></h1>
+      <div class="role-row">
+        <span class="role">IT &amp; AI Systems Specialist</span>
+        <span class="role-sub">Automation architect · builder of production AI systems · superyacht-trained operator</span>
+      </div>
+    </header>
+
+    <div class="grid">
+
+      <!-- ============ LEFT RAIL ============ -->
+      <aside class="rail">
+        <h2>Contact</h2>
+        <div class="contact">
+          <div><span class="k">Email</span><span class="v"><a href="mailto:biannogomes@gmail.com">biannogomes@gmail.com</a></span></div>
+          <div><span class="k">Base</span><span class="v">Palma de Mallorca, Spain</span></div>
+          <div><span class="k">Phone</span><span class="v slot">add number</span></div>
+          <div><span class="k">LinkedIn</span><span class="v slot">add profile URL</span></div>
+          <div><span class="k">Nationality</span><span class="v">South African · Portuguese (EU)</span></div>
+        </div>
+
+        <h2>Capabilities</h2>
+        <div class="cap-group">
+          <div class="cap-h">AI &amp; agents</div>
+          <p>LLM agent design (Claude API), Model Context Protocol (MCP) servers, prompt systems, human-in-the-loop approval gates, multi-agent orchestration.</p>
+        </div>
+        <div class="cap-group">
+          <div class="cap-h">Automation &amp; integration</div>
+          <p>n8n workflow architecture, Make, REST APIs &amp; webhooks, error-handling &amp; retry design, scheduled/cron operations.</p>
+        </div>
+        <div class="cap-group">
+          <div class="cap-h">Web &amp; documents</div>
+          <p>HTML/CSS/JS, dashboards &amp; internal tools, automated PDF/DOCX/PPTX generation, print-ready typesetting as code.</p>
+        </div>
+        <div class="cap-group">
+          <div class="cap-h">Ops &amp; publishing</div>
+          <p>End-to-end publishing pipelines (Amazon KDP), listing optimisation, multi-platform content operations, analytics-driven iteration.</p>
+        </div>
+
+        <h2>Languages</h2>
+        <div class="lang"><span>English</span><span class="lv">NATIVE</span></div>
+        <div class="lang"><span>Portuguese</span><span class="lv">CONVERSATIONAL</span></div>
+        <div class="lang"><span>Spanish</span><span class="lv">BASIC</span></div>
+
+        <h2>Certifications</h2>
+        <ul class="cred">
+          <li>STCW Basic Safety Training</li>
+          <li>ENG1 Seafarer Medical</li>
+          <li class="slot" style="border-bottom:none">add further certs / education</li>
+        </ul>
+      </aside>
+
+      <!-- ============ MAIN ============ -->
+      <main>
+        <section class="profile">
+          <h2>Profile</h2>
+          <p>Self-taught systems builder who designs, ships and operates <strong>production AI automation end-to-end</strong> — from client problem to running system. Founder of UnifyOps, building AI front-desk automation for service businesses. Trained in the most unforgiving operational environment there is: superyacht service, where safety procedure, uptime and attention to detail are non-negotiable. Capital-lean by principle — every system is built to run near zero cost and without babysitting.</p>
+        </section>
+
+        <section>
+          <h2>Experience</h2>
+
+          <div class="job">
+            <div class="job-head">
+              <span class="job-title">Founder &amp; Systems Architect</span>
+              <span class="job-org">UnifyOps</span>
+              <span class="job-when">2024 — PRESENT</span>
+            </div>
+            <ul>
+              <li>Design and deliver <strong>AI automation for service businesses</strong>; flagship product is an AI front desk for clinics — inbound call/message handling, triage and appointment booking.</li>
+              <li>Architect agent workflows on <strong>n8n + Claude API</strong>: webhook integrations, structured error branches, retries, and human approval gates before anything publishes, sends or pays.</li>
+              <li>Operate the business solo and capital-lean — sales, scoping, build, deployment and support.</li>
+            </ul>
+          </div>
+
+          <div class="job">
+            <div class="job-head">
+              <span class="job-title">Founder, Author &amp; Publisher</span>
+              <span class="job-org">UnifyMind</span>
+              <span class="job-when">2024 — PRESENT</span>
+            </div>
+            <ul>
+              <li>Built an automated <strong>book production pipeline</strong> — manuscript, editing, typesetting, cover and Amazon KDP package — and used it to write and publish <em>Self Mastery</em>.</li>
+              <li>Run a daily multi-platform <strong>publishing operation</strong> (Instagram, Facebook, TikTok) with scheduled queues, approval workflow and results logging.</li>
+            </ul>
+          </div>
+
+          <div class="job">
+            <div class="job-head">
+              <span class="job-title">Automation Consultant</span>
+              <span class="job-org">Beach Girls Retreats — Mallorca</span>
+              <span class="job-when">ONGOING</span>
+            </div>
+            <ul>
+              <li>Build and maintain the booking, operations and marketing systems for a retreat business — hands-on client work from requirements to running tooling.</li>
+            </ul>
+          </div>
+
+          <div class="job">
+            <div class="job-head">
+              <span class="job-title">Deckhand</span>
+              <span class="job-org">M/Y Goldrush — Palma de Mallorca</span>
+              <span class="job-when">PRESENT</span>
+            </div>
+            <ul>
+              <li>Safety-critical operations, planned maintenance and five-star guest service on a private superyacht — while founding and running two businesses on 10–25 focused hours a week.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2>Selected Systems Shipped</h2>
+          <div class="systems">
+            <div class="sys">
+              <div class="sys-name">AI_FRONT_DESK</div>
+              <p>Agent that answers, triages and books for clinics — n8n + Claude API, with human-approval gates on every outbound action.</p>
+            </div>
+            <div class="sys">
+              <div class="sys-name">BOOK_FACTORY</div>
+              <p>One-command pipeline from draft manuscript to Amazon-ready package: edit, typeset, cover, KDP metadata.</p>
+            </div>
+            <div class="sys">
+              <div class="sys-name">PUBLISH_OPS</div>
+              <p>Daily content operation across three platforms: queued posts, one-word approval flow, publish, log, follow-up list.</p>
+            </div>
+            <div class="sys">
+              <div class="sys-name">JARVIS_BRAIN</div>
+              <p>Personal AI chief-of-staff: Claude agents governed by an Obsidian knowledge vault, custom skills, and a written trust ledger.</p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <footer>
+      <span class="proof">PROOF_OF_WORK: this CV is a single hand-built HTML file — view source.</span>
+      <span>BIANNO GOMES · 2026</span>
+    </footer>
+  </div>
+</div>
+</body>
+</html>
