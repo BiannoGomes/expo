@@ -639,11 +639,13 @@ function momentum(){
   const rows=[];
   const mi=S.missions.items;
   const ship=mi.length?mi.filter(m=>m.done).length/mi.length:0;
+  const cl=mi.find(m=>/paying client|UnifyOps/i.test(m.t));
+  const clp=cl&&cl.subs.length?cl.subs.filter(s=>s.done).length/cl.subs.length:0;
   const b3=mi.find(m=>/Book 3/i.test(m.t));
   const b3p=b3&&b3.subs.length?b3.subs.filter(s=>s.done).length/b3.subs.length:0;
   const dec=(S.rail.log.length+S.rail.queue.length)?S.rail.log.length/(S.rail.log.length+S.rail.queue.length):0;
   const day=(S.day.blocks&&S.day.blocks.length)?S.day.blocks.filter(b=>b.done).length/S.day.blocks.length:0;
-  rows.push(['Book 3',b3p,'var(--cyan)'],['Shipping',ship,'var(--blue)'],['Decisions',dec,'var(--violet)'],['Today',day,'var(--ok)']);
+  rows.push(['First client',clp,'var(--gold)'],['Book 3',b3p,'var(--cyan)'],['Shipping',ship,'var(--blue)'],['Decisions',dec,'var(--violet)'],['Today',day,'var(--ok)']);
   document.getElementById('mom').innerHTML=rows.map(([l,v,c])=>
     `<div class="row"><span>${l}</span><div class="bar"><i style="width:${Math.round(v*100)}%;background:${c}"></i></div><span class="v">${Math.round(v*100)}%</span></div>`).join('');
 }
@@ -654,19 +656,32 @@ function renderBridge(){
     const d=cur.subs.filter(s=>s.done).length;
     document.getElementById('curPct').textContent=d+' / '+cur.subs.length+' blockers cleared';
   }else document.getElementById('curPct').textContent=cur?'ready when you are':'log the exposures ↓';
-  /* work river for Book 3 pipeline */
-  const b3=S.missions.items.find(m=>/Book 3/i.test(m.t));
+  /* work river follows the CURRENT mission */
   let stages;
-  if(b3){
-    const fixed=b3.subs.every(s=>s.done);
+  if(cur&&/Book 3/i.test(cur.t)){
+    const fixed=cur.subs.every(s=>s.done);
     stages=[
       {n:'TYPESET',st:'done'},
       {n:'FIX BLOCKERS',st:fixed?'done':'cur'},
-      {n:'UPLOAD',st:fixed&&!b3.done?'cur':(b3.done?'done':'')},
-      {n:'LIVE ✓',st:b3.done?'done':''},
+      {n:'UPLOAD',st:fixed&&!cur.done?'cur':(cur.done?'done':'')},
+      {n:'LIVE ✓',st:cur.done?'done':''},
       {n:'REVIEW ASK',st:''},
       {n:'EXPOSURE',st:''}
     ];
+  }else if(cur&&/paying client|UnifyOps/i.test(cur.t)){
+    const s=cur.subs, d=i=>s[i]&&s[i].done;
+    const idx=s.findIndex(x=>!x.done);
+    stages=[
+      {n:'FIRST TOUCH',st:d(0)?'done':(idx===0?'cur':'')},
+      {n:'FOLLOW-UP',st:d(1)?'done':(idx===1?'cur':'')},
+      {n:'REPLIES',st:d(2)?'done':(idx===2?'cur':'')},
+      {n:'DEMO',st:d(3)?'done':(idx===3?'cur':'')},
+      {n:'€97 AUDIT',st:d(4)?'done':(idx===4?'cur':'')},
+      {n:'RETAINER',st:''}
+    ];
+  }else if(cur&&cur.subs.length){
+    const idx=cur.subs.findIndex(x=>!x.done);
+    stages=cur.subs.slice(0,6).map((x,i)=>({n:x.s.split(' ').slice(0,2).join(' ').toUpperCase(),st:x.done?'done':(i===idx?'cur':'')}));
   }else stages=[{n:'IDEA',st:'done'},{n:'PLAN',st:'done'},{n:'EXECUTE',st:'cur'},{n:'VERIFY',st:''},{n:'RESULT',st:''}];
   document.getElementById('stages').innerHTML=stages.map((s,i)=>
     `<div class="stage ${s.st}"><div class="b"></div><span>${s.n}</span></div>`+
