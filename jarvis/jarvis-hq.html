@@ -1,0 +1,548 @@
+<title>Jarvis HQ</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#0b0d13; --panel:#11141d; --panel2:#171b27; --line:#232838; --line2:#2f3650;
+    --text:#eef0f7; --dim:#9aa1b8; --faint:#5d637a;
+    --blue:#5b8cff; --purple:#9b5bff; --teal:#18d3c8; --gold:#e6c07b;
+    --ok:#3ddc97; --bad:#ff6f68; --warn:#f0a35e;
+    --r:16px; --rs:11px;
+    --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --disp:Sora,Inter,-apple-system,sans-serif;
+    color-scheme:dark;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;
+    padding-block:22px 60px;padding-inline:16px;min-height:100vh}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(820px 420px at 18% -8%,rgba(91,140,255,.09),transparent 60%),
+               radial-gradient(700px 460px at 96% 108%,rgba(155,91,255,.07),transparent 60%)}
+  .wrap{max-width:1180px;margin:0 auto;position:relative;z-index:1;display:flex;flex-direction:column;gap:14px}
+
+  header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .wm{font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:.32em}
+  .wm em{font-style:normal;background:linear-gradient(90deg,var(--blue),var(--purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .wm span{display:block;font-family:var(--sans);font-weight:500;font-size:10.5px;letter-spacing:.14em;
+    color:var(--faint);text-transform:uppercase;margin-top:2px}
+  .pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:500;letter-spacing:.05em;
+    color:var(--dim);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 13px}
+  .pill .d{width:7px;height:7px;border-radius:50%;background:var(--faint);flex-shrink:0}
+  .pill.live .d{background:var(--teal);box-shadow:0 0 9px rgba(24,211,200,.7)}
+  .pill.warn .d{background:var(--warn);box-shadow:0 0 9px rgba(240,163,94,.6)}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+  h2.sec{font-family:var(--disp);font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  h2.sec .sub{font-family:var(--sans);font-weight:500;font-size:11px;letter-spacing:.03em;text-transform:none;color:var(--dim)}
+
+  /* exposure hero */
+  .hero{display:grid;grid-template-columns:minmax(230px,340px) 1fr;gap:14px}
+  @media(max-width:820px){.hero{grid-template-columns:1fr}}
+  .expo{background:linear-gradient(155deg,rgba(230,192,123,.12),rgba(230,192,123,.02));
+    border:1px solid rgba(230,192,123,.32);border-radius:var(--r);padding:22px;display:flex;flex-direction:column}
+  .expo .k{font-family:var(--disp);font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+  .expo .n{font-family:var(--disp);font-weight:300;font-size:64px;line-height:1.05;letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums;margin-top:6px}
+  .expo .n small{font-size:15px;color:var(--dim);font-weight:400;letter-spacing:0}
+  .expo p{font-size:12px;color:var(--dim);line-height:1.6;margin-top:8px}
+  .expo .adder{display:flex;gap:8px;margin-top:auto;padding-top:16px}
+  .expo input{flex:1;min-width:0;background:rgba(11,13,19,.6);border:1px solid rgba(230,192,123,.3);border-radius:10px;
+    color:var(--text);padding:11px 13px;font-size:13px;font-family:var(--sans);outline:none}
+  .expo input:focus{border-color:var(--gold)}
+  .expo button{background:var(--gold);border:none;color:#191204;font-weight:700;font-size:13px;
+    padding:0 16px;border-radius:10px;cursor:pointer}
+  .expo .recent{margin-top:12px;font-size:11.5px;color:var(--faint);line-height:1.8;max-height:86px;overflow-y:auto}
+  .expo .recent b{color:var(--dim);font-weight:500}
+
+  .brief h3{font-family:var(--disp);font-weight:300;font-size:clamp(20px,3vw,27px);letter-spacing:-.015em;line-height:1.3;margin-bottom:12px}
+  .brief h3 b{font-weight:600;color:var(--blue)}
+  .bseg{display:flex;gap:12px;padding:10px 12px;border-radius:var(--rs);border:1px solid transparent;font-size:13px;color:var(--dim);line-height:1.6}
+  .bseg:hover{background:var(--panel2);border-color:var(--line)}
+  .bseg .t{color:var(--text);font-weight:600;display:block;font-size:13.5px}
+  .bseg .i{font-family:var(--disp);color:var(--blue);font-weight:600;font-size:11px;min-width:20px;padding-top:3px}
+  .speakrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+  .grid{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:14px;align-items:start}
+  @media(max-width:1020px){.grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:700px){.grid{grid-template-columns:1fr}}
+  .col{display:flex;flex-direction:column;gap:14px;min-width:0}
+
+  /* metrics */
+  .mrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:920px){.mrow{grid-template-columns:repeat(2,1fr)}}
+  .metric{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+  .metric .l{font-size:10.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+  .metric .v{font-family:var(--disp);font-weight:400;font-size:26px;letter-spacing:-.02em;margin-top:7px;
+    font-variant-numeric:tabular-nums;line-height:1.2}
+  .metric .v small{font-size:13px;color:var(--dim);font-weight:400}
+  .metric .d{font-size:11.5px;color:var(--dim);margin-top:5px;line-height:1.5}
+  .metric.alert{border-color:rgba(240,163,94,.45)}
+  .metric.alert .v{color:var(--warn)}
+
+  /* decision rail */
+  .dcard{background:linear-gradient(160deg,rgba(91,140,255,.12),rgba(155,91,255,.05));
+    border:1px solid rgba(91,140,255,.35);border-radius:var(--rs);padding:18px}
+  .dcard .tag{font-family:var(--disp);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--blue)}
+  .dcard h3{font-size:15px;font-weight:600;line-height:1.45;margin-top:9px}
+  .dcard p{font-size:12.5px;color:var(--dim);line-height:1.6;margin-top:7px}
+  .dact{display:flex;gap:8px;margin-top:14px}
+  .btn{flex:1;padding:10px;border-radius:9px;border:1px solid var(--line2);font-size:12.5px;font-weight:700;
+    cursor:pointer;background:var(--panel2);color:var(--text);font-family:var(--sans)}
+  .btn.ok{background:rgba(61,220,151,.13);border-color:rgba(61,220,151,.4);color:var(--ok)}
+  .btn.no{background:rgba(255,111,104,.11);border-color:rgba(255,111,104,.35);color:var(--bad)}
+  .btn.ghost{flex:0 0 auto;padding-inline:14px}
+  .btn:focus-visible,.expo button:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+  .railclear{text-align:center;color:var(--faint);font-size:13px;padding:22px 0}
+  .railclear b{color:var(--ok)}
+  .note{font-size:10.5px;color:var(--faint);margin-top:10px;text-align:center;line-height:1.6}
+  .adder2{display:flex;gap:8px;margin-top:12px}
+  .adder2 input{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+    color:var(--text);padding:10px 12px;font-size:13px;outline:none}
+  .adder2 input:focus{border-color:var(--blue)}
+  .adder2 button{background:var(--blue);border:none;color:#0a1024;font-weight:700;padding:0 14px;border-radius:9px;cursor:pointer;font-size:13px}
+  .dlog{font-size:11.5px;color:var(--dim);line-height:1.9;max-height:120px;overflow-y:auto;margin-top:10px}
+  .dlog .y{color:var(--ok)} .dlog .x{color:var(--bad)}
+
+  /* missions */
+  .mi{border-bottom:1px solid var(--line);padding:11px 2px}
+  .mi:last-child{border-bottom:none}
+  .mi .top{display:flex;gap:11px;align-items:flex-start;cursor:pointer}
+  .chk{width:22px;height:22px;border-radius:7px;border:2px solid var(--line2);flex-shrink:0;display:flex;
+    align-items:center;justify-content:center;font-size:13px;color:transparent;margin-top:1px}
+  .mi.done .chk{background:var(--ok);border-color:var(--ok);color:#08130d}
+  .mi.done .mt{text-decoration:line-through;color:var(--faint)}
+  .mt{font-size:13.5px;font-weight:600;line-height:1.4}
+  .md{font-size:11.5px;color:var(--dim);margin-top:2px;line-height:1.55}
+  .subs{margin:8px 0 2px 33px;display:flex;flex-direction:column;gap:5px}
+  .sub{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--dim);cursor:pointer}
+  .sub .sc{width:15px;height:15px;border-radius:5px;border:1.5px solid var(--line2);flex-shrink:0;display:flex;
+    align-items:center;justify-content:center;font-size:9px;color:transparent}
+  .sub.done .sc{background:var(--teal);border-color:var(--teal);color:#04211f}
+  .sub.done span{text-decoration:line-through;color:var(--faint)}
+
+  /* day os */
+  .staterow{display:flex;gap:7px;margin-bottom:10px}
+  .st{flex:1;padding:10px 0;text-align:center;background:var(--panel2);border:1px solid var(--line);
+    border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);cursor:pointer}
+  .st.on{background:var(--blue);color:#0a1024;border-color:var(--blue)}
+  .tgl{display:flex;align-items:center;justify-content:space-between;font-size:13px;padding:7px 2px;color:var(--dim)}
+  .tog{width:46px;height:26px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);
+    position:relative;cursor:pointer;flex-shrink:0}
+  .tog::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--dim);transition:left .18s}
+  .tog.on{background:var(--teal);border-color:var(--teal)}
+  .tog.on::after{left:23px;background:#04211f}
+  .dayblocks .blk{display:flex;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line);cursor:pointer;align-items:flex-start}
+  .dayblocks .blk:last-child{border-bottom:none}
+  .blk .bt{font-size:13px;font-weight:600;line-height:1.4}
+  .blk .bd{font-size:11.5px;color:var(--dim);line-height:1.5;margin-top:2px}
+  .blk time{margin-left:auto;font-size:10.5px;color:var(--purple);white-space:nowrap;padding-top:3px}
+  .blk.done .bt{text-decoration:line-through;color:var(--faint)}
+  .modehead{font-family:var(--disp);font-size:16px;font-weight:600;margin-bottom:2px}
+  .modesub{font-size:12px;color:var(--dim);line-height:1.6;margin-bottom:8px}
+
+  /* neural index */
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-size:11px;font-weight:600;letter-spacing:.02em;padding:6px 11px;border-radius:999px;border:1px solid var(--line2);color:var(--dim);background:var(--panel2)}
+  .chip.armed{border-color:rgba(61,220,151,.45);color:var(--ok);background:rgba(61,220,151,.08)}
+  .chip.queued{border-color:rgba(91,140,255,.4);color:var(--blue);background:rgba(91,140,255,.07)}
+  .chip.skip{border-color:rgba(255,111,104,.3);color:var(--bad);background:rgba(255,111,104,.06);text-decoration:line-through}
+  .nlbl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:12px 0 7px}
+  .nlbl:first-of-type{margin-top:0}
+
+  /* ledger */
+  .lrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:12.5px}
+  .lrow:last-child{border-bottom:none}
+  .lrow small{display:block;color:var(--faint);font-size:10.5px;margin-top:1px}
+  .pips{display:flex;gap:4px;align-items:center;flex-shrink:0}
+  .pip{width:17px;height:6px;border-radius:4px;background:var(--panel2);border:1px solid var(--line);cursor:pointer}
+  .pip.on{background:var(--purple);border-color:var(--purple)}
+  .pip.cap{opacity:.25;cursor:default}
+  .lvl{font-size:10px;color:var(--dim);min-width:18px;text-align:right;font-weight:700}
+
+  .vbtn{background:var(--panel2);border:1px solid var(--line2);color:var(--text);font-size:12px;font-weight:600;
+    padding:9px 15px;border-radius:999px;cursor:pointer}
+  .vbtn:hover{border-color:var(--blue);color:var(--blue)}
+
+  .foot{color:var(--faint);font-size:11px;text-align:center;line-height:1.9;letter-spacing:.02em;margin-top:8px}
+  .foot b{color:var(--dim)}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--blue);
+    color:#0a1024;font-size:13px;font-weight:700;padding:11px 22px;border-radius:11px;transition:transform .28s;z-index:60;max-width:88vw;text-align:center}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="wm">J A R V I S <em>HQ</em><span>unified command · v4</span></div>
+    <div class="pills">
+      <span class="pill" id="datePill"></span>
+      <span class="pill" id="syncPill"><span class="d"></span><span id="syncTxt">connecting…</span></span>
+      <span class="pill warn" id="qPill"><span class="d"></span><span>queue dry Sun 20 Sep</span></span>
+    </div>
+  </header>
+
+  <!-- EXPOSURE + BRIEF -->
+  <div class="hero">
+    <div class="expo">
+      <span class="k">Exposure count</span>
+      <div class="n"><span id="expoN">0</span><small> humans reached · since 16 Sep</small></div>
+      <p>The only number this empire runs on. Sent, listed, uploaded, published, replied-to — log it the moment it leaves your hands.</p>
+      <div class="adder">
+        <input id="expoIn" placeholder="e.g. sent DM to Avinash" aria-label="Log an exposure">
+        <button onclick="logExpo()">+1</button>
+      </div>
+      <div class="recent" id="expoRecent"></div>
+    </div>
+
+    <div class="panel brief">
+      <h2 class="sec">Situation brief <span class="sub" id="briefDate"></span></h2>
+      <h3>Two books live. The machine is built. <b>Everything now is shipping.</b></h3>
+      <div id="briefList"></div>
+      <div class="speakrow">
+        <button class="vbtn" onclick="speakBrief()" id="spkBtn">▶ Speak the brief</button>
+        <button class="vbtn" onclick="stopSpeak()">Stop</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="mrow">
+    <div class="metric">
+      <div class="l">Books live on KDP</div>
+      <div class="v">2 <small>of 3</small></div>
+      <div class="d">Invisible Ocean · Self-Mastery — all formats, KDP Select. Book 3: 5 blockers.</div>
+    </div>
+    <div class="metric alert">
+      <div class="l">Posting queue</div>
+      <div class="v">20 <small>posts left</small></div>
+      <div class="d">100 of 120 fired, zero stuck. Runs dry Sunday 20 Sep — 4 days.</div>
+    </div>
+    <div class="metric alert">
+      <div class="l">Heartbeat log</div>
+      <div class="v">stale</div>
+      <div class="d">Last OK line 2 Aug. The daily loop needs re-arming from the desktop.</div>
+    </div>
+    <div class="metric">
+      <div class="l">Governing rule</div>
+      <div class="v">L1 <small>hard cap</small></div>
+      <div class="d">Publish · send · pay — Jarvis proposes, Bianno approves. Unchanged in v4.</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- COL 1: decisions + missions -->
+    <div class="col">
+      <section class="panel">
+        <h2 class="sec">Decision rail <span class="sub" id="railCount"></span></h2>
+        <div id="rail"></div>
+        <div class="adder2">
+          <input id="newDec" placeholder="Queue a decision…" aria-label="Queue a decision">
+          <button onclick="addDec()">Queue</button>
+        </div>
+        <p class="note">One decision at a time. Batches get zero approvals.</p>
+        <div class="dlog" id="dlog"></div>
+      </section>
+
+      <section class="panel">
+        <h2 class="sec">Ship queue <span class="sub" id="miCount"></span></h2>
+        <div id="missions"></div>
+        <div class="adder2">
+          <input id="newMi" placeholder="Add a mission…" aria-label="Add a mission">
+          <button onclick="addMi()">Add</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- COL 2: day os -->
+    <div class="col">
+      <section class="panel" id="dayPanel">
+        <h2 class="sec">Day OS <span class="sub" id="dayMeta"></span></h2>
+        <div id="dayCheckin">
+          <div style="font-size:12.5px;color:var(--dim);margin-bottom:8px">State right now?</div>
+          <div class="staterow" id="states"></div>
+          <div class="tgl"><span>⚓ Yacht workday (Goldrush)</span><span class="tog" id="yachtTog" role="switch" aria-label="Yacht workday"></span></div>
+          <div class="adder2" style="margin-top:8px">
+            <input id="oneIn" placeholder="The ONE thing today…" aria-label="The one thing today">
+            <button onclick="buildDay()">Build</button>
+          </div>
+        </div>
+        <div id="dayView" hidden>
+          <div class="modehead" id="modeT"></div>
+          <div class="modesub" id="modeS"></div>
+          <div class="dayblocks" id="blocks"></div>
+          <div class="speakrow" style="margin-top:10px">
+            <button class="vbtn" onclick="newDay()">Plan a new day</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 class="sec">Trust ledger <span class="sub">L0–L3</span></h2>
+        <div id="ledger"></div>
+        <p class="note">Publish / send / pay: hard-capped at L1 — the one rule v4 keeps.</p>
+      </section>
+    </div>
+
+    <!-- COL 3: neural index -->
+    <div class="col">
+      <section class="panel">
+        <h2 class="sec">Neural index <span class="sub">drive intel · 3 waves</span></h2>
+        <div class="nlbl">Armed — in the machine</div>
+        <div class="chips" id="chArmed"></div>
+        <div class="nlbl">Queued — install when a mission needs it</div>
+        <div class="chips" id="chQueued"></div>
+        <div class="nlbl">Skip — rejected, on purpose</div>
+        <div class="chips" id="chSkip"></div>
+      </section>
+
+      <section class="panel">
+        <h2 class="sec">Standing intel</h2>
+        <div class="bseg"><span class="i">$</span><div><span class="t">Deal economics benchmark</span>$3,500 setup before the build · $1,800/mo retainer · ~5h build. Two independent sources. He isn't buying AI — he's buying his Sundays back.</div></div>
+        <div class="bseg"><span class="i">⚠</span><div><span class="t">Security</span>A Firecrawl API key sits in plain text in the old "Jarvis — claude code setup" Google Doc. Rotate it, then delete it from the doc.</div></div>
+        <div class="bseg"><span class="i">◆</span><div><span class="t">Build-once, sell-many</span>Client #2 of an identical build takes 90 minutes. Ten clinics on one front-desk build is the UnifyOps thesis.</div></div>
+      </section>
+    </div>
+  </div>
+
+  <p class="foot">
+    <b>Jarvis proposes · Bianno approves anything that publishes, sends, or pays.</b><br>
+    Every number on this page is real, or it isn't shown. · Jarvis HQ v4 · synced via artifact db
+  </p>
+</div>
+<div class="toast" id="toast" role="status">Saved</div>
+
+<script>
+/* ============ state ============ */
+const KEYS=['exposure','rail','missions','day','ledger'];
+const DEFAULTS={
+  exposure:{count:0,entries:[]},
+  rail:{queue:[
+    {t:'Approve the UnifyOps pricing floor',d:'Retainer floor €500/mo · setup €1,500–2,500 · audit stays €97. Outreach already says “a partir de 500€/mês”; the planned Stripe product was €400 — we undercut our own emails until you call it.'},
+    {t:'Rotate the exposed Firecrawl API key',d:'The old “Jarvis — claude code setup” Google Doc contains a live-looking key in plain text (fc-be9…). Rotate at firecrawl.dev, then delete it from the doc.'},
+    {t:'Extend the posting queue past Sunday 20 Sep?',d:'20 posts left at 5/day. Option A: extend the queue. Option B: let the feed rest while Book 3 ships. Jarvis recommends B — a third live book beats a fortnight of posts pointing at two books with zero reviews.'}
+  ],log:[]},
+  missions:{items:[
+    {t:'Ship Book 3 to KDP',d:'Typeset and waiting since August. Clear the five audit blockers, upload, done.',done:false,subs:[
+      {s:'Fix contents-page capitalization',done:false},
+      {s:'Fix the “fortieth seal” error',done:false},
+      {s:'Add author photo',done:false},
+      {s:'Add compliant review ask to back matter (all 3 books)',done:false},
+      {s:'Add capture link to back matter',done:false}]},
+    {t:'Send the remaining drafted DMs',d:'Warm and referred only. One per sitting counts.',done:false,subs:[]},
+    {t:'List the finished Etsy products',d:'Long Game Press — the one shop. Products are built; they need to exist in public.',done:false,subs:[]},
+    {t:'Build the 7-Day Reset capture page',d:'One 90-minute page trading the PDF for an email. The seed of the whole funnel.',done:false,subs:[]},
+    {t:'Re-arm the heartbeat loop',d:'Heartbeat log stale since 2 Aug. Restart the morning-brief publisher from the desktop vault.',done:false,subs:[]},
+    {t:'Decide the queue: extend or rest',d:'Content runs dry Sunday 20 Sep. Tied to the decision on the rail.',done:false,subs:[]}
+  ]},
+  day:{date:null,state:3,yacht:false,one:'',mode:'',sub:'',blocks:[]},
+  ledger:{rows:[
+    {dom:'Vault writing & research',sub:'two-way door',lvl:2,max:3},
+    {dom:'Content drafts',sub:'drafting only',lvl:2,max:3},
+    {dom:'Publishing content',sub:'governing rule',lvl:1,max:1},
+    {dom:'Outreach / sending',sub:'governing rule',lvl:1,max:1},
+    {dom:'Payments / money',sub:'governing rule',lvl:1,max:1},
+    {dom:'Scheduled briefs',sub:'needs 7 clean runs',lvl:0,max:3},
+    {dom:'n8n workflow edits',sub:'external side effects',lvl:1,max:3}
+  ]}
+};
+const NEURAL={
+  armed:['Marketing Engine skill','Empire / council / launch skills','Scrapling (lead enrichment)','Deal-economics pricing frame','Books live on KDP'],
+  queued:['43-day warm outreach protocol','Faceless YT 5-prompt system','Blotato — 1 render → 9 platforms','ask-hormozi corpus + coach','Handy — private speech-to-text','HeyGem avatar layer','Superset / ECharts client dashboards','Premium bespoke sites add-on','AI Video Factory L1–L2 (post-reviews)','AI Vault storefront (teardown held)','n8n-workflows collection (reference)','agents-office (evaluate)','linkedin-skills (if LinkedIn opens)'],
+  skip:['“Restore Fable” permissions-off hack','OpenHands (redundant)','Career-ops (wrong mission)','Money-Loves-Speed course']
+};
+
+let S=JSON.parse(JSON.stringify(DEFAULTS));
+let DBH=null, docs={}, writing={}, dirty={};
+const cacheKey='jarvis-hq-v4';
+try{const c=localStorage.getItem(cacheKey); if(c){const p=JSON.parse(c); KEYS.forEach(k=>{if(p[k])S[k]=p[k];});}}catch(e){}
+
+function cache(){try{localStorage.setItem(cacheKey,JSON.stringify(S));}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const todayStr=()=>new Date().toISOString().slice(0,10);
+const stamp=()=>{const d=new Date();return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
+let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200);}
+
+/* one write at a time per doc; re-write if dirtied meanwhile */
+async function save(key){
+  cache(); renderAll();
+  if(!DBH) return;
+  if(writing[key]){dirty[key]=true;return;}
+  writing[key]=true;
+  try{ do{ dirty[key]=false; await docs[key].set(S[key]); }while(dirty[key]); }
+  catch(e){ toast('Sync hiccup — kept locally'); }
+  finally{ writing[key]=false; }
+}
+
+/* ============ render ============ */
+document.getElementById('datePill').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+document.getElementById('briefDate').textContent=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+
+const BRIEF=[
+  {t:'Ship Book 3',b:'Typeset since August, five known blockers, none bigger than an evening. A third live book does more than another fortnight of posts.'},
+  {t:'The feed goes quiet Sunday',b:'100 of 120 posts fired clean. Decide on the rail: extend the queue, or let it rest while Book 3 ships.'},
+  {t:'One security fix',b:'Rotate the Firecrawl key sitting in an old Google Doc, then delete it from the doc. Two minutes, real risk.'},
+  {t:'Exposure is the scoreboard',b:'Every session ends with something in front of a human, or it failed. The counter on the left is the whole game.'}
+];
+document.getElementById('briefList').innerHTML=BRIEF.map((s,i)=>
+  `<div class="bseg"><span class="i">${String(i+1).padStart(2,'0')}</span><div><span class="t">${esc(s.t)}</span>${esc(s.b)}</div></div>`).join('');
+
+function renderExpo(){
+  document.getElementById('expoN').textContent=S.exposure.count;
+  document.getElementById('expoRecent').innerHTML=S.exposure.entries.slice(-5).reverse()
+    .map(e=>`<div><b>${esc(e.s)}</b> — ${esc(e.t)}</div>`).join('')||'<div>Nothing logged yet. The next one is the win.</div>';
+}
+function logExpo(){
+  const i=document.getElementById('expoIn'); const v=i.value.trim();
+  if(!v){toast('Name the human it reached');return;}
+  S.exposure.count++; S.exposure.entries.push({t:v,s:stamp()});
+  if(S.exposure.entries.length>200)S.exposure.entries=S.exposure.entries.slice(-200);
+  i.value=''; save('exposure'); toast('Exposure logged — '+S.exposure.count+' and counting');
+}
+
+function renderRail(){
+  const q=S.rail.queue;
+  document.getElementById('railCount').textContent=q.length?q.length+' waiting':'clear';
+  document.getElementById('rail').innerHTML=q.length?
+    `<div class="dcard"><span class="tag">Decision${q.length>1?' 1 of '+q.length:''}</span>
+      <h3>${esc(q[0].t)}</h3>${q[0].d?'<p>'+esc(q[0].d)+'</p>':''}
+      <div class="dact">
+        <button class="btn ok" onclick="decide(true)">Approve</button>
+        <button class="btn no" onclick="decide(false)">Reject</button>
+        <button class="btn ghost" onclick="deferDec()">Later</button>
+      </div></div>`
+    :'<div class="railclear"><b>Rail clear.</b><br>No decisions waiting on you.</div>';
+  document.getElementById('dlog').innerHTML=S.rail.log.slice(0,20)
+    .map(e=>`<div><span class="${e.v?'y':'x'}">${e.v?'✓':'✗'}</span> ${esc(e.s)} — ${esc(e.t)}</div>`).join('');
+}
+function decide(v){const d=S.rail.queue.shift(); if(!d)return;
+  S.rail.log.unshift({v,t:d.t,s:stamp()}); if(S.rail.log.length>100)S.rail.log.length=100;
+  save('rail'); toast(v?'Approved — tell Jarvis to execute':'Rejected — logged');}
+function deferDec(){if(S.rail.queue.length<2){toast('Nothing behind it — decide this one');return;}
+  S.rail.queue.push(S.rail.queue.shift()); save('rail');}
+function addDec(){const i=document.getElementById('newDec'); if(!i.value.trim())return;
+  S.rail.queue.push({t:i.value.trim(),d:''}); i.value=''; save('rail');}
+
+function renderMissions(){
+  const items=S.missions.items;
+  document.getElementById('miCount').textContent=items.filter(m=>!m.done).length+' open';
+  document.getElementById('missions').innerHTML=items.map((m,i)=>`
+    <div class="mi ${m.done?'done':''}">
+      <div class="top" onclick="tglMi(${i})"><span class="chk">✓</span>
+        <div><div class="mt">${esc(m.t)}</div>${m.d?'<div class="md">'+esc(m.d)+'</div>':''}</div>
+      </div>
+      ${(m.subs&&m.subs.length)?'<div class="subs">'+m.subs.map((s,j)=>
+        `<div class="sub ${s.done?'done':''}" onclick="tglSub(${i},${j})"><span class="sc">✓</span><span>${esc(s.s)}</span></div>`).join('')+'</div>':''}
+    </div>`).join('');
+}
+function tglMi(i){const m=S.missions.items[i]; m.done=!m.done; save('missions');
+  if(m.done)toast('Shipped? Then log the exposure it created ↑');}
+function tglSub(i,j){const s=S.missions.items[i].subs[j]; s.done=!s.done;
+  const m=S.missions.items[i]; if(m.subs.every(x=>x.done)&&!m.done)toast('All blockers clear — the mission is ready to ship');
+  save('missions');}
+function addMi(){const i=document.getElementById('newMi'); if(!i.value.trim())return;
+  S.missions.items.push({t:i.value.trim(),d:'',done:false,subs:[]}); i.value=''; save('missions');}
+
+/* day os */
+const RULES=["Choose growth over comfort.","Choose experience over consumption.","Choose action over overthinking.",
+ "Build assets before seeking status.","Protect health — it powers every mission.",
+ "Relationships matter more than short-term wins.","Long-term freedom beats short-term pleasure."];
+function renderStates(){
+  document.getElementById('states').innerHTML=[1,2,3,4,5].map(n=>
+    `<span class="st ${S.day.state===n?'on':''}" onclick="setSt(${n})">${n}</span>`).join('');
+  document.getElementById('yachtTog').classList.toggle('on',!!S.day.yacht);
+}
+function setSt(n){S.day.state=n;renderStates();}
+document.getElementById('yachtTog').onclick=function(){S.day.yacht=!S.day.yacht;renderStates();};
+function buildDay(){
+  const one=document.getElementById('oneIn').value.trim()||'the ONE decision on the rail';
+  const st=S.day.state, y=S.day.yacht; let mode,sub,blocks;
+  if(st<=2){mode='Recovery Mode';sub='Low state. The system shrinks so you don’t. One tiny win, then real recovery.';
+    blocks=[{t:'Minimum viable win',d:one+' — smallest version. 15 minutes, then permission to stop.',time:'any 15 min'},
+            {t:'Recovery block',d:'Nature, water, no screens. Recovery IS the work today.',time:'30–60 min'}];}
+  else if(y){mode='Yacht Day';sub='Goldrush day — the shift is the training load. One micro-block keeps the machine alive.';
+    blocks=[{t:'Pre-shift anchor',d:'Read the rail. Know the ONE thing: '+one,time:'5 min'},
+            {t:'Post-shift business block',d:one+' — 30–45 focused minutes. One approval minimum.',time:'post-shift'},
+            {t:'Shutdown by 22:00',d:'7.5h+ sleep is tomorrow’s edge.',time:'22:00'}];}
+  else if(st>=4){mode='Campaign Day';sub='High state — spend it on the needle. Ship something that counts as a SEND.';
+    blocks=[{t:'⚡ Power block — the ONE thing',d:one+' — 90 minutes, phone in another room.',time:'morning'},
+            {t:'Momentum block',d:'Follow-ups, approvals, or one build-in-public post from real work.',time:'midday'},
+            {t:'Training block',d:'Full session — high state earns it.',time:'afternoon'}];}
+  else{mode='Standard Day';sub='Solid state. Three honest blocks the ratchet can stand on.';
+    blocks=[{t:'⚡ Anchor block — the ONE thing',d:one+' — 60–90 min, best energy first.',time:'morning'},
+            {t:'Admin sweep',d:'Approvals, replies — 30 min cap, timer on.',time:'midday'},
+            {t:'Training block',d:'Trail run, circuit, or long walk + mobility.',time:'flexible'}];}
+  S.day={date:todayStr(),state:st,yacht:y,one,mode,sub,blocks:blocks.map(b=>({...b,done:false}))};
+  save('day');
+}
+function renderDay(){
+  const d=S.day, live=d.date===todayStr()&&d.blocks&&d.blocks.length;
+  document.getElementById('dayCheckin').hidden=!!live;
+  document.getElementById('dayView').hidden=!live;
+  document.getElementById('dayMeta').textContent=live?('“'+RULES[new Date().getDate()%7]+'”'):'morning check-in';
+  if(!live){renderStates();return;}
+  document.getElementById('modeT').textContent=d.mode;
+  document.getElementById('modeS').textContent=d.sub;
+  document.getElementById('blocks').innerHTML=d.blocks.map((b,i)=>`
+    <div class="blk ${b.done?'done':''}" onclick="tglBlk(${i})"><span class="chk" style="width:20px;height:20px;border-radius:6px">✓</span>
+      <div><div class="bt">${esc(b.t)}</div><div class="bd">${esc(b.d)}</div></div><time>${esc(b.time)}</time></div>`).join('');
+}
+function tglBlk(i){S.day.blocks[i].done=!S.day.blocks[i].done; save('day');}
+function newDay(){S.day={date:null,state:3,yacht:false,one:'',mode:'',sub:'',blocks:[]}; save('day');}
+
+function renderLedger(){
+  document.getElementById('ledger').innerHTML=S.ledger.rows.map((r,ri)=>{
+    let p='';for(let l=1;l<=3;l++){const on=r.lvl>=l,cap=l>r.max;
+      p+=`<span class="pip ${on?'on':''} ${cap?'cap':''}" ${cap?'':`onclick="setLvl(${ri},${l})"`}></span>`;}
+    return `<div class="lrow"><div>${esc(r.dom)}<small>${esc(r.sub)}</small></div>
+      <div class="pips">${p}<span class="lvl">L${r.lvl}</span></div></div>`;}).join('');
+}
+function setLvl(ri,l){const r=S.ledger.rows[ri]; r.lvl=(r.lvl===l)?l-1:Math.min(l,r.max); save('ledger');}
+
+['chArmed','chQueued','chSkip'].forEach((id,ix)=>{
+  const cls=['armed','queued','skip'][ix], arr=[NEURAL.armed,NEURAL.queued,NEURAL.skip][ix];
+  document.getElementById(id).innerHTML=arr.map(c=>`<span class="chip ${cls}">${esc(c)}</span>`).join('');
+});
+
+function renderAll(){renderExpo();renderRail();renderMissions();renderDay();renderLedger();}
+renderAll();
+document.getElementById('newDec').addEventListener('keydown',e=>{if(e.key==='Enter')addDec();});
+document.getElementById('newMi').addEventListener('keydown',e=>{if(e.key==='Enter')addMi();});
+document.getElementById('expoIn').addEventListener('keydown',e=>{if(e.key==='Enter')logExpo();});
+document.getElementById('oneIn').addEventListener('keydown',e=>{if(e.key==='Enter')buildDay();});
+
+/* ============ voice (browser TTS, best-effort) ============ */
+let VOICE=null;
+function pickVoice(){const vs=speechSynthesis.getVoices();
+  VOICE=vs.find(v=>/en-GB/i.test(v.lang)&&/natural|online/i.test(v.name))||vs.find(v=>/en-GB/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
+function speakBrief(){
+  if(!('speechSynthesis' in window)){toast('No speech engine in this browser');return;}
+  stopSpeak();
+  const text='Morning, Bianno. '+BRIEF.map(s=>s.t+'. '+s.b).join(' ')+
+    ' Exposure count stands at '+S.exposure.count+'. '+
+    (S.rail.queue.length?('One decision is waiting: '+S.rail.queue[0].t+'.'):'The rail is clear.')+' Over to you.';
+  const u=new SpeechSynthesisUtterance(text); if(VOICE)u.voice=VOICE; u.rate=.95;
+  speechSynthesis.speak(u);
+}
+function stopSpeak(){if('speechSynthesis' in window)speechSynthesis.cancel();}
+
+/* ============ db sync ============ */
+(async()=>{
+  const pill=document.getElementById('syncPill'), txt=document.getElementById('syncTxt');
+  try{
+    DBH=await window.claude.use('db');
+  }catch(e){DBH=null;}
+  if(!DBH){txt.textContent='local only — this device';return;}
+  KEYS.forEach(k=>{docs[k]=DBH.doc('hq/'+k);});
+  let first=true;
+  KEYS.forEach(k=>{
+    docs[k].onSnapshot(snap=>{
+      if(snap.exists&&!snap.metadata.hasPendingWrites){S[k]=snap.data();cache();renderAll();}
+      if(first){first=false;pill.classList.add('live');txt.textContent='synced — every device';}
+    },err=>{ if(err&&err.code==='revoked'){pill.classList.remove('live');txt.textContent='local only — sync revoked';} });
+  });
+  pill.classList.add('live');txt.textContent='synced — every device';
+})();
+</script>
