@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Front Desk</title>
+<meta name="description" content="See how the AI front desk answers every call, texts back missed ones, and books straight into the calendar.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --paper:#F6F5F1;
+    --paper-raised:#FFFFFF;
+    --ink:#1C1F1D;
+    --ink-soft:#3A3F3A;
+    --muted:#6E6A60;
+    --line:#DBD8CE;
+    --accent:#1F6F5C;
+    --accent-ink:#0E4238;
+    --accent-soft:#E4EFE9;
+    --gold:#A87F2E;
+    --gold-soft:#F3EBDA;
+    --shadow: 0 1px 2px rgba(28,31,29,0.06), 0 8px 24px rgba(28,31,29,0.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#14181A;
+      --paper-raised:#1B2020;
+      --ink:#E8E6DE;
+      --ink-soft:#C9C6BB;
+      --muted:#9B978C;
+      --line:#2A2F2C;
+      --accent:#4FB99E;
+      --accent-ink:#DFF3EC;
+      --accent-soft:#1D3530;
+      --gold:#C79A4E;
+      --gold-soft:#332A1A;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#14181A;
+    --paper-raised:#1B2020;
+    --ink:#E8E6DE;
+    --ink-soft:#C9C6BB;
+    --muted:#9B978C;
+    --line:#2A2F2C;
+    --accent:#4FB99E;
+    --accent-ink:#DFF3EC;
+    --accent-soft:#1D3530;
+    --gold:#C79A4E;
+    --gold-soft:#332A1A;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    padding-inline:20px;
+    padding-block:32px 64px;
+  }
+  .wrap{max-width:880px;margin:0 auto;}
+  h1,h2,h3{font-family:'Archivo', system-ui, sans-serif; text-wrap:balance; margin:0;}
+  .num{font-family:'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums;}
+
+  /* top bar */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; padding-block:4px 28px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .mark{
+    width:34px; height:34px; border-radius:9px;
+    background:var(--accent); color:var(--paper-raised);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Archivo'; font-weight:800; font-size:15px; flex-shrink:0;
+  }
+  .brand-name{font-weight:700; font-size:15px; letter-spacing:0.01em;}
+  .brand-sub{font-size:12px; color:var(--muted);}
+  .for-tag{
+    font-family:'IBM Plex Mono'; font-size:12px; color:var(--muted);
+    border:1px solid var(--line); border-radius:100px; padding:6px 12px;
+    background:var(--paper-raised); white-space:nowrap;
+  }
+
+  /* hero */
+  .hero{padding-block:8px 40px; border-bottom:1px solid var(--line); margin-bottom:40px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono'; font-size:12px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--accent); margin-bottom:14px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--accent); display:inline-block;}
+  h1{font-size:clamp(28px,4.4vw,42px); font-weight:700; line-height:1.12; letter-spacing:-0.01em;}
+  h1 em{font-style:normal; color:var(--accent);}
+  .lede{
+    font-size:17px; line-height:1.6; color:var(--ink-soft); max-width:62ch;
+    margin-top:16px;
+  }
+  .who{font-size:13px; color:var(--muted); margin-top:18px;}
+
+  /* demo panel */
+  .demo{
+    display:grid; grid-template-columns:1fr 1fr; gap:0;
+    border:1px solid var(--line); border-radius:16px; overflow:hidden;
+    background:var(--paper-raised); box-shadow:var(--shadow); margin-bottom:44px;
+  }
+  @media (max-width:620px){ .demo{grid-template-columns:1fr;} }
+  .demo-pane{padding:22px 22px 24px;}
+  .demo-pane + .demo-pane{border-top:1px solid var(--line);}
+  @media (min-width:621px){ .demo-pane + .demo-pane{border-top:none; border-left:1px solid var(--line);} }
+  .pane-label{
+    font-family:'IBM Plex Mono'; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .pane-label .live{color:var(--accent); display:flex; align-items:center; gap:6px;}
+  .pane-label .live::before{content:''; width:6px; height:6px; border-radius:50%; background:var(--accent);}
+
+  .call-line{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding-block:10px; border-bottom:1px dashed var(--line); font-size:13px;
+  }
+  .call-line:last-child{border-bottom:none;}
+  .call-who{color:var(--ink-soft);}
+  .call-when{font-family:'IBM Plex Mono'; color:var(--muted); font-size:12px;}
+  .call-tag{
+    font-family:'IBM Plex Mono'; font-size:11px; padding:2px 8px; border-radius:100px;
+    background:var(--accent-soft); color:var(--accent-ink); margin-left:8px;
+  }
+  .call-tag.after{background:var(--gold-soft); color:var(--gold);}
+
+  .sms-thread{display:flex; flex-direction:column; gap:8px;}
+  .bubble{
+    max-width:86%; padding:9px 13px; border-radius:12px; font-size:13.5px; line-height:1.45;
+  }
+  .bubble.in{background:var(--accent); color:#fff; align-self:flex-start; border-bottom-left-radius:4px;}
+  .bubble.out{background:var(--paper); border:1px solid var(--line); align-self:flex-end; border-bottom-right-radius:4px; color:var(--ink-soft);}
+  .thread-meta{font-size:11px; color:var(--muted); text-align:center; margin:2px 0 6px; font-family:'IBM Plex Mono';}
+
+  /* feature strip */
+  .features{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden;
+    margin-bottom:44px;
+  }
+  @media (max-width:620px){ .features{grid-template-columns:1fr;} }
+  .feature{background:var(--paper-raised); padding:22px 20px;}
+  .feature .fi{
+    font-family:'IBM Plex Mono'; font-size:12px; color:var(--accent); margin-bottom:10px;
+  }
+  .feature h3{font-size:16px; font-weight:600; margin-bottom:6px;}
+  .feature p{font-size:13.5px; line-height:1.55; color:var(--muted); margin:0;}
+
+  /* pricing band */
+  .terms{
+    border:1px solid var(--line); border-radius:14px; background:var(--paper-raised);
+    padding:26px 26px 24px; box-shadow:var(--shadow); margin-bottom:36px;
+  }
+  .terms-top{display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:18px;}
+  .price-num{font-family:'Archivo'; font-weight:800; font-size:34px; letter-spacing:-0.01em;}
+  .price-sub{font-size:12.5px; color:var(--muted); margin-top:2px;}
+  .guarantee{
+    display:flex; gap:10px; align-items:flex-start; background:var(--gold-soft);
+    border:1px solid color-mix(in srgb, var(--gold) 35%, transparent); border-radius:10px;
+    padding:12px 14px; font-size:13.5px; line-height:1.5; color:var(--ink-soft);
+  }
+  .guarantee b{color:var(--gold); font-family:'IBM Plex Mono'; font-weight:600;}
+
+  /* close */
+  .close{padding-top:8px;}
+  .close p{font-size:15px; line-height:1.65; color:var(--ink-soft); max-width:60ch;}
+  .close .sign{margin-top:20px; font-size:14px;}
+  .close .sign b{display:block; font-family:'Archivo'; font-size:15px; margin-bottom:2px;}
+  .close .sign span{color:var(--muted); font-size:13px;}
+
+  footer{margin-top:40px; padding-top:20px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); font-family:'IBM Plex Mono';}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="mark">AI</div>
+      <div>
+        <div class="brand-name">AI Front Desk</div>
+        <div class="brand-sub">for dental practices &middot; by UnifyOps</div>
+      </div>
+    </div>
+    <div class="for-tag" id="forTag">Built for your practice</div>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow">Live demo, not a mockup</div>
+    <h1>Every call answered.<br>Every missed one <em>texted back</em>.<br>Nothing booked by hand.</h1>
+    <p class="lede" id="ledeText">This is what it looks like the moment it's turned on for your practice: the phone gets answered at 8pm on a Sunday, and if it's ever missed, the patient gets a text before they've even hung up.</p>
+    <p class="who">Built for practices currently hiring (or thinking about hiring) a front desk receptionist &mdash; this replaces the phone-and-booking half of that job, not the human warmth of your team.</p>
+  </div>
+
+  <div class="demo">
+    <div class="demo-pane">
+      <div class="pane-label"><span>Call log &middot; today</span><span class="live">answering live</span></div>
+      <div class="call-line"><span class="call-who">New patient &middot; toothache</span><span class="call-when">8:52pm <span class="call-tag after">after hours</span></span></div>
+      <div class="call-line"><span class="call-who">Reschedule &middot; cleaning</span><span class="call-when">1:14pm <span class="call-tag">booked</span></span></div>
+      <div class="call-line"><span class="call-who">Insurance question</span><span class="call-when">11:03am <span class="call-tag">handled</span></span></div>
+      <div class="call-line"><span class="call-who">New patient &middot; consult</span><span class="call-when">9:41am <span class="call-tag">booked</span></span></div>
+    </div>
+    <div class="demo-pane">
+      <div class="pane-label"><span>Missed-call text-back</span><span class="live">instant</span></div>
+      <div class="thread-meta" id="threadMeta">as it would send for your practice</div>
+      <div class="sms-thread">
+        <div class="bubble out">Hi, sorry we missed your call!</div>
+        <div class="bubble in">This is <span id="threadBiz">the front desk</span> — want me to grab you the next available cleaning slot?</div>
+        <div class="bubble out">Yes, mornings work best</div>
+        <div class="bubble in">Got you down for Thu 9:15am. See you then!</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="fi">01 &middot; Calls</div>
+      <h3>Answers every call, 24/7</h3>
+      <p>Nights, lunch breaks, Sundays. Patients reach a real conversation, not a voicemail beep.</p>
+    </div>
+    <div class="feature">
+      <div class="fi">02 &middot; Booking</div>
+      <h3>Books straight into your calendar</h3>
+      <p>No back-and-forth. It checks real openings and puts the appointment on your schedule directly.</p>
+    </div>
+    <div class="feature">
+      <div class="fi">03 &middot; Follow-up</div>
+      <h3>Texts back every missed call</h3>
+      <p>If a call still slips through, the patient gets a text within seconds instead of silence.</p>
+    </div>
+  </div>
+
+  <div class="terms">
+    <div class="terms-top">
+      <div>
+        <div class="price-num num">$500<span style="font-size:16px;font-weight:600;">/mo</span></div>
+        <div class="price-sub">Flat. No setup required to start a trial.</div>
+      </div>
+      <div class="price-sub" style="text-align:right;">Runs alongside your current team<br>on your rules &mdash; on or off in seconds.</div>
+    </div>
+    <div class="guarantee">
+      <span>&#9679;</span>
+      <span><b>The guarantee:</b> if it doesn't book at least 5 new appointments in the first 30 days, the next month is free.</span>
+    </div>
+  </div>
+
+  <div class="close">
+    <p id="closeText">If any of this needs walking through, or you'd rather hear it than read it, just reply to my email and I'll call you &mdash; five minutes is usually enough to know if it's a fit.</p>
+    <div class="sign">
+      <b>Bianno Gomes</b>
+      <span>Founder, UnifyOps &middot; AI Front Desk for Dental Practices</span>
+    </div>
+  </div>
+
+  <footer id="footerNote">This page updates the moment your practice is mentioned in the link &mdash; nothing here is stored or tracked.</footer>
+</div>
+
+<script>
+  (function(){
+    try{
+      var params = new URLSearchParams(window.location.search);
+      var biz = (params.get('biz') || '').trim();
+      if(biz){
+        biz = biz.slice(0,80);
+        document.title = 'AI Front Desk — ' + biz;
+        document.getElementById('forTag').textContent = 'Built for ' + biz;
+        document.getElementById('ledeText').textContent = 'This is what it looks like the moment it\'s turned on for ' + biz + ': the phone gets answered at 8pm on a Sunday, and if it\'s ever missed, the patient gets a text before they\'ve even hung up.';
+        document.getElementById('threadMeta').textContent = 'as it would send for ' + biz;
+        document.getElementById('threadBiz').textContent = biz;
+        document.getElementById('closeText').textContent = 'If any of this needs walking through, or you\'d rather hear it than read it, just reply to my email and I\'ll call you about ' + biz + ' — five minutes is usually enough to know if it\'s a fit.';
+      }
+    }catch(e){}
+  })();
+</script>
+
+</body>
+</html>
