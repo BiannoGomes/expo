@@ -271,6 +271,7 @@
       <span class="ts">DECISIONS <b id="tDec">—</b></span>
       <span class="ts">EXPOSURE <b id="tExp">—</b></span>
       <span class="ts">MRR <b>€0 → first client</b></span>
+      <span class="ts" id="hbPill">HEARTBEAT <b style="color:var(--faint)">not armed</b></span>
       <span class="auto">AUTONOMY <span class="bar"><i id="autoBar" style="width:0%"></i></span><b id="autoPct" style="color:var(--text)">—</b></span>
       <span class="ts" id="syncTs"><b style="color:var(--faint)">local</b></span>
     </div>
@@ -433,7 +434,7 @@
 
 <script>
 /* ================= state & sync ================= */
-const KEYS=['exposure','rail','missions','day','ledger','events'];
+const KEYS=['exposure','rail','missions','day','ledger','events','heartbeat'];
 const DEFAULTS={
   exposure:{count:0,entries:[]},
   rail:{queue:[
@@ -468,7 +469,8 @@ const DEFAULTS={
     {ts:Date.parse('2026-09-16T14:15:00+02:00'),k:'warn',m:'Firecrawl key found exposed in old Google Doc — decision queued'},
     {ts:Date.parse('2026-09-16T14:18:00+02:00'),k:'ship',m:'MISSION SHIPPED — jarvis/ repo package pushed to GitHub'},
     {ts:Date.parse('2026-09-16T19:40:00+02:00'),k:'sys',m:'HQ v5 «Command Bridge» — living bridge, NOW cards, event bus'}
-  ]}
+  ]},
+  heartbeat:{runs:[]}
 };
 const NEURAL={
   armed:['Marketing Engine skill','Empire / council / launch skills','Scrapling (lead enrichment)','Deal-economics pricing frame','Books live on KDP'],
@@ -536,7 +538,7 @@ function fleetState(f){
     case 'BUILDER': return ['green','HQ v5 shipped · standby'];
     case 'OUTREACH':return dms?['white','waiting on you — drafted DMs unsent']:['idle','standby'];
     case 'VERIFIER':return (b3&&!b3.done)?['cyan',(b3.subs.filter(s=>s.done).length)+'/'+b3.subs.length+' Book 3 blockers cleared']:['green','Book 3 verified'];
-    case 'MEMORY':  return [DBH?'cyan':'amber',DBH?'db synced · '+S.events.list.length+' events':'local cache only'];
+    case 'MEMORY':  {const hb=lastHB();return hb.fresh?['green','autonomous run '+hb.ago]:[DBH?'cyan':'amber',DBH?'db synced · '+S.events.list.length+' events':'local cache only'];}
     case 'FINANCE': return ['amber','€0 MRR · pricing floor on the rail'];
   }
 }
@@ -606,6 +608,18 @@ function drawOrb(t){
 requestAnimationFrame(drawOrb);
 
 /* ================= renders ================= */
+function lastHB(){
+  const runs=(S.heartbeat&&S.heartbeat.runs)||[];
+  if(!runs.length)return{fresh:false,ago:null,run:null};
+  const r=runs[runs.length-1],h=(Date.now()-r.ts)/36e5;
+  return{fresh:h<36,ago:h<1?'<1h ago':Math.round(h)+'h ago',run:r};
+}
+function renderHB(){
+  const el=document.getElementById('hbPill'),hb=lastHB();
+  if(!hb.run){el.innerHTML='HEARTBEAT <b style="color:var(--faint)">not armed</b>';return;}
+  el.innerHTML='HEARTBEAT <b style="color:'+(hb.fresh?'var(--ok)':'var(--warn)')+'">'
+    +(hb.fresh?'OK · ':'STALE · ')+hb.ago+'</b>';
+}
 function topStats(){
   const open=S.missions.items.filter(m=>!m.done).length;
   const shipped=S.missions.items.filter(m=>m.done).length;
@@ -831,7 +845,7 @@ function renderStream(){
     :'<div style="color:var(--faint)">No events yet — the trace fills as real actions happen.</div>';
 }
 
-function renderAll(){topStats();momentum();renderBridge();renderNow();renderExpo();renderRail();renderMissions();renderDay();renderLedger();renderStream();renderShelf();}
+function renderAll(){topStats();renderHB();momentum();renderBridge();renderNow();renderExpo();renderRail();renderMissions();renderDay();renderLedger();renderStream();renderShelf();}
 renderAll();sizeOrb();
 document.getElementById('newDec').addEventListener('keydown',e=>{if(e.key==='Enter')addDec();});
 document.getElementById('newMi').addEventListener('keydown',e=>{if(e.key==='Enter')addMi();});
