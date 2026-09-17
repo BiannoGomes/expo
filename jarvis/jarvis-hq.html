@@ -14,12 +14,13 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13.5px;line-height:1.5;
-    padding-block:14px 60px;padding-inline:16px;min-height:100vh}
+    padding-block:16px 72px;padding-inline:20px;min-height:100vh}
+  @media(max-width:520px){body{padding-inline:16px}}
   body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
     background:radial-gradient(1000px 560px at 50% -12%,rgba(91,140,255,.10),transparent 62%),
                radial-gradient(760px 520px at 8% 100%,rgba(155,91,255,.06),transparent 60%),
                radial-gradient(700px 480px at 100% 74%,rgba(55,213,232,.05),transparent 60%)}
-  .wrap{max-width:1240px;margin:0 auto;position:relative;z-index:1;display:flex;flex-direction:column;gap:13px}
+  .wrap{max-width:1240px;margin:0 auto;position:relative;z-index:1;display:flex;flex-direction:column;gap:18px}
 
   /* ---------- top bar ---------- */
   .top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--panel);
@@ -33,17 +34,19 @@
   .ts{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.02em;white-space:nowrap}
   .ts b{color:var(--text);font-weight:600}
   .ts.warn b{color:var(--warn)}
+  @media(max-width:860px){.ts.opt{display:none}}
   .auto{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:700;letter-spacing:.14em;color:var(--dim)}
   .auto .bar{width:86px;height:6px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden}
   .auto .bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--violet))}
 
   /* ---------- bridge ---------- */
-  .bridge{display:grid;grid-template-columns:300px 1fr 320px;gap:13px;align-items:stretch}
+  .bridge{display:grid;grid-template-columns:300px 1fr 320px;gap:16px;align-items:stretch}
   @media(max-width:1080px){.bridge{grid-template-columns:1fr 1fr}.orbwrap{order:-1;grid-column:1/-1}}
   @media(max-width:720px){.bridge{grid-template-columns:1fr}}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:17px;backdrop-filter:blur(10px)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;backdrop-filter:blur(10px)}
   h2.sec{font-family:var(--disp);font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
-    color:var(--faint);margin-bottom:12px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+    color:var(--faint);margin-bottom:15px;padding-bottom:10px;border-bottom:1px solid rgba(90,120,200,.12);
+    display:flex;justify-content:space-between;align-items:baseline;gap:8px}
   h2.sec .sub{font-family:var(--sans);font-weight:500;font-size:10.5px;letter-spacing:.02em;text-transform:none;color:var(--dim);text-align:right}
 
   /* orb center */
@@ -158,10 +161,10 @@
   .stream .k-ship{color:var(--ok)} .stream .k-warn{color:var(--warn)}
 
   /* main grid */
-  .grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:13px;align-items:start}
+  .grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:16px;align-items:start}
   @media(max-width:1020px){.grid{grid-template-columns:1fr 1fr}}
   @media(max-width:700px){.grid{grid-template-columns:1fr}}
-  .col{display:flex;flex-direction:column;gap:13px;min-width:0}
+  .col{display:flex;flex-direction:column;gap:16px;min-width:0}
 
   /* exposure */
   .expo{background:linear-gradient(155deg,rgba(230,192,123,.13),rgba(230,192,123,.02));
@@ -237,7 +240,7 @@
   .bseg .i{font-family:var(--mono);color:var(--cyan);font-weight:600;font-size:11px;min-width:16px;padding-top:2px}
 
   /* NOW mission cards */
-  .nowgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+  .nowgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   @media(max-width:1020px){.nowgrid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:700px){.nowgrid{grid-template-columns:1fr}}
   .ncard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;display:flex;flex-direction:column;gap:9px}
@@ -293,7 +296,7 @@
       <span class="ts">MISSIONS <b id="tMiss">—</b></span>
       <span class="ts">DECISIONS <b id="tDec">—</b></span>
       <span class="ts">EXPOSURE <b id="tExp">—</b></span>
-      <span class="ts">MRR <b>€0 → first client</b></span>
+      <span class="ts opt">MRR <b>€0 → first client</b></span>
       <span class="ts" id="hbPill">HEARTBEAT <b style="color:var(--faint)">not armed</b></span>
       <span class="auto">AUTONOMY <span class="bar"><i id="autoBar" style="width:0%"></i></span><b id="autoPct" style="color:var(--text)">—</b></span>
       <span class="ts" id="syncTs"><b style="color:var(--faint)">local</b></span>
@@ -453,13 +456,12 @@
 
 <!-- COMMAND BAR -->
 <div class="cmd" id="cmdBar">
-  <input id="cmdIn" placeholder="Ask Jarvis… hold SPACE to speak · brief · missions · log sent DM to Sam" aria-label="Command bar">
+  <input id="cmdIn" placeholder='Ask Jarvis… or just say "Hey Jarvis"' aria-label="Command bar">
   <button class="go" onclick="runCmd()">Run</button>
+  <span class="qc" id="wakeBtn" onclick="wakeToggle()">🎙 Hey Jarvis: OFF</span>
   <span class="qc" onclick="cmd('brief')">▶ brief</span>
-  <span class="qc" onclick="cmd('everything')">show me everything</span>
-  <span class="qc" onclick="cmd('stop')">stop</span>
   <select id="voiceSel" class="vsel" onchange="voiceChosen()" aria-label="Jarvis voice"><option value="">Voice: auto</option></select>
-  <span class="qc" onclick="testVoice()">test voice</span>
+  <span class="qc" onclick="testVoice()">test</span>
 </div>
 <div class="toast" id="toast" role="status">Saved</div>
 
@@ -553,12 +555,12 @@ for(let i=0;i<N;i++){const y=1-(i/(N-1))*2,r=Math.sqrt(1-y*y),th=i*2.39996323;
 let rot=0,energy=0; /* energy spikes on events */
 function pulse(kind){energy=Math.min(2.2,energy+ (kind==='ship'?1.6:kind==='exp'?1.3:0.8));}
 const FLEET=[
-  {id:'FABLE',role:'strategy · reasoning',ang:-142},
-  {id:'BUILDER',role:'code · pages',ang:-38},
-  {id:'OUTREACH',role:'DMs · email',ang:22},
+  {id:'FABLE',role:'strategy · reasoning',ang:-140},
+  {id:'BUILDER',role:'code · pages',ang:-40},
+  {id:'OUTREACH',role:'DMs · email',ang:20},
   {id:'VERIFIER',role:'audits · evidence',ang:98},
-  {id:'MEMORY',role:'vault · db',ang:158},
-  {id:'FINANCE',role:'revenue · pricing',ang:202}
+  {id:'FINANCE',role:'revenue · pricing',ang:143},
+  {id:'MEMORY',role:'vault · db',ang:184}
 ];
 let fleetPos=[];
 function fleetState(f){
@@ -577,11 +579,26 @@ function placeFleet(){
   const cx=OW/2,cy=OH/2-26,R=Math.min(OW,OH)*0.335;
   const wrap=document.getElementById('fleet');wrap.innerHTML='';fleetPos=[];
   const half=OW<520?46:54;
-  FLEET.forEach(f=>{
+  const pos=FLEET.map(f=>{
     const a=f.ang*Math.PI/180;
     let x=cx+Math.cos(a)*R*1.28,y=cy+Math.sin(a)*R*0.92;
     x=Math.max(half+4,Math.min(OW-half-4,x));
-    y=Math.max(46,Math.min(OH-120,y));
+    y=Math.max(46,Math.min(OH-124,y));
+    return {f,x,y};
+  });
+  /* de-collide: clamping on narrow screens can stack nodes — push overlaps apart vertically */
+  const minDy=OW<520?80:64;
+  for(let pass=0;pass<4;pass++){
+    for(let i=0;i<pos.length;i++)for(let j=i+1;j<pos.length;j++){
+      const a=pos[i],b2=pos[j];
+      if(Math.abs(a.x-b2.x)<half*2&&Math.abs(a.y-b2.y)<minDy){
+        const lo=a.y>b2.y?a:b2,hi=lo===a?b2:a;
+        lo.y=Math.min(OH-124,hi.y+minDy);
+        if(lo.y-hi.y<minDy)hi.y=Math.max(46,lo.y-minDy);
+      }
+    }
+  }
+  pos.forEach(({f,x,y})=>{
     fleetPos.push({x,y});
     const [cls,st]=fleetState(f);
     const el=document.createElement('div');el.className='fnode '+cls;
@@ -1002,28 +1019,88 @@ function closeNode(){document.getElementById('npanel').hidden=true;}
 function nodeGo(){closeNode();jump(nodeTarget);}
 function jump(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});}
 
-/* ================= push-to-talk (hold SPACE) ================= */
-let REC=null,ptt=false;
-function pttStart(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){toast('No speech recognition in this browser — type instead');return;}
-  if(ptt)return;ptt=true;
-  document.getElementById('cmdBar').classList.add('listening');
-  document.getElementById('cmdIn').placeholder='Listening, Commander…';
-  REC=new SR();REC.lang='en-GB';REC.interimResults=false;
-  REC.onresult=e=>{const said=e.results[0][0].transcript.trim();
-    document.getElementById('cmdIn').value=said;runCmd();};
-  REC.onerror=e=>{if(e.error==='not-allowed')toast('Mic blocked — allow the microphone in the address bar');};
-  REC.onend=pttStop;
-  try{REC.start();}catch(e){}
+/* ================= "Hey Jarvis" wake engine =================
+   Always-listening (once armed) continuous recognition. Saying "hey jarvis"
+   barges in: current speech stops, the words after the wake phrase run as a
+   command. Spoken replies never contain the wake word, so the engine cannot
+   trigger itself. Armed state persists per device. */
+let REC=null,wakeOn=false,awaiting=false,wakeTs=0;
+const WAKE=/\b(?:hey|hi|ok(?:ay)?|yo)?,?\s*(?:jarvis|jervis|gervis|jarvus|travis)\b/i;
+function beep(up){try{const C=window.__ac||(window.__ac=new (window.AudioContext||window.webkitAudioContext)());
+  const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);
+  o.frequency.value=up?740:520;g.gain.value=.05;o.start();
+  o.frequency.exponentialRampToValueAtTime(up?980:390,C.currentTime+.14);
+  g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+.18);o.stop(C.currentTime+.2);}catch(e){}}
+function sitrep(){
+  const mid=new Date();mid.setHours(0,0,0,0);
+  const today=S.events.list.filter(e=>e.ts>=mid.getTime());
+  const hb=lastHB();
+  const cur=S.missions.items.find(m=>!m.done);
+  const nxt=cur&&cur.subs.find(s=>!s.done);
+  const done=cur&&cur.subs.length?cur.subs.filter(s=>s.done).length+' of '+cur.subs.length+' steps done':'';
+  return 'Commander. Today: '+(today.length?today.length+' logged action'+(today.length>1?'s':'')+'. ':'no new actions logged yet. ')+
+    (hb.run?('The autonomous run '+hb.ago+' '+ (hb.run.note?('reported: '+hb.run.note+'. '):'completed. ')):'')+
+    (cur?('Current mission: '+cur.t+(done?', '+done:'')+'. '+(nxt?('Next in the pipeline: '+nxt.s+'. '):'')):'All missions shipped. ')+
+    (S.rail.queue.length?('Waiting on you: '+S.rail.queue.length+' decision'+(S.rail.queue.length>1?'s':'')+', first is '+S.rail.queue[0].t+'.'):'The rail is clear.')+
+    ' Exposure count: '+S.exposure.count+'.';
 }
-function pttStop(){if(!ptt)return;ptt=false;
+function handleVoice(said){
+  const s=said.toLowerCase();
+  document.getElementById('cmdIn').value=said;
+  if(/update|status|workload|what have you done|pipeline|how far|progress|report/.test(s)){say(sitrep());return;}
+  if(/brief|morning/.test(s)){speakBrief();return;}
+  if(/approve/.test(s)){S.rail.queue.length?decide(true):say('The rail is clear. Nothing to approve.');return;}
+  if(/reject/.test(s)){S.rail.queue.length?decide(false):say('The rail is clear. Nothing to reject.');return;}
+  if(/^log\s|log an exposure|exposure/.test(s)&&/log/.test(s)){logExpo(said.replace(/^.*?log\s+/i,''));return;}
+  if(/stop|quiet|silence|thank you/.test(s)){if('speechSynthesis' in window)speechSynthesis.cancel();return;}
+  if(/mission/.test(s)){jump('missions');say('Missions on screen.');return;}
+  if(/everything|x.?ray/.test(s)){window.scrollTo({top:0,behavior:'smooth'});say('Full bridge. Everything on screen is live state.');return;}
+  say('That one is beyond this bridge — I have queued it in the command bar for the chat.');
+}
+function wakeToggle(){wakeOn?disarmWake(true):armWake(true);}
+function armWake(byUser){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){if(byUser)toast('No speech recognition in this browser — Chrome or Edge needed');return;}
+  if(wakeOn)return;
+  REC=new SR();REC.lang='en-GB';REC.continuous=true;REC.interimResults=true;
+  REC.onresult=e=>{
+    const res=e.results[e.results.length-1];
+    const said=res[0].transcript.trim();if(!said)return;
+    const speaking=('speechSynthesis' in window)&&speechSynthesis.speaking;
+    const m=said.match(WAKE);
+    if(m){
+      if(speaking)speechSynthesis.cancel();          /* barge-in: he interrupts, it shuts up */
+      const after=said.slice(m.index+m[0].length).replace(/^[,.!?\s]+/,'');
+      pulse('sys');
+      if(after.length>3&&res.isFinal){handleVoice(after);awaiting=false;}
+      else if(res.isFinal||after.length<=3){beep(true);awaiting=true;wakeTs=Date.now();
+        document.getElementById('cmdIn').placeholder='Listening, Commander…';}
+      return;
+    }
+    if(awaiting&&res.isFinal){
+      if(Date.now()-wakeTs<9000){awaiting=false;
+        document.getElementById('cmdIn').placeholder='Ask Jarvis… or just say "Hey Jarvis"';
+        if(!speaking)handleVoice(said);}
+      else awaiting=false;
+    }
+  };
+  REC.onerror=e=>{if(e.error==='not-allowed'){disarmWake(false);toast('Mic blocked — allow the microphone in the address bar, then re-arm');}};
+  REC.onend=()=>{if(wakeOn){try{REC.start();}catch(e){}}};   /* self-heal: keep listening */
+  try{REC.start();}catch(e){if(byUser)toast('Could not start the mic');return;}
+  wakeOn=true;try{localStorage.setItem('hq-wake','1');}catch(e){}
+  const b=document.getElementById('wakeBtn');if(b){b.textContent='🎙 Hey Jarvis: ON';b.style.color='var(--cyan)';b.style.borderColor='var(--cyan)';}
+  document.getElementById('cmdBar').classList.add('listening');
+  if(byUser)toast('Armed. Say "Hey Jarvis" any time — even to interrupt me.');
+}
+function disarmWake(byUser){
+  wakeOn=false;awaiting=false;try{REC&&REC.stop();}catch(e){}
+  try{localStorage.setItem('hq-wake','0');}catch(e){}
+  const b=document.getElementById('wakeBtn');if(b){b.textContent='🎙 Hey Jarvis: OFF';b.style.color='';b.style.borderColor='';}
   document.getElementById('cmdBar').classList.remove('listening');
-  document.getElementById('cmdIn').placeholder='Ask Jarvis… hold SPACE to speak · brief · missions · log sent DM to Sam';
-  try{REC&&REC.stop();}catch(e){}}
-document.addEventListener('keydown',e=>{
-  if(e.code==='Space'&&!e.repeat&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName||'')){e.preventDefault();pttStart();}});
-document.addEventListener('keyup',e=>{if(e.code==='Space')pttStop();});
+  if(byUser)toast('Standing down. The mic is off.');
+}
+/* re-arm automatically if it was on last time (works once mic permission is granted) */
+try{if(localStorage.getItem('hq-wake')==='1')setTimeout(()=>armWake(false),1200);}catch(e){}
 function cmd(s){document.getElementById('cmdIn').value=s;runCmd();}
 function runCmd(){
   const i=document.getElementById('cmdIn'),s=i.value.trim().toLowerCase();if(!s)return;i.value='';
