@@ -57,8 +57,31 @@
   .mission-tag h1{font-family:var(--disp);font-weight:600;font-size:clamp(17px,2.4vw,23px);letter-spacing:.02em;margin-top:4px;text-shadow:0 0 24px rgba(55,213,232,.35)}
   .mission-tag .pct{font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:3px}
   .fleet{position:absolute;inset:0;z-index:1;pointer-events:none}
-  .fnode{position:absolute;transform:translate(-50%,-50%);text-align:center;width:104px;pointer-events:auto}
+  .fnode{position:absolute;transform:translate(-50%,-50%);text-align:center;width:104px;pointer-events:auto;
+    cursor:pointer;transition:transform .18s}
+  .fnode:hover{transform:translate(-50%,-50%) scale(1.12)}
   @media(max-width:520px){.fnode{width:88px}.fnode .st{font-size:8.5px}}
+
+  /* node detail panel */
+  .npanel{position:absolute;z-index:5;left:14px;bottom:96px;width:min(320px,calc(100% - 28px));
+    background:rgba(5,7,13,.92);border:1px solid var(--line2);border-radius:14px;padding:15px 16px;
+    backdrop-filter:blur(14px);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+  .npanel h3{font-family:var(--disp);font-size:13px;font-weight:700;letter-spacing:.14em;display:flex;justify-content:space-between;align-items:center}
+  .npanel h3 button{background:none;border:none;color:var(--faint);font-size:15px;cursor:pointer;padding:2px 6px}
+  .npanel .role{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:2px 0 9px}
+  .npanel ul{list-style:none;font-size:11.5px;color:var(--dim);line-height:1.65}
+  .npanel ul b{color:var(--text);font-weight:600}
+  .npanel .go{margin-top:10px;width:100%;padding:8px;border-radius:8px;border:1px solid var(--line2);
+    background:var(--panel2);color:var(--cyan);font-size:11.5px;font-weight:700;cursor:pointer}
+
+  .imp .cell{cursor:pointer;border-radius:10px;padding:6px;margin:-6px;transition:background .18s}
+  .imp .cell:hover{background:rgba(255,255,255,.04)}
+  .ncard,.panel{transition:border-color .2s}
+  .ncard:hover{border-color:var(--line2)}
+  .cmd.listening{border-color:var(--cyan);box-shadow:0 0 22px rgba(55,213,232,.25)}
+  .vsel{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:8px;
+    padding:6px 8px;font-size:10.5px;max-width:150px;outline:none;cursor:pointer}
+  .vsel:focus{border-color:var(--cyan)}
   .fnode .dot{width:13px;height:13px;border-radius:50%;margin:0 auto;border:2px solid;background:var(--bg2)}
   .fnode .nm{font-family:var(--disp);font-size:9.5px;font-weight:700;letter-spacing:.16em;margin-top:5px}
   .fnode .st{font-size:9px;color:var(--dim);letter-spacing:.04em;line-height:1.35}
@@ -289,10 +312,10 @@
     <section class="panel">
       <h2 class="sec">Omniscope <span class="sub">real numbers only</span></h2>
       <div class="imp">
-        <div class="cell gold"><b id="iExp">0</b><span>humans reached</span></div>
-        <div class="cell"><b id="iShip">0</b><span>missions shipped</span></div>
-        <div class="cell"><b id="iDec">0</b><span>decisions made</span></div>
-        <div class="cell warn"><b id="iNeed">0</b><span>need commander</span></div>
+        <div class="cell gold" onclick="jump('expoBox')"><b id="iExp">0</b><span>humans reached</span></div>
+        <div class="cell" onclick="jump('missions')"><b id="iShip">0</b><span>missions shipped</span></div>
+        <div class="cell" onclick="jump('rail')"><b id="iDec">0</b><span>decisions made</span></div>
+        <div class="cell warn" onclick="jump('rail')"><b id="iNeed">0</b><span>need commander</span></div>
       </div>
       <h2 class="sec" style="margin-top:4px">System momentum</h2>
       <div class="mom" id="mom"></div>
@@ -303,6 +326,12 @@
     <div class="orbwrap">
       <canvas id="orb"></canvas>
       <div class="fleet" id="fleet"></div>
+      <div class="npanel" id="npanel" hidden>
+        <h3><span id="npName"></span><button onclick="closeNode()" aria-label="Close">✕</button></h3>
+        <div class="role" id="npRole"></div>
+        <ul id="npBody"></ul>
+        <button class="go" id="npGo" onclick="nodeGo()">View on the bridge ↓</button>
+      </div>
       <div class="orbui">
         <div class="mission-tag">
           <div class="k">Current mission</div>
@@ -342,7 +371,7 @@
   </section>
 
   <!-- DONE / PROVEN -->
-  <section class="panel">
+  <section class="panel" id="shelfBox">
     <h2 class="sec">Done / proven <span class="sub">artifacts &amp; shipped work — the vault</span></h2>
     <div class="shelf" id="shelf"></div>
   </section>
@@ -350,7 +379,7 @@
   <!-- MAIN GRID -->
   <div class="grid">
     <div class="col">
-      <div class="expo">
+      <div class="expo" id="expoBox">
         <span class="k">Exposure engine</span>
         <div class="n"><span id="expoN">0</span><small> since 16 Sep</small></div>
         <p>Sent, listed, uploaded, published, replied-to. The scoreboard the whole bridge serves.</p>
@@ -423,12 +452,14 @@
 </div>
 
 <!-- COMMAND BAR -->
-<div class="cmd">
-  <input id="cmdIn" placeholder="Ask Jarvis… try: brief · day · missions · log sent DM to Sam" aria-label="Command bar">
+<div class="cmd" id="cmdBar">
+  <input id="cmdIn" placeholder="Ask Jarvis… hold SPACE to speak · brief · missions · log sent DM to Sam" aria-label="Command bar">
   <button class="go" onclick="runCmd()">Run</button>
   <span class="qc" onclick="cmd('brief')">▶ brief</span>
   <span class="qc" onclick="cmd('everything')">show me everything</span>
   <span class="qc" onclick="cmd('stop')">stop</span>
+  <select id="voiceSel" class="vsel" onchange="voiceChosen()" aria-label="Jarvis voice"><option value="">Voice: auto</option></select>
+  <span class="qc" onclick="testVoice()">test voice</span>
 </div>
 <div class="toast" id="toast" role="status">Saved</div>
 
@@ -556,6 +587,9 @@ function placeFleet(){
     const el=document.createElement('div');el.className='fnode '+cls;
     el.style.left=x+'px';el.style.top=y+'px';
     el.innerHTML='<div class="dot"></div><div class="nm">'+f.id+'</div><div class="st">'+esc(st)+'</div>';
+    el.onclick=ev=>{ev.stopPropagation();showNode(f.id);};
+    el.setAttribute('role','button');el.tabIndex=0;
+    el.onkeydown=ev=>{if(ev.key==='Enter')showNode(f.id);};
     wrap.appendChild(el);
   });
 }
@@ -606,6 +640,7 @@ function drawOrb(t){
   requestAnimationFrame(drawOrb);
 }
 requestAnimationFrame(drawOrb);
+orbC.addEventListener('click',()=>{closeNode();pulse('sys');});
 
 /* ================= renders ================= */
 function lastHB(){
@@ -889,22 +924,106 @@ function awayCheck(){
   document.getElementById('away').hidden=false;
 }
 
-/* ================= voice + command bar ================= */
-let VOICE=null;
-function pickVoice(){const vs=speechSynthesis.getVoices();
-  VOICE=vs.find(v=>/en-GB/i.test(v.lang)&&/natural|online/i.test(v.name))||vs.find(v=>/en-GB/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;}
-if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
-function speakBrief(){
+/* ================= voice engine v2 =================
+   Best available British voice, ranked. Edge's free "Natural" en-GB voices are the
+   closest thing to a butler-grade Jarvis without any external API (the page sandbox
+   blocks outside TTS services). Choice persists per device. */
+let VOICE=null,VOICES=[];
+function rankVoice(v){
+  const n=v.name.toLowerCase();let s=0;
+  if(!/en/i.test(v.lang))return -1;
+  if(/en-GB/i.test(v.lang))s+=40;
+  if(/natural|online/.test(n))s+=30;
+  if(/ryan|george|thomas|alistair|daniel|arthur|brian/.test(n))s+=16;
+  if(/google uk english male/.test(n))s+=24;
+  if(/male/.test(n))s+=6;
+  if(/female|libby|sonia|maisie|susan|hazel/.test(n))s-=8;
+  return s;
+}
+function pickVoice(){
+  VOICES=speechSynthesis.getVoices();
+  let saved='';try{saved=localStorage.getItem('hq-voice')||'';}catch(e){}
+  VOICE=(saved&&VOICES.find(v=>v.name===saved))||
+        VOICES.slice().sort((a,b)=>rankVoice(b)-rankVoice(a))[0]||null;
+  const sel=document.getElementById('voiceSel');
+  if(sel){sel.innerHTML='<option value="">Voice: auto</option>'+VOICES.filter(v=>/en/i.test(v.lang)).map(v=>
+    `<option value="${esc(v.name)}" ${v.name===(saved||'')?'selected':''}>${esc(v.name.replace(/Microsoft |Google |Online |\(Natural\)/g,'').trim())}</option>`).join('');}
+}
+function voiceChosen(){
+  const v=document.getElementById('voiceSel').value;
+  try{localStorage.setItem('hq-voice',v);}catch(e){}
+  pickVoice();toast(VOICE?('Voice: '+VOICE.name.replace(/Microsoft |Google |Online |\(Natural\)/g,'').trim()):'Voice: auto');
+}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;setTimeout(pickVoice,900);}
+function say(text){
   if(!('speechSynthesis' in window)){toast('No speech engine in this browser');return;}
   speechSynthesis.cancel();
-  const cur=S.missions.items.find(m=>!m.done);
-  const text='Commander. Exposure count: '+S.exposure.count+'. '+
-    (cur?('Current mission: '+cur.t+'. '):'All missions shipped. ')+
-    (S.rail.queue.length?(S.rail.queue.length+' approval'+(S.rail.queue.length>1?'s':'')+' waiting. First: '+S.rail.queue[0].t+'.'):'The rail is clear.')+
-    ' Two books live. The feed runs dry Sunday. Over to you.';
-  const u=new SpeechSynthesisUtterance(text);if(VOICE)u.voice=VOICE;u.rate=.95;
+  const u=new SpeechSynthesisUtterance(text);
+  if(VOICE)u.voice=VOICE;u.rate=.95;u.pitch=.92;pulse('sys');
   speechSynthesis.speak(u);
 }
+function testVoice(){pickVoice();say('Online, Commander. All systems standing by.');
+  if(!(VOICE&&/natural|online/i.test(VOICE.name)))toast('Tip: open this page in Microsoft Edge for the free Natural UK voices');}
+function speakBrief(){
+  const cur=S.missions.items.find(m=>!m.done);
+  say('Commander. Exposure count: '+S.exposure.count+'. '+
+    (cur?('Current mission: '+cur.t+'. '):'All missions shipped. ')+
+    (S.rail.queue.length?(S.rail.queue.length+' approval'+(S.rail.queue.length>1?'s':'')+' waiting. First: '+S.rail.queue[0].t+'.'):'The rail is clear.')+
+    ' Over to you.');
+}
+
+/* ================= node detail panel ================= */
+const ROLES={FABLE:'strategy · reasoning · recovery',BUILDER:'code · pages · dashboards',
+  OUTREACH:'DMs · email · waves',VERIFIER:'audits · QA · evidence',
+  MEMORY:'vault · shared db · events',FINANCE:'revenue · pricing · Stripe'};
+let nodeTarget='rail';
+function showNode(id){
+  const [cls,st]=fleetState(FLEET.find(f=>f.id===id));
+  const li=[];nodeTarget='rail';
+  li.push('<li><b>State:</b> '+esc(st)+'</li>');
+  if(id==='FABLE'){S.rail.queue.slice(0,3).forEach(q=>li.push('<li>› '+esc(q.t)+'</li>'));nodeTarget='rail';}
+  if(id==='VERIFIER'){const b3=S.missions.items.find(m=>/Book 3/i.test(m.t));
+    if(b3)b3.subs.filter(s=>!s.done).slice(0,4).forEach(s=>li.push('<li>› '+esc(s.s)+'</li>'));nodeTarget='missions';}
+  if(id==='OUTREACH'){const c=S.missions.items.find(m=>/paying client/i.test(m.t));
+    if(c){const nxt=c.subs.find(s=>!s.done);if(nxt)li.push('<li><b>Next:</b> '+esc(nxt.s)+'</li>');}
+    li.push('<li>Sends only on your word — governing rule.</li>');nodeTarget='missions';}
+  if(id==='MEMORY'){const hb=lastHB();
+    li.push('<li><b>Events logged:</b> '+S.events.list.length+'</li>');
+    if(hb.run)li.push('<li><b>Last autonomous run:</b> '+esc(hb.ago)+' — '+esc(hb.run.note||'')+'</li>');nodeTarget='stream';}
+  if(id==='FINANCE'){li.push('<li><b>MRR:</b> €0 → first client</li><li>€97 audit link LIVE on Stripe.</li>');nodeTarget='rail';}
+  if(id==='BUILDER'){const last=S.events.list.filter(e=>e.k==='ship').slice(-1)[0];
+    if(last)li.push('<li><b>Last shipped:</b> '+esc(last.m)+'</li>');nodeTarget='shelf';}
+  document.getElementById('npName').textContent=id;
+  document.getElementById('npRole').textContent=ROLES[id]||'';
+  document.getElementById('npBody').innerHTML=li.join('');
+  document.getElementById('npanel').hidden=false;pulse('sys');
+}
+function closeNode(){document.getElementById('npanel').hidden=true;}
+function nodeGo(){closeNode();jump(nodeTarget);}
+function jump(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});}
+
+/* ================= push-to-talk (hold SPACE) ================= */
+let REC=null,ptt=false;
+function pttStart(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('No speech recognition in this browser — type instead');return;}
+  if(ptt)return;ptt=true;
+  document.getElementById('cmdBar').classList.add('listening');
+  document.getElementById('cmdIn').placeholder='Listening, Commander…';
+  REC=new SR();REC.lang='en-GB';REC.interimResults=false;
+  REC.onresult=e=>{const said=e.results[0][0].transcript.trim();
+    document.getElementById('cmdIn').value=said;runCmd();};
+  REC.onerror=e=>{if(e.error==='not-allowed')toast('Mic blocked — allow the microphone in the address bar');};
+  REC.onend=pttStop;
+  try{REC.start();}catch(e){}
+}
+function pttStop(){if(!ptt)return;ptt=false;
+  document.getElementById('cmdBar').classList.remove('listening');
+  document.getElementById('cmdIn').placeholder='Ask Jarvis… hold SPACE to speak · brief · missions · log sent DM to Sam';
+  try{REC&&REC.stop();}catch(e){}}
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'&&!e.repeat&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName||'')){e.preventDefault();pttStart();}});
+document.addEventListener('keyup',e=>{if(e.code==='Space')pttStop();});
 function cmd(s){document.getElementById('cmdIn').value=s;runCmd();}
 function runCmd(){
   const i=document.getElementById('cmdIn'),s=i.value.trim().toLowerCase();if(!s)return;i.value='';
