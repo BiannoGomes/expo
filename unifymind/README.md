@@ -45,13 +45,13 @@ header mark. Chapter labels are blueprint blue; ember appears exactly once, on
 
 | Item | Status |
 |---|---|
-| Self-Mastery buy link | tr.ee shortlink from Bianno, unverified here (tr.ee egress-blocked). Prefer the public amazon.com/dp/ link |
-| The Invisible Ocean buy link | Same |
-| The Sealed Codex buy link | **Missing.** The KDP bookshelf URL is a private dashboard, not a product page. Use "View on Amazon" from the bookshelf and paste the public link |
-| Cover art | Typographic placeholders render until `BOOKS[*].cover` is set. Real covers exist in the vault's KDP packages (4 - EBOOK COVER, 1600x2560) |
-| Author portrait | `PORTRAIT` empty. Professional AIGLE portraits exist in Drive but exceed what the connector can carry; paste one into chat |
-| MailerLite | `MAILERLITE_ACTION` empty; form states it is not connected. MCP server also unauthorized in this session |
-| Tracking parameters | Cannot be added to tr.ee shortlinks; direct Amazon links accept them |
+| Buy links | **Live for all three**, built from the ASINs on Bianno's KDP bookshelf: B0HBMJDPDS, B0HBYJ8MXJ, B0HGZ322VQ. Ebook editions; Amazon shows the other formats on-page |
+| Cover art | **Real covers in `assets/covers/`** (from the Cowork showcase, 680px web masters). The Sealed Codex also carries its real back cover and flips on click |
+| Author portrait | **Set**: `assets/author/author.jpg`, supplied by Bianno |
+| Prices | Corrected per book from the bookshelf: Self-Mastery ebook $4.99; The Sealed Codex has no hardcover edition |
+| Subtitles | Now the real Amazon subtitles for all three |
+| MailerLite | `MAILERLITE_ACTION` still empty; form states it is not connected |
+| Sales tracking | Clean /dp/ links. Real per-page attribution needs Amazon Attribution tags, which only Bianno can generate in his Amazon Ads console |
 
 The vault at C:\Users\biann\Desktop\Jarvis and Instagram are unreachable from
 this cloud container; everything here came from chat, Drive documents, and the
