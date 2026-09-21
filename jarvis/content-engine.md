@@ -24,10 +24,11 @@
 7. **Optimization**: model routing, cost-per-verified-outcome, self-improvement review
    (what became more/less true, what repeats, what to stop).
 
-## Video model router — Tier A settled (17 Sep)
+## Video model router — Tier A settled (17 Sep, HyperFrames added 21 Sep)
 | Tier | Engine | Use | Why |
 |---|---|---|---|
-| A (free/local) | **Wan2.2 TI2V-5B** in ComfyUI on the RTX 5060 (fp8/GGUF + offload; benchmark one 5s 720p clip first) | ALL experimentation + volume b-roll | Apache 2.0 — full commercial use. Wan2.1-1.3B already on disk; ComfyUI already live |
+| A0 (free/deterministic) | **HyperFrames** (heygen-com, Apache 2.0, local: Node 22 + headless Chrome + FFmpeg) | ALL typographic/graphic motion: quote cards, stat reveals, carousel→reel, book promos, daily bridge sitrep clip | HTML in, identical MP4 out every time — brand CSS renders pixel-perfect, zero credits, zero diffusion roulette. See oss-radar.md |
+| A (free/local) | **Wan2.2 TI2V-5B** in ComfyUI on the RTX 5060 (fp8/GGUF + offload; benchmark one 5s 720p clip first) | photoreal experimentation + volume b-roll | Apache 2.0 — full commercial use. Wan2.1-1.3B already on disk; ComfyUI already live |
 | A (talking head) | Existing Avatar Studio (portrait + Wav2Lip) | UGC/avatar clips | Proven 9 Sep, zero credits. Wan S2V-14B too heavy for the 5060 — skip |
 | — | HunyuanVideo family | **SKIP** | Community license excludes the EU — Bianno operates/sells in the EU |
 | B/C | Low-cost hosted APIs | when local quality caps a proven winner | test before paying |
@@ -36,6 +37,11 @@
 Router rule: FREE until quality is the binding constraint on a *proven* winner; premium
 only when expected commercial value covers it. Real cost includes GPU time, failure rate,
 and human correction — "free" ≠ zero.
+
+Voiceover tier (21 Sep): **Qwen3-TTS 1.7B** (Apache 2.0, fits the 5060) is the planned
+local voice engine — voice DESIGN from text description (the bespoke Jarvis-butler
+archetype, never a real person) + PT-PT and EN voiceovers. Kokoro-82M demoted to
+fallback. Full scan + skip list: oss-radar.md.
 
 ## Governance (unchanged, structural)
 Autonomous: research, drafts, internal analysis, generation, page drafts, staging.
