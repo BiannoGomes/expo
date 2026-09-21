@@ -251,6 +251,36 @@ h2.light { color: var(--ivory); }
 .certs li span { color: var(--ink-soft); font-weight: 400; font-size: .8rem; margin-left: .35rem; }
 
 /* ==========================================================================
+   INTRODUCTION VIDEO
+   ========================================================================== */
+.intro .section__head { text-align: center; }
+.intro__sub { color: rgba(247,244,238,.65); max-width: 520px; margin: 1rem auto 0; font-size: .98rem; }
+.intro__frame {
+  position: relative; max-width: 860px; margin: 0 auto;
+  aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden;
+  background: var(--navy-950); border: 1px solid rgba(201,164,92,.3);
+  box-shadow: 0 30px 70px -25px rgba(0,0,0,.6);
+}
+.intro__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.intro__fallback { text-align: center; margin-top: 1.1rem; color: rgba(247,244,238,.45); font-size: .82rem; }
+.intro__fallback a { color: var(--gold-soft); }
+
+/* ==========================================================================
+   THE WORK (season log, Drive-hosted)
+   ========================================================================== */
+.work__sub { color: var(--ink-soft); max-width: 520px; margin-top: 1rem; font-size: .98rem; }
+.work__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem 1rem; }
+.work__item { margin: 0; }
+.work__item .gallery__item { width: 100%; }
+.work__item img { aspect-ratio: 4 / 3; }
+.work__item figcaption {
+  margin-top: .6rem; font-size: .74rem; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
+}
+.work__item.is-unavailable { display: none; }
+@media (max-width: 700px) { .work__grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* ==========================================================================
    SEA RECORD
    ========================================================================== */
 .flagship {

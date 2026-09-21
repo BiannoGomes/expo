@@ -80,6 +80,18 @@
     });
   }
 
+  /* ---------- Drive-hosted work photos: hide tiles that fail to load ---------- */
+  document.querySelectorAll(".work__item img").forEach(function (img) {
+    img.addEventListener("error", function () {
+      var item = img.closest(".work__item");
+      if (item) item.classList.add("is-unavailable");
+      var section = document.getElementById("work");
+      if (section && section.querySelectorAll(".work__item:not(.is-unavailable)").length === 0) {
+        section.style.display = "none";
+      }
+    });
+  });
+
   /* ---------- gallery lightbox ---------- */
   var lightbox = document.getElementById("lightbox");
   var lbImg = document.getElementById("lbImg");
