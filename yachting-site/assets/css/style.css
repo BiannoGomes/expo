@@ -325,6 +325,17 @@ h2.light { color: var(--ivory); }
 .tl > p { color: var(--ink-soft); font-size: .93rem; max-width: 760px; }
 .tl strong { color: var(--navy-900); }
 
+.tl__divider {
+  font-size: .72rem; font-weight: 700; letter-spacing: .28em; text-transform: uppercase;
+  color: var(--gold); margin: 1.2rem 0 0; position: relative;
+}
+.tl__divider::before {
+  content: ""; position: absolute; left: calc(-2rem - 5px); top: .45rem;
+  width: 8px; height: 8px; background: var(--gold); transform: rotate(45deg);
+}
+.tl > p a { color: var(--gold); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.tl > p a:hover { text-decoration: underline; }
+
 .vessels { margin-top: 3.5rem; padding: 1.6rem 2rem; background: var(--ivory); border-radius: var(--radius); }
 .vessels__label {
   font-size: .7rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
@@ -419,6 +430,45 @@ h2.light { color: var(--ivory); }
 .quote footer { color: rgba(247,244,238,.6); font-size: .82rem; letter-spacing: .04em; }
 .quote cite { color: var(--gold-soft); font-style: normal; }
 @media (max-width: 900px) { .quotes { grid-template-columns: 1fr; } }
+
+/* ==========================================================================
+   REFERENCE LETTERS
+   ========================================================================== */
+.refs__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.3rem; align-items: stretch; }
+.refletter {
+  display: flex; flex-direction: column; gap: 1.2rem;
+  border: 1px solid var(--line); border-left: 3px solid var(--gold);
+  border-radius: var(--radius); padding: 1.9rem 1.7rem; background: var(--paper);
+  transition: box-shadow .25s ease, transform .25s ease;
+}
+.refletter:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+.refletter__quote {
+  font-family: var(--font-display); font-size: 1.16rem; font-style: italic;
+  color: var(--navy-800); line-height: 1.5; flex: 1;
+}
+.refletter__org { font-weight: 600; color: var(--navy-900); font-size: .92rem; }
+.refletter__date { color: var(--ink-soft); font-size: .8rem; margin-top: .15rem; }
+.refletter__link {
+  font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--gold); text-decoration: none;
+}
+.refletter__link:hover { text-decoration: underline; }
+@media (max-width: 900px) { .refs__grid { grid-template-columns: 1fr; } }
+
+/* ==========================================================================
+   MED SEASON ALBUM (Drive embedded folder)
+   ========================================================================== */
+.album { margin-top: 4rem; }
+.album__head h3 { font-size: 1.7rem; color: var(--navy-900); }
+.album__head p { color: var(--ink-soft); font-size: .92rem; margin: .4rem 0 1.4rem; }
+.album__frame {
+  border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+  background: #fff; box-shadow: 0 10px 30px -16px rgba(8,21,34,.25);
+}
+.album__frame iframe { display: block; width: 100%; height: 560px; border: 0; }
+.album__link { margin-top: .9rem; font-size: .85rem; }
+.album__link a { color: var(--gold); font-weight: 600; text-decoration: none; }
+.album__link a:hover { text-decoration: underline; }
 
 /* ==========================================================================
    CONTACT
