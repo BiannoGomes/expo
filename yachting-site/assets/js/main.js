@@ -24,6 +24,29 @@
     }
   });
 
+  /* ---------- hero parallax (water-depth drift) ---------- */
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var heroBg = document.querySelector(".hero__bg");
+  var heroContent = document.querySelector(".hero__content");
+  if (!reduceMotion && heroBg && heroContent) {
+    var parallaxTicking = false;
+    var applyParallax = function () {
+      var y = window.scrollY;
+      if (y <= window.innerHeight * 1.2) {
+        heroBg.style.transform = "translate3d(0," + y * 0.3 + "px,0)";
+        heroContent.style.transform = "translate3d(0," + y * 0.16 + "px,0)";
+        heroContent.style.opacity = Math.max(0, 1 - y / (window.innerHeight * 0.85));
+      }
+      parallaxTicking = false;
+    };
+    window.addEventListener("scroll", function () {
+      if (!parallaxTicking) {
+        requestAnimationFrame(applyParallax);
+        parallaxTicking = true;
+      }
+    }, { passive: true });
+  }
+
   /* ---------- reveal on scroll ---------- */
   var revealEls = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window) {
