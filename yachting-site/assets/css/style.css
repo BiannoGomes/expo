@@ -325,21 +325,6 @@ section[id] { scroll-margin-top: 4.5rem; }
 .certs li span { color: var(--ink-soft); font-weight: 400; font-size: .8rem; margin-left: .35rem; }
 
 /* ==========================================================================
-   INTRODUCTION VIDEO
-   ========================================================================== */
-.intro .section__head { text-align: center; }
-.intro__sub { color: rgba(247,244,238,.65); max-width: 520px; margin: 1rem auto 0; font-size: .98rem; }
-.intro__frame {
-  position: relative; max-width: 860px; margin: 0 auto;
-  aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden;
-  background: var(--navy-950); border: 1px solid rgba(201,164,92,.3);
-  box-shadow: 0 30px 70px -25px rgba(0,0,0,.6);
-}
-.intro__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.intro__fallback { text-align: center; margin-top: 1.1rem; color: rgba(247,244,238,.45); font-size: .82rem; }
-.intro__fallback a { color: var(--gold-soft); }
-
-/* ==========================================================================
    THE WORK (season log, Drive-hosted)
    ========================================================================== */
 .work__sub { color: var(--ink-soft); max-width: 520px; margin-top: 1rem; font-size: .98rem; }
@@ -533,16 +518,17 @@ section[id] { scroll-margin-top: 4.5rem; }
    MED SEASON ALBUM (Drive embedded folder)
    ========================================================================== */
 .album { margin-top: 4rem; }
-.album__head h3 { font-size: 1.7rem; color: var(--navy-900); }
-.album__head p { color: var(--ink-soft); font-size: .92rem; margin: .4rem 0 1.4rem; }
-.album__frame {
-  border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
-  background: #fff; box-shadow: 0 10px 30px -16px rgba(8,21,34,.25);
+.album__banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+  background: var(--navy-900); border: 1px solid rgba(201,164,92,.25);
+  border-radius: var(--radius); padding: 2.2rem 2.4rem; box-shadow: var(--shadow);
 }
-.album__frame iframe { display: block; width: 100%; height: 560px; border: 0; }
-.album__link { margin-top: .9rem; font-size: .85rem; }
-.album__link a { color: var(--gold); font-weight: 600; text-decoration: none; }
-.album__link a:hover { text-decoration: underline; }
+.album__banner h3 { font-size: 1.7rem; color: var(--ivory); }
+.album__banner p { color: rgba(247,244,238,.65); font-size: .92rem; margin-top: .4rem; max-width: 520px; }
+.album__banner .btn { flex-shrink: 0; }
+@media (max-width: 700px) {
+  .album__banner { flex-direction: column; align-items: flex-start; padding: 1.8rem 1.6rem; }
+}
 
 /* ==========================================================================
    CONTACT
