@@ -331,7 +331,7 @@ section[id] { scroll-margin-top: 4.5rem; }
 .work__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem 1rem; }
 .work__item { margin: 0; }
 .work__item .gallery__item { width: 100%; }
-.work__item img { aspect-ratio: 4 / 3; }
+.work__item img { aspect-ratio: 4 / 5; }
 .work__item figcaption {
   margin-top: .6rem; font-size: .74rem; font-weight: 600;
   letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
