@@ -75,7 +75,12 @@ Publish / send / pay stays L1 human-approval forever.
 ## Current honest state (17 Sep)
 Live already: event spine, HQ db as canonical state, trust ledger, daily heartbeat
 (first run 06:37 today — drafted the Wave 7 follow-up and correctly held it), Wan2.2
-runbook, demo-page white-label package. Next slices in order: Playwright-first hands +
-browser supervisor on the desktop → experiment ledger v2 (control/test) → Sentinel →
-funnel autopsy → eval lab. One slice at a time; each proves itself on real work before
-the next begins.
+runbook, demo-page white-label package.
+
+**Slice order revised 22 Sep (commander-approved council synthesis — LEARNING-LOOP.md):**
+the self-correcting layer comes before new capability. In order: eval corpus (seeded,
+jarvis/evals/cases.json) → deterministic postconditions → post-mortem pipeline →
+regression gate → memory consolidation (vault tiers) → experiment ledger v2 →
+metric-divergence detector → Playwright-first hands + browser supervisor (with A9
+canaries) → Sentinel → funnel autopsy → only then new tools/models. One slice at a
+time; each proves itself on real work before the next begins.

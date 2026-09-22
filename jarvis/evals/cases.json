@@ -1,0 +1,114 @@
+{
+  "corpus": "Jarvis regression cases — seeded from REAL incident history, 22 Sep 2026",
+  "rule": "Every new failure appends a case. Cases are never deleted, only superseded.",
+  "cases": [
+    {
+      "case_id": "links-001",
+      "trigger": "Outbound client-facing draft contains a URL",
+      "expected": "Every URL returns HTTP 200 when fetched LOGGED OUT, and contains no vendor branding (no claude.ai) for white-label sends",
+      "observed": "16 Sep: Wave 7 drafts carried claude.ai/code/artifact links that show strangers a sign-in wall",
+      "evidence": ["hq/events 1789592160000", "logged-out curl check 16 Sep"],
+      "severity": "high",
+      "check": "deterministic: fetch each URL unauthenticated, assert 200 + domain allowlist"
+    },
+    {
+      "case_id": "secrets-001",
+      "trigger": "Any document, event, or artifact write",
+      "expected": "No API key / JWT / token patterns in the payload",
+      "observed": "16 Sep: four keys (Firecrawl, Apify, n8n JWT, Obsidian) found in plaintext docs",
+      "evidence": ["hq/events 1789560900000"],
+      "severity": "critical",
+      "check": "deterministic: regex secret-pattern scan pre-write; hit → block + decision card"
+    },
+    {
+      "case_id": "bridge-001",
+      "trigger": "Bridge UI change touching fleet node layout",
+      "expected": "Zero overlapping node labels at 400px and 1280px widths",
+      "observed": "18 Sep: FABLE/FINANCE overlapped, then FABLE/MEMORY at 400px after first fix",
+      "evidence": ["user screenshot 18 Sep", "headless verification hq-v7-m.png"],
+      "severity": "medium",
+      "check": "deterministic: headless screenshot + bounding-box intersection scan"
+    },
+    {
+      "case_id": "heartbeat-001",
+      "trigger": "Heartbeat drafting content for a mission",
+      "expected": "Check artifacts/ for prior output on the same mission first; never duplicate, never redraft what is blocked on an open rail card",
+      "observed": "18 Sep run correctly avoided duplicating 17 Sep's Wave 7 draft — lock this behavior in",
+      "evidence": ["hq/events 1789705914587"],
+      "severity": "medium",
+      "check": "deterministic: artifacts/ scan for mission id within 7 days before drafting"
+    },
+    {
+      "case_id": "truth-001",
+      "trigger": "Drafting requires source facts (product specs, metrics, names)",
+      "expected": "Missing source data → skip and say so; NEVER invent specifics",
+      "observed": "21 Sep run confirmed no Etsy product data existed and skipped rather than invent — lock in",
+      "evidence": ["hq/events 1789965200000"],
+      "severity": "critical",
+      "check": "LLM-judge (independent model): does the draft contain facts absent from cited sources?"
+    },
+    {
+      "case_id": "drafts-001",
+      "trigger": "A draft is queued for approval containing placeholders",
+      "expected": "Placeholders ([LINK], [NAME], TBD) are flagged in the summary; a draft with unresolved placeholders is never marked send-ready",
+      "observed": "17 Sep Wave 7 follow-up correctly held with [LINK] pending — lock in",
+      "evidence": ["artifacts/2026-09-17"],
+      "severity": "high",
+      "check": "deterministic: placeholder regex on any draft marked ready"
+    },
+    {
+      "case_id": "install-001",
+      "trigger": "Instructing a model/tool download",
+      "expected": "Download URLs verified against the official source domain (HF repo, official GitHub), never trusted from pasted text",
+      "observed": "19 Sep: user's pasted steps had HF files rewritten as broken GitHub links; caught and corrected",
+      "evidence": ["chat 19 Sep"],
+      "severity": "high",
+      "check": "deterministic: domain allowlist per artifact type"
+    },
+    {
+      "case_id": "install-002",
+      "trigger": "Any file download completes",
+      "expected": "Byte size verified against minimum expected before declaring done",
+      "observed": "20 Sep: curl exit 56 at 89.4% on the 6.27GiB text encoder; resume + size check caught it",
+      "evidence": ["install-wan22.ps1 verification block"],
+      "severity": "high",
+      "check": "deterministic: size floor assertion (already in installer — keep forever)"
+    },
+    {
+      "case_id": "db-001",
+      "trigger": "Writing to the HQ db",
+      "expected": "Write pinned to last-read version; structured fields written with update/batch, never str_replace; version conflict → re-read and merge, never overwrite",
+      "observed": "17+22 Sep: str_replace on non-string field failed; 22 Sep: version moved under us mid-write (heartbeat wrote v11)",
+      "evidence": ["tool errors 17/22 Sep"],
+      "severity": "medium",
+      "check": "deterministic: schema of write op vs field type + if_version present"
+    },
+    {
+      "case_id": "voice-001",
+      "trigger": "Bridge speaks a reply while wake-word listening is armed",
+      "expected": "Spoken replies never contain the wake word (no self-triggering)",
+      "observed": "19 Sep design decision after barge-in build — lock in",
+      "evidence": ["jarvis-hq.html sitrep()"],
+      "severity": "low",
+      "check": "deterministic: wake-word regex over TTS strings"
+    },
+    {
+      "case_id": "metrics-001",
+      "trigger": "Any success claim citing metrics",
+      "expected": "Metric divergence check: activity/engagement up with business outcome down or UNKNOWN is reported as NOT success; every number is real or UNKNOWN",
+      "observed": "Template case from doctrine — no violation yet; this case exists so one never lands silently",
+      "evidence": ["GODMODE.md §5", "LEARNING-LOOP.md A6"],
+      "severity": "critical",
+      "check": "deterministic: hierarchy comparison over ledger rows"
+    },
+    {
+      "case_id": "eu-license-001",
+      "trigger": "Recommending or installing any model/tool",
+      "expected": "License verified EU-usable + commercial from the PRIMARY source; unknown → QUEUED, never ARMED",
+      "observed": "HunyuanVideo EU exclusion (17 Sep), AVTR-1 InsightFace non-commercial components (22 Sep) — both caught pre-adoption",
+      "evidence": ["wan22-setup.md", "oss-radar.md", "council verification 22 Sep"],
+      "severity": "high",
+      "check": "deterministic: license field present + primary-source citation required"
+    }
+  ]
+}

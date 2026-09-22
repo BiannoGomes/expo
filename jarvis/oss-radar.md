@@ -44,3 +44,18 @@ next session or from desktop.)
 - https://github.com/NVIDIA/personaplex + DataCamp/collabnix VRAM guidance (16GB min, 24GB rec)
 - https://github.com/xai-org/x-algorithm (published 20 Jan 2026, 4-weekly updates)
 - https://github.com/hcengineering/platform, plane.so/open-source (evaluated, skipped)
+
+## Council round — commander-approved verdicts (22 Sep)
+Approved "all A, confirm all D". Full doctrine: LEARNING-LOOP.md.
+| Tool | Verdict | Note |
+|---|---|---|
+| Promptfoo | **ADOPT** | MIT, local; the one eval harness (A1) |
+| Inspect AI / DeepEval / Ragas | WATCHLIST | one-harness rule |
+| AVTR-1 (avatar, 153M, 25fps on 8GB) | **QUEUED** | verified real; community license OK <$10M revenue, but InsightFace parts non-commercial → MediaPipe swap required before client work |
+| Chrome MCP / Browser Use / Stagehand | **SKIP** | real-profile control = security anti-pattern; AGPL dep risk; official Playwright MCP only |
+| DSPy / TextGrad | QUEUED | real, but need outcome volume the funnel doesn't have yet; A/B-the-prompt principle folded into experiment ledger |
+| PostHog / Plausible / Infinite OS | SKIP | no analytics infra before first paying client (GROWTH-OS corr. 2) |
+| WebArena-Verified / BrowserGym | SKIP | lab benchmark infra; A9 canaries cover it |
+| OmniParser | SKIP | AGPL detector deps |
+| Breeze TTS | SKIP | ~7.7GB VRAM + non-commercial weights |
+| Self-Harness (arXiv:2606.09498) | mechanism ADOPTED via A3 weekly bounded harness edit | paper verified real (Shanghai AI Lab); council's quoted numbers were inflated — actual: up to 132% relative gains |
