@@ -110,18 +110,25 @@
   .worlds .head{margin-bottom:clamp(40px,6vh,64px)}
   .triptych{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
     gap:clamp(22px,3vw,40px); margin-bottom:clamp(40px,6vh,60px)}
-  .world{display:block; text-align:left; background:none; border:1px solid var(--rule);
-    padding:clamp(24px,3vw,38px); cursor:pointer; color:inherit; font-family:var(--serif);
+  .world{display:flex; flex-direction:column; text-align:left; background:rgba(10,10,11,.4);
+    border:1px solid var(--rule); padding:0; cursor:pointer; color:inherit; font-family:var(--serif);
     transition:border-color .35s, transform .5s cubic-bezier(.2,.8,.2,1)}
-  .world:hover,.world:focus-visible{border-color:rgba(201,162,39,.55); transform:translateY(-6px); outline:none}
+  .world:hover,.world:focus-visible{border-color:rgba(201,162,39,.55); transform:translateY(-8px); outline:none}
+  .wcover{display:flex; justify-content:center;
+    padding:clamp(24px,2.8vw,34px) clamp(22px,2.6vw,32px) 0}
+  .wcover img{width:62%; max-width:190px; border:1px solid rgba(201,162,39,.3);
+    box-shadow:0 24px 48px -22px rgba(0,0,0,.9);
+    transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+  .world:hover .wcover img,.world:focus-visible .wcover img{transform:translateY(-6px)}
+  .wbody{display:block; padding:clamp(20px,2.5vw,28px) clamp(22px,2.6vw,32px) clamp(24px,2.8vw,34px)}
   .world .num{font-family:var(--inscr); font-size:11px; letter-spacing:.4em; color:var(--gold);
-    display:block; margin-bottom:18px}
-  .world h3{margin-bottom:12px; color:var(--bone)}
-  .world .terr{font-size:14px; line-height:1.7; color:var(--dim); margin-bottom:16px}
+    display:block; margin-bottom:12px}
+  .world h3{margin-bottom:8px; color:var(--bone)}
+  .wtag{display:block; font-size:10px; letter-spacing:.3em; text-transform:uppercase;
+    color:var(--blue); margin-bottom:14px}
   .world .ask{font-family:var(--display); font-style:italic; font-size:15px; color:var(--gold-lt)}
-  .thread-line{font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--blue);
-    text-align:center}
-  .thread-line b{color:var(--dim); font-weight:400; padding:0 10px}
+  .threadnote{max-width:none; text-align:center; font-family:var(--display); font-style:italic;
+    color:var(--dim); font-size:clamp(15px,1.7vw,19px)}
 
   /* ---------- book chapters ---------- */
   .bookch .inner{max-width:1180px; margin:0 auto; display:grid;
@@ -316,7 +323,7 @@
         <h2 class="rise">Three doors into one question</h2>
       </div>
       <div class="triptych" id="triptych"></div>
-      <p class="thread-line rise">The body <b>then</b> the inner world <b>then</b> the world of meaning</p>
+      <p class="threadnote rise">One question runs beneath all three.</p>
     </div>
   </section>
 
@@ -517,9 +524,9 @@ const CODEX = [
 ];
 
 const WORLDS = [
-  ["I","Self-Mastery","The territory of deliberate action. The outward-facing book.","Who are you becoming through what you repeatedly do?","#ch-body"],
-  ["II","The Invisible Ocean","The territory beneath the visible world. The inward-facing book.","What exists beneath the surface of what you can see?","#ch-depth"],
-  ["III","The Sealed Codex","The territory of language and hidden meaning. The symbolic book.","What if language contains more than we were taught to notice?","#ch-code"],
+  ["I","Self-Mastery","The Body","Who are you becoming through what you repeatedly do?","#ch-body","assets/covers/self-mastery.jpg"],
+  ["II","The Invisible Ocean","The Inner World","What exists beneath the surface of what you can see?","#ch-depth","assets/covers/invisible-ocean.jpg"],
+  ["III","The Sealed Codex","The World of Meaning","What if language contains more than we were taught to notice?","#ch-code","assets/covers/sealed-codex.jpg"],
 ];
 
 const DOORS = [
@@ -554,12 +561,13 @@ function spiral(){
 
 /* ---------- the three worlds ---------- */
 const triptych = document.getElementById("triptych");
-WORLDS.forEach(([num, title, terr, ask, href], i) => {
+WORLDS.forEach(([num, title, tag, ask, href, cov], i) => {
   const b = el("button", "world rise");
   b.type = "button";
   b.style.transitionDelay = (i*90) + "ms";
-  b.innerHTML = `<span class="num">${num}</span><h3>${title}</h3>
-    <p class="terr">${terr}</p><p class="ask">${ask}</p>`;
+  b.innerHTML = `<span class="wcover"><img src="${cov}" alt="Cover of ${title}" loading="lazy" decoding="async"></span>
+    <span class="wbody"><span class="num">${num}</span><h3>${title}</h3>
+    <span class="wtag">${tag}</span><p class="ask">${ask}</p></span>`;
   b.addEventListener("click", () => document.querySelector(href).scrollIntoView({block:"start"}));
   triptych.appendChild(b);
 });
