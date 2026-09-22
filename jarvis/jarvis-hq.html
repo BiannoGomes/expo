@@ -283,6 +283,57 @@
     color:#032a2f;font-size:12.5px;font-weight:700;padding:10px 20px;border-radius:10px;transition:transform .28s;z-index:60;max-width:88vw;text-align:center}
   .toast.show{transform:translateX(-50%) translateY(0)}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  /* ---------- DEBRIEF cinema ---------- */
+  .deb{position:fixed;inset:0;z-index:60;background:#04060c;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .deb[hidden]{display:none}
+  .deb::before{content:"";position:absolute;inset:-30%;pointer-events:none;
+    background:radial-gradient(46% 38% at 30% 32%,rgba(91,140,255,.16),transparent 62%),
+               radial-gradient(40% 34% at 74% 70%,rgba(155,91,255,.13),transparent 60%),
+               radial-gradient(30% 26% at 62% 22%,rgba(55,213,232,.10),transparent 58%);
+    animation:debdrift 26s ease-in-out infinite alternate}
+  @keyframes debdrift{from{transform:translate3d(-2%,-1%,0) scale(1)}to{transform:translate3d(2%,2%,0) scale(1.06)}}
+  .deb::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:radial-gradient(1px 1px at 12% 24%,rgba(255,255,255,.35),transparent 55%),
+      radial-gradient(1px 1px at 78% 12%,rgba(255,255,255,.25),transparent 55%),
+      radial-gradient(1.5px 1.5px at 54% 66%,rgba(155,203,255,.3),transparent 55%),
+      radial-gradient(1px 1px at 30% 82%,rgba(255,255,255,.22),transparent 55%),
+      radial-gradient(1px 1px at 90% 58%,rgba(255,255,255,.28),transparent 55%)}
+  .debCard{position:relative;z-index:2;max-width:860px;width:min(92vw,860px);text-align:center;padding:20px}
+  .debIco{font-size:54px;line-height:1;margin-bottom:22px;filter:drop-shadow(0 0 22px rgba(91,140,255,.55));
+    animation:debpop .7s cubic-bezier(.2,1.4,.4,1) both}
+  @keyframes debpop{from{opacity:0;transform:scale(.5) translateY(14px)}to{opacity:1;transform:none}}
+  .debKick{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.42em;color:var(--cyan);
+    text-transform:uppercase;margin-bottom:16px;animation:debin .8s .08s ease both}
+  .debTitle{font-family:var(--disp);font-weight:700;font-size:clamp(24px,4.6vw,44px);line-height:1.16;
+    letter-spacing:-.01em;margin-bottom:18px;animation:debin .8s .16s ease both;
+    background:linear-gradient(180deg,#fff,#b9c8f2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .debBody{font-size:clamp(13px,1.8vw,16.5px);color:var(--dim);max-width:620px;margin:0 auto 26px;line-height:1.65;
+    animation:debin .8s .26s ease both}
+  .debBody b{color:var(--text)}
+  @keyframes debin{from{opacity:0;transform:translateY(16px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+  .debBar{width:min(420px,70vw);height:8px;margin:0 auto 26px;border-radius:6px;background:rgba(255,255,255,.07);
+    overflow:hidden;animation:debin .8s .3s ease both}
+  .debBar i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,var(--cyan),var(--blue),var(--violet));
+    box-shadow:0 0 14px rgba(91,140,255,.6);transition:width 1.4s cubic-bezier(.3,1,.3,1)}
+  .debWarnT .debTitle{background:linear-gradient(180deg,#ffe9d2,#f0a35e);-webkit-background-clip:text;background-clip:text}
+  .debOkT .debIco{filter:drop-shadow(0 0 22px rgba(61,220,151,.6))}
+  .debDots{position:absolute;left:0;right:0;bottom:66px;display:flex;gap:8px;justify-content:center;z-index:3}
+  .debDots i{width:22px;height:4px;border-radius:3px;background:rgba(255,255,255,.12);transition:.3s}
+  .debDots i.on{background:linear-gradient(90deg,var(--cyan),var(--blue));box-shadow:0 0 10px rgba(55,213,232,.5)}
+  .debHint{position:absolute;left:0;right:0;bottom:26px;text-align:center;z-index:3;
+    font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--faint)}
+  .debX{position:absolute;top:18px;right:22px;z-index:4;font-size:13px;color:var(--dim);cursor:pointer;
+    border:1px solid var(--line2);border-radius:20px;padding:6px 14px;background:rgba(13,18,32,.6)}
+  .debX:hover{color:var(--text);border-color:var(--cyan)}
+  .debMute{position:absolute;top:18px;left:22px;z-index:4;font-size:13px;color:var(--dim);cursor:pointer;
+    border:1px solid var(--line);border-radius:20px;padding:6px 14px;background:rgba(13,18,32,.6)}
+  .debPill{position:fixed;left:50%;transform:translateX(-50%);bottom:76px;z-index:55;cursor:pointer;
+    display:flex;align-items:center;gap:10px;padding:10px 18px;border-radius:26px;
+    background:linear-gradient(135deg,rgba(23,32,58,.95),rgba(34,26,66,.95));border:1px solid var(--line2);
+    box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 24px rgba(91,140,255,.25);backdrop-filter:blur(10px);
+    font-family:var(--disp);font-weight:600;font-size:13px;animation:debpop .6s cubic-bezier(.2,1.4,.4,1) both}
+  .debPill i{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);animation:bl 2s infinite}
+  .debPill:hover{border-color:var(--cyan)}
 </style>
 
 <div class="wrap">
@@ -450,9 +501,19 @@
 
   <p class="foot">
     <b>Jarvis proposes · Bianno approves anything that publishes, sends, or pays.</b><br>
-    Every number on this bridge is real, or it isn't shown. · Jarvis HQ v5 «Command Bridge» · synced via artifact db
+    Every number on this bridge is real, or it isn't shown. · Jarvis HQ v7 «Command Bridge · Debrief» · synced via artifact db
   </p>
 </div>
+
+<!-- DEBRIEF CINEMA -->
+<div class="deb" id="deb" hidden>
+  <span class="debMute" id="debMute" onclick="debMuteToggle(event)">🔊 voice</span>
+  <span class="debX" onclick="debClose()">✕ close</span>
+  <div class="debCard" id="debCard"></div>
+  <div class="debDots" id="debDots"></div>
+  <div class="debHint">CLICK / → NEXT &nbsp;·&nbsp; ← BACK &nbsp;·&nbsp; ESC CLOSE</div>
+</div>
+<div class="debPill" id="debPill" hidden onclick="debStart()"><i></i><span id="debPillTxt">Daily debrief ready</span></div>
 
 <!-- COMMAND BAR -->
 <div class="cmd" id="cmdBar">
@@ -460,6 +521,7 @@
   <button class="go" onclick="runCmd()">Run</button>
   <span class="qc" id="wakeBtn" onclick="wakeToggle()">🎙 Hey Jarvis: OFF</span>
   <span class="qc" onclick="cmd('brief')">▶ brief</span>
+  <span class="qc" onclick="debStart()">🎬 debrief</span>
   <select id="voiceSel" class="vsel" onchange="voiceChosen()" aria-label="Jarvis voice"><option value="">Voice: auto</option></select>
   <span class="qc" onclick="testVoice()">test</span>
 </div>
@@ -1047,6 +1109,7 @@ function sitrep(){
 function handleVoice(said){
   const s=said.toLowerCase();
   document.getElementById('cmdIn').value=said;
+  if(/debrief|walk me through|show me the work|what did you do today/.test(s)){debStart();return;}
   if(/update|status|workload|what have you done|pipeline|how far|progress|report/.test(s)){say(sitrep());return;}
   if(/brief|morning/.test(s)){speakBrief();return;}
   if(/approve/.test(s)){S.rail.queue.length?decide(true):say('The rail is clear. Nothing to approve.');return;}
@@ -1105,6 +1168,7 @@ function cmd(s){document.getElementById('cmdIn').value=s;runCmd();}
 function runCmd(){
   const i=document.getElementById('cmdIn'),s=i.value.trim().toLowerCase();if(!s)return;i.value='';
   if(/^log\s+/.test(s)){logExpo(s.replace(/^log\s+/,''));return;}
+  if(/debrief|walk me through/.test(s)){debStart();return;}
   if(/brief|morning/.test(s)){speakBrief();return;}
   if(/^stop/.test(s)){if('speechSynthesis' in window)speechSynthesis.cancel();toast('Quiet.');return;}
   if(/everything|x-?ray/.test(s)){document.getElementById('away').hidden=true;window.scrollTo({top:0,behavior:'smooth'});
@@ -1114,6 +1178,104 @@ function runCmd(){
   if(/approve/.test(s)){S.rail.queue.length?decide(true):toast('Rail clear — nothing to approve');return;}
   if(/reject/.test(s)){S.rail.queue.length?decide(false):toast('Rail clear — nothing to reject');return;}
   toast('Beyond this bridge’s reach — paste it to Jarvis in chat');
+}
+
+/* ================= DEBRIEF cinema =================
+   A full-screen, narrated walkthrough of what Jarvis actually did — every slide is
+   generated from live db state; nothing decorative claims progress that isn't real. */
+let DEBS=[],debIdx=0,debOn=false,debVoice=true,debTimer=null;
+const KICON={ship:'🚀',exp:'📡',sys:'🛰️',warn:'⚠️'};
+function debSince(){let t=0;try{t=+localStorage.getItem('hq-deb-ts')||0;}catch(e){}
+  const mid=new Date();mid.setHours(0,0,0,0);
+  return t||mid.getTime()-86400000;}
+function buildDebrief(){
+  const since=debSince();
+  let evs=S.events.list.filter(e=>e.ts>since);
+  if(!evs.length)evs=S.events.list.slice(-4);
+  const order={ship:0,exp:1,warn:2,sys:3};
+  evs=evs.slice().sort((a,b)=>(order[a.k]??4)-(order[b.k]??4)||a.ts-b.ts);
+  const hb=lastHB();
+  const cur=S.missions.items.find(m=>!m.done);
+  const slides=[];
+  const dstr=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  slides.push({ico:'🛰️',kick:'JARVIS · DAILY DEBRIEF',title:dstr,
+    body:'<b>'+evs.length+'</b> logged action'+(evs.length===1?'':'s')+' since your last debrief. Every number that follows is live state.',
+    say:'Commander. Your debrief. '+evs.length+' logged action'+(evs.length===1?'':'s')+' since we last spoke.'});
+  if(hb.run)slides.push({ico:hb.run.status==='WARN'?'⚠️':'💓',kick:'AUTONOMOUS RUN · '+esc(hb.ago).toUpperCase(),
+    cls:hb.run.status==='WARN'?'debWarnT':'debOkT',
+    title:hb.run.status==='WARN'?'Heartbeat ran — flagged for you':'Heartbeat ran clean',
+    body:esc(hb.run.note||'Run completed.'),
+    say:'The autonomous run '+hb.ago+' reported: '+(hb.run.note||'completed.')});
+  evs.slice(0,6).forEach(e=>{
+    slides.push({ico:KICON[e.k]||'◆',kick:e.k==='ship'?'SHIPPED':e.k==='exp'?'EXPOSURE':e.k==='warn'?'NEEDS EYES':'SYSTEM',
+      cls:e.k==='warn'?'debWarnT':(e.k==='ship'?'debOkT':''),
+      title:esc(e.m.split('—')[0].trim().slice(0,80)),
+      body:esc(e.m.length>80?e.m:'' )||('Logged '+new Date(e.ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'})),
+      say:e.m.split('—').join('. ').slice(0,220)});
+  });
+  if(cur){const dn=cur.subs.filter(s=>s.done).length,tot=cur.subs.length;
+    const nxt=cur.subs.find(s=>!s.done);
+    slides.push({ico:'🎯',kick:'CURRENT MISSION',title:esc(cur.t),
+      body:(tot?('<b>'+dn+' of '+tot+'</b> steps complete.'):esc(cur.d||''))+(nxt?(' Next: <b>'+esc(nxt.s)+'</b>'):''),
+      bar:tot?Math.round(dn/tot*100):null,
+      say:'Current mission: '+cur.t+'. '+(tot?(dn+' of '+tot+' steps complete. '):'')+(nxt?('Next: '+nxt.s+'.'):'')});}
+  if(S.rail.queue.length)slides.push({ico:'🔔',kick:'WAITING ON YOU',cls:'debWarnT',
+    title:S.rail.queue.length+' decision'+(S.rail.queue.length>1?'s':'')+' on the rail',
+    body:'Top of the rail: <b>'+esc(S.rail.queue[0].t)+'</b>',
+    say:S.rail.queue.length+' decision'+(S.rail.queue.length>1?'s':'')+' waiting. Top of the rail: '+S.rail.queue[0].t+'.'});
+  slides.push({ico:'🧭',kick:'DEBRIEF COMPLETE',title:'Exposure count: '+S.exposure.count,
+    body:S.rail.queue.length?'One tap clears the top rail card — that is the highest-leverage click on this bridge.':'The rail is clear, Commander.',
+    say:'Debrief complete. Exposure count '+S.exposure.count+'. '+(S.rail.queue.length?'The rail awaits your word.':'The rail is clear.')+' Over to you.'});
+  return slides;
+}
+function debRender(){
+  const s=DEBS[debIdx];if(!s)return;
+  document.getElementById('debCard').innerHTML=
+    '<div class="'+(s.cls||'')+'"><div class="debIco">'+s.ico+'</div>'+
+    '<div class="debKick">'+s.kick+'</div><div class="debTitle">'+s.title+'</div>'+
+    (s.body?('<div class="debBody">'+s.body+'</div>'):'')+
+    (s.bar!=null?('<div class="debBar"><i id="debBarI"></i></div>'):'')+'</div>';
+  if(s.bar!=null)requestAnimationFrame(()=>setTimeout(()=>{const b=document.getElementById('debBarI');if(b)b.style.width=s.bar+'%';},60));
+  document.getElementById('debDots').innerHTML=DEBS.map((_,i)=>'<i class="'+(i<=debIdx?'on':'')+'"></i>').join('');
+  pulse('sys');
+  clearTimeout(debTimer);
+  if(debVoice&&('speechSynthesis' in window)){
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(s.say||'');if(VOICE)u.voice=VOICE;u.rate=.97;u.pitch=.92;
+    u.onend=()=>{if(debOn)debTimer=setTimeout(debNext,1600);};
+    speechSynthesis.speak(u);
+    debTimer=setTimeout(()=>{if(debOn)debNext();},16000); /* safety net */
+  }else debTimer=setTimeout(()=>{if(debOn)debNext();},6500);
+}
+function debNext(){if(!debOn)return;if(debIdx<DEBS.length-1){debIdx++;debRender();}else debClose();}
+function debPrev(){if(debOn&&debIdx>0){debIdx--;debRender();}}
+function debStart(){
+  DEBS=buildDebrief();debIdx=0;debOn=true;
+  document.getElementById('debPill').hidden=true;
+  document.getElementById('deb').hidden=false;
+  document.body.style.overflow='hidden';
+  debRender();
+}
+function debClose(){
+  debOn=false;clearTimeout(debTimer);
+  if('speechSynthesis' in window)speechSynthesis.cancel();
+  document.getElementById('deb').hidden=true;
+  document.body.style.overflow='';
+  try{localStorage.setItem('hq-deb-ts',String(Date.now()));}catch(e){}
+}
+function debMuteToggle(e){e.stopPropagation();debVoice=!debVoice;
+  document.getElementById('debMute').textContent=debVoice?'🔊 voice':'🔇 muted';
+  if(!debVoice&&('speechSynthesis' in window))speechSynthesis.cancel();
+  if(debOn)debRender();}
+document.getElementById('deb').addEventListener('click',e=>{
+  if(e.target.closest('.debX')||e.target.closest('.debMute'))return;debNext();});
+document.addEventListener('keydown',e=>{if(!debOn)return;
+  if(e.key==='Escape')debClose();else if(e.key==='ArrowLeft')debPrev();
+  else if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();debNext();}});
+function debriefOffer(){
+  const n=S.events.list.filter(e=>e.ts>debSince()).length;
+  if(n>=2&&!debOn){document.getElementById('debPillTxt').textContent='Daily debrief ready — '+n+' update'+(n>1?'s':'');
+    document.getElementById('debPill').hidden=false;}
 }
 
 /* ================= db sync ================= */
@@ -1131,5 +1293,6 @@ function runCmd(){
   });
   ts.innerHTML='<b style="color:var(--cyan)">SYNCED</b>';
   setTimeout(awayCheck,2500);
+  setTimeout(debriefOffer,3200);
 })();
 </script>
