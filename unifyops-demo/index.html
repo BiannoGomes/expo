@@ -221,6 +221,33 @@
     </div>
   </div>
 
+  <!-- LIVE VOICE DEMO — talk to the receptionist (no backend, runs in the browser) -->
+  <style>
+    .vd{margin:26px 0;border:1px solid rgba(120,150,230,.25);border-radius:14px;padding:18px;background:rgba(13,18,32,.35)}
+    .vd .pane-label{margin-bottom:10px}
+    .vd-thread{display:flex;flex-direction:column;gap:8px;min-height:120px;max-height:260px;overflow-y:auto;padding:4px 0}
+    .vd-row{display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap}
+    .vd-btn{border:none;border-radius:999px;padding:12px 22px;font-weight:700;font-size:14px;cursor:pointer;
+      background:linear-gradient(90deg,#5b8cff,#9b5bff);color:#fff}
+    .vd-btn.listening{background:linear-gradient(90deg,#37d5e8,#5b8cff);box-shadow:0 0 18px rgba(55,213,232,.5)}
+    .vd input{flex:1;min-width:150px;border:1px solid rgba(120,150,230,.3);background:rgba(5,7,13,.5);
+      color:inherit;border-radius:10px;padding:11px 13px;font-size:14px;outline:none}
+    .vd-lang{font-size:11px;font-weight:700;letter-spacing:.06em;border:1px solid rgba(120,150,230,.3);
+      border-radius:999px;padding:6px 12px;cursor:pointer;background:transparent;color:inherit}
+    .vd-note{font-size:11px;opacity:.55;margin-top:8px}
+  </style>
+  <div class="vd">
+    <div class="pane-label"><span>Try it yourself &middot; talk to the receptionist</span><span class="live">live demo</span></div>
+    <div class="vd-thread" id="vdThread"></div>
+    <div class="vd-row">
+      <button class="vd-btn" id="vdMic" onclick="vdMic()">&#127908; Hold a conversation</button>
+      <input id="vdIn" placeholder="…or type here (e.g. 'I have a toothache')" aria-label="Type to the receptionist">
+      <button class="vd-btn" style="padding:11px 16px" onclick="vdSend()">Send</button>
+      <button class="vd-lang" id="vdLang" onclick="vdLangToggle()">PT</button>
+    </div>
+    <div class="vd-note">Runs entirely in your browser &mdash; the production version answers your real phone line, books into your real calendar, and speaks your language.</div>
+  </div>
+
   <div class="features">
     <div class="feature">
       <div class="fi">01 &middot; Calls</div>
@@ -279,6 +306,73 @@
         document.getElementById('closeText').textContent = 'If any of this needs walking through, or you\'d rather hear it than read it, just reply to my email and I\'ll call you about ' + biz + ' — five minutes is usually enough to know if it\'s a fit.';
       }
     }catch(e){}
+  })();
+
+  /* ============ live voice receptionist demo (scripted, zero backend) ============ */
+  (function(){
+    var lang='en', booked=false, rec=null, listening=false;
+    var biz=(new URLSearchParams(location.search).get('biz')||'').trim().slice(0,80);
+    var name=biz||((lang==='pt')?'a clínica':'the practice');
+    var T={
+      en:{greet:"Good evening! You've reached "+(biz||'the practice')+"'s front desk. How can I help you today?",
+          pain:"I'm sorry to hear that — let's get you seen quickly. The next available slot is tomorrow at 9:15am. Shall I book it for you?",
+          clean:"Of course. For a cleaning I have Thursday 9:15am or Friday 2:30pm. Which suits you better?",
+          resched:"No problem at all. Which day was your appointment, and when would suit you instead?",
+          price:"A standard check-up is from €45, and I can confirm exact pricing for your treatment at the visit. Would you like me to book you a slot?",
+          hours:"We answer here 24/7, and the clinic sees patients Monday to Friday, 9am to 6pm. Would you like an appointment?",
+          confirm:"Perfect — you're booked. You'll get an SMS confirmation in a moment. Anything else I can help with?",
+          yes:"Great — consider it done. You'll receive an SMS confirmation shortly. Anything else?",
+          bye:"You're very welcome. Have a lovely evening!",
+          fallback:"I can help with appointments, opening hours, or prices. What would you like to do?"},
+      pt:{greet:"Boa noite! Ligou para a receção de "+(biz||'a clínica')+". Como posso ajudar?",
+          pain:"Lamento ouvir isso — vamos vê-lo rapidamente. A próxima vaga é amanhã às 9h15. Quer que marque?",
+          clean:"Com certeza. Para limpeza tenho quinta às 9h15 ou sexta às 14h30. Qual prefere?",
+          resched:"Sem problema. Em que dia era a sua consulta, e quando preferia remarcar?",
+          price:"A consulta de avaliação é a partir de 45€, e confirmo valores exatos na visita. Quer que marque uma consulta?",
+          hours:"Atendemos aqui 24/7, e a clínica recebe pacientes de segunda a sexta, das 9h às 18h. Quer marcar?",
+          confirm:"Perfeito — está marcado. Vai receber um SMS de confirmação. Posso ajudar com mais alguma coisa?",
+          yes:"Ótimo — está feito. Vai receber a confirmação por SMS. Mais alguma coisa?",
+          bye:"De nada! Uma excelente noite para si.",
+          fallback:"Posso ajudar com marcações, horários ou preços. O que deseja fazer?"}};
+    function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+    function bub(txt,who){var t=document.getElementById('vdThread');
+      t.insertAdjacentHTML('beforeend','<div class="bubble '+(who==='ai'?'in':'out')+'">'+esc(txt)+'</div>');
+      t.scrollTop=t.scrollHeight;}
+    function speak(txt){try{if(!('speechSynthesis' in window))return;
+      speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(txt);u.lang=(lang==='pt')?'pt-PT':'en-GB';u.rate=.98;
+      var v=speechSynthesis.getVoices().filter(function(x){return x.lang.toLowerCase().indexOf(lang==='pt'?'pt':'en')===0;})[0];
+      if(v)u.voice=v;speechSynthesis.speak(u);}catch(e){}}
+    function ai(txt){bub(txt,'ai');speak(txt);}
+    function brain(said){var s=said.toLowerCase();var L=T[lang];
+      if(/dor|toothache|pain|hurt|partiu|broke/.test(s))return L.pain;
+      if(/limpeza|clean|higien/.test(s))return L.clean;
+      if(/remarcar|reschedul|mudar|change/.test(s))return L.resched;
+      if(/pre[cç]o|price|cost|quanto|how much/.test(s))return L.price;
+      if(/hor[aá]rio|hours|open|aberto/.test(s))return L.hours;
+      if(/sim|yes|ok|perfect|9|thursday|quinta|friday|sexta|morning|manh|amanh|tomorrow|book|marc/.test(s)){booked=true;return L.yes;}
+      if(/obrigad|thank|thanks|bye|adeus|nada|no,? that/.test(s))return L.bye;
+      return L.fallback;}
+    window.vdSend=function(txt){var i=document.getElementById('vdIn');var v=(txt||i.value).trim();if(!v)return;
+      i.value='';bub(v,'me');setTimeout(function(){ai(brain(v));},350);};
+    window.vdLangToggle=function(){lang=(lang==='en')?'pt':'en';
+      document.getElementById('vdLang').textContent=(lang==='en')?'PT':'EN';
+      document.getElementById('vdThread').innerHTML='';booked=false;ai(T[lang].greet);};
+    window.vdMic=function(){
+      var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+      var b=document.getElementById('vdMic');
+      if(!SR){bub((lang==='pt')?'(Sem microfone neste navegador — escreva em baixo.)':'(No mic in this browser — type below instead.)','ai');return;}
+      if(listening){try{rec.stop();}catch(e){}return;}
+      rec=new SR();rec.lang=(lang==='pt')?'pt-PT':'en-GB';rec.interimResults=false;
+      rec.onresult=function(e){var said=e.results[e.results.length-1][0].transcript.trim();if(said)vdSend(said);};
+      rec.onend=function(){listening=false;b.classList.remove('listening');
+        b.innerHTML='🎤 Hold a conversation';};
+      rec.onerror=function(){listening=false;b.classList.remove('listening');};
+      try{rec.start();listening=true;b.classList.add('listening');
+        b.innerHTML='● Listening… (tap to stop)';}catch(e){}
+    };
+    document.getElementById('vdIn').addEventListener('keydown',function(e){if(e.key==='Enter')vdSend();});
+    setTimeout(function(){ai(T[lang].greet);},900);
   })();
 </script>
 
