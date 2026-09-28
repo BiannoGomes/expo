@@ -27,6 +27,9 @@ export function LivingSky({ mode }: { mode: SkyMode }) {
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <View style={[StyleSheet.absoluteFill, { backgroundColor: theme.colors.ground }]} />
+      {/* Upper atmosphere: a breath darker than the ground, so the room
+          has depth instead of a flat backdrop. Darker, never lighter. */}
+      <LinearGradient colors={["#06080D", "#0B0E1200"]} style={styles.zenith} />
       {glow.opacity > 0 && (
         <LinearGradient
           colors={glow.colors}
@@ -38,6 +41,14 @@ export function LivingSky({ mode }: { mode: SkyMode }) {
 }
 
 const styles = StyleSheet.create({
+  zenith: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    height: "35%",
+    opacity: 0.8,
+  },
   horizon: {
     position: "absolute",
     left: 0,

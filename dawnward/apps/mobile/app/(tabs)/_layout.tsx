@@ -1,20 +1,30 @@
 import { Tabs } from "expo-router";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import { fonts, theme } from "@/lib/theme";
 
 function TabLabel({ label, focused }: { label: string; focused: boolean }) {
   return (
-    <Text
-      style={{
-        fontFamily: fonts.label,
-        fontSize: 10,
-        letterSpacing: 10 * 0.22,
-        textTransform: "uppercase",
-        color: focused ? theme.colors.gold : theme.colors.faint,
-      }}
-    >
-      {label}
-    </Text>
+    <View style={{ alignItems: "center", gap: 5 }}>
+      <Text
+        style={{
+          fontFamily: fonts.label,
+          fontSize: 10,
+          letterSpacing: 10 * 0.22,
+          textTransform: "uppercase",
+          color: focused ? theme.colors.gold : theme.colors.faint,
+        }}
+      >
+        {label}
+      </Text>
+      <View
+        style={{
+          width: 3,
+          height: 3,
+          borderRadius: 1.5,
+          backgroundColor: focused ? theme.colors.gold : "transparent",
+        }}
+      />
+    </View>
   );
 }
 

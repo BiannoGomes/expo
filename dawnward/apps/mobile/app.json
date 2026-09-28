@@ -9,10 +9,14 @@
     "backgroundColor": "#0B0E12",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "com.unifymind.dawnward",
+      "buildNumber": "1"
     },
     "android": {
       "edgeToEdgeEnabled": true,
+      "package": "com.unifymind.dawnward",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-foreground.png",
         "backgroundColor": "#0B0E12"

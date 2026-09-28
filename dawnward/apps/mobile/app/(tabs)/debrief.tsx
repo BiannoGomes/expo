@@ -79,6 +79,7 @@ function ListeningDot() {
 export default function DebriefScreen() {
   const [text, setText] = useState("");
   const [question, setQuestion] = useState<string | null>(null);
+  const [name, setName] = useState<string | null>(null);
   const [reply, setReply] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -90,6 +91,7 @@ export default function DebriefScreen() {
     if (draft) setText(draft);
     fetchMe()
       .then((me) => {
+        setName(me.preferredName);
         // Never generate a plan for someone whose story hasn't begun.
         if (!me.onboardingComplete) return;
         return fetchPlan(today()).then(
@@ -245,8 +247,9 @@ export default function DebriefScreen() {
               <Text style={theme.type.label}>Today's evolution</Text>
               <Text style={[theme.type.body, styles.replyText]}>{reply}</Text>
               <Text style={[theme.type.dim, styles.goodnight]}>
-                That's the day, witnessed. Sleep well. Tomorrow starts from
-                here.
+                {name
+                  ? `That's the day, witnessed. Sleep well, ${name}. Tomorrow starts from here.`
+                  : "That's the day, witnessed. Sleep well. Tomorrow starts from here."}
               </Text>
             </View>
           )}

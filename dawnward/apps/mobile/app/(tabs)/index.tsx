@@ -57,6 +57,15 @@ function greetingForNow(): string {
   return "Good evening";
 }
 
+/** "Sun 28 Sep": the day, grounded, in the corner of the eye. */
+function dateLine(): string {
+  return new Date().toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+}
+
 /** Morning arrival: dealt like cards, 60ms apart, 12px rise + fade. */
 function DealtCard({
   index,
@@ -315,14 +324,20 @@ export default function TodayScreen() {
             <>
               {plan?.reentryGapDays === undefined ? (
                 <>
-                  <Text style={theme.type.label}>{greeting}</Text>
+                  <View style={styles.greetingRow}>
+                    <Text style={theme.type.label}>{greeting}</Text>
+                    <Text style={styles.dateLabel}>{dateLine()}</Text>
+                  </View>
                   <Text style={[theme.type.title, styles.title]}>
                     Your evolution today
                   </Text>
                 </>
               ) : (
                 <View style={styles.reentryHero}>
-                  <Text style={theme.type.label}>{greeting}</Text>
+                  <View style={styles.greetingRow}>
+                    <Text style={theme.type.label}>{greeting}</Text>
+                    <Text style={styles.dateLabel}>{dateLine()}</Text>
+                  </View>
                   <Text style={[theme.type.title, styles.title]}>Welcome back</Text>
                   <Text style={[theme.type.body, styles.reentryBody]}>
                     Nothing is broken. Your campaign kept your seat warm, and it
@@ -424,7 +439,23 @@ const styles = StyleSheet.create({
     padding: theme.spacing(2.5),
     marginBottom: theme.spacing(1.5),
   },
-  cardDone: { opacity: 0.45 },
+  cardDone: {
+    opacity: 0.5,
+    borderLeftColor: theme.colors.gold,
+    borderLeftWidth: 2,
+  },
+  greetingRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+  },
+  dateLabel: {
+    fontFamily: fonts.label,
+    fontSize: 10,
+    letterSpacing: 10 * 0.18,
+    textTransform: "uppercase",
+    color: theme.colors.faint,
+  },
   labelBreath: { position: "absolute", top: 0, left: 0 },
   slotText: { marginVertical: theme.spacing(1) },
   question: {
