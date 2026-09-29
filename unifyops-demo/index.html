@@ -235,9 +235,15 @@
     .vd-lang{font-size:11px;font-weight:700;letter-spacing:.06em;border:1px solid rgba(120,150,230,.3);
       border-radius:999px;padding:6px 12px;cursor:pointer;background:transparent;color:inherit}
     .vd-note{font-size:11px;opacity:.55;margin-top:8px}
+    .vd-typing{display:inline-flex;gap:4px;padding:10px 14px}
+    .vd-typing i{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4;animation:vdty 1s infinite}
+    .vd-typing i:nth-child(2){animation-delay:.15s}.vd-typing i:nth-child(3){animation-delay:.3s}
+    @keyframes vdty{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:.9;transform:translateY(-3px)}}
+    .vd-status{font-size:10px;font-weight:700;letter-spacing:.08em;opacity:.6}
+    .vd-status.on{color:#3ddc97;opacity:1}
   </style>
   <div class="vd">
-    <div class="pane-label"><span>Try it yourself &middot; talk to the receptionist</span><span class="live">live demo</span></div>
+    <div class="pane-label"><span>Try it yourself &middot; talk to the receptionist</span><span class="vd-status" id="vdStatus">live demo</span></div>
     <div class="vd-thread" id="vdThread"></div>
     <div class="vd-row">
       <button class="vd-btn" id="vdMic" onclick="vdMic()">&#127908; Hold a conversation</button>
@@ -269,7 +275,7 @@
   <div class="terms">
     <div class="terms-top">
       <div>
-        <div class="price-num num">$500<span style="font-size:16px;font-weight:600;">/mo</span></div>
+        <div class="price-num num">&euro;500<span style="font-size:16px;font-weight:600;">/mo</span></div>
         <div class="price-sub">Flat. No setup required to start a trial.</div>
       </div>
       <div class="price-sub" style="text-align:right;">Runs alongside your current team<br>on your rules &mdash; on or off in seconds.</div>
@@ -308,68 +314,98 @@
     }catch(e){}
   })();
 
-  /* ============ live voice receptionist demo (scripted, zero backend) ============ */
+  /* ============ live voice receptionist v2 — stateful, barge-in, continuous call ============ */
   (function(){
-    var lang='en', booked=false, rec=null, listening=false;
+    var lang='en', rec=null, listening=false, wantListen=false, stage='open', pending='', userName='';
     var biz=(new URLSearchParams(location.search).get('biz')||'').trim().slice(0,80);
-    var name=biz||((lang==='pt')?'a clínica':'the practice');
+    var SLOTS={en:['Thursday 9:15am','Friday 2:30pm'],pt:['quinta às 9h15','sexta às 14h30']};
     var T={
-      en:{greet:"Good evening! You've reached "+(biz||'the practice')+"'s front desk. How can I help you today?",
-          pain:"I'm sorry to hear that — let's get you seen quickly. The next available slot is tomorrow at 9:15am. Shall I book it for you?",
-          clean:"Of course. For a cleaning I have Thursday 9:15am or Friday 2:30pm. Which suits you better?",
+      en:{greet:"Good evening! You've reached "+(biz||"the practice")+"'s front desk. How can I help you today?",
+          pain:"I'm sorry to hear that — let's get you seen quickly. I can do tomorrow at 9:15am, or "+SLOTS.en[1]+". Which works for you?",
+          clean:"Of course. For a cleaning I have "+SLOTS.en[0]+" or "+SLOTS.en[1]+". Which suits you better?",
+          implant:"We do — the doctor handles implants and whitening personally. The first step is a short assessment visit. Shall I book you in?",
           resched:"No problem at all. Which day was your appointment, and when would suit you instead?",
-          price:"A standard check-up is from €45, and I can confirm exact pricing for your treatment at the visit. Would you like me to book you a slot?",
-          hours:"We answer here 24/7, and the clinic sees patients Monday to Friday, 9am to 6pm. Would you like an appointment?",
-          confirm:"Perfect — you're booked. You'll get an SMS confirmation in a moment. Anything else I can help with?",
-          yes:"Great — consider it done. You'll receive an SMS confirmation shortly. Anything else?",
+          reschedOk:"Done — I've moved it. You'll get an updated SMS confirmation shortly. Anything else?",
+          price:"A check-up is from \u20AC45, and exact treatment pricing is confirmed at the visit. Shall I book you a slot?",
+          hours:"We answer the phone 24/7, and the clinic sees patients Monday to Friday, 9am to 6pm. Would you like an appointment?",
+          insurance:"We work with the main insurers — bring your card and we handle the paperwork at reception. Would you like me to book you in?",
+          emergency:"That sounds urgent. If there's heavy bleeding or swelling, please go to urgent care now. Otherwise I can put you first on tomorrow's list at 9:00am — shall I?",
+          askName:"Perfect. May I take your name for the booking?",
+          confirmed:function(n,slot){return "Lovely, "+n+" — you're booked for "+slot+". An SMS confirmation is on its way. Anything else I can help with?"},
+          which:"Which of the two works better for you — "+SLOTS.en[0]+" or "+SLOTS.en[1]+"?",
           bye:"You're very welcome. Have a lovely evening!",
-          fallback:"I can help with appointments, opening hours, or prices. What would you like to do?"},
-      pt:{greet:"Boa noite! Ligou para a receção de "+(biz||'a clínica')+". Como posso ajudar?",
-          pain:"Lamento ouvir isso — vamos vê-lo rapidamente. A próxima vaga é amanhã às 9h15. Quer que marque?",
-          clean:"Com certeza. Para limpeza tenho quinta às 9h15 ou sexta às 14h30. Qual prefere?",
+          fallback:"I can help with appointments, prices, opening hours or insurance. What would you like to do?"},
+      pt:{greet:"Boa noite! Ligou para a receção de "+(biz||"a clínica")+". Como posso ajudar?",
+          pain:"Lamento ouvir isso — vamos vê-lo rapidamente. Tenho amanhã às 9h15 ou "+SLOTS.pt[1]+". Qual prefere?",
+          clean:"Com certeza. Para limpeza tenho "+SLOTS.pt[0]+" ou "+SLOTS.pt[1]+". Qual prefere?",
+          implant:"Sim — o doutor trata implantes e branqueamentos pessoalmente. O primeiro passo é uma consulta de avaliação. Quer que marque?",
           resched:"Sem problema. Em que dia era a sua consulta, e quando preferia remarcar?",
-          price:"A consulta de avaliação é a partir de 45€, e confirmo valores exatos na visita. Quer que marque uma consulta?",
-          hours:"Atendemos aqui 24/7, e a clínica recebe pacientes de segunda a sexta, das 9h às 18h. Quer marcar?",
-          confirm:"Perfeito — está marcado. Vai receber um SMS de confirmação. Posso ajudar com mais alguma coisa?",
-          yes:"Ótimo — está feito. Vai receber a confirmação por SMS. Mais alguma coisa?",
+          reschedOk:"Feito — está remarcada. Vai receber um SMS atualizado. Mais alguma coisa?",
+          price:"A consulta de avaliação é a partir de 45\u20AC, e os valores exatos confirmam-se na visita. Quer que marque?",
+          hours:"Atendemos o telefone 24/7, e a clínica recebe pacientes de segunda a sexta, das 9h às 18h. Quer marcar consulta?",
+          insurance:"Trabalhamos com os principais seguros — traga o cartão e tratamos de tudo na receção. Quer que marque?",
+          emergency:"Isso parece urgente. Se houver sangramento ou inchaço forte, procure urgências já. Caso contrário, coloco-o em primeiro amanhã às 9h00 — quer?",
+          askName:"Perfeito. Em que nome fica a marcação?",
+          confirmed:function(n,slot){return "Ótimo, "+n+" — fica marcado para "+slot+". Vai receber a confirmação por SMS. Mais alguma coisa?"},
+          which:"Qual prefere — "+SLOTS.pt[0]+" ou "+SLOTS.pt[1]+"?",
           bye:"De nada! Uma excelente noite para si.",
-          fallback:"Posso ajudar com marcações, horários ou preços. O que deseja fazer?"}};
-    function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
-    function bub(txt,who){var t=document.getElementById('vdThread');
-      t.insertAdjacentHTML('beforeend','<div class="bubble '+(who==='ai'?'in':'out')+'">'+esc(txt)+'</div>');
-      t.scrollTop=t.scrollHeight;}
+          fallback:"Posso ajudar com marcações, preços, horários ou seguros. O que deseja?"}};
+    function esc(x){return String(x).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+    function thread(){return document.getElementById('vdThread');}
+    function bub(txt,who){thread().insertAdjacentHTML('beforeend','<div class="bubble '+(who==='ai'?'in':'out')+'">'+esc(txt)+'</div>');thread().scrollTop=1e6;}
+    function typing(on){var t=document.getElementById('vdTy');if(t)t.remove();
+      if(on){thread().insertAdjacentHTML('beforeend','<div class="bubble in vd-typing" id="vdTy"><i></i><i></i><i></i></div>');thread().scrollTop=1e6;}}
     function speak(txt){try{if(!('speechSynthesis' in window))return;
       speechSynthesis.cancel();
       var u=new SpeechSynthesisUtterance(txt);u.lang=(lang==='pt')?'pt-PT':'en-GB';u.rate=.98;
-      var v=speechSynthesis.getVoices().filter(function(x){return x.lang.toLowerCase().indexOf(lang==='pt'?'pt':'en')===0;})[0];
-      if(v)u.voice=v;speechSynthesis.speak(u);}catch(e){}}
-    function ai(txt){bub(txt,'ai');speak(txt);}
+      var vs=speechSynthesis.getVoices().filter(function(x){return x.lang.toLowerCase().indexOf(lang)===0;});
+      if(vs[0])u.voice=vs[0];speechSynthesis.speak(u);}catch(e){}}
+    function ai(txt){typing(true);setTimeout(function(){typing(false);bub(txt,'ai');speak(txt);},520);}
+    function pickSlot(s){var a=SLOTS[lang];
+      if(/friday|sexta|2:30|14h30|afternoon|tarde/.test(s))return a[1];
+      if(/thursday|quinta|9:15|9h15|morning|manh|tomorrow|amanh|first|primeiro|9:00|9h00/.test(s))return a[0];
+      return null;}
     function brain(said){var s=said.toLowerCase();var L=T[lang];
-      if(/dor|toothache|pain|hurt|partiu|broke/.test(s))return L.pain;
-      if(/limpeza|clean|higien/.test(s))return L.clean;
-      if(/remarcar|reschedul|mudar|change/.test(s))return L.resched;
-      if(/pre[cç]o|price|cost|quanto|how much/.test(s))return L.price;
-      if(/hor[aá]rio|hours|open|aberto/.test(s))return L.hours;
-      if(/sim|yes|ok|perfect|9|thursday|quinta|friday|sexta|morning|manh|amanh|tomorrow|book|marc/.test(s)){booked=true;return L.yes;}
-      if(/obrigad|thank|thanks|bye|adeus|nada|no,? that/.test(s))return L.bye;
+      if(stage==='name'){userName=said.replace(/^(i'm|i am|my name is|sou o|sou a|é|e o|chamo-me)\s+/i,'').trim().split(/\s+/).slice(0,2).join(' ');
+        stage='done';return L.confirmed(userName||((lang==='pt')?'perfeito':'perfect'),pending||SLOTS[lang][0]);}
+      if(stage==='slot'){var p=pickSlot(s);
+        if(p||/sim|yes|ok|either|qualquer|tanto faz/.test(s)){pending=p||SLOTS[lang][0];stage='name';return L.askName;}
+        return L.which;}
+      if(/sangra|bleed|swell|incha|acidente|accident|emergen|urgen/.test(s)){stage='slot';return L.emergency;}
+      if(/dor|toothache|pain|hurt|partiu|broke|sensib/.test(s)){stage='slot';return L.pain;}
+      if(/limpeza|clean|higien|destart/.test(s)){stage='slot';return L.clean;}
+      if(/implant|branquea|whiten|aparelho|invisalign|ortodont/.test(s)){stage='slot';return L.implant;}
+      if(/remarcar|reschedul|mudar|change|cancel/.test(s)){stage='resched';return L.resched;}
+      if(stage==='resched'){stage='done';return L.reschedOk;}
+      if(/pre[cç]o|price|cost|quanto|how much|valor/.test(s)){stage='slot';return L.price;}
+      if(/hor[aá]rio|hours|open|aberto|fecha/.test(s)){return L.hours;}
+      if(/seguro|insurance|adse|m[eé]dis|advancecare/.test(s)){stage='slot';return L.insurance;}
+      if(/sim|yes|ok|book|marc|appointment|consulta/.test(s)){stage='slot';return L.which;}
+      if(/obrigad|thank|bye|adeus|nada mais|no,? that|s[oó] isso/.test(s)){stage='open';return L.bye;}
       return L.fallback;}
     window.vdSend=function(txt){var i=document.getElementById('vdIn');var v=(txt||i.value).trim();if(!v)return;
-      i.value='';bub(v,'me');setTimeout(function(){ai(brain(v));},350);};
-    window.vdLangToggle=function(){lang=(lang==='en')?'pt':'en';
+      i.value='';bub(v,'me');setTimeout(function(){ai(brain(v));},250);};
+    window.vdLangToggle=function(){lang=(lang==='en')?'pt':'en';stage='open';pending='';userName='';
       document.getElementById('vdLang').textContent=(lang==='en')?'PT':'EN';
-      document.getElementById('vdThread').innerHTML='';booked=false;ai(T[lang].greet);};
+      thread().innerHTML='';ai(T[lang].greet);
+      if(listening){try{rec.stop();}catch(e){}setTimeout(function(){window.vdMic();},400);}};
+    function setStatus(on){var st=document.getElementById('vdStatus'),b=document.getElementById('vdMic');
+      if(on){st.textContent=(lang==='pt')?'\u25CF em chamada':'\u25CF on call';st.classList.add('on');
+        b.classList.add('listening');b.innerHTML='\u25CF On the call \u2014 tap to hang up';}
+      else{st.textContent='live demo';st.classList.remove('on');
+        b.classList.remove('listening');b.innerHTML='\uD83C\uDFA4 Hold a conversation';}}
     window.vdMic=function(){
       var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-      var b=document.getElementById('vdMic');
-      if(!SR){bub((lang==='pt')?'(Sem microfone neste navegador — escreva em baixo.)':'(No mic in this browser — type below instead.)','ai');return;}
-      if(listening){try{rec.stop();}catch(e){}return;}
-      rec=new SR();rec.lang=(lang==='pt')?'pt-PT':'en-GB';rec.interimResults=false;
-      rec.onresult=function(e){var said=e.results[e.results.length-1][0].transcript.trim();if(said)vdSend(said);};
-      rec.onend=function(){listening=false;b.classList.remove('listening');
-        b.innerHTML='🎤 Hold a conversation';};
-      rec.onerror=function(){listening=false;b.classList.remove('listening');};
-      try{rec.start();listening=true;b.classList.add('listening');
-        b.innerHTML='● Listening… (tap to stop)';}catch(e){}
+      if(!SR){bub((lang==='pt')?'(Sem microfone neste navegador \u2014 escreva em baixo.)':'(No mic in this browser \u2014 type below instead.)','ai');return;}
+      if(wantListen){wantListen=false;try{rec.stop();}catch(e){}setStatus(false);return;}
+      rec=new SR();rec.lang=(lang==='pt')?'pt-PT':'en-GB';rec.interimResults=true;rec.continuous=true;
+      rec.onresult=function(e){var r=e.results[e.results.length-1];
+        if(!r.isFinal){if(('speechSynthesis' in window)&&speechSynthesis.speaking)speechSynthesis.cancel();return;} /* barge-in */
+        var said=r[0].transcript.trim();if(said)vdSend(said);};
+      rec.onend=function(){listening=false;if(wantListen){try{rec.start();listening=true;}catch(e){setStatus(false);}}};
+      rec.onerror=function(e){if(e.error==='not-allowed'){wantListen=false;setStatus(false);
+        bub((lang==='pt')?'(Microfone bloqueado \u2014 permita-o na barra do navegador.)':'(Mic blocked \u2014 allow it in the address bar.)','ai');}};
+      try{rec.start();listening=true;wantListen=true;setStatus(true);}catch(e){}
     };
     document.getElementById('vdIn').addEventListener('keydown',function(e){if(e.key==='Enter')vdSend();});
     setTimeout(function(){ai(T[lang].greet);},900);
