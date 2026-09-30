@@ -1,6 +1,6 @@
 # Motion brief · Two versions of you (Book 1 reel)
 
-> **Status: DRAFT for Bianno's approval.** This is the studio's pipeline proof. Nothing here is
+> **Status: FINAL RENDER passed QA (renders/final.mp4). Awaiting Bianno's watch + copy approval.** This is the studio's pipeline proof. Nothing here is
 > posted. Copy lines marked *draft copy* are Claude's. Replace them with a real manuscript
 > line if a better one exists.
 
@@ -13,7 +13,7 @@
 | **Core message** | You are two people: the one you are, and the one you could become. Book 1 is how you meet the second. |
 | **Hook (0–3 s)** | Frame 0 already shows the brand field and wordmark. The first line starts rising at 0.15 s. By 1.1 s: "There are two / versions / of you." (a strong statement, the curiosity angle) |
 | **Story** | Statement (two of you) → turn (one you are, one you could become) → resolution (Book 1 · comment WARRIOR) |
-| **Visual metaphor** | The gold bar: the brand's one rule stretches across the frame and sweeps the old idea away, then retracts. Separation, then becoming. |
+| **Visual metaphor** | The gold rule underlines the old you, then leaves with it. Separation, then becoming. (Evolved over v4–v6; see review/log.md.) |
 | **Medium** | Code (HyperFrames). Type-only, no generated imagery (no credits spent). |
 | **Specialist skill** | HyperFrames `motion-graphics` pattern (short, unnarrated, motion is the message) |
 

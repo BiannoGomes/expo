@@ -55,6 +55,14 @@ claude
 /jarvis-studio:studio make a 10s UnifyMind reel for Book 2
 ```
 
+**Also in claude.ai and cloud sessions:** your claude.ai skills sync into Claude Code on the web.
+To get the studio there too, zip each skill folder and upload it under claude.ai → Settings → Skills:
+
+```powershell
+New-Item -ItemType Directory -Force dist | Out-Null
+Get-ChildItem skills -Directory | ForEach-Object { Compress-Archive $_.FullName "dist\$($_.Name).zip" -Force }
+```
+
 ## The stack it installs (verified 2026-09-30)
 
 | Layer | Repo | Licence | Why it's here |
@@ -76,10 +84,11 @@ LinkedIn rejects MOV. X caps organic video at 40 fps and 1200×1900.
 
 ## The proof: `workspace/projects/2026-09-30-unifymind-two-versions/`
 
-A 10 s 9:16 UnifyMind reel for Book 1, built through the whole pipeline: brand activation, brief
-with 3 directions, storyboard, fact ledger, HyperFrames composition, 4 logged revisions with one
-hypothesis each (`review/log.md`), and the full QA gate. **It's a draft for Bianno's approval.
-Nothing was posted.** The hook copy is draft copy on the book's "two versions of you" theme.
+A 10 s 9:16 UnifyMind reel for Book 1 (`renders/final.mp4`), built through the whole pipeline:
+brand activation, brief with 3 directions, storyboard, fact ledger, HyperFrames composition, 7
+logged revisions with one hypothesis each, including 3 fixes from the fresh-eyes critic
+(`review/log.md`), and the full QA gate. **It's a draft for Bianno's approval. Nothing was posted.**
+The hook copy is draft copy on the book's "two versions of you" theme.
 
 ## Honest limits
 

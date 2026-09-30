@@ -47,14 +47,14 @@
         white-space: nowrap; opacity: 0;
       }
 
-      /* CTA: centred, gold, holds to the end */
+      /* CTA: centred. The product name is bone (it carries meaning, not metadata); the action is the one gold phrase. Holds to the end. */
       #cta { position: absolute; left: 0; top: 660px; width: 100%; text-align: center; }
       #cta .meta {
-        display: block; font-size: 32px; letter-spacing: 0.24em; color: #787E8A;
-        opacity: 0; margin-bottom: 44px;
+        display: block; font-size: 40px; letter-spacing: 0.08em; color: #EEE9DC;
+        opacity: 0; margin-bottom: 36px;
       }
       #cta .go {
-        display: block; width: 760px; margin: 0 auto; font-size: 76px; line-height: 1.18; letter-spacing: -0.015em; color: #E0A83E; opacity: 0;
+        display: block; width: 760px; margin: 0 auto; font-size: 76px; line-height: 1.28; letter-spacing: -0.015em; color: #E0A83E; opacity: 0;
       }
       #cta .tri { display: inline-block; width: 0.5em; height: 0.56em; margin-left: 0.22em; vertical-align: 0.02em; }
     </style>
@@ -100,25 +100,24 @@
       tl.set("#s1 .line:nth-child(1)", { opacity: 1, y: 0 }, 0);
       tl.fromTo("#s1 .line:nth-child(n+2)", RISE.from, RISE.to, 0.1);
 
-      // T1 · separation, at the focal point: the brand's gold rule draws itself under the hook
-      // (left → right), the hook exits upward, then the rule passes through and leaves (left end
-      // chases the right). The header bar stays still: it belongs to the wordmark lockup.
-      tl.fromTo("#rule", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.35, ease: "power3.inOut" }, 2.4);
-      tl.to("#s1 .line", { opacity: 0, y: -16, duration: 0.3, ease: "power3.inOut", stagger: 0.03 }, 2.55);
-      tl.set("#rule", { transformOrigin: "100% 50%" }, 2.8);
-      tl.to("#rule", { scaleX: 0, duration: 0.35, ease: "power3.inOut" }, 2.8);
+      // T1 · separation, at the focal point: the brand's gold rule underlines the old you, then the
+      // rule lifts away WITH the hook as one move (no pass-through: that read as a loader, per v4 critique).
+      // The header bar stays still: it belongs to the wordmark lockup.
+      tl.fromTo("#rule", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.35, ease: "power3.inOut" }, 1.7);
+      const oldSelf = [...document.querySelectorAll("#s1 .line"), document.querySelector("#rule")];
+      tl.to(oldSelf, { opacity: 0, y: -16, duration: 0.3, ease: "power3.inOut", stagger: 0.03 }, 2.05);
 
-      // Scene 2 · turn: the new lines rise as the rule leaves; the payoff turns gold last
-      tl.fromTo("#s2 .line", RISE.from, RISE.to, 2.95);
-      tl.fromTo("#payoff", { color: "#EEE9DC" }, { color: "#E0A83E", duration: 0.4, ease: "power3.inOut" }, 4.5);
+      // Scene 2 · turn: the new lines rise as the old self leaves; the payoff turns gold last
+      tl.fromTo("#s2 .line", RISE.from, RISE.to, 2.34);
+      tl.fromTo("#payoff", { color: "#EEE9DC" }, { color: "#E0A83E", duration: 0.4, ease: "power3.inOut" }, 4.0);
 
       // Hard cut into the CTA on the beat. The CTA's rise starts 100 ms early inside a hidden container,
       // so the cut frame itself lands on content already arriving (never on an empty field).
       tl.fromTo("#cta", { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
-      tl.fromTo("#cta .meta", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: "power4.out" }, 6.2);
-      tl.fromTo("#cta .go", { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: 0.8, ease: "power4.out" }, 6.24);
-      tl.set("#s2", { opacity: 0 }, 6.3);
-      tl.set("#cta", { opacity: 1 }, 6.3);
+      tl.fromTo("#cta .meta", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: "power4.out" }, 5.6);
+      tl.fromTo("#cta .go", { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: 0.8, ease: "power4.out" }, 5.64);
+      tl.set("#s2", { opacity: 0 }, 5.7);
+      tl.set("#cta", { opacity: 1 }, 5.7);
 
       // Keep the timeline exactly as long as the composition
       tl.set({}, {}, 10);

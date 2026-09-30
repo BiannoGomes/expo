@@ -79,7 +79,8 @@ if (a[0]) {
   const r = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', video, '-map', '0:a:0', '-af', 'ebur128=peak=true', '-f', 'null', '-'], { encoding: 'utf8' });
   const I = +(r.stderr.match(/I:\s+(-?[\d.]+) LUFS/g)?.pop()?.match(/-?[\d.]+/)?.[0] ?? NaN);
   const TP = +(r.stderr.match(/Peak:\s+(-?[\d.]+|-inf) dBFS/g)?.pop()?.match(/-?[\d.]+|-inf/)?.[0] ?? NaN);
-  if (Number.isFinite(I)) {
+  if (Number.isFinite(I) && I <= -60) info('integrated loudness', `${I.toFixed(1)} LUFS: a silent track (fine for a muted-first piece; add music or VO and re-check)`);
+  else if (Number.isFinite(I)) {
     const [lo, hi] = P.lufsRange ?? [-16, -12];
     check('WARN', 'integrated loudness', I >= lo && I <= hi, `${I.toFixed(1)} LUFS (target ${lo} to ${hi}; ${P.lufsNote ?? ''})`.trim());
   } else info('integrated loudness', 'silent or unmeasurable');

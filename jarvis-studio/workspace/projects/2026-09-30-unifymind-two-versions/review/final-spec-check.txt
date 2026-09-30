@@ -1,0 +1,22 @@
+spec-check · renders/final.mp4 · preset "reels" · spec source: Instagram Graph API media reference (OFF): 23-60 fps, 3 s-15 min, 300 MB, moov first; Help Center: >3 min not recommended to new audiences (OFF). Help Center says min 30 fps (conflict), so export 30.
+✔ container                      mov,mp4,m4a,3gp,3g2,mj2
+✔ video codec                    h264 High
+✔ pixel format                   yuv420p
+✔ resolution                     1080×1920 (want 1080×1920)
+✔ aspect                         0.5625 vs 9:16
+✔ frame rate                     30.000 fps (allowed 23–60)
+✔ constant frame rate            avg 30/1 vs r 30/1
+✔ duration max                   10.00 s (max 900)
+✔ duration min                   10.00 s (min 3)
+✔ duration ideal                 10.00 s (platform recommends ≤ 180)
+✔ file size                      1.3 MB (max 300)
+✔ colour range                   tv
+✔ colour primaries bt709         bt709
+✔ audio track present            1 audio stream(s) (some platforms reject or mis-handle silent/no-audio uploads)
+✔ audio codec aac                aac
+✔ audio sample rate              48000 Hz
+✔ faststart (moov before mdat)   ftyp → moov → free → mdat
+ℹ integrated loudness            -70.0 LUFS: a silent track (fine for a muted-first piece; add music or VO and re-check)
+⚠ holds over 1.5s                4.20s for 1.50s, 6.10s for 3.90s. Intentional? A CTA end-hold is fine, and it should be in the storyboard
+✔ opening frame not empty        frame 0 luma range 0–224
+✔ flash risk (WCAG 2.3.1 heuristic) 0 flash pair(s) in the worst 1 s window (limit 3). Heuristic on average luma only: confirm by eye
