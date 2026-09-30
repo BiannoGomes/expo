@@ -23,6 +23,12 @@ the one thing the pipeline doesn't have yet: the Creator Stack's *ears and sciss
 | Build: composition | `edit-kit/scripts/scaffold-reel.mjs` | a HyperFrames project that already passes lint + check: muted video + separate WAV voice + captions. Then import `brand-tokens.css` |
 | Quality gates | `motion-review`: `spec-check --platform reels`, `review-frames --platform becoming` (x 80–940, y 250–1500), `--platform cover-3x4`, `brand-lint` (enforces **no exclamation marks** and the **banned words** from brand.md), `motion-critic` agent | mechanical checks the gates table can cite |
 
+## One take, every angle — real pixels (added 2026-09-30, Bianno's decision)
+`edit-kit/scripts/multicam-plan.mjs` gives the Creator Stack multicam / kinetic-supers look from **crops of the real
+take**: hard cuts in the breaths, close-up on the key line, back to wide for the outro, gentle push-ins, supers only
+from his spoken words. Verified in HyperFrames (lint/check clean, frame-accurate sync). Film vertical 4K on a tripod.
+The Seedance/Omni versions (`kinetic-multicam`, `motion-hack`, `multicam`) re-render his face and stay out (rule 3).
+
 ## Found in the handover (worth fixing)
 
 1. **Transcription command won't run.** `becoming-video` says `whisper <file> --language en`, but START HERE installs

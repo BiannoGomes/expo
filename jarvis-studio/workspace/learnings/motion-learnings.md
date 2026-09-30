@@ -17,6 +17,7 @@ _None yet._
 - 2026-09-30 · A HyperFrames `<audio>` in AAC (`.m4a`) can't be measured by the headless Chrome that `check` uses (`clip_media_fit` warning). Use WAV for voice tracks; `rough-cut` writes one.
 - 2026-09-30 · Rough cuts: skip cuts under 0.2 s (a visible jump for no gain), but always cut a dropped filler however small. Keep about 0.45 s before a punchline (`--beat`).
 - 2026-09-30 · Captions read better when a cue never ends on a weak word ("zoom in / on my hand.", not "zoom in on / my hand.").
+- 2026-09-30 · Real-pixel multicam: vertical 4K (2160×3840) gives a native close-up up to 2×; a 1080p take upscales from the first punch-in. Animate a wrapper (`#cam`), not the `<video class="clip">`, and HyperFrames lint/check stay clean.
 - 2026-09-30 · Handover check: faster-whisper has no `whisper` CLI. Pipelines must call `edit-kit/scripts/transcribe.py` (or Python), not `whisper <file>`.
 
 ## 2026-09-30 · two-versions (studio proof) · unifymind · 9:16 reel, 10 s, silent

@@ -8,6 +8,7 @@
          brand/2026-09-30-brand-tokens.css) and point the five --cap-* variables at its tokens. Don't add colours by hand. -->
     <script src="vendor/gsap.min.js"></script>
     <script src="assets/captions.js"></script>
+    <script src="assets/camera.js"></script>
     <style>
       @font-face { font-family: "CaptionFallback"; font-weight: 600; src: url("fonts/inter-latin-600-normal.woff2") format("woff2"); }
       :root {
@@ -16,11 +17,24 @@
         --cap-color: #ffffff;                        /* → brand caption colour */
         --cap-key: #ffd166;                          /* → brand accent (the key word) */
         --cap-y: 1180px;                             /* ~61% of the height: inside every 9:16 safe zone */
+        --super-font: var(--cap-font);               /* → brand display font */
+        --super-size: 104px;
+        --super-color: #ffffff;                      /* → brand text colour */
+        --super-case: uppercase;
       }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
       #root { position: relative; width: 100%; height: 100%; overflow: hidden; }
+      /* Real-pixel camera: #cam is sized/moved by camera.js (crops of the real take). No camera plan = plain cover. */
+      #cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 0 0; }
       #take { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      #supers { position: absolute; inset: 0; }
+      .super {
+        position: absolute; opacity: 0; font-family: var(--super-font); font-weight: 600; font-size: var(--super-size);
+        line-height: 1.02; letter-spacing: -0.02em; color: var(--super-color); text-transform: var(--super-case);
+      }
+      .super.low { left: 80px; width: 860px; top: 1200px; text-align: center; }
+      .super.left { left: 80px; width: 400px; top: 560px; text-align: left; }
       /* Captions live inside x 80–940 (the Becoming playbook's safe zone); lines never touch the right-hand app buttons. */
       #captions { position: absolute; left: 80px; width: 860px; top: var(--cap-y); height: 240px; }
       .cue {
@@ -33,16 +47,48 @@
   </head>
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="{{DURATION}}" data-fps="30" data-width="1080" data-height="1920">
-      <video id="take" class="clip" data-start="0" data-duration="{{DURATION}}" src="assets/take.mp4" muted playsinline></video>
+      <div id="cam"><video id="take" class="clip" data-start="0" data-duration="{{DURATION}}" src="assets/take.mp4" muted playsinline></video></div>
       <audio id="voice" class="clip" data-start="0" data-duration="{{DURATION}}" src="assets/voice.wav"></audio>
       <div id="captions"></div>
+      <div id="supers"></div>
     </div>
     <script>
       // One paused timeline; every caption is placed at its word time from captions.js (generated, never hand-timed).
       const tl = gsap.timeline({ paused: true });
       const layer = document.getElementById("captions");
       const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+      const CAM = window.CAMERA;
+      // Supers replace captions while they're on screen (never two text layers competing).
+      const underSuper = (c) => CAM && CAM.supers.some((x) => c.s < x.e && c.e > x.s);
+
+      // Real-pixel camera: each shot is a crop of the real take, hard-cut on a breath, with a gentle push-in.
+      if (CAM) {
+        const cam = document.getElementById("cam");
+        cam.style.width = `${CAM.sourceSize[0] * Math.max(CAM.canvas[0] / CAM.sourceSize[0], CAM.canvas[1] / CAM.sourceSize[1])}px`;
+        cam.style.height = `${CAM.sourceSize[1] * Math.max(CAM.canvas[0] / CAM.sourceSize[0], CAM.canvas[1] / CAM.sourceSize[1])}px`;
+        CAM.shots.forEach((sh, i) => {
+          tl.set(cam, { x: sh.from.x, y: sh.from.y, scale: sh.from.scale }, sh.s);
+          if (CAM.transition === "whip" && i > 0) {
+            // Real-pixel whip: the frame arrives with motion blur and settles in 180 ms (off-brand for Becoming).
+            tl.set(cam, { x: sh.from.x + 140, filter: "blur(10px)" }, sh.s);
+            tl.to(cam, { x: sh.from.x, filter: "blur(0px)", duration: 0.18, ease: "power2.out" }, sh.s);
+          }
+          const settle = CAM.transition === "whip" && i > 0 ? 0.18 : 0;
+          tl.to(cam, { x: sh.to.x, y: sh.to.y, scale: sh.to.scale, duration: sh.e - sh.s - settle, ease: "none" }, sh.s + settle);
+        });
+        const sl = document.getElementById("supers");
+        for (const x of CAM.supers) {
+          const el = document.createElement("div");
+          el.className = `super ${x.place}`;
+          el.textContent = x.text;
+          sl.appendChild(el);
+          tl.fromTo(el, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, x.s); // slow ease, no bounce
+          tl.to(el, { opacity: 0, duration: 0.3, ease: "power2.inOut" }, Math.max(x.s + 0.7, x.e - 0.3));
+        }
+      }
+
       for (const c of window.CAPTIONS.cues) {
+        if (underSuper(c)) continue;
         const el = document.createElement("div");
         el.className = "cue";
         el.innerHTML = c.words.map((w) => (w.key ? `<span class="k">${esc(w.w)}</span>` : esc(w.w))).join(" ");

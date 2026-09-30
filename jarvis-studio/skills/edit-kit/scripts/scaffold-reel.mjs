@@ -27,5 +27,8 @@ for (const d of ['vendor', 'fonts']) for (const f of readdirSync(join(tpl, d))) 
 copyFileSync(video, join(out, 'assets', 'take.mp4'));
 copyFileSync(voice, join(out, 'assets', 'voice.wav'));
 copyFileSync(caps, join(out, 'assets', 'captions.js'));
+const cam = `${base}.camera.js`; // optional real-pixel multicam plan from multicam-plan.mjs
+if (existsSync(cam)) copyFileSync(cam, join(out, 'assets', 'camera.js'));
+else writeFileSync(join(out, 'assets', 'camera.js'), '// no multicam plan: a single real framing (object-fit: cover)\nwindow.CAMERA = null;\n');
 writeFileSync(join(out, 'index.html'), readFileSync(join(tpl, 'index.html'), 'utf8').replaceAll('{{DURATION}}', dur));
-console.log(`scaffold-reel → ${out}\n  ${dur} s · assets/take.mp4 · assets/voice.wav · assets/captions.js\n  next: brand it (tokens + --cap-* variables), then hyperframes lint → check → preview → render`);
+console.log(`scaffold-reel → ${out}\n  ${dur} s · assets/take.mp4 · assets/voice.wav · assets/captions.js · assets/camera.js${existsSync(cam) ? ' (multicam plan)' : ' (single framing)'}\n  next: brand it (tokens + --cap-* variables), then hyperframes lint → check → preview → render`);

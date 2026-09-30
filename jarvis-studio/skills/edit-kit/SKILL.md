@@ -1,6 +1,6 @@
 ---
 name: edit-kit
-description: Edit a real talking clip with Claude, the Creator Stack method (Whisper ears + FFmpeg eyes + HyperFrames). Word-level transcript with a names glossary, frames to see the shot, beat sheet, deterministic rough cut that removes dead air and fillers on word boundaries with remapped timings, word-synced 2–3-word captions, and a verified HyperFrames scaffold (cut video + real voice + captions). Use when Bianno drops a clip or voice memo in footage/inbox, or says "edit this", "cut the pauses", "add captions", "transcribe", "rough cut", "check my shot".
+description: Edit a real talking clip with Claude, the Creator Stack method (Whisper ears + FFmpeg eyes + HyperFrames), real pixels only. Word-level transcript with names glossary, frames, beat sheet, word-boundary rough cut with remapped timings, word-synced captions, a real-pixel "one take, every angle" multicam (crops cut in the breaths, push-ins, supers from spoken words), and a verified HyperFrames scaffold. Use for "edit this", "cut the pauses", "captions", "transcribe", "rough cut", "multicam", "every angle", "kinetic supers", "check my shot".
 ---
 
 # edit-kit · let Claude edit a real take
@@ -70,6 +70,22 @@ a weak word. The key word gets the accent. → `captions.json` · `captions.js` 
 project already verified to lint, check and render: the muted video, a separate `<audio id>` for the voice (WAV,
 because headless Chromium can't read AAC), and captions placed from `captions.js`. **Then brand it:** link
 the brand tokens CSS and point the five `--cap-*` variables at them. Never hard-code colours.
+
+**6b · One take, every angle (real pixels only)** — the Creator Stack multicam/kinetic look without AI:
+```bash
+node K/multicam-plan.mjs take.cut.mp4 take.cut.words.json --face 0.5,0.38 --key "the key line" --supers "WORDS HE SAID"
+```
+Virtual cameras are **crops of the real take** — wide · offset medium · close-up · back to wide for the outro — with
+hard cuts placed *inside breaths* (never mid-word), the key line on the close-up, a gentle push-in (1.04×) within
+each shot, and supers lifted only from words he actually spoke (captions step aside while a super is up).
+Read `--face` off the review-frames sheets (normalised centre of his face). Run it **before** `scaffold-reel`; the
+scaffold picks up `camera.js` automatically. `--transition whip` adds a real-pixel motion-blur whip — **off-brand for
+Becoming** (its motion is slow eases and gentle push-ins); cuts are the default.
+- **Film for it:** tripod, locked shot, **vertical 4K (2160×3840)** — then even the close-up is native pixels. The planner
+  warns when a framing would upscale a softer source.
+- **What it can't do:** a true profile or high angle, or changing where he looks — those need a generative re-render.
+  **Decision 2026-09-30 (Bianno): real pixels only.** The Seedance/Omni skills (`kinetic-multicam`, `motion-hack`,
+  `multicam`) re-render his face, so they are not installed and never used on him.
 
 **7 · Effects on words.** Every effect names its word and time from `take.cut.words.json`:
 - punch-in 1.2× on the key word, at most one every 5 s, ease back out

@@ -41,6 +41,11 @@
    no real-time vessel location, nothing that breaks the crew NDA.
 8. **Educational claims carry sources.** FACT vs INTERPRETATION vs PERSONAL EXPERIENCE stay visibly separate.
 
+## Decisions log
+- **2026-09-30 · Real pixels only for his likeness.** Offered the Creator Stack's video-to-video methods (One Take Every
+  Move / Every Angle / Motion Hack via Seedance 2.0 or Google Omni); Bianno chose to keep rule 3. Multi-angle edits are
+  built from crops of his real take (`edit-kit` multicam), never from a generative re-render of his face.
+
 ## Out of scope for this brand
 The "Unbelievably Real" hyperreal-character method (Nano Banana Pro + Kling) belongs to Bianno's **separate AI
 influencer project**, on its own AI-labelled account. Never use it, or any AI-generated person, here.
