@@ -42,8 +42,12 @@ generics), so the whole v1–v4 serif rendered as a fallback with no lint or che
 `generic-font-name`; always use the real family name. (2) Dissolving out of a subject on black (the eclipse) reads as a
 double exposure → dip to black (0.45 s out, 1.0 s in). (3) Balanced wrap (`text-wrap: balance`) kills one-word widows;
 anchor captions by `bottom` so 3-line captions grow upward instead of into the date stamp. (4) Caption box centred at
-540 must be ≤ 780 px wide to stay inside x 80–940.
-Values that earned their place: captions Cormorant Garamond 500 italic 70/1.12, bottom 506 px, 150–930 px; stamps Inter 500
+540 must be ≤ 780 px wide to stay inside x 80–940. (5) The fresh-eyes critic caught what four self-reviews missed: date
+stamps outlived their photo by 0.3 s on dip transitions (a documentary marker on the wrong photo) → stamps and titles
+exit at next.s − 0.5; one photo reused for two beats (eclipse ring, sunset) reads as padding → one image, one beat, and
+the strongest image is saved for the name; the thesis lines sat on the least human frame (ear and neck) → the emotional
+centre gets the face. (6) A thin subject on black (a crescent) needs ~12 % push over 5 s, or spec-check flags a hold.
+Values that earned their place: captions Cormorant Garamond 500 italic 70/1.12, bottom 506 px, 150–930 px, balanced; stamps Inter 500
 24 px .22em at y 1452; scrim to rgba(8,10,12,.74); dissolve 0.6 s; Ken Burns 1.00→1.05–1.08 over the shot, sine.inOut.
 Bianno's notes → variable that fixed it: pending
 PROPOSED confirmed/overridden: none yet
