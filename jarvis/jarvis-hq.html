@@ -283,6 +283,13 @@
     color:#032a2f;font-size:12.5px;font-weight:700;padding:10px 20px;border-radius:10px;transition:transform .28s;z-index:60;max-width:88vw;text-align:center}
   .toast.show{transform:translateX(-50%) translateY(0)}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  .qrow{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);padding:5px 0;border-bottom:1px solid var(--line)}
+  .qrow span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .qrow b{cursor:pointer;padding:3px 9px;border-radius:6px;border:1px solid var(--line2);font-size:11px}
+  .qrow .qok{color:var(--ok);border-color:rgba(61,220,151,.4)} .qrow .qok:hover{background:rgba(61,220,151,.12)}
+  .qrow .qno{color:var(--bad);border-color:rgba(255,111,104,.3)} .qrow .qno:hover{background:rgba(255,111,104,.1)}
+  .qrow em{font-style:normal;font-family:var(--mono);font-size:9.5px;white-space:nowrap}
+  .qst-approved{color:var(--cyan)} .qst-executed{color:var(--ok)} .qst-blocked{color:var(--warn)}
   /* ---------- v9: departments + system map ---------- */
   .depts{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
   @media(max-width:900px){.depts{grid-template-columns:repeat(3,1fr)}}
@@ -383,6 +390,8 @@
       <span class="ts">EXPOSURE <b id="tExp">—</b></span>
       <span class="ts opt">MRR <b>€0 → first client</b></span>
       <span class="ts" id="hbPill">HEARTBEAT <b style="color:var(--faint)">not armed</b></span>
+      <span class="ts" id="execPill">EXECUTING <b style="color:var(--faint)">0</b></span>
+      <span class="ts opt" id="workPill">WORK UNITS <b>—</b></span>
       <span class="auto">AUTONOMY <span class="bar"><i id="autoBar" style="width:0%"></i></span><b id="autoPct" style="color:var(--text)">—</b></span>
       <span class="ts" id="syncTs"><b style="color:var(--faint)">local</b></span>
     </div>
@@ -441,7 +450,9 @@
         <input id="newDec" placeholder="Queue a decision…" aria-label="Queue a decision">
         <button onclick="addDec()">Queue</button>
       </div>
-      <p class="note">Level 3 attention — only what genuinely needs you. One at a time.</p>
+      <div id="railRest"></div>
+      <div id="execList"></div>
+      <p class="note">Approve = Jarvis executes it (4-hourly executor) and writes a receipt. Publish/send/pay fires ONLY on your per-card approval — never on its own.</p>
       <div class="dlog" id="dlog"></div>
     </section>
   </div>
@@ -552,7 +563,7 @@
 
   <p class="foot">
     <b>Jarvis proposes · Bianno approves anything that publishes, sends, or pays.</b><br>
-    Every number on this bridge is real, or it isn't shown. · Jarvis HQ v9 «Command Bridge · System Map» · synced via artifact db
+    Every number on this bridge is real, or it isn't shown. · Jarvis HQ v10 «Command Bridge · Approve→Execute» · synced via artifact db
   </p>
 </div>
 
@@ -581,7 +592,7 @@
 
 <script>
 /* ================= state & sync ================= */
-const KEYS=['exposure','rail','missions','day','ledger','events','heartbeat'];
+const KEYS=['exposure','rail','missions','day','ledger','events','heartbeat','approved'];
 const DEFAULTS={
   exposure:{count:0,entries:[]},
   rail:{queue:[
@@ -617,7 +628,8 @@ const DEFAULTS={
     {ts:Date.parse('2026-09-16T14:18:00+02:00'),k:'ship',m:'MISSION SHIPPED — jarvis/ repo package pushed to GitHub'},
     {ts:Date.parse('2026-09-16T19:40:00+02:00'),k:'sys',m:'HQ v5 «Command Bridge» — living bridge, NOW cards, event bus'}
   ]},
-  heartbeat:{runs:[]}
+  heartbeat:{runs:[]},
+  approved:{queue:[]}
 };
 const NEURAL={
   armed:['Marketing Engine skill','Empire / council / launch skills','Scrapling (lead enrichment)','Deal-economics pricing frame','Books live on KDP'],
@@ -800,6 +812,11 @@ function topStats(){
   document.getElementById('iShip').textContent=shipped;
   document.getElementById('iDec').textContent=S.rail.log.length;
   document.getElementById('iNeed').textContent=S.rail.queue.length;
+  const ap=(S.approved&&S.approved.queue||[]).filter(a=>a.status==='approved').length;
+  const ex=(S.approved&&S.approved.queue||[]).filter(a=>a.status==='executed').length;
+  document.getElementById('execPill').innerHTML='EXECUTING <b style="color:'+(ap?'var(--cyan)':'var(--faint)')+'">'+ap+'</b>';
+  const wu=S.events.list.length+((S.heartbeat&&S.heartbeat.runs)||[]).length+S.rail.log.length+ex;
+  document.getElementById('workPill').innerHTML='WORK UNITS <b>'+wu+'</b>';
 }
 function momentum(){
   const rows=[];
@@ -885,13 +902,29 @@ function renderRail(){
         <button class="btn ghost" onclick="deferDec()">Later</button>
       </div></div>`
     :'<div class="railclear"><b>Rail clear.</b><br>Nothing needs the commander.</div>';
+  const rest=q.slice(1);
+  document.getElementById('railRest').innerHTML=rest.length?
+    '<div class="nlbl" style="margin-top:10px">Also queued — one-tap</div>'+rest.map((c,ix)=>
+    '<div class="qrow"><span title="'+esc(c.d||'')+'">'+esc(c.t)+'</span>'+
+    '<b class="qok" onclick="decideAt('+(ix+1)+',true)">✓</b><b class="qno" onclick="decideAt('+(ix+1)+',false)">✗</b></div>').join(''):'';
+  const ap=(S.approved&&S.approved.queue||[]).slice(-8).reverse();
+  document.getElementById('execList').innerHTML=ap.length?
+    '<div class="nlbl" style="margin-top:10px">Execution queue</div>'+ap.map(a=>
+    '<div class="qrow"><span>'+esc(a.t)+'</span><em class="qst qst-'+a.status+'">'+
+    (a.status==='approved'?'⚙ queued':a.status==='executed'?'✓ done':a.status==='blocked'?'⚠ '+esc((a.note||'blocked').slice(0,40)):esc(a.status))+'</em></div>').join(''):'';
   document.getElementById('dlog').innerHTML=S.rail.log.slice(0,16)
     .map(e=>`<div><span class="${e.v?'y':'x'}">${e.v?'✓':'✗'}</span> ${esc(e.s)} — ${esc(e.t)}</div>`).join('');
 }
-function decide(v){const d=S.rail.queue.shift();if(!d)return;
+function decide(v){decideAt(0,v);}
+function decideAt(i,v){const d=S.rail.queue.splice(i,1)[0];if(!d)return;
   S.rail.log.unshift({v,t:d.t,s:stamp()});if(S.rail.log.length>100)S.rail.log.length=100;
+  if(v){if(!S.approved)S.approved={queue:[]};
+    S.approved.queue.push({id:'ap_'+Date.now().toString(36),t:d.t,d:d.d||'',by:d.by||'',
+      approved:Date.now(),status:'approved'});
+    if(S.approved.queue.length>60)S.approved.queue=S.approved.queue.slice(-60);
+    save('approved');}
   save('rail');ev('dec',(v?'APPROVED':'REJECTED')+' — '+d.t);
-  toast(v?'Approved — tell Jarvis to execute':'Rejected — logged');}
+  toast(v?'Approved — the executor picks this up within 4 hours':'Rejected — logged');}
 function deferDec(){if(S.rail.queue.length<2){toast('Nothing behind it — decide this one');return;}
   S.rail.queue.push(S.rail.queue.shift());save('rail');}
 function addDec(){const i=document.getElementById('newDec');if(!i.value.trim())return;
