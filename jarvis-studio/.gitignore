@@ -5,3 +5,5 @@ workspace/projects/*/review/v*/
 workspace/projects/*/review/*/*.png
 node_modules/
 skills-lock.json
+__pycache__/
+*.pyc
