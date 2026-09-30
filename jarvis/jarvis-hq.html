@@ -290,6 +290,17 @@
   .qrow .qno{color:var(--bad);border-color:rgba(255,111,104,.3)} .qrow .qno:hover{background:rgba(255,111,104,.1)}
   .qrow em{font-style:normal;font-family:var(--mono);font-size:9.5px;white-space:nowrap}
   .qst-approved{color:var(--cyan)} .qst-executed{color:var(--ok)} .qst-blocked{color:var(--warn)}
+  /* tap feel: every clickable visibly responds, comfortable targets on touch */
+  .sub,.mi .top2,.blk,.pip,.st,.dept,.imp .cell,.qc,.btn,.qrow b,.fnode,.chk,.sc{touch-action:manipulation}
+  .sub:active,.mi .top2:active,.blk:active,.dept:active,.imp .cell:active,.qrow b:active{transform:scale(.97);opacity:.8}
+  .btn:active,.qc:active,.st:active{transform:scale(.95)}
+  @media(pointer:coarse){
+    .sub{padding:7px 0}
+    .sub .sc{width:20px;height:20px;border-radius:7px;font-size:11px}
+    .chk{width:24px;height:24px}
+    .pip{width:20px;height:10px}
+    .qrow b{padding:6px 13px;font-size:13px}
+  }
   /* ---------- v11: two-speed ops (ReStructure-grade info design, our skin) ---------- */
   .stmt{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
     background:linear-gradient(120deg,#0a0d16,#151a2c 60%,#1a1430);border:1px solid rgba(230,192,123,.35);
@@ -1013,6 +1024,7 @@ function renderMissions(){
 function tglMi(i){const m=S.missions.items[i];m.done=!m.done;save('missions');
   if(m.done){ev('ship','MISSION SHIPPED — '+m.t);toast('Shipped. Now log the exposure it created ↑');}}
 function tglSub(i,j){const m=S.missions.items[i],s=m.subs[j];s.done=!s.done;
+  toast(s.done?'✓ step done — synced':'step reopened');
   if(s.done)ev('sys','Blocker cleared — '+s.s);
   if(m.subs.every(x=>x.done)&&!m.done)toast('All blockers clear — ready to ship');
   save('missions');}
