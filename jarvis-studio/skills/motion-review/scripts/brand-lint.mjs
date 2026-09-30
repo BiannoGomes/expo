@@ -74,6 +74,12 @@ for (const f of files) {
     const blurs = [...m[1].matchAll(/(-?[\d.]+)(?:px)?\s+(-?[\d.]+)(?:px)?\s+([\d.]+)px/g)].map((b) => +b[3]);
     if (blurs.some((b) => b >= 3)) hit('error', 'glow', rel, src, m.index, `text-shadow blur ${Math.max(...blurs)}px reads as glow (house rule: no generic AI glow): \`${m[0].slice(0, 60)}\``);
   }
+  // an @font-face named like a generic family ("Serif", "Sans", "Mono"…) is silently dropped: HyperFrames lowercases
+  // family names and skips generics, so the text renders in a fallback face with no lint or check warning
+  for (const m of src.matchAll(/@font-face\s*\{[^}]*?font-family\s*:\s*(['"]?)([^;'"}]+)\1/gi)) {
+    if (/^(?:serif|sans|sans-serif|mono|monospace|cursive|fantasy|system-ui|ui-serif|ui-sans-serif|ui-monospace|ui-rounded|emoji|math|fangsong)$/i.test(m[2].trim()))
+      hit('error', 'generic-font-name', rel, src, m.index, `@font-face family "${m[2].trim()}" reads as a generic family: the font can silently fail to load and a fallback renders. Use the real name ("Cormorant Garamond", "Inter")`);
+  }
 
   if (paletteKnown) {
     const seen = new Map();

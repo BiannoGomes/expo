@@ -16,7 +16,7 @@ Decide per **shot**, not per project. Code first where code is strongest. Free b
 | Captions | **Code** | `edit-kit` captions (word-synced, reading-speed checked) → HyperFrames `embedded-captions` → `auto-editor` SRT | Free |
 | Voice cleanup (a noisy phone recording) | **Audio** | Adobe `media_enhance_speech` → ElevenLabs voice isolation | Adobe plan / **credits** |
 | Voiceover | **Audio** | Bianno's own voice (always best for a personal brand) → HyperFrames TTS (Kokoro, local) → ElevenLabs | Free / **credits** |
-| Music | **Audio** | Pixabay (commercial use OK, no attribution, per HyperFrames CREDITS.md) → ElevenLabs Music (paid plan) → Lyria (needs a Gemini key) | Free / **credits** |
+| Music | **Audio** | `studio/scripts/compose-score.py`: an original score composed to picture from a cue sheet (felt piano, pad, pulse, sea; owned outright, no licence, no copyright mute) → Pixabay (commercial use OK, no attribution, per HyperFrames CREDITS.md) → ElevenLabs Music (paid plan) → Lyria (needs a Gemini key) | Free / **credits** |
 | SFX | **Audio** | HyperFrames Pixabay SFX → ElevenLabs SFX | Free / **credits** |
 | Static social graphics, carousels, thumbnails | **Design** | The `content-wave` skill (UnifyMind carousels) → Canva connector → `canvas-design` | Free |
 | Background removal, upscale, reframe | **Image ops** | Adobe for creativity → Higgsfield `remove_background` / `upscale_*` / `reframe` | Plan / **credits** |

@@ -32,6 +32,25 @@ Honest critique to remember: apart from the rule, the format (white sans on blac
 Audience result (Bianno's numbers only): pending
 Next action to get it in front of a human: Bianno watches renders/final.mp4, approves or replaces the copy, and posts it as a Reel.
 
+## 2026-09-30 · the-beginning · becoming-project · Reel 9:16 55.5 s + 15 s teaser
+Ship target: first Reel on the Becoming account · Shipped: no (draft, awaiting Bianno's approve)
+Worked: real photos only, with EXIF dates as on-screen documentary markers (bound in facts.md, so fact-lock proves them);
+the "reveal" (hard cut into a tight crop of the opening photo, then a 3 s power2.inOut pull-back to the full frame);
+an original score composed to the cut in code (compose-score.py, cue sheet keyed to the edit's cut points).
+Failed → fix: (1) an @font-face family named "Serif" was silently dropped by HyperFrames (it treats generic names as
+generics), so the whole v1–v4 serif rendered as a fallback with no lint or check warning → brand-lint rule
+`generic-font-name`; always use the real family name. (2) Dissolving out of a subject on black (the eclipse) reads as a
+double exposure → dip to black (0.45 s out, 1.0 s in). (3) Balanced wrap (`text-wrap: balance`) kills one-word widows;
+anchor captions by `bottom` so 3-line captions grow upward instead of into the date stamp. (4) Caption box centred at
+540 must be ≤ 780 px wide to stay inside x 80–940.
+Values that earned their place: captions Cormorant Garamond 500 italic 70/1.12, bottom 506 px, 150–930 px; stamps Inter 500
+24 px .22em at y 1452; scrim to rgba(8,10,12,.74); dissolve 0.6 s; Ken Burns 1.00→1.05–1.08 over the shot, sine.inOut.
+Bianno's notes → variable that fixed it: pending
+PROPOSED confirmed/overridden: none yet
+Tool issues: the Drive connector refuses files over ~6.3 MB (23 of the folder's files, including both videos).
+Audience result (Bianno's numbers only): pending
+Next action to get it in front of a human: Bianno watches the draft and says approve, or names the one change.
+
 ---
 
 ## Entry template
