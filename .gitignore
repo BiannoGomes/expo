@@ -132,3 +132,6 @@ docs/pages/versions/*/react-native/*.diff
 
 # TypeScript state
 tsconfig.tsbuildinfo
+__pycache__/
+*.pyc
+jarvis/judge/decisions.jsonl
