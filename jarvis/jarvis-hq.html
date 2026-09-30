@@ -283,6 +283,32 @@
     color:#032a2f;font-size:12.5px;font-weight:700;padding:10px 20px;border-radius:10px;transition:transform .28s;z-index:60;max-width:88vw;text-align:center}
   .toast.show{transform:translateX(-50%) translateY(0)}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  /* ---------- v9: departments + system map ---------- */
+  .depts{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  @media(max-width:900px){.depts{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:560px){.depts{grid-template-columns:repeat(2,1fr)}}
+  .dept{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 13px;cursor:pointer;transition:border-color .18s,transform .18s}
+  .dept:hover{border-color:var(--cyan);transform:translateY(-2px)}
+  .dept.on{border-color:var(--cyan);box-shadow:0 0 16px rgba(55,213,232,.18)}
+  .dept .dn{font-family:var(--disp);font-size:10px;font-weight:700;letter-spacing:.18em;display:flex;align-items:center;gap:7px}
+  .dept .dn i{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .dept .ds{font-size:10.5px;color:var(--dim);margin-top:6px;line-height:1.45}
+  .dept .ds b{color:var(--text)}
+  .deptView{margin-top:12px;border-top:1px solid var(--line);padding-top:12px;font-size:11.5px;color:var(--dim);line-height:1.7}
+  .deptView b{color:var(--text)}
+  .deptView .dvk{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--cyan);text-transform:uppercase;display:block;margin:8px 0 2px}
+  .connGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px}
+  .conn{display:flex;align-items:flex-start;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;cursor:default}
+  .conn i{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+  .conn .cn{font-size:11px;font-weight:600;line-height:1.3}
+  .conn .cs{font-size:9.5px;color:var(--faint);line-height:1.4;margin-top:1px}
+  .st-live{background:var(--ok);box-shadow:0 0 8px rgba(61,220,151,.7)}
+  .st-armed{background:var(--cyan);box-shadow:0 0 8px rgba(55,213,232,.7);animation:bl 2.2s infinite}
+  .st-queued{background:var(--blue)}
+  .st-attn{background:var(--warn);box-shadow:0 0 8px rgba(240,163,94,.8);animation:bl 1.6s infinite}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:9.5px;color:var(--faint);margin-top:10px}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .legend i{width:7px;height:7px;border-radius:50%}
   /* ---------- DEBRIEF cinema ---------- */
   .deb{position:fixed;inset:0;z-index:60;background:#04060c;display:flex;align-items:center;justify-content:center;overflow:hidden}
   .deb[hidden]{display:none}
@@ -426,6 +452,23 @@
     <div class="nowgrid" id="nowGrid"></div>
   </section>
 
+  <!-- v9: DEPARTMENTS (lenses over one truth, never new agents) -->
+  <section class="panel">
+    <h2 class="sec">Departments <span class="sub">business lenses over one shared truth · click to project</span></h2>
+    <div class="depts" id="depts"></div>
+    <div class="deptView" id="deptView" hidden></div>
+  </section>
+
+  <!-- v9: SYSTEM MAP — what is actually connected, honestly -->
+  <section class="panel">
+    <h2 class="sec">System map <span class="sub">every connection · real status only</span></h2>
+    <div class="connGrid" id="connGrid"></div>
+    <div class="legend">
+      <span><i class="st-live"></i>LIVE</span><span><i class="st-armed"></i>ARMED — one step from live</span>
+      <span><i class="st-queued"></i>QUEUED</span><span><i class="st-attn"></i>NEEDS ATTENTION</span>
+    </div>
+  </section>
+
   <!-- EVENT STREAM -->
   <section class="panel">
     <h2 class="sec">Live event trace <span class="sub">every entry is a real action taken in this system</span></h2>
@@ -509,7 +552,7 @@
 
   <p class="foot">
     <b>Jarvis proposes · Bianno approves anything that publishes, sends, or pays.</b><br>
-    Every number on this bridge is real, or it isn't shown. · Jarvis HQ v7 «Command Bridge · Debrief» · synced via artifact db
+    Every number on this bridge is real, or it isn't shown. · Jarvis HQ v9 «Command Bridge · System Map» · synced via artifact db
   </p>
 </div>
 
@@ -983,7 +1026,7 @@ function renderStream(){
     :'<div style="color:var(--faint)">No events yet — the trace fills as real actions happen.</div>';
 }
 
-function renderAll(){topStats();renderHB();momentum();renderBridge();renderNow();renderExpo();renderRail();renderMissions();renderDay();renderLedger();renderStream();renderShelf();}
+function renderAll(){topStats();renderHB();momentum();renderBridge();renderNow();renderExpo();renderRail();renderMissions();renderDay();renderLedger();renderStream();renderShelf();if(window.renderDepts)renderDepts();}
 renderAll();sizeOrb();
 document.getElementById('newDec').addEventListener('keydown',e=>{if(e.key==='Enter')addDec();});
 document.getElementById('newMi').addEventListener('keydown',e=>{if(e.key==='Enter')addMi();});
@@ -1288,7 +1331,69 @@ function debriefOffer(){
     document.getElementById('debPill').hidden=false;}
 }
 
+
+/* ================= v9: departments + system map ================= */
+const CONNECTIONS=[
+ {n:'HQ shared db',s:'live',d:'canonical state · every panel reads it'},
+ {n:'Daily heartbeat',s:'live',d:'06:30 · judge pass + Morning One Page'},
+ {n:'GitHub repo',s:'live',d:'jarvis/ doctrine + demo + vault-sync'},
+ {n:'Higgsfield Ultra',s:'live',d:'2,858 credits · brand art shipped'},
+ {n:'Stripe €97 audit',s:'live',d:'live payment link'},
+ {n:'Google Drive',s:'live',d:'swipe intake · Claude+Jev folder'},
+ {n:'Notion · Gmail · Calendar',s:'live',d:'connected via claude.ai'},
+ {n:'ComfyUI + Wan2.2',s:'live',d:'installed · first brand render pending'},
+ {n:'Avatar Studio',s:'live',d:'Wav2Lip · proven 9 Sep'},
+ {n:'Voice receptionist demo',s:'live',d:'on the demo page · EN/PT'},
+ {n:'Jev judge layer',s:'armed',d:'wiring shipped · needs OPENROUTER key in .env'},
+ {n:'GitHub Pages deploy',s:'armed',d:'workflow pushed · flip Settings→Pages'},
+ {n:'HyperFrames',s:'queued',d:'HTML→MP4 · install via Cowork'},
+ {n:'Qwen3-TTS',s:'queued',d:'local voice · install via Cowork'},
+ {n:'Kit + Calendly',s:'queued',d:'slice-1 capture + booking'},
+ {n:'Telegram inbox',s:'queued',d:'voice-note capture → classify'},
+ {n:'n8n',s:'attn',d:'on a laptop tunnel — dies when lid closes · host it (~€5/mo, reserve)'},
+ {n:'Exposed API keys ×4',s:'attn',d:'rotate to .env — rail card since 16 Sep'}
+];
+function renderConns(){document.getElementById('connGrid').innerHTML=CONNECTIONS.map(c=>
+ '<div class="conn"><i class="st-'+c.s+'"></i><div><div class="cn">'+esc(c.n)+'</div><div class="cs">'+esc(c.d)+'</div></div></div>').join('');}
+function deptData(){
+ const cl=S.missions.items.find(m=>/paying client|UnifyOps/i.test(m.t));
+ const clDone=cl&&cl.subs.length?cl.subs.filter(x=>x.done).length+'/'+cl.subs.length:'—';
+ const hb=lastHB();
+ return {
+ SALES:{c:'#37d5e8',stat:'Wave 7: <b>5</b> clinics · '+clDone+' steps',
+  view:()=>['<span class="dvk">Pipeline</span>5 clinics first-touched 8 Sep · follow-ups drafted, unsent — lanes go HOT/WARM/COLD once replies exist',
+   '<span class="dvk">Next</span>'+esc(cl&&cl.subs.find(x=>!x.done)?cl.subs.find(x=>!x.done).s:'—'),
+   '<span class="dvk">Judge</span>lead_readiness + reply_intent registered · awaiting first real data']},
+ MARKETING:{c:'#5b8cff',stat:'Exposure <b>'+S.exposure.count+'</b> · queue decision pending',
+  view:()=>['<span class="dvk">Scoreboard</span>'+S.exposure.count+' humans reached since 16 Sep — leads, never likes',
+   '<span class="dvk">Verdict engine</span>content_scale judge: SCALE / FIX_HOOK / PAUSE — armed, no scored assets yet',
+   '<span class="dvk">Pending</span>extend-or-rest content queue (rail)']},
+ FINANCE:{c:'#e6c07b',stat:'MRR <b>€0</b> → first client · €97 LIVE',
+  view:()=>['<span class="dvk">Live</span>€97 audit on Stripe · retainer floor €500/mo (rail) · setup €1.5–2.5k',
+   '<span class="dvk">Leak watch</span>anomaly judge registered · reserve €500 intact, release gated by evidence',
+   '<span class="dvk">Truth</span>every number here is real or UNKNOWN — no invented revenue, ever']},
+ CONTENT:{c:'#9b5bff',stat:'<b>2</b> books live · pillars armed',
+  view:()=>['<span class="dvk">Shipped</span>2 books on KDP · 100+ posts fired · Book 3 blocked on 5 fixes',
+   '<span class="dvk">Engine</span>HyperFrames→Wan2.2→Avatar→Higgsfield router · SKILL/STORY/PASSION rotation',
+   '<span class="dvk">Radar</span>swipe_verdict judge: TEST / WATCH / REVERSE_ENGINEER / IGNORE']},
+ SYSTEM:{c:'#3ddc97',stat:(hb.run?('heartbeat <b>'+(hb.fresh?'OK':'stale')+'</b>'):'heartbeat —')+' · '+S.events.list.length+' events',
+  view:()=>['<span class="dvk">Health</span>'+(hb.run?('last run '+hb.ago+' — '+esc((hb.run.note||'').slice(0,120))):'no runs recorded'),
+   '<span class="dvk">Loops</span>regression gate · decision ledger · weekly review: “where did I waste your attention?”',
+   '<span class="dvk">Kill switch</span>any automation with zero useful output for 30 days gets flagged here']}};}
+var deptOpen='';
+function renderDepts(){
+ const D=deptData();
+ document.getElementById('depts').innerHTML=Object.keys(D).map(k=>
+  '<div class="dept '+(deptOpen===k?'on':'')+'" onclick="deptClick(\''+k+'\')"><div class="dn"><i style="background:'+D[k].c+';box-shadow:0 0 8px '+D[k].c+'"></i>'+k+'</div><div class="ds">'+D[k].stat+'</div></div>').join('');
+ const v=document.getElementById('deptView');
+ if(deptOpen&&D[deptOpen]){v.hidden=false;v.innerHTML=D[deptOpen].view().join('');}
+ else v.hidden=true;
+}
+function deptClick(k){deptOpen=(deptOpen===k)?'':k;renderDepts();pulse('sys');}
+renderConns();renderDepts();
+
 /* ================= db sync ================= */
+
 (async()=>{
   const ts=document.getElementById('syncTs');
   try{DBH=await window.claude.use('db');}catch(e){DBH=null;}
