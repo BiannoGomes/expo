@@ -290,6 +290,42 @@
   .qrow .qno{color:var(--bad);border-color:rgba(255,111,104,.3)} .qrow .qno:hover{background:rgba(255,111,104,.1)}
   .qrow em{font-style:normal;font-family:var(--mono);font-size:9.5px;white-space:nowrap}
   .qst-approved{color:var(--cyan)} .qst-executed{color:var(--ok)} .qst-blocked{color:var(--warn)}
+  /* ---------- v11: two-speed ops (ReStructure-grade info design, our skin) ---------- */
+  .stmt{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+    background:linear-gradient(120deg,#0a0d16,#151a2c 60%,#1a1430);border:1px solid rgba(230,192,123,.35);
+    border-radius:var(--r);padding:20px 24px}
+  .stmt h2{font-family:var(--disp);font-weight:700;font-size:clamp(17px,2.6vw,24px);line-height:1.25;letter-spacing:-.01em}
+  .stmt h2 b{color:var(--gold)}
+  .stmt .sc{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.16em;text-align:right;line-height:1.8}
+  .bigstats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:760px){.bigstats{grid-template-columns:repeat(2,1fr)}}
+  .bs{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .bs b{font-family:var(--disp);font-weight:300;font-size:clamp(26px,3.6vw,40px);letter-spacing:-.03em;
+    line-height:1.05;display:block;font-variant-numeric:tabular-nums}
+  .bs span{font-size:9px;font-weight:700;letter-spacing:.18em;color:var(--faint);text-transform:uppercase}
+  .bs.hl{border-color:rgba(230,192,123,.4);background:linear-gradient(150deg,rgba(230,192,123,.10),var(--panel))}
+  .bs.hl b{color:var(--gold)}
+  .twospeed{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:820px){.twospeed{grid-template-columns:1fr}}
+  .sp-h{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .sp-h .ic{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .sp-h b{font-family:var(--disp);font-size:12.5px;font-weight:700}
+  .sp-h small{font-size:10px;color:var(--faint);display:block;font-weight:400}
+  .sprow{display:flex;align-items:flex-start;gap:9px;padding:7.5px 0;border-bottom:1px solid var(--line);font-size:11.5px;color:var(--dim);line-height:1.5}
+  .sprow:last-child{border-bottom:none}
+  .sprow .em{font-size:12px;margin-top:1px;flex-shrink:0}
+  .sprow .ms{margin-left:auto;flex-shrink:0;font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:5px;
+    border:1px solid rgba(55,213,232,.35);color:var(--cyan);white-space:nowrap}
+  .sprow .ms.dim{border-color:var(--line);color:var(--faint)}
+  .wdog{margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .wdog .wh{display:flex;justify-content:space-between;align-items:center;padding:8px 13px;background:var(--panel2);
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--faint)}
+  .wdog .wh b{color:var(--text);letter-spacing:.06em}
+  .wrow{font-family:var(--mono);font-size:10.5px;padding:7px 13px;border-top:1px solid var(--line);color:var(--dim);
+    display:flex;gap:9px;align-items:baseline}
+  .wrow.alert{background:rgba(255,111,104,.07);color:#ffb0aa}
+  .wrow.alert::before{content:"⚠";flex-shrink:0}
+  .wrow time{color:var(--faint);flex-shrink:0}
   /* ---------- v9: departments + system map ---------- */
   .depts{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
   @media(max-width:900px){.depts{grid-template-columns:repeat(3,1fr)}}
@@ -463,6 +499,37 @@
     <div class="nowgrid" id="nowGrid"></div>
   </section>
 
+  <!-- v11: STATEMENT + BIG STATS + TWO-SPEED OPS -->
+  <div class="stmt">
+    <h2>Jarvis does the work.<br><b>You make the decisions.</b></h2>
+    <div class="sc">FABLE THINKS · JEV JUDGES · HERMES MOVES<br>BIANNO COMMANDS — ALWAYS</div>
+  </div>
+  <div class="bigstats">
+    <div class="bs"><b id="bsWork">—</b><span>work units logged</span></div>
+    <div class="bs"><b id="bsConn">—</b><span>systems live / 18 wired</span></div>
+    <div class="bs"><b>8</b><span>judges registered</span></div>
+    <div class="bs hl"><b id="bsDec">—</b><span>decisions made by you</span></div>
+  </div>
+  <section class="panel">
+    <h2 class="sec">Two-speed operations <span class="sub">deep thought · fast judgment — both real, nothing staged</span></h2>
+    <div class="twospeed">
+      <div>
+        <div class="sp-h"><span class="ic" style="background:rgba(155,91,255,.15);border:1px solid rgba(155,91,255,.4)">✦</span>
+          <b>FABLE does the thinking<small>plans · writes · explains — deep reasoning tier</small></b></div>
+        <div id="spFable"></div>
+      </div>
+      <div>
+        <div class="sp-h"><span class="ic" style="background:rgba(55,213,232,.12);border:1px solid rgba(55,213,232,.4)">⚡</span>
+          <b>JEV makes the quick calls<small>scores · sorts · flags — typed decisions, calibrated</small></b></div>
+        <div id="spJev"></div>
+      </div>
+    </div>
+    <div class="wdog">
+      <div class="wh"><b>WATCHDOG</b><span>IF ANYTHING BREAKS, YOU HEAR ABOUT IT FIRST</span></div>
+      <div id="wdogRows"></div>
+    </div>
+  </section>
+
   <!-- v9: DEPARTMENTS (lenses over one truth, never new agents) -->
   <section class="panel">
     <h2 class="sec">Departments <span class="sub">business lenses over one shared truth · click to project</span></h2>
@@ -563,7 +630,7 @@
 
   <p class="foot">
     <b>Jarvis proposes · Bianno approves anything that publishes, sends, or pays.</b><br>
-    Every number on this bridge is real, or it isn't shown. · Jarvis HQ v10 «Command Bridge · Approve→Execute» · synced via artifact db
+    Every number on this bridge is real, or it isn't shown. · Jarvis HQ v11 «Command Bridge · Two-Speed Ops» · synced via artifact db
   </p>
 </div>
 
@@ -1059,7 +1126,7 @@ function renderStream(){
     :'<div style="color:var(--faint)">No events yet — the trace fills as real actions happen.</div>';
 }
 
-function renderAll(){topStats();renderHB();momentum();renderBridge();renderNow();renderExpo();renderRail();renderMissions();renderDay();renderLedger();renderStream();renderShelf();if(window.renderDepts)renderDepts();}
+function renderAll(){topStats();renderHB();momentum();renderBridge();renderNow();renderExpo();renderRail();renderMissions();renderDay();renderLedger();renderStream();renderShelf();if(window.renderDepts)renderDepts();if(window.renderTwoSpeed)renderTwoSpeed();}
 renderAll();sizeOrb();
 document.getElementById('newDec').addEventListener('keydown',e=>{if(e.key==='Enter')addDec();});
 document.getElementById('newMi').addEventListener('keydown',e=>{if(e.key==='Enter')addMi();});
@@ -1424,6 +1491,36 @@ function renderDepts(){
 }
 function deptClick(k){deptOpen=(deptOpen===k)?'':k;renderDepts();pulse('sys');}
 renderConns();renderDepts();
+/* ================= v11: two-speed ops ================= */
+var JUDGE_REG=[['lead_readiness','HOT / WARM / COLD','0.90'],['reply_intent','6 intents','0.85'],
+ ['content_scale','SCALE / FIX_HOOK / PAUSE','0.90'],['search_intent','buy / compare / DIY','0.85'],
+ ['anomaly','money-leak detection','0.90'],['duplicate','dedupe','0.90'],
+ ['human_review_required','can only ADD your review','0.95'],['swipe_verdict','TEST / WATCH / RE','0.80']];
+var EMK={ship:'🚀',exp:'📡',dec:'🎖️',sys:'✦',warn:'⚠️'};
+function renderTwoSpeed(){
+  if(!window.JUDGE_REG||!document.getElementById('spFable'))return;
+  const th=S.events.list.filter(e=>e.k!=='warn').slice(-6).reverse();
+  document.getElementById('spFable').innerHTML=th.map(e=>{
+    const d=new Date(e.ts);
+    return '<div class="sprow"><span class="em">'+(EMK[e.k]||'✦')+'</span><span>'+esc(e.m.length>110?e.m.slice(0,110)+'…':e.m)+
+      '</span><span class="ms dim">'+d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+'</span></div>';}).join('')
+    ||'<div class="sprow">No reasoning events yet.</div>';
+  document.getElementById('spJev').innerHTML=JUDGE_REG.map(j=>
+    '<div class="sprow"><span class="em">⚡</span><span><b style="color:var(--text)">'+j[0]+'</b> — '+j[1]+
+    '</span><span class="ms">≥'+j[2]+'</span></div>').join('')+
+    '<div class="sprow" style="color:var(--faint)">armed · first live calls land here with real ms once the OpenRouter key exists</div>';
+  const warns=S.events.list.filter(e=>e.k==='warn').slice(-3).reverse();
+  const oks=S.events.list.filter(e=>e.k==='ship').slice(-2).reverse();
+  const row=e=>{const d=new Date(e.ts);
+    return '<div class="wrow'+(e.k==='warn'?' alert':'')+'"><time>'+d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+
+    '</time><span>'+esc(e.m.length>150?e.m.slice(0,150)+'…':e.m)+'</span></div>';};
+  document.getElementById('wdogRows').innerHTML=(warns.map(row).join('')+oks.map(row).join(''))||'<div class="wrow">quiet.</div>';
+  document.getElementById('bsWork').textContent=S.events.list.length+((S.heartbeat&&S.heartbeat.runs)||[]).length+S.rail.log.length;
+  document.getElementById('bsConn').textContent=(typeof CONNECTIONS!=='undefined')?CONNECTIONS.filter(c=>c.s==='live').length:'—';
+  document.getElementById('bsDec').textContent=S.rail.log.length;
+}
+renderTwoSpeed();
+
 
 /* ================= db sync ================= */
 
