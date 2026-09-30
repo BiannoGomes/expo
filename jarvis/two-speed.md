@@ -23,8 +23,21 @@ deterministic postconditions (LEARNING-LOOP A2) still outrank any judge's opinio
 | Tier | Model | When |
 |---|---|---|
 | NOW (cloud) | Haiku via the Agent tool's fast tier | heartbeat + session judgments, €0 extra |
-| ARMED on approval | **Jev via OpenRouter** (~€5 one-time top-up ≈ months of calls) | desktop classifier + high-volume scoring — say "arm Jev" |
-| Fallback | free tiers per free-llm-apis.md | desktop cron if OpenRouter is down |
+| **ARMED 30 Sep** | **Jev via OpenRouter** (`typesafe/jev-1.13`) — wiring built at jarvis/judge/ (judge.py + registry.json); goes live the moment OPENROUTER_API_KEY exists in the desktop .env (~€5 top-up ≈ months of calls) | desktop classifier + high-volume scoring |
+| Fallback | JUDGE_FALLBACK_MODEL env (free tiers per free-llm-apis.md) | if OpenRouter/Jev is down |
+
+**Four speeds (vocabulary locked):** S1 REFLEX = judge calls (Jev/fast tier) · S2 OPERATIONS
+= Hermes + execution-tier Claude · S3 DEEP THOUGHT = Fable · S4 HUMAN = Bianno at the rail.
+
+**Decision ledger + calibration (adopted from the 30 Sep council eval — the genuinely new
+piece):** every judge call writes {decision_id, judge, state, choice, probabilities,
+confidence, lane} to decisions.jsonl; record_outcome() closes it with observed truth;
+calibrate() compares predicted confidence vs actual correctness per judge — ≥20 closed
+decisions with a >0.10 gap flags OVERCONFIDENT and Fable investigates. Judges are
+measured, never trusted. New capability = new registry entry, never a new agent.
+
+**Weekly self-review question (added to the weekly consolidation):** "Where did I waste
+Bianno's attention this week?" — the answer becomes a rule, a judge, a skill, or a test.
 Jev Router (their model-picker) stays SKIP — routing Claude Code stays on the D-list;
 Jev the JUDGE is in scope, Jev the router of our brain is not.
 

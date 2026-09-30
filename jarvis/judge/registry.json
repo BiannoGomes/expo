@@ -1,0 +1,55 @@
+{
+  "doc": "JARVIS judge registry — a new capability is a new decision function, never a new agent. Each judge: typed question, allowed outputs, proceed-threshold, escalation. publish/send/pay is never a judge question (GODMODE). Historical accuracy comes from judge.py calibrate().",
+  "judges": {
+    "lead_readiness": {
+      "question": "Given this lead's behaviour, which lane?",
+      "options": ["HOT", "WARM", "COLD"],
+      "threshold": 0.9,
+      "on_review": "Fable reviews with full context",
+      "notes": "HOT skips the line (same-day reply drafted). WARM = follow up until yes/no. COLD = nurture. Re-judge on every reply."
+    },
+    "reply_intent": {
+      "question": "What does this reply from a prospect mean?",
+      "options": ["INTERESTED", "PRICE_OBJECTION", "NOT_NOW", "HANDOFF_REQUEST", "NOT_INTERESTED", "UNCLEAR"],
+      "threshold": 0.85,
+      "on_review": "route to Fable + the 30 Sep reply-handling cards (artifacts/2026-09-30)"
+    },
+    "content_scale": {
+      "question": "Based on attributed leads (never likes), what should happen to this asset?",
+      "options": ["SCALE", "FIX_HOOK", "PAUSE"],
+      "threshold": 0.9,
+      "on_review": "experiment ledger row; a confounded result cannot be promoted (LEARNING-LOOP A6)"
+    },
+    "search_intent": {
+      "question": "What is the intent behind this search query?",
+      "options": ["READY_TO_BUY", "COMPARING", "DIY", "BROWSING"],
+      "threshold": 0.85,
+      "on_review": "keep as UNKNOWN in the keyword sheet"
+    },
+    "anomaly": {
+      "question": "Is this metric movement anomalous against its baseline window?",
+      "options": ["ANOMALOUS", "NORMAL"],
+      "threshold": 0.9,
+      "on_review": "Fable explains cause before any flag reaches the One Page"
+    },
+    "duplicate": {
+      "question": "Is this item substantively a duplicate of the given prior item?",
+      "options": ["DUPLICATE", "DISTINCT"],
+      "threshold": 0.9,
+      "on_review": "keep both, mark provisional"
+    },
+    "human_review_required": {
+      "question": "Does this action or content need Bianno before proceeding, even though it is not publish/send/pay?",
+      "options": ["YES", "NO"],
+      "threshold": 0.95,
+      "on_review": "YES wins ties — when unsure, ask the human",
+      "notes": "This judge can only ADD human review, never remove it. Publish/send/pay never reaches this judge — always human."
+    },
+    "swipe_verdict": {
+      "question": "What should Jarvis do with this observed content pattern?",
+      "options": ["TEST", "WATCH", "REVERSE_ENGINEER", "IGNORE"],
+      "threshold": 0.8,
+      "on_review": "Fable decides; pattern evidence (frequency, sample) required, single viral posts are noise"
+    }
+  }
+}
