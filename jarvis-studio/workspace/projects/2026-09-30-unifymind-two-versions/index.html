@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>UnifyMind · Two versions of you</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      /* Brand: brands/unifymind (activated). Every colour below is from MOTION.md field 1. */
+      @font-face {
+        font-family: "Inter";
+        font-weight: 600;
+        font-style: normal;
+        src: url("fonts/inter-latin-600-normal.woff2") format("woff2");
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #05070B; }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        color: #EEE9DC;
+        /* ink field + the subtle top glow (bone at 7%) */
+        background:
+          radial-gradient(ellipse 85% 32% at 50% 0%, rgba(238, 233, 220, 0.07), rgba(238, 233, 220, 0) 72%),
+          linear-gradient(180deg, #0B0E14 0%, #05070B 100%);
+      }
+      .grain { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.035; pointer-events: none; }
+
+      /* Header: wordmark + the one rule (the 95×5 gold bar). Strict safe zone: x 65–940, y 269–1248. */
+      #wordmark {
+        position: absolute; left: 96px; top: 300px;
+        font-size: 40px; letter-spacing: 0.08em; line-height: 1;
+      }
+      #wordmark .mind { color: #E0A83E; }
+      #bar { position: absolute; left: 96px; top: 358px; width: 95px; height: 5px; background: #E0A83E; }
+      /* The same rule, drawn at the focal point: it separates the two versions of you */
+      #rule { position: absolute; left: 96px; top: 1000px; width: 844px; height: 5px; background: #E0A83E; transform-origin: 0 50%; }
+
+      /* Type blocks: hero 104 px, leading 1.12, tracking −0.02em (PROPOSED values) */
+      .block { position: absolute; left: 96px; top: 612px; width: 844px; }
+      .line {
+        display: block; font-size: 104px; line-height: 1.12; letter-spacing: -0.02em;
+        white-space: nowrap; opacity: 0;
+      }
+
+      /* CTA: centred, gold, holds to the end */
+      #cta { position: absolute; left: 0; top: 660px; width: 100%; text-align: center; }
+      #cta .meta {
+        display: block; font-size: 32px; letter-spacing: 0.24em; color: #787E8A;
+        opacity: 0; margin-bottom: 44px;
+      }
+      #cta .go {
+        display: block; width: 760px; margin: 0 auto; font-size: 76px; line-height: 1.18; letter-spacing: -0.015em; color: #E0A83E; opacity: 0;
+      }
+      #cta .tri { display: inline-block; width: 0.5em; height: 0.56em; margin-left: 0.22em; vertical-align: 0.02em; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="10" data-fps="30" data-width="1080" data-height="1920">
+      <!-- static film grain: seeded, never animated (MOTION.md field 18) -->
+      <svg class="grain" viewBox="0 0 1080 1920" preserveAspectRatio="none" aria-hidden="true">
+        <filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" stitchTiles="stitch" /><feColorMatrix type="saturate" values="0" /></filter>
+        <rect width="1080" height="1920" filter="url(#g)" />
+      </svg>
+
+      <div id="wordmark">UNIFY<span class="mind">MIND</span></div>
+      <div id="bar"></div>
+      <div id="rule"></div>
+
+      <div class="block" id="s1">
+        <span class="line">There are two</span>
+        <span class="line">versions</span>
+        <span class="line">of you.</span>
+      </div>
+
+      <div class="block" id="s2">
+        <span class="line">One you are.</span>
+        <span class="line">One you</span>
+        <span class="line" id="payoff">could become.</span>
+      </div>
+
+      <div id="cta">
+        <span class="meta" data-fact="book1-label">BOOK 1</span>
+        <span class="go"><span data-fact="book1-cta">Comment WARRIOR for the link</span><svg class="tri" viewBox="0 0 10 11" aria-hidden="true"><polygon points="0,0 10,5.5 0,11" fill="#E0A83E" /></svg></span>
+      </div>
+    </div>
+
+    <script>
+      // One paused timeline, registered for HyperFrames. Eases per MOTION.md field 14:
+      // arrivals power4.out = cubic-bezier(0.23,1,0.32,1); on-screen moves/exits power3.inOut.
+      const tl = gsap.timeline({ paused: true });
+      const RISE = { from: { opacity: 0, y: 32 }, to: { opacity: 1, y: 0, duration: 0.8, ease: "power4.out", stagger: 0.11 } };
+
+      // Scene 1 · hook: frame 0 already states "There are two" (it is also the thumbnail);
+      // the rest of the thought rises into place from 0.1 s
+      tl.set("#s1 .line:nth-child(1)", { opacity: 1, y: 0 }, 0);
+      tl.fromTo("#s1 .line:nth-child(n+2)", RISE.from, RISE.to, 0.1);
+
+      // T1 · separation, at the focal point: the brand's gold rule draws itself under the hook
+      // (left → right), the hook exits upward, then the rule passes through and leaves (left end
+      // chases the right). The header bar stays still: it belongs to the wordmark lockup.
+      tl.fromTo("#rule", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.35, ease: "power3.inOut" }, 2.4);
+      tl.to("#s1 .line", { opacity: 0, y: -16, duration: 0.3, ease: "power3.inOut", stagger: 0.03 }, 2.55);
+      tl.set("#rule", { transformOrigin: "100% 50%" }, 2.8);
+      tl.to("#rule", { scaleX: 0, duration: 0.35, ease: "power3.inOut" }, 2.8);
+
+      // Scene 2 · turn: the new lines rise as the rule leaves; the payoff turns gold last
+      tl.fromTo("#s2 .line", RISE.from, RISE.to, 2.95);
+      tl.fromTo("#payoff", { color: "#EEE9DC" }, { color: "#E0A83E", duration: 0.4, ease: "power3.inOut" }, 4.5);
+
+      // Hard cut into the CTA on the beat. The CTA's rise starts 100 ms early inside a hidden container,
+      // so the cut frame itself lands on content already arriving (never on an empty field).
+      tl.fromTo("#cta", { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+      tl.fromTo("#cta .meta", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: "power4.out" }, 6.2);
+      tl.fromTo("#cta .go", { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: 0.8, ease: "power4.out" }, 6.24);
+      tl.set("#s2", { opacity: 0 }, 6.3);
+      tl.set("#cta", { opacity: 1 }, 6.3);
+
+      // Keep the timeline exactly as long as the composition
+      tl.set({}, {}, 10);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

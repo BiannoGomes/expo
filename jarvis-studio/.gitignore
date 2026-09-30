@@ -1,0 +1,7 @@
+# Drafts and bulky review frames stay local; the final render, review log, contact sheets and spec report are kept.
+workspace/projects/*/renders/*
+!workspace/projects/*/renders/final*.mp4
+workspace/projects/*/review/v*/
+workspace/projects/*/review/*/*.png
+node_modules/
+skills-lock.json

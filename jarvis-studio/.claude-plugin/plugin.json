@@ -1,0 +1,8 @@
+{
+  "name": "jarvis-studio",
+  "displayName": "Jarvis Studio",
+  "version": "1.0.0",
+  "description": "An AI-native motion and content studio for Bianno's brands. A director skill routes to HyperFrames, Charlie Hills' motion skills and Emil Kowalski's craft skills. Adds per-brand motion systems, fact-locking, brand-lint, platform spec QA, frame-based review, a fresh-eyes critic, and a learning loop.",
+  "author": { "name": "Bianno Gomes" },
+  "keywords": ["motion-design", "video", "hyperframes", "brand", "reels", "qa"]
+}

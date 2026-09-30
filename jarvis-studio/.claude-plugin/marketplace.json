@@ -1,0 +1,15 @@
+{
+  "name": "jarvis-studio",
+  "description": "Jarvis Studio: Bianno's AI-native motion and content studio as one Claude Code plugin.",
+  "owner": {
+    "name": "Bianno Gomes"
+  },
+  "plugins": [
+    {
+      "name": "jarvis-studio",
+      "source": "./",
+      "description": "Jarvis Studio: director, brand systems, fact-lock, motion review/QA and retro for Bianno's brand content.",
+      "version": "1.0.0"
+    }
+  ]
+}
