@@ -12,7 +12,7 @@
 | Deep memory | Obsidian vault | strategy, lessons, knowledge |
 | Relationship / lifecycle | Kit (subscribers, tags, sequences) | every lead is tagged at capture |
 | Transactions | Stripe (live: €97 audit) / Stan later | pay-gate |
-| Scheduling | Calendly | bookings become events via webhook |
+| Scheduling | Cal.com (OSS, free tier — upgraded from Calendly 1 Oct) | bookings become events via webhook |
 | Conversation intel | OpenReply / native comment mining | every DM & comment = market research |
 | Design system / production | Figma / Canva | never a database |
 | Video | Wan2.2 local → Higgsfield premium | per wan22-setup.md router |
