@@ -44,7 +44,8 @@ function status(motion) {
   const rows = motion.split('\n').filter((l) => /^\|\s*\d+\s*\|/.test(l));
   const ask = rows.filter((r) => /ASK ME/.test(r)).length;
   const prop = rows.filter((r) => /PROPOSED/.test(r) && !/ASK ME/.test(r)).length;
-  return { fields: rows.length, ask, prop, confirmed: rows.length - ask - prop };
+  const vault = rows.filter((r) => /CONFIRMED in vault/.test(r)).length;
+  return { fields: rows.length, ask, prop, vault, confirmed: rows.length - ask - prop };
 }
 
 // HyperFrames reads frame.md (YAML frontmatter = normative tokens, prose = context). We derive it from
@@ -113,7 +114,7 @@ ${example}
 if (args.includes('--list')) {
   for (const slug of readdirSync(brandsDir).filter((d) => existsSync(join(brandsDir, d, 'MOTION.md')))) {
     const s = status(readFileSync(join(brandsDir, slug, 'MOTION.md'), 'utf8'));
-    console.log(`${slug.padEnd(20)} ${s.confirmed} confirmed · ${s.prop} proposed · ${s.ask} ASK ME  (of ${s.fields})`);
+    console.log(`${slug.padEnd(20)} ${s.confirmed} confirmed${s.vault ? ` (${s.vault} held in the vault, not here)` : ''} · ${s.prop} proposed · ${s.ask} ASK ME  (of ${s.fields})`);
   }
   process.exit(0);
 }

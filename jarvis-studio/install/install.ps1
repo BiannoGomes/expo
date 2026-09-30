@@ -2,10 +2,10 @@
   Jarvis Studio installer (Windows / PowerShell).
 
   What it does, in order:
-    1. Checks prerequisites (Node >= 22, ffmpeg/ffprobe, git, Claude Code CLI) and tells you how to fix any gap.
+    1. Checks prerequisites (Node >= 22, ffmpeg/ffprobe, Python 3 + faster-whisper, git, Claude Code CLI) and fixes or explains gaps.
     2. Installs the jarvis-studio plugin (director, brand-system, fact-lock, motion-review, studio-retro, motion-critic).
-    3. Installs the free production stack as user-level skills: HyperFrames, Charlie Hills' motion-graphics
-       skills, Emil Kowalski's animation craft skills, auto-editor's skills.
+    3. Installs the free production stack: the HyperFrames plugin (same route as the Becoming Project START HERE),
+       Charlie Hills' motion-graphics skills, Emil Kowalski's animation craft skills, auto-editor's skills.
     4. Copies the studio workspace (brands, learnings, library, the proof project) to -StudioPath,
        WITHOUT overwriting anything that already exists there.
     5. Verifies the install.
@@ -13,14 +13,14 @@
   Usage (from the jarvis-studio folder):
     powershell -ExecutionPolicy Bypass -File install\install.ps1
     powershell -ExecutionPolicy Bypass -File install\install.ps1 -StudioPath "D:\Studio" -Extras
-    powershell -ExecutionPolicy Bypass -File install\install.ps1 -HyperFramesPlugin   # HeyGen's plugin route (~1.9 GB cache)
+    powershell -ExecutionPolicy Bypass -File install\install.ps1 -HyperFramesSkills   # lighter: HyperFrames as plain skills, not the plugin
 
   Nothing here spends money, and nothing publishes anywhere.
 #>
 param(
   [string]$StudioPath = "$env:USERPROFILE\Desktop\Jarvis\Jarvis Brain\03 Projects\Studio",
   [switch]$Extras,             # + Lottie skill, clipify (long-form -> shorts)
-  [switch]$HyperFramesPlugin,  # use HeyGen's Claude Code plugin instead of user-level skills
+  [switch]$HyperFramesSkills,  # install HyperFrames as user-level skills instead of HeyGen's plugin (plugin cache is ~1.9 GB)
   [switch]$SkipThirdParty,
   [switch]$SkipPlugin
 )
@@ -45,6 +45,13 @@ if (Has node) {
 } else { $missing += "Node 22+:  winget install OpenJS.NodeJS.LTS" }
 if ((Has ffmpeg) -and (Has ffprobe)) { Ok "ffmpeg + ffprobe" } else { $missing += "ffmpeg:  winget install Gyan.FFmpeg" }
 if (Has git) { Ok "git" } else { $missing += "git:  winget install Git.Git" }
+$py = if (Has python) { 'python' } elseif (Has py) { 'py' } else { $null }
+if ($py) {
+  Ok "Python $(& $py --version 2>&1)"
+  & $py -c "import faster_whisper" 2>$null
+  if ($LASTEXITCODE -eq 0) { Ok "faster-whisper (Claude's ears)" }
+  else { Say "installing faster-whisper (Claude's ears)..."; & $py -m pip install --upgrade faster-whisper | Out-Host; if ($LASTEXITCODE -eq 0) { Ok "faster-whisper" } else { Warn "faster-whisper failed: run  $py -m pip install faster-whisper" } }
+} else { $missing += "Python 3.13:  winget install Python.Python.3.13   (then re-run: it installs faster-whisper)" }
 if (Has claude) { Ok "Claude Code CLI" } else { Warn "Claude Code CLI not on PATH: the plugin will be copied into ~/.claude instead" }
 if ($missing.Count) {
   Warn "Install these, restart the terminal, then run this script again:"
@@ -74,10 +81,13 @@ function SkillsAdd([string]$repo, [string[]]$pick) {
   if ($LASTEXITCODE -eq 0) { Ok "skills: $repo" } else { Warn "skills install failed for $repo (re-run later: npx skills add $repo)" }
 }
 if (-not $SkipThirdParty) {
-  if ($HyperFramesPlugin -and (Has claude)) {
-    claude plugin marketplace add heygen-com/hyperframes | Out-Host
-    claude plugin install hyperframes@hyperframes | Out-Host
-    Ok "HyperFrames plugin (run its CLI through the plugin's scripts/plugin-cli.mjs launcher)"
+  if (-not $HyperFramesSkills -and (Has claude)) {
+    if ((claude plugin list 2>$null | Out-String) -match 'hyperframes') { Ok "HyperFrames plugin already installed" }
+    else {
+      claude plugin marketplace add heygen-com/hyperframes | Out-Host
+      claude plugin install hyperframes@hyperframes | Out-Host
+      Ok "HyperFrames plugin (check: claude plugin details hyperframes)"
+    }
   } else {
     SkillsAdd 'heygen-com/hyperframes' @('*')
   }
@@ -112,8 +122,10 @@ Get-ChildItem $src -Recurse -File | ForEach-Object {
 Ok "studio workspace at $StudioPath ($copied new files, $kept existing files left untouched)"
 
 # 5 · verify ----------------------------------------------------------------------------------------
+npx -y hyperframes@latest doctor | Out-Host
 node "$Root\skills\brand-system\scripts\activate-brand.mjs" --list --studio "$StudioPath" | Out-Host
 Write-Host "`nDone. Next:" -ForegroundColor Cyan
 Say "cd `"$StudioPath`"; claude"
-Say "then:  /jarvis-studio:studio make a 10s UnifyMind reel for Book 2"
+Say "Becoming Project:  cd to 'BIANNO  THE BECOMING PROJECT' and use becoming-video (it calls edit-kit for real takes)"
+Say "anything else:     /jarvis-studio:studio <what you want>"
 Say "Paid, optional (only when you decide): ElevenLabs skills + video-use. See README > Optional paid tools."

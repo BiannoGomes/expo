@@ -16,6 +16,9 @@ content.
    - `source`: a URL, a file path, "Bianno, <date>", or a named dashboard screenshot. Never "common knowledge".
    - `approved`: `yes` only when Bianno supplied or confirmed it, or when it comes verbatim from his
      own published system (e.g. the content-wave CTA words)
+   - `kind`: `FACT` · `INTERPRETATION` · `PERSONAL EXPERIENCE`, kept visibly separate on screen or in the caption
+   - personal stories: the source is the story-register ID (`S-001`), and it's only approvable when the register row
+     says `verified: yes`. Details marked "unconfirmed" there never go on screen, even if they'd make a better story.
 2. **Bind** each factual element in the composition: `<span data-fact="book1-rating">4.8</span>`.
    Count-ups animate *to* the bound text, and the final frame must show it exactly.
 3. **Run** `node <this skill>/scripts/check-facts.mjs <project>` (exit 0 = clean). It checks:

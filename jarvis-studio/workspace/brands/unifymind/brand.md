@@ -6,8 +6,9 @@
 
 ## Identity
 
-- **What it is:** Bianno Gomes's personal brand and book imprint. Documents the real
-  transition from deckhand to AI entrepreneur, plus the Self-Mastery books.
+- **What it is:** Bianno's book imprint and brand: the Self-Mastery books and their content.
+  (His *personal* brand is now The Becoming Project, a separate brand with its own account, per his
+  handover of 2026-09-30. Never cross-post between the two.)
 - **Audience:** ASK ME (who exactly, and who buys the books today?)
 - **Feel (CONFIRMED):** intelligent · deep · disciplined · modern · psychological ·
   philosophical · premium · quietly powerful.

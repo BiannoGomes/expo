@@ -37,6 +37,11 @@ make generic AI motion.
 Use real assets (logos, screenshots, photos, UI) whenever they exist. Never redraw an
 important real-world asset from memory.
 
+**Bianno is never synthesised.** His face, body and voice come only from real footage and real
+recordings. AI never generates, clones, animates or face-swaps him, and no AI-generated person appears in
+his brands. When a brand folder brings its own `CLAUDE.md` and pipeline (the Becoming Project), that
+pipeline leads and this studio is its toolbelt.
+
 ## 3. First action: audit
 
 Before creating anything:

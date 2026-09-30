@@ -58,7 +58,8 @@ fix only those.
 | Fresh eyes | the `motion-critic` subagent on `review/final/` | verdict SHIP, or its fixes applied |
 | Human | Bianno watches the MP4 once with sound, once muted | his yes |
 
-Presets: `reels · feed45 · tiktok · shorts · youtube · linkedin · x · universal`. Sources and
+Presets: `reels · feed45 · tiktok · shorts · youtube · linkedin · x · universal`. Safe-zone overlays
+(`review-frames --platform`): `universal · universal-relaxed · reels · tiktok · shorts · becoming · cover-3x4`. Sources and
 safe zones: `references/platform-specs.md` (machine-readable: `references/platforms.json`).
 
 ## 4. Final export

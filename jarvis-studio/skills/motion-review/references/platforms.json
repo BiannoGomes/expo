@@ -2,61 +2,199 @@
   "_about": "Machine-readable presets for spec-check.mjs and review-frames.mjs. Every number is sourced in platform-specs.md (research dated 2026-09-30). OFF = official platform page, 3P = reputable third party, DERIVED = computed from sourced numbers. Re-verify every 6 months: platforms change these silently.",
   "presets": {
     "default": {
-      "fpsMin": 23.976, "fpsMax": 60,
-      "lufsRange": [-15, -13], "truePeakMax": -1,
-      "lufsNote": "-14 LUFS ±1 (DERIVED: YouTube -14 is 3P-measured; Spotify -14/-1 dBTP OFF analog). Speech-only pieces may sit at -16.",
+      "fpsMin": 23.976,
+      "fpsMax": 60,
+      "lufsRange": [
+        -15,
+        -13
+      ],
+      "truePeakMax": -1,
+      "lufsNote": "-14 LUFS \u00b11 (DERIVED: YouTube -14 is 3P-measured; Spotify -14/-1 dBTP OFF analog). Speech-only pieces may sit at -16.",
       "maxHoldSeconds": 1.5
     },
     "reels": {
-      "width": 1080, "height": 1920, "aspect": "9:16",
-      "fpsMin": 23, "fpsMax": 60,
-      "minSeconds": 3, "maxSeconds": 900, "idealMaxSeconds": 180,
+      "width": 1080,
+      "height": 1920,
+      "aspect": "9:16",
+      "fpsMin": 23,
+      "fpsMax": 60,
+      "minSeconds": 3,
+      "maxSeconds": 900,
+      "idealMaxSeconds": 180,
       "maxFileMB": 300,
       "source": "Instagram Graph API media reference (OFF): 23-60 fps, 3 s-15 min, 300 MB, moov first; Help Center: >3 min not recommended to new audiences (OFF). Help Center says min 30 fps (conflict), so export 30."
     },
     "feed45": {
-      "width": 1080, "height": 1350, "aspect": "4:5",
-      "fpsMin": 23, "fpsMax": 60, "minSeconds": 3, "maxSeconds": 900, "idealMaxSeconds": 180, "maxFileMB": 300,
+      "width": 1080,
+      "height": 1350,
+      "aspect": "4:5",
+      "fpsMin": 23,
+      "fpsMax": 60,
+      "minSeconds": 3,
+      "maxSeconds": 900,
+      "idealMaxSeconds": 180,
+      "maxFileMB": 300,
       "source": "Instagram organic 1080 wide, 1.91:1 to 4:5 (OFF); videos under 15 min post as Reels since 2022 (3P TechCrunch), so Reels API limits apply."
     },
     "tiktok": {
-      "width": 1080, "height": 1920, "aspect": "9:16",
-      "fpsMin": 23, "fpsMax": 60, "minSeconds": 3, "maxSeconds": 600, "maxFileMB": 4000,
+      "width": 1080,
+      "height": 1920,
+      "aspect": "9:16",
+      "fpsMin": 23,
+      "fpsMax": 60,
+      "minSeconds": 3,
+      "maxSeconds": 600,
+      "maxFileMB": 4000,
       "source": "TikTok Content Posting API media transfer guide (OFF): 23-60 fps, max 10 min, 4 GB, H.264 recommended."
     },
     "shorts": {
-      "width": 1080, "height": 1920, "aspect": "9:16",
-      "fpsMin": 24, "fpsMax": 60, "maxSeconds": 180,
+      "width": 1080,
+      "height": 1920,
+      "aspect": "9:16",
+      "fpsMin": 24,
+      "fpsMax": 60,
+      "maxSeconds": 180,
       "source": "YouTube Help 15424877 (OFF): up to 3 min, square or vertical. Encoding per YouTube 1722171 (OFF)."
     },
     "youtube": {
-      "width": 1920, "height": 1080, "aspect": "16:9",
-      "fpsMin": 24, "fpsMax": 60, "maxSeconds": 900,
+      "width": 1920,
+      "height": 1080,
+      "aspect": "16:9",
+      "fpsMin": 24,
+      "fpsMax": 60,
+      "maxSeconds": 900,
       "source": "YouTube 1722171 / 6375112 / 71673 (OFF): H.264 High, 4:2:0, BT.709, faststart, 15 min unless verified."
     },
     "linkedin": {
-      "fpsMin": 10, "fpsMax": 60, "minSeconds": 3, "maxSeconds": 600, "maxFileMB": 5000, "mp4Only": true,
+      "fpsMin": 10,
+      "fpsMax": 60,
+      "minSeconds": 3,
+      "maxSeconds": 600,
+      "maxFileMB": 5000,
+      "mp4Only": true,
       "source": "LinkedIn Help a1311816 (OFF): 3 s-15 min desktop (10 min mobile), 10-60 fps, 75 KB-5 GB, MOV/QuickTime/AVI no longer supported."
     },
     "x": {
-      "fpsMin": 23.976, "fpsMax": 40, "maxSeconds": 140, "maxFileMB": 512, "maxWidth": 1200, "maxHeight": 1900,
+      "fpsMin": 23.976,
+      "fpsMax": 40,
+      "maxSeconds": 140,
+      "maxFileMB": 512,
+      "maxWidth": 1200,
+      "maxHeight": 1900,
       "source": "X Help x-videos (OFF, organic non-Premium): 140 s, 512 MB, max 1920x1200 or 1200x1900, max 40 fps."
     },
     "universal": {
-      "width": 1080, "height": 1920, "aspect": "9:16",
-      "fpsMin": 24, "fpsMax": 30, "minSeconds": 3, "maxSeconds": 140, "maxFileMB": 300, "mp4Only": true,
+      "width": 1080,
+      "height": 1920,
+      "aspect": "9:16",
+      "fpsMin": 24,
+      "fpsMax": 30,
+      "minSeconds": 3,
+      "maxSeconds": 140,
+      "maxFileMB": 300,
+      "mp4Only": true,
       "source": "DERIVED envelope that uploads cleanly to Reels, TikTok, Shorts, LinkedIn and X: 3-140 s, <=300 MB, MP4, 24-30 fps (X caps organic at 40)."
     }
   },
   "safeZones": {
-    "universal": { "canvas": [1080, 1920], "top": 269, "bottom": 672, "left": 65, "right": 140,
-      "source": "DERIVED strict: max per side across Meta Reels ads (OFF: 14% top / 35% bottom / 6% sides) and 3P TikTok/Shorts right margins. Safe rect x 65-940, y 269-1248." },
-    "universal-relaxed": { "canvas": [1080, 1920], "top": 220, "bottom": 484, "left": 60, "right": 140,
-      "source": "DERIVED warn tier from organic 3P maxima. Safe rect x 60-940, y 220-1436. Use for organic posts when the strict zone is too tight; captions/CTA still belong in the strict zone." },
-    "reels-ads": { "canvas": [1080, 1920], "top": 269, "bottom": 672, "left": 65, "right": 65, "source": "Meta Reels ads guide (OFF): 14% top, 35% bottom, 6% sides." },
-    "reels": { "canvas": [1080, 1920], "top": 220, "bottom": 420, "left": 65, "right": 65, "source": "3P organic (ignitesocialmedia); sides from Meta OFF 6%." },
-    "tiktok": { "canvas": [1080, 1920], "top": 130, "bottom": 484, "left": 44, "right": 140, "source": "3P (cadenus). TikTok OFF publishes templates only; the zone shrinks as the caption grows." },
-    "shorts": { "canvas": [1080, 1920], "top": 180, "bottom": 390, "left": 60, "right": 120, "source": "3P (postplanify, hopperhq). Google OFF publishes PNG templates only. Shorts ads may compress to 1:1 (y 420-1500)." },
-    "cover-crops": { "canvas": [1080, 1920], "top": 420, "bottom": 420, "left": 0, "right": 0, "source": "DERIVED: the centre 1080x1080 survives the 3:4 grid, 4:5 and the 1:1 crops. Cover text lives here." }
+    "universal": {
+      "canvas": [
+        1080,
+        1920
+      ],
+      "top": 269,
+      "bottom": 672,
+      "left": 65,
+      "right": 140,
+      "source": "DERIVED strict: max per side across Meta Reels ads (OFF: 14% top / 35% bottom / 6% sides) and 3P TikTok/Shorts right margins. Safe rect x 65-940, y 269-1248."
+    },
+    "universal-relaxed": {
+      "canvas": [
+        1080,
+        1920
+      ],
+      "top": 220,
+      "bottom": 484,
+      "left": 60,
+      "right": 140,
+      "source": "DERIVED warn tier from organic 3P maxima. Safe rect x 60-940, y 220-1436. Use for organic posts when the strict zone is too tight; captions/CTA still belong in the strict zone."
+    },
+    "reels-ads": {
+      "canvas": [
+        1080,
+        1920
+      ],
+      "top": 269,
+      "bottom": 672,
+      "left": 65,
+      "right": 65,
+      "source": "Meta Reels ads guide (OFF): 14% top, 35% bottom, 6% sides."
+    },
+    "reels": {
+      "canvas": [
+        1080,
+        1920
+      ],
+      "top": 220,
+      "bottom": 420,
+      "left": 65,
+      "right": 65,
+      "source": "3P organic (ignitesocialmedia); sides from Meta OFF 6%."
+    },
+    "tiktok": {
+      "canvas": [
+        1080,
+        1920
+      ],
+      "top": 130,
+      "bottom": 484,
+      "left": 44,
+      "right": 140,
+      "source": "3P (cadenus). TikTok OFF publishes templates only; the zone shrinks as the caption grows."
+    },
+    "shorts": {
+      "canvas": [
+        1080,
+        1920
+      ],
+      "top": 180,
+      "bottom": 390,
+      "left": 60,
+      "right": 120,
+      "source": "3P (postplanify, hopperhq). Google OFF publishes PNG templates only. Shorts ads may compress to 1:1 (y 420-1500)."
+    },
+    "cover-crops": {
+      "canvas": [
+        1080,
+        1920
+      ],
+      "top": 420,
+      "bottom": 420,
+      "left": 0,
+      "right": 0,
+      "source": "DERIVED: the centre 1080x1080 survives the 3:4 grid, 4:5 and the 1:1 crops. Cover text lives here."
+    },
+    "becoming": {
+      "canvas": [
+        1080,
+        1920
+      ],
+      "top": 250,
+      "bottom": 420,
+      "left": 80,
+      "right": 140,
+      "source": "Becoming Project playbook via becoming-video skill (CONFIRMED, Bianno's brand): captions/text inside x 80-940, y 250-1500. Matches IG organic bottom (420); TikTok's 3P bottom is 484, so keep CTAs above y 1436 if cross-posting."
+    },
+    "cover-3x4": {
+      "canvas": [
+        1080,
+        1920
+      ],
+      "top": 240,
+      "bottom": 240,
+      "left": 0,
+      "right": 0,
+      "source": "Becoming Project CLAUDE.md (CONFIRMED): reel-cover key text inside the centre 1080x1440 (Instagram's 3:4 profile-grid crop)."
+    }
   }
 }

@@ -27,7 +27,9 @@ isn't installed, say so and use the fallback. Never pretend a skill ran.
 | Beat-synced lyric / kinetic promo from a track | HyperFrames `music-to-video` | Music drives the pacing | none |
 | Captions on a talking-head video | HyperFrames `embedded-captions` | 35 styles, runs locally | `auto-editor` SRT |
 | Overlays on an existing talking-head video | HyperFrames `talking-head-recut` | Kinetic titles, lower-thirds, callouts | none |
-| Cut raw talking-head footage | `auto-editor` (free) | Silence and dead-air cuts, NLE export | `video-use` (ElevenLabs key) |
+| **Edit a real talking take** (the Creator Stack method) | **`edit-kit`** (this plugin) | Whisper word timings + names glossary, frames, beat sheet, word-boundary rough cut with remapped timings, word-synced captions, verified HyperFrames scaffold | HyperFrames `talking-head-recut` / `embedded-captions` |
+| Becoming Project reel, carousel, cover, template | Bianno's **`becoming-video`** (the vault pipeline leads) | Its brief, gates and approval flow. Uses `edit-kit` + `motion-review` as tools. | – |
+| Cut raw talking-head footage (no captions needed) | `auto-editor` (free) | Silence and dead-air cuts, NLE export | `video-use` (ElevenLabs key) |
 | Long-form → shorts with speaker tracking | `clipify` | Crop follows the speaker | none |
 | Figma design → motion | HyperFrames `figma` | Brand tokens, components | none |
 | Pitch deck as an interactive HTML deck | HyperFrames `slideshow` (confirm first: output is a deck, not an MP4) | | `slide-deck-builder` |

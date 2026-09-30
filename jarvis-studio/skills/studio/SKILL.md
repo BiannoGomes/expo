@@ -11,6 +11,11 @@ skills, Emil Kowalski's craft skills, connected generative tools) decide **how**
 HyperFrames calls itself the "mandatory entry point" for video. That applies once production
 starts. This skill runs first.
 
+**Local pipelines lead.** If the working folder has its own `CLAUDE.md` and pipeline skill (e.g. the
+Becoming Project folder with `becoming-video`), that pipeline decides the flow, folders, naming and
+approval words. This studio then acts as a **toolbelt**: `edit-kit` for real takes, `motion-review` QA,
+`fact-lock`, and the `motion-critic`. Where both have a rule, the stricter one wins.
+
 Full reasoning: `references/constitution.md`. Read it the first time in a session, and whenever a
 judgment call isn't covered here.
 
@@ -40,7 +45,7 @@ judgment call isn't covered here.
 5. **Expand, then choose.** Generate 3 genuinely different directions (metaphor, structure,
    hook). Pick the strongest one, give a one-line reason, and record the others in the brief.
    "Go all out" means more design intelligence, not more effects.
-6. **Route.** Choose the medium per shot (`references/medium-router.md`) and the specialist
+6. **Route.** A real take (talking clip, voice memo) → `edit-kit` first. Choose the medium per shot (`references/medium-router.md`) and the specialist
    skill (`references/routing.md`). Don't reinvent a workflow an installed skill already
    covers, and don't invoke a skill just because its name sounds close.
 7. **Facts.** Any on-screen number, date, name, quote or claim goes into `facts.md` with a
@@ -69,6 +74,9 @@ judgment call isn't covered here.
   values can drive drafts and are listed in the delivery for him to confirm.
 - **Real assets.** Real logos, covers, screenshots and UI only. Never redraw them from memory.
 - **Sea / NDA.** No vessel, guests, owner, crew faces or working-location tags. If unsure, leave it out.
+- **No AI Bianno, no AI people in his brands.** Never generate, clone or face-swap his face, body or voice.
+  Real takes go through `edit-kit`. The hyperreal-character method belongs only to the separate, AI-labelled project.
+- **People are not content.** Anyone else on screen needs his per-asset OK.
 - **Licences.** No MusicGen (non-commercial) in anything that sells. Every generated asset
   gets logged in the asset manifest.
 - **House motion rules** (`references/constitution.md` §6): no typewriter, glow, meaningless
