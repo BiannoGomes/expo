@@ -135,3 +135,4 @@ tsconfig.tsbuildinfo
 __pycache__/
 *.pyc
 jarvis/judge/decisions.jsonl
+jarvis/whatsapp/.kapso/

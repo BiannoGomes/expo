@@ -1,9 +1,9 @@
-// Offline test harness for jarvis-line.js — no network. Run: node jarvis/whatsapp/test.mjs
+// Offline test harness for functions/jarvis-line/index.js — no network. Run: node jarvis/whatsapp/test.mjs
 import { readFileSync } from 'node:fs';
 import { createHmac } from 'node:crypto';
 import assert from 'node:assert/strict';
 
-const code = readFileSync(new URL('./jarvis-line.js', import.meta.url), 'utf8');
+const code = readFileSync(new URL('./functions/jarvis-line/index.js', import.meta.url), 'utf8');
 const handler = new Function(code + '\nreturn handler;')();
 
 const OWNER = '34600111222', STRANGER = '351910000000', SECRET = 'whsec_test';

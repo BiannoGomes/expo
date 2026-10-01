@@ -68,3 +68,5 @@ Approved "all A, confirm all D". Full doctrine: LEARNING-LOOP.md.
 | Unofficial bridges (Baileys / whatsapp-web.js / OpenClaw on personal number) | **SKIP** | Meta ToS, ban risk on your number |
 | Composio | SKIP | native MCP connectors already cover it |
 | Treg (treg.to) | QUEUED | pay-per-call enrichment/SEO data; Wave 8 lead lists once money flows |
+| Hermes Agent (NousResearch/hermes-agent, MIT) | **QUEUED** | free software, deny-by-default WhatsApp allowlist, persistent memory, self-made skills, cron; but needs an always-on host (2 GB min, 4 GB recommended — a ~$5 VPS). Our Kapso line covers the WhatsApp channel serverless at €0. Revisit with the sanctioned ~€5/mo n8n VPS (one box for both) once a money loop runs. Note: "HERMES" in ARCHITECTURE.md is a role name, not this software |
+| OpenClaw | **SKIP — security** | 135k+ instances exposed without auth, 341 → 1,400+ malicious ClawHub skills (incl. infostealers posing as Gmail/Notion/GitHub skills), one-click RCE (Jan–Apr 2026 reports). Never near Bianno's accounts |

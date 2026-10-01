@@ -94,8 +94,8 @@
         "DEEP_WORK"
       ],
       "threshold": 0.85,
-      "on_review": "deterministic keyword router decides (jarvis-line.js keywordRoute)",
-      "notes": "Lives inside jarvis/whatsapp/jarvis-line.js. Blocked lane (<0.5) = CAPTURE only, never acts. Eval: whatsapp-003. This is Jev routing a MESSAGE to a lane — not Jev routing the Claude brain (still SKIP per two-speed.md)."
+      "on_review": "deterministic keyword router decides (functions/jarvis-line/index.js keywordRoute)",
+      "notes": "Lives inside jarvis/whatsapp/functions/jarvis-line/index.js. Blocked lane (<0.5) = CAPTURE only, never acts. Eval: whatsapp-003. This is Jev routing a MESSAGE to a lane — not Jev routing the Claude brain (still SKIP per two-speed.md)."
     }
   }
 }

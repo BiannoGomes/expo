@@ -10,7 +10,7 @@
 |---|---|---|
 | **JARVIS CORE** | mission + memory + policy + events | who does what, with what authority, on what evidence |
 | **FABLE** | strategy, hypotheses, analysis, recovery strategy, architecture | what should we do, why, and what evidence would change our mind |
-| **HERMES** | EXECUTION SUPERVISOR — decomposes Fable's mission into jobs, assigns workers, tracks completion | is the mission actually moving, job by job |
+| **HERMES** (role name — not Nous Research's Hermes Agent software, which is QUEUED in oss-radar) | EXECUTION SUPERVISOR — decomposes Fable's mission into jobs, assigns workers, tracks completion | is the mission actually moving, job by job |
 | **SENTINEL** | quarantine — screens ALL external content (web, email, comments) for injection before it reaches privileged agents | is this data or a disguised instruction |
 | **PLAYWRIGHT** | deterministic hands (official `@playwright/mcp` ONLY — never lookalike packages); accessibility-tree driven | structured UI operations, testing, QA |
 | **ASTRA / vision** | perception + exception handler — visual fallback when deterministic locators fail | what is actually on the screen |

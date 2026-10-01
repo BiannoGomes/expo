@@ -26,8 +26,9 @@ Commands on the line: `/inbox` · `/done N` · `/clear` · `/help`.
 ## Files
 | File | What |
 |---|---|
-| `jarvis-line.js` | the Kapso Function (Cloudflare runtime). Owner allowlist, HMAC signature check (fails closed), dedupe, Jev routing with lanes, keyword fallback, brain via OpenRouter, KV inbox, `sendToOwner()` is the ONLY outbound path and throws on any other recipient |
+| `functions/jarvis-line/index.js` (+ `function.yaml`, `kapso.yaml`) | the Kapso Function in Kapso CLI source layout (`kapso push` deploys it) (Cloudflare runtime). Owner allowlist, HMAC signature check (fails closed), dedupe, Jev routing with lanes, keyword fallback, brain via OpenRouter, KV inbox, `sendToOwner()` is the ONLY outbound path and throws on any other recipient |
 | `test.mjs` | `node jarvis/whatsapp/test.mjs` — 18 offline tests (signature, stranger, mixed batch, voice, Jev lanes, drafts, outage, dedupe, commands, chunking, send isolation, export auth) |
+| `setup-line.ps1` | one-paste Windows setup: login, number, deploy, signed webhook, random secrets, prints what to paste |
 | `sync.mjs` | desktop pull of open inbox items into the Obsidian vault (read-only, key-authenticated) |
 | `../../vault-sync/UnifyOps/WhatsApp Shop.md` | shop catalog, greeting/away/quick replies, PT |
 
@@ -46,13 +47,21 @@ Commands on the line: `/inbox` · `/done N` · `/clear` · `/help`.
 | Brain | depends on the `BRAIN_MODEL` you choose on OpenRouter (Claude = best, paid; `:free` models = €0 but rate-limited — limits UNKNOWN here, check openrouter.ai) | — |
 Realistic use: 20 voice notes a day ≈ 1,200 messages/month → inside Kapso's 2,000 and Meta's 1,000-reply allowance. **€0 until you choose a paid brain.**
 
-## Setup — what only you can do (≈15 min, all free)
-1. **kapso.ai** → sign up → take the free number (instant, no SIM) → create an API key.
-2. **openrouter.ai** → create a key (the same one Jev needs). A top-up is a PAY action — your call; Jev alone costs fractions of a cent per message.
-3. In Kapso → Functions → after Cowork creates `jarvis-line`, paste the secrets into its settings: `OWNER_WA`, `WEBHOOK_SECRET`, `KAPSO_API_KEY`, `PHONE_NUMBER_ID`, `OPENROUTER_API_KEY`, `BRAIN_MODEL`, `SYNC_KEY` (secrets never go through chat).
-
-**Cowork paste-line (does everything else):**
-> Install Kapso's skills with `npx skills add gokapso/agent-skills`. Using KAPSO_API_KEY from my .env: create a Kapso function named jarvis-line from jarvis/whatsapp/jarvis-line.js on branch claude/ai-vault-portal-replica-jutqvp with public_endpoint=true, deploy it, then create a phone-number webhook for my Kapso number pointing at the function's endpoint_url with events whatsapp.message.received, buffer_enabled=true, buffer_window_seconds=3, saving the webhook secret via KAPSO_SECRET_OUTPUT_FILE (never print it). Tell me which secrets to paste into the function settings. Then I'll send "/help" from my phone and you check the function logs until it replies. Add JARVIS_LINE_URL and SYNC_KEY to my .env for sync.mjs.
+## Setup — Kapso project `WHATSAPP + JARVIS` exists (1 Oct). Remaining ≈ 10 min on the laptop
+The cloud container cannot reach api.kapso.ai (egress policy), so setup runs on the laptop. Every
+command and flag in the script was checked against @kapso/cli 0.19.0 source; the folder parses
+with the CLI's own reader. The script itself has not been run on Windows yet — if a step stops,
+paste the red line to Claude.
+```powershell
+iwr https://raw.githubusercontent.com/BiannoGomes/expo/claude/ai-vault-portal-replica-jutqvp/jarvis/whatsapp/setup-line.ps1 -OutFile setup-line.ps1; powershell -ExecutionPolicy Bypass -File .\setup-line.ps1
+```
+It: installs the CLI → `kapso login` (browser) → selects the project → gets the free number via
+`kapso setup` → `kapso push function jarvis-line` (deploys) → creates the signed webhook
+(`whatsapp.message.received`, 3 s buffer) → generates WEBHOOK_SECRET + SYNC_KEY → saves
+JARVIS_LINE_URL/SYNC_KEY to `~/jarvis-line/.env` → prints the 7 function secrets to paste.
+Paste every secret BEFORE messaging the line (Kapso pauses webhooks failing >85% for 15 min).
+KAPSO_API_KEY = dashboard → Project → API keys. OpenRouter is optional on day one: captures and
+deep-work queueing work without it; chat answers need it.
 
 ## The shop — honest verdict
 A catalog doesn't create demand; buyers do. It earns its place **only** as the destination for the Wave 7 clinics: every follow-up ends with "ou fale connosco no WhatsApp". So the shop sells **UnifyOps only** (books stay on Amazon; mixing brands confuses a clinic owner).
@@ -65,7 +74,7 @@ A catalog doesn't create demand; buyers do. It earns its place **only** as the d
 |---|---|---|
 | Jev = orchestrator (classify · route · escalate) | Jev = S1 judge; `message_route` now live in the line; 9 judges in registry | **ADOPTED** — Jev routes *messages* to lanes. Jev routing the Claude brain stays SKIP (two-speed.md) |
 | Source layer (docs, chats, CRM, files) | vault + Drive + HQ db + Kapso KV inbox | live |
-| CAG (cached understanding) | context pack in `jarvis-line.js` + GODMODE/CLAUDE.md | **live today** |
+| CAG (cached understanding) | context pack in `functions/jarvis-line/index.js` + GODMODE/CLAUDE.md | **live today** |
 | RAG (fresh retrieval) | desktop Claude over the vault (Cowork) | live on desktop; not on the line yet — deep work goes there |
 | Graph (who-knows-what) | — | **SKIP** until ≥3 clients exist; there are no relationships to graph yet |
 | Composio (tools) | native MCP connectors (Gmail, Drive, Calendar, Notion, Canva, Higgsfield) + Kapso | **SKIP** — a second tool layer is sprawl |

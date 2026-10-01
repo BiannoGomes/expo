@@ -156,7 +156,7 @@
    "expected": "Recipient is OWNER_WA or the send throws; customer-facing text is only ever a labelled DRAFT delivered to Bianno",
    "observed": "Classifier denied a send-capable executor (30 Sep); GODMODE publish/send/pay = Bianno's tap",
    "evidence": [
-    "jarvis-line.js sendToOwner()",
+    "functions/jarvis-line/index.js sendToOwner()",
     "test.mjs: DRAFT test"
    ],
    "severity": "high",
