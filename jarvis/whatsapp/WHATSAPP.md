@@ -1,4 +1,4 @@
-# JARVIS // WhatsApp line + shop — built 1 Oct 2026
+# JARVIS // WhatsApp line + shop — built 1 Oct 2026 · LIVE 2 Oct 2026 (Kapso sandbox)
 
 > Sources: aiwithanushka "Give Claude a WhatsApp number" (Kapso, 9 slides) + gobi_automates
 > "Build your Jev Company Brain" (8 slides) + Kapso's own repos read in full
@@ -46,6 +46,15 @@ Commands on the line: `/inbox` · `/done N` · `/clear` · `/help`.
 | Jev | ~$0.042 per million input tokens, $0 output | two-speed.md (verified 30 Sep) |
 | Brain | depends on the `BRAIN_MODEL` you choose on OpenRouter (Claude = best, paid; `:free` models = €0 but rate-limited — limits UNKNOWN here, check openrouter.ai) | — |
 Realistic use: 20 voice notes a day ≈ 1,200 messages/month → inside Kapso's 2,000 and Meta's 1,000-reply allowance. **€0 until you choose a paid brain.**
+
+## Status 2 Oct: LIVE on the Kapso sandbox
+`/help` answered end to end. Lessons from the real setup (add to the next client install):
+- Run the setup from the home folder (`cd $HOME`) — an admin PowerShell starts in system32, which is write-protected.
+- Function secrets only take effect after **Save & deploy**.
+- The sandbox needs a session: Phone numbers → Sandbox WhatsApp → **Add session**, then send the activation code from the owner's WhatsApp.
+- OWNER_WA = the number WhatsApp is registered to (here the SA number), not whichever SIM is in the phone.
+- A bare `401` from the POST check can be Kapso's gateway, not the function; the phone test is the proof.
+- Moving to a real number later: provision it, `kapso whatsapp webhooks new` on the new phone_number_id, update PHONE_NUMBER_ID, Save & deploy.
 
 ## Setup — Kapso project `WHATSAPP + JARVIS` exists (1 Oct). Remaining ≈ 10 min on the laptop
 The cloud container cannot reach api.kapso.ai (egress policy), so setup runs on the laptop. Every
