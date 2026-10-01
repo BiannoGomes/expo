@@ -13,4 +13,5 @@ updated: 2026-09-29
 - [[Follow-up Templates]] — day-3 PT DM, ready to personalize
 - [[Objections]] — the answers, calm and short
 - [[Offer Ladder]] — pricing + guarantee, locked wording
+- [[WhatsApp Shop]] — catalog, greeting/away, quick replies (PT), Wave 7 hook
 Cloud bridge: Jarvis HQ artifact (pinned in claude.ai sidebar) is canonical state; this folder is the sales kit.

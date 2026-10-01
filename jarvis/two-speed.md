@@ -69,3 +69,11 @@ Jev the JUDGE is in scope, Jev the router of our brain is not.
   the supervisor, gates intact.
 - "Runs the whole business": ours runs the WORK; Bianno runs the business. Same line
   their owner drew — kept, because it is the architecture, not a limitation.
+
+## Addendum 1 Oct 2026 — Jev Company Brain (gobi_automates) + the WhatsApp line
+First live Jev route outside the desktop: `message_route` (ANSWER/DRAFT/CAPTURE/DEEP_WORK)
+inside jarvis/whatsapp/jarvis-line.js — Jev picks the cheapest useful path for each message
+you send the line; blocked lane stores only. Their layered brain maps to ours: Source = vault/
+Drive/HQ db · CAG = the line's context pack (live) · RAG = desktop vault search · Graph = SKIP
+until ≥3 clients · Composio = SKIP (native MCP connectors) · Treg = QUEUED (pay-per-call data,
+behind a money loop). Full table: jarvis/whatsapp/WHATSAPP.md.

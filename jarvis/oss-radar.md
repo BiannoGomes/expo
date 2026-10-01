@@ -59,3 +59,12 @@ Approved "all A, confirm all D". Full doctrine: LEARNING-LOOP.md.
 | OmniParser | SKIP | AGPL detector deps |
 | Breeze TTS | SKIP | ~7.7GB VRAM + non-commercial weights |
 | Self-Harness (arXiv:2606.09498) | mechanism ADOPTED via A3 weekly bounded harness edit | paper verified real (Shanghai AI Lab); council's quoted numbers were inflated — actual: up to 132% relative gains |
+
+## WhatsApp + Company Brain round (1 Oct)
+| Tool | Verdict | Note |
+|---|---|---|
+| Kapso (kapso.ai) + gokapso/agent-skills | **ADOPT** | official Cloud API via Meta partner; free 2,000 msgs/mo, 1 number, functions, voice transcription; the Jarvis line runs as a Kapso Function |
+| gokapso/claude-code-whatsapp | **SKIP as-is** | no sender allowlist (anyone drives Claude with your GitHub token) + needs paid Anthropic key + E2B; we took the pattern, not the repo |
+| Unofficial bridges (Baileys / whatsapp-web.js / OpenClaw on personal number) | **SKIP** | Meta ToS, ban risk on your number |
+| Composio | SKIP | native MCP connectors already cover it |
+| Treg (treg.to) | QUEUED | pay-per-call enrichment/SEO data; Wave 8 lead lists once money flows |
