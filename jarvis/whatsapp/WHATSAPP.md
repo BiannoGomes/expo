@@ -53,7 +53,7 @@ command and flag in the script was checked against @kapso/cli 0.19.0 source; the
 with the CLI's own reader. The script itself has not been run on Windows yet — if a step stops,
 paste the red line to Claude.
 ```powershell
-iwr https://raw.githubusercontent.com/BiannoGomes/expo/claude/ai-vault-portal-replica-jutqvp/jarvis/whatsapp/setup-line.ps1 -OutFile setup-line.ps1; powershell -ExecutionPolicy Bypass -File .\setup-line.ps1
+cd $HOME; iwr https://raw.githubusercontent.com/BiannoGomes/expo/claude/ai-vault-portal-replica-jutqvp/jarvis/whatsapp/setup-line.ps1 -OutFile setup-line.ps1; powershell -ExecutionPolicy Bypass -File .\setup-line.ps1
 ```
 It: installs the CLI → `kapso login` (browser) → selects the project → gets the free number via
 `kapso setup` → `kapso push function jarvis-line` (deploys) → creates the signed webhook

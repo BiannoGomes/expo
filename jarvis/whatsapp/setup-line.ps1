@@ -1,6 +1,6 @@
 # Jarvis line — one-shot setup on Bianno's Windows laptop.
 # Run in PowerShell:
-#   iwr https://raw.githubusercontent.com/BiannoGomes/expo/claude/ai-vault-portal-replica-jutqvp/jarvis/whatsapp/setup-line.ps1 -OutFile setup-line.ps1; powershell -ExecutionPolicy Bypass -File .\setup-line.ps1
+#   cd $HOME; iwr https://raw.githubusercontent.com/BiannoGomes/expo/claude/ai-vault-portal-replica-jutqvp/jarvis/whatsapp/setup-line.ps1 -OutFile setup-line.ps1; powershell -ExecutionPolicy Bypass -File .\setup-line.ps1
 # It deploys the function, creates the signed webhook, generates two random secrets,
 # and prints exactly what to paste into the function's secrets. Nothing is sent to anyone.
 
