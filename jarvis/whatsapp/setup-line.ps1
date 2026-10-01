@@ -55,8 +55,10 @@ Need ($LASTEXITCODE -eq 0) 'Webhook creation failed.'
 
 Step 7 'Saving desktop sync settings'
 "JARVIS_LINE_URL=$Endpoint`nSYNC_KEY=$SyncKey" | Set-Content -Path (Join-Path $Dir '.env') -Encoding utf8
-$health = try { (iwr $Endpoint -UseBasicParsing).Content } catch { $_.Exception.Message }
-Write-Host "Endpoint check: $health"
+# The invoke route is POST-only. A 401/503 JSON reply from the function itself proves it is live
+# and guarding (unsigned request / secrets not pasted yet); a 404 means the endpoint URL is wrong.
+$health = try { (iwr $Endpoint -Method Post -Body '{}' -ContentType 'application/json' -UseBasicParsing).StatusCode } catch { "$($_.Exception.Response.StatusCode.value__) $($_.ErrorDetails.Message)" }
+Write-Host "Endpoint check (expect 401 or 503 from the function): $health"
 
 Step 8 'Paste these into the function secrets (dashboard -> Functions -> jarvis-line -> secrets)'
 $Owner = Read-Host 'Your personal WhatsApp number with country code (e.g. 34600111222)'
