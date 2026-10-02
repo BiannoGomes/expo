@@ -415,8 +415,8 @@
     <div class="wrap">
       <p class="ch-label rise" style="justify-content:center">Chapter 08 · The First Page</p>
       <h2 class="rise" style="margin-bottom:22px">Begin with a page</h2>
-      <p class="rise">One email when a book is finished. A first chapter when it is ready.
-      Nothing else.</p>
+      <p class="rise" id="beginLede">One message when a book is finished. A first chapter
+      when it is ready. Nothing else.</p>
       <form class="signup rise" id="signup" novalidate>
         <label class="vh" for="email">Email address</label>
         <input id="email" type="email" placeholder="your@email.com" autocomplete="email" required>
@@ -572,6 +572,20 @@ WORLDS.forEach(([num, title, tag, ask, href, cov], i) => {
   triptych.appendChild(b);
 });
 
+/* ---------- the hooks and the keys ---------- */
+const hookList = document.getElementById("hookList");
+HOOKS.forEach((h, i) => {
+  const li = el("li", "rise", `<span>${h}</span>`);
+  li.style.transitionDelay = (i*80) + "ms";
+  hookList.appendChild(li);
+});
+const keyList = document.getElementById("keyList");
+CODEX.forEach(([n, name, line], i) => {
+  const li = el("li", "rise", `<span class="kn">${n}</span><h3>${name}</h3><p>${line}</p>`);
+  li.style.transitionDelay = (i*60) + "ms";
+  keyList.appendChild(li);
+});
+
 /* ---------- book chapters: covers and CTAs ---------- */
 Object.entries(BOOKS).forEach(([key, b]) => {
   const plate = document.getElementById("plate-" + key);
@@ -648,10 +662,12 @@ if(matchMedia("(pointer: fine)").matches && !reduced){
     document.getElementById("email").name = "fields[email]";
     note.textContent = "No noise. One click to leave.";
   } else {
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      note.textContent = "Not connected yet. Set MAILERLITE_ACTION in the script to collect this address.";
-    });
+    // Launch law: no dead forms in production. Until the mailing provider is
+    // wired, the first page opens through a real door instead.
+    form.outerHTML =
+      `<a class="buy rise in" style="margin-top:6px" target="_blank" rel="noopener"
+        href="https://www.instagram.com/unifymind">Follow @unifymind</a>`;
+    note.textContent = "The mailing list opens soon. Until then, Instagram is the door.";
   }
 }
 
