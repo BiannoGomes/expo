@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PHASE — Realtime Studio</title>
+<meta name="description" content="PHASE is a creative technology studio building realtime 3D for the browser. Every frame on this page is generated live — no video, no images.">
+<meta name="theme-color" content="#05060B">
+<style>
+  :root{
+    --void:#05060B;
+    --ink:#0A0C16;
+    --bone:#EDEBFF;
+    --dim:#6E7192;
+    --line:rgba(237,235,255,.14);
+    --flux:#FF2E7E;
+    --cyan:#22E4FF;
+    --lime:#B6FF3C;
+    --pad:clamp(16px, 3.2vw, 40px);
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--void);
+    color:var(--bone);
+    font-family:var(--mono);
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior:none;
+  }
+
+  /* ---------- stage ---------- */
+  #gl{
+    position:fixed; inset:0; width:100%; height:100%;
+    display:block; z-index:0;
+    touch-action:none;
+  }
+  /* fallback backdrop when WebGL2 is unavailable */
+  .fallback{
+    position:fixed; inset:0; z-index:0; display:none;
+    background:
+      radial-gradient(120% 90% at 50% 55%, #2A0B3E 0%, #0A0618 45%, #05060B 100%);
+  }
+  .fallback::after{
+    content:""; position:absolute; inset:-20%;
+    background:conic-gradient(from 0deg, var(--flux), var(--cyan), var(--lime), var(--flux));
+    filter:blur(90px); opacity:.28;
+    animation:spin 24s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  body.no-gl .fallback{display:block}
+
+  .grain{
+    position:fixed; inset:0; z-index:2; pointer-events:none; opacity:.5;
+    background-image:radial-gradient(rgba(255,255,255,.05) .5px, transparent .5px);
+    background-size:3px 3px;
+    mix-blend-mode:overlay;
+  }
+  .scrim{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(5,6,11,.72) 0%, rgba(5,6,11,0) 26%),
+      linear-gradient(0deg,   rgba(5,6,11,.82) 0%, rgba(5,6,11,0) 34%),
+      linear-gradient(90deg,  rgba(5,6,11,.80) 0%, rgba(5,6,11,0) 30%),
+      linear-gradient(270deg, rgba(5,6,11,.70) 0%, rgba(5,6,11,0) 26%),
+      radial-gradient(140% 100% at 50% 50%, rgba(5,6,11,0) 40%, rgba(5,6,11,.6) 100%);
+  }
+
+  /* ---------- chrome ---------- */
+  .ui{position:fixed; inset:0; z-index:3; pointer-events:none}
+  .ui > *{pointer-events:auto}
+
+  header{
+    position:absolute; top:0; left:0; right:0;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:var(--pad);
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+  }
+  .brand{display:flex; align-items:baseline; gap:10px; font-weight:700}
+  .brand b{font-size:15px; letter-spacing:.3em; font-weight:700}
+  .brand span{color:var(--dim); letter-spacing:.16em}
+  nav{display:flex; gap:22px; align-items:center}
+  nav a{color:var(--dim); text-decoration:none; transition:color .2s}
+  nav a:hover, nav a:focus-visible{color:var(--bone)}
+  .live{display:flex; align-items:center; gap:7px; color:var(--dim)}
+  .dot{width:5px;height:5px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+  /* ---------- hero thesis ---------- */
+  .thesis{
+    position:absolute; left:var(--pad); top:50%; transform:translateY(-50%);
+    max-width:min(38ch, 42vw);
+  }
+  .eyebrow{
+    font-size:10px; letter-spacing:.28em; color:var(--dim);
+    text-transform:uppercase; margin-bottom:20px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:""; width:26px; height:1px; background:var(--line)}
+  h1{
+    font-family:var(--sans);
+    font-size:clamp(34px, 5.2vw, 76px);
+    line-height:.92; letter-spacing:-.045em; font-weight:800;
+    text-transform:uppercase; text-wrap:balance;
+  }
+  h1 em{
+    font-style:normal;
+    background:linear-gradient(96deg, var(--flux), var(--cyan) 48%, var(--lime));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .thesis p{
+    margin-top:22px; max-width:34ch;
+    font-size:12px; line-height:1.8; color:var(--dim); letter-spacing:.03em;
+  }
+  .thesis p b{color:var(--bone); font-weight:400}
+
+  /* ---------- work index ---------- */
+  .index{
+    position:absolute; right:var(--pad); top:50%; transform:translateY(-50%);
+    width:min(320px, 34vw);
+  }
+  .index h2{
+    font-size:10px; letter-spacing:.28em; color:var(--dim); font-weight:400;
+    text-transform:uppercase; margin-bottom:14px; text-align:right;
+  }
+  .index ol{list-style:none}
+  .index li + li{margin-top:2px}
+  .item{
+    width:100%; display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:baseline;
+    background:none; border:0; border-top:1px solid var(--line);
+    padding:13px 0 12px; text-align:right; cursor:pointer;
+    color:var(--dim); font-family:var(--mono); font-size:12px; letter-spacing:.06em;
+    transition:color .25s, border-color .25s, padding-right .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .item .n{font-size:10px; letter-spacing:.14em; opacity:.6; text-align:left}
+  .item .t{text-transform:uppercase; font-weight:500}
+  .item:hover,.item:focus-visible{color:var(--bone); padding-right:10px; outline:none}
+  .item:focus-visible{border-color:var(--cyan)}
+  .item[aria-current="true"]{color:var(--bone); border-color:rgba(237,235,255,.5)}
+  .item[aria-current="true"] .n{opacity:1; color:var(--cyan)}
+  .item.dimmed{opacity:.25}
+
+  .field{
+    margin-top:22px; display:flex; align-items:center; gap:10px;
+    border:1px solid var(--line); border-radius:999px; padding:10px 16px;
+    transition:border-color .25s;
+  }
+  .field:focus-within{border-color:rgba(237,235,255,.45)}
+  .field input{
+    flex:1; background:none; border:0; outline:none; color:var(--bone);
+    font-family:var(--mono); font-size:11px; letter-spacing:.1em;
+  }
+  .field input::placeholder{color:var(--dim); text-transform:uppercase; letter-spacing:.14em; font-size:10px}
+  .field svg{width:12px;height:12px;stroke:var(--dim);fill:none;stroke-width:1.6;flex:none}
+
+  /* ---------- caption ---------- */
+  .caption{
+    position:absolute; left:var(--pad); bottom:var(--pad);
+    display:flex; align-items:flex-end; gap:28px;
+  }
+  .caption .big{
+    font-family:var(--sans); font-size:clamp(20px,2.6vw,34px);
+    letter-spacing:-.02em; font-weight:700; text-transform:uppercase; line-height:1;
+  }
+  .caption dl{display:flex; gap:24px; font-size:10px; letter-spacing:.16em; text-transform:uppercase}
+  .caption dt{color:var(--dim); margin-bottom:5px}
+  .caption dd{color:var(--bone)}
+
+  .hint{
+    position:absolute; right:var(--pad); bottom:var(--pad);
+    font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim);
+    display:flex; align-items:center; gap:9px;
+  }
+  .hint kbd{
+    font-family:var(--mono); font-size:9px; border:1px solid var(--line);
+    border-radius:4px; padding:3px 6px; color:var(--bone);
+  }
+
+  .ticks{position:absolute; inset:var(--pad); pointer-events:none}
+  .ticks i{position:absolute; width:9px; height:9px; border:1px solid var(--line)}
+  .ticks i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0}
+  .ticks i:nth-child(2){top:0;right:0;border-left:0;border-bottom:0}
+  .ticks i:nth-child(3){bottom:0;left:0;border-right:0;border-top:0}
+  .ticks i:nth-child(4){bottom:0;right:0;border-left:0;border-top:0}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:900px){
+    .thesis{
+      top:auto; bottom:calc(var(--pad) + 210px); transform:none;
+      max-width:none; right:var(--pad);
+    }
+    .thesis p{display:none}
+    .index{
+      top:auto; bottom:var(--pad); left:var(--pad); right:var(--pad);
+      width:auto; transform:none;
+    }
+    .index h2{display:none}
+    .index ol{display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px}
+    .index ol::-webkit-scrollbar{display:none}
+    .index li + li{margin-top:0}
+    .item{
+      grid-template-columns:auto; gap:0; border:1px solid var(--line);
+      border-radius:999px; padding:9px 15px; white-space:nowrap; text-align:left;
+    }
+    .item .n{display:none}
+    .item:hover{padding-right:15px}
+    .field{margin-top:10px}
+    .caption{display:none}
+    .hint{display:none}
+  }
+  @media (max-width:520px){
+    h1{font-size:clamp(28px,9vw,40px)}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .dot,.fallback::after{animation:none}
+  }
+  .visually-hidden{
+    position:absolute!important;width:1px;height:1px;overflow:hidden;
+    clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="fallback" aria-hidden="true"></div>
+<div class="scrim" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="ui">
+  <div class="ticks" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+  <header>
+    <div class="brand"><b>PHASE</b><span>Realtime Studio</span></div>
+    <nav>
+      <a href="#work">Work</a>
+      <a href="#contact">Contact</a>
+      <span class="live" aria-hidden="true"><span class="dot"></span><span id="fps">60 FPS</span></span>
+    </nav>
+  </header>
+
+  <div class="thesis">
+    <p class="eyebrow">Creative technology</p>
+    <h1>We build the web in a <em>state of change</em>.</h1>
+    <p>
+      Realtime 3D that ships. <b>Every frame on this page is generated live in your
+      browser</b> — no video, no images, no libraries. Drag to orbit the form.
+    </p>
+  </div>
+
+  <section class="index" id="work" aria-label="Selected work">
+    <h2>Selected work — 2024/26</h2>
+    <ol id="list"></ol>
+    <div class="field">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16 16l5 5"/></svg>
+      <input id="q" type="search" placeholder="Filter the work — try “xr”" aria-label="Filter the work by discipline or client">
+    </div>
+  </section>
+
+  <div class="caption">
+    <div>
+      <div class="big" id="capTitle">Tidal Bloom</div>
+    </div>
+    <dl>
+      <div><dt>Client</dt><dd id="capClient">—</dd></div>
+      <div><dt>Discipline</dt><dd id="capKind">—</dd></div>
+      <div><dt>Year</dt><dd id="capYear">—</dd></div>
+    </dl>
+  </div>
+
+  <p class="hint"><kbd>↑</kbd><kbd>↓</kbd> or scroll to morph</p>
+</div>
+
+<p class="visually-hidden" id="live" role="status" aria-live="polite"></p>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------ *
+ * PHASE — a raymarched, morphing studio index.
+ * Five signed-distance forms, blended continuously. Thin-film
+ * iridescence, RGB-split refraction, and a particle swarm that
+ * sphere-traces onto the surface and detonates on transition.
+ * ------------------------------------------------------------------ */
+
+const WORKS = [
+  { t:"Tidal Bloom",    client:"Meridian Aquarium", kind:"Installation · Realtime", year:"2026", tags:"installation realtime water generative" },
+  { t:"Night Circuit",  client:"Kessler Motors",    kind:"Website · WebGPU",        year:"2025", tags:"website webgpu automotive product" },
+  { t:"Paper Lungs",    client:"Atlas Climate",     kind:"Data film · WebGL",       year:"2025", tags:"data film webgl climate dataviz" },
+  { t:"Salt Cathedral", client:"Verse Festival",    kind:"Multiplayer · XR",        year:"2024", tags:"multiplayer xr vr music social" },
+  { t:"Quiet Machine",  client:"Onyx Audio",        kind:"Product site · WebGL",    year:"2024", tags:"product website webgl audio hardware" },
+];
+const N = WORKS.length;
+
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const canvas = document.getElementById("gl");
+const gl = canvas.getContext("webgl2", {
+  antialias:false, alpha:false, depth:false, stencil:false,
+  powerPreference:"high-performance", preserveDrawingBuffer:false,
+});
+
+/* ------------------------------ shaders ------------------------------ */
+
+const COMMON = `
+#define NS 5
+uniform float uTime, uMorph, uShatter, uSpin;
+
+float h1(float p){ p=fract(p*.1031); p*=p+33.33; p*=p+p; return fract(p); }
+vec3  h3(vec3 p){
+  p = vec3(dot(p,vec3(127.1,311.7,74.7)),
+           dot(p,vec3(269.5,183.3,246.1)),
+           dot(p,vec3(113.5,271.9,124.6)));
+  return fract(sin(p)*43758.5453123);
+}
+float vh(vec3 p){ return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453123); }
+float vnoise(vec3 p){
+  vec3 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+  return mix(mix(mix(vh(i+vec3(0,0,0)),vh(i+vec3(1,0,0)),f.x),
+                 mix(vh(i+vec3(0,1,0)),vh(i+vec3(1,1,0)),f.x),f.y),
+             mix(mix(vh(i+vec3(0,0,1)),vh(i+vec3(1,0,1)),f.x),
+                 mix(vh(i+vec3(0,1,1)),vh(i+vec3(1,1,1)),f.x),f.y),f.z);
+}
+float fbm(vec3 p){ float a=.5,s=0.; for(int i=0;i<3;i++){ s+=a*vnoise(p); p*=2.03; a*=.5; } return s; }
+
+mat2 r2(float a){ float c=cos(a),s=sin(a); return mat2(c,-s,s,c); }
+vec3 warp(vec3 p){
+  p.xz *= r2(uSpin);
+  p.xy *= r2(sin(uTime*.15)*.13);
+  return p;
+}
+
+float sdSphere(vec3 p,float r){ return length(p)-r; }
+float sdTorus(vec3 p,vec2 t){ vec2 q=vec2(length(p.xz)-t.x,p.y); return length(q)-t.y; }
+float sdBox(vec3 p,vec3 b){ vec3 q=abs(p)-b; return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.); }
+float sdOcta(vec3 p,float s){ p=abs(p); return (p.x+p.y+p.z-s)*.5773503; }
+float gyroid(vec3 p,float sc,float th){
+  p*=sc; return (abs(dot(sin(p),cos(p.zxy)))-th)/sc;
+}
+
+// 0 tidal blob · 1 torus circuit · 2 gyroid lattice · 3 crystal · 4 machined box
+float shape(int i, vec3 p){
+  if(i==0){
+    float w = .19*sin(2.4*p.x+uTime*.8)*sin(2.7*p.y+uTime*.45)*sin(2.2*p.z+uTime*.3);
+    w += .06*sin(6.2*p.y - uTime*1.3);
+    return sdSphere(p,1.05)+w;
+  }
+  if(i==1){ p.yz *= r2(.66); p.xy *= r2(.18); return sdTorus(p,vec2(1.00,.34)); }
+  if(i==2) return max(sdSphere(p,1.24), gyroid(p,4.2,.62));
+  if(i==3) return sdOcta(p,1.52);
+  return sdBox(p,vec3(.80))-.14;
+}
+
+float mapLite(vec3 p){
+  p = warp(p);
+  float m = mod(uMorph, float(NS));
+  float f = fract(m);
+  int a = int(floor(m));
+  int b = int(mod(floor(m)+1., float(NS)));
+  float t = f*f*(3.-2.*f);
+  return mix(shape(a,p), shape(b,p), t);
+}
+float map(vec3 p){
+  float d = mapLite(p);
+  d += uShatter * .5 * (fbm(warp(p)*2.3 + uTime*.4) - .5);
+  d -= .022*sin(uTime*.55);
+  return d*.78;
+}
+`;
+
+const VERT_QUAD = `#version 300 es
+void main(){
+  vec2 v = vec2((gl_VertexID<<1)&2, gl_VertexID&2);
+  gl_Position = vec4(v*2.-1., 0., 1.);
+}`;
+
+const FRAG = `#version 300 es
+precision highp float;
+out vec4 O;
+uniform vec2 uRes;
+uniform vec3 uRo, uTa;
+uniform float uFade;
+${COMMON}
+
+vec3 nrm(vec3 p){
+  vec2 e = vec2(1.,-1.)*.0016;
+  return normalize(
+    e.xyy*map(p+e.xyy) + e.yyx*map(p+e.yyx) +
+    e.yxy*map(p+e.yxy) + e.xxx*map(p+e.xxx));
+}
+
+vec3 pal(float t){
+  return .5 + .5*cos(6.28318*(t + vec3(.00,.36,.68)));
+}
+
+vec3 env(vec3 rd){
+  float y = rd.y*.5+.5;
+  vec3 c = mix(vec3(.0035,.004,.011), vec3(.018,.009,.038), y);
+  c += vec3(.045,.012,.085) * pow(max(0., -rd.y), 3.);
+  // fine, sparse starfield — high frequency so peaks stay pin-sized
+  c += vec3(.82,.86,1.) * pow(max(0., vnoise(rd*380.)), 52.) * 3.4;
+  // one soft key light so the form has a direction to catch
+  float band = pow(max(0., dot(rd, normalize(vec3(.42,.72,-.55)))), 11.);
+  c += vec3(.085,.022,.135) * band;
+  return c;
+}
+
+void main(){
+  vec2 uv = (gl_FragCoord.xy*2. - uRes) / uRes.y;
+
+  vec3 f = normalize(uTa - uRo);
+  vec3 r = normalize(cross(f, vec3(0,1,0)));
+  vec3 u = cross(r, f);
+  vec3 rd = normalize(f*1.65 + r*uv.x + u*uv.y);
+
+  vec3 col = env(rd);
+
+  float t = 0., d = 0.;
+  bool hit = false;
+  int steps = 0;
+  for(int i=0;i<110;i++){
+    vec3 p = uRo + rd*t;
+    d = map(p);
+    if(d < .0012*t + .0009){ hit = true; steps = i; break; }
+    if(t > 9.) break;
+    t += d;
+    steps = i;
+  }
+
+  if(hit){
+    vec3 p = uRo + rd*t;
+    vec3 n = nrm(p);
+    float fres = pow(1. - max(0., dot(n, -rd)), 3.2);
+
+    vec3 refl = reflect(rd, n);
+    vec3 spec = env(refl);
+
+    // chromatic dispersion — three IORs through the shell
+    vec3 dr = refract(rd, n, .93);
+    vec3 dg = refract(rd, n, .955);
+    vec3 db = refract(rd, n, .98);
+    vec3 disp = vec3(env(dr).r, env(dg).g, env(db).b);
+
+    // thin-film interference, biased off the olive mids toward magenta/cyan
+    float film = fres*1.35 + dot(n, normalize(vec3(.3,1.,.2)))*.28 + uTime*.025;
+    vec3 irid = pal(film) * vec3(1.14,.88,1.18);
+
+    float ao = 1. - float(steps)/110.;
+    ao = clamp(ao*ao*1.25, .18, 1.);
+
+    // glass: dark core, all the energy at grazing angles
+    col  = disp * .90;
+    col += spec * .55;
+    col += irid * pow(fres, 1.9) * 1.45;
+
+    // internal veining so the body reads as volume, not a decal
+    float vein = fbm(warp(p)*3.4 + uTime*.12);
+    col *= .48 + 1.05*vein;
+    col *= ao;
+
+    // subsurface scatter — keeps the core alive where fresnel gives nothing
+    float sss = fbm(warp(p)*2.6 - uTime*.18);
+    col += pal(film + .5) * pow(max(0., sss), 2.4) * .62 * (1. - fres);
+
+    // edge ignition
+    col += irid * pow(fres, 6.) * 2.8;
+
+    // shatter sparkle
+    col += pal(film+.35) * uShatter * pow(max(0., fbm(p*7.+uTime*2.)-.42), 1.6) * 5.5;
+
+    col = mix(col, env(rd), smoothstep(6.2, 9.0, t));
+  }
+
+  // volumetric bloom around the form
+  float halo = 1. - smoothstep(.0, 1.05, length(uv)*.62);
+  col += pal(uTime*.03) * halo * .028;
+
+  // grade
+  col *= uFade;
+  col = (col*(2.51*col+.03))/(col*(2.43*col+.59)+.14);   // ACES-ish
+  col = pow(max(col, 0.), vec3(.4545));
+
+  // vignette + grain
+  col *= 1. - .58*pow(length(uv)*.55, 2.2);
+  col += (h1(gl_FragCoord.x + gl_FragCoord.y*1234. + uTime*60.) - .5)*.022;
+
+  O = vec4(col, 1.);
+}`;
+
+const VERT_PTS = `#version 300 es
+precision highp float;
+uniform vec2 uRes;
+uniform vec3 uRo, uTa;
+uniform float uCount, uFade;
+out float vSeed;
+out float vHeat;
+${COMMON}
+
+vec3 grad(vec3 p){
+  vec2 e = vec2(1.,-1.)*.004;
+  return normalize(
+    e.xyy*mapLite(p+e.xyy) + e.yyx*mapLite(p+e.yyx) +
+    e.yxy*mapLite(p+e.yxy) + e.xxx*mapLite(p+e.xxx));
+}
+
+void main(){
+  float id = float(gl_VertexID);
+  vec3 rnd = h3(vec3(id*.017, id*.0031, 7.13));
+  vSeed = rnd.x;
+
+  // seed on a sphere, then sphere-trace down onto the isosurface
+  float z = rnd.x*2.-1.;
+  float a = rnd.y*6.28318;
+  float s = sqrt(max(0., 1.-z*z));
+  vec3 p = vec3(s*cos(a), z, s*sin(a)) * 2.05;
+
+  for(int i=0;i<6;i++){
+    float d = mapLite(p);
+    p -= grad(p) * d * .85;
+  }
+
+  // detonation: push along the surface normal, with per-particle chaos
+  float burst = uShatter * (.45 + rnd.z*1.35);
+  vec3 dir = normalize(p + (h3(p*3.1+rnd)-.5)*1.4);
+  p += dir * burst;
+  p += (h3(p*1.7 + uTime*.15) - .5) * uShatter * .5;
+
+  // drift so the swarm never looks frozen
+  p += (h3(vec3(id*.11, uTime*.09, 3.7)) - .5) * .05;
+
+  vHeat = burst;
+
+  vec3 rel = p - uRo;
+  vec3 f = normalize(uTa - uRo);
+  vec3 r = normalize(cross(f, vec3(0,1,0)));
+  vec3 u = cross(r, f);
+  vec3 v = vec3(dot(rel,r), dot(rel,u), dot(rel,f));
+
+  if(v.z < .05){ gl_Position = vec4(2.,2.,2.,1.); gl_PointSize = 0.; return; }
+
+  vec2 sp = v.xy * 1.65 / v.z;
+  gl_Position = vec4(sp.x * uRes.y/uRes.x, sp.y, 0., 1.);
+  gl_PointSize = clamp((1.6 + rnd.z*2.6) * (uRes.y/900.) / v.z * 1.5, 1., 7.);
+}`;
+
+const FRAG_PTS = `#version 300 es
+precision highp float;
+in float vSeed;
+in float vHeat;
+out vec4 O;
+uniform float uShatter, uTime, uFade;
+
+vec3 pal(float t){ return .5 + .5*cos(6.28318*(t + vec3(.00,.36,.68))); }
+
+void main(){
+  vec2 c = gl_PointCoord - .5;
+  float m = 1. - smoothstep(.16, .5, length(c));
+  if(m <= .001) discard;
+  vec3 col = pal(vSeed*.9 + uTime*.04 + vHeat*.4);
+  float amp = (.17 + uShatter*1.9) * (.4 + vSeed*.9);
+  O = vec4(col * m * amp * uFade, m);
+}`;
+
+/* ------------------------------ engine ------------------------------ */
+
+function compile(src, type){
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+    throw new Error(gl.getShaderInfoLog(s) + "\n" + src.split("\n").map((l,i)=>(i+1)+": "+l).join("\n"));
+  return s;
+}
+function program(vs, fs){
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(vs, gl.VERTEX_SHADER));
+  gl.attachShader(p, compile(fs, gl.FRAGMENT_SHADER));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  return p;
+}
+const U = (p, names) => Object.fromEntries(names.map(n => [n, gl.getUniformLocation(p, n)]));
+
+let progScene, progPts, uScene, uPts, vao;
+let PARTICLES = 0;
+
+function initGL(){
+  progScene = program(VERT_QUAD, FRAG);
+  progPts   = program(VERT_PTS, FRAG_PTS);
+  const names = ["uRes","uTime","uMorph","uShatter","uSpin","uRo","uTa","uFade","uCount"];
+  uScene = U(progScene, names);
+  uPts   = U(progPts, names);
+  vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  PARTICLES = Math.min(innerWidth, innerHeight) < 720 ? 3500 : 9000;
+}
+
+/* ------------------------------ state ------------------------------ */
+
+const state = {
+  morph:0, morphTarget:0,
+  shatter:0,
+  spin:0, spinVel:0,
+  camA:0, camY:.30, camAT:0, camYT:.30,
+  fade:0,
+  current:0,
+  dragging:false, lastX:0, lastY:0,
+  idle:0, interacted:false,
+  quality:1,
+};
+
+let ro = [0,0,4.2], ta = [0,0,0];
+const lerp = (a,b,t) => a + (b-a)*t;
+
+function resize(){
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  // internal render scale — raymarching is fill-rate bound
+  const base = (innerWidth * innerHeight > 1600*1000) ? .62 : .78;
+  const scale = base * state.quality;
+  const w = Math.max(1, Math.round(innerWidth  * dpr * scale));
+  const h = Math.max(1, Math.round(innerHeight * dpr * scale));
+  if(canvas.width !== w || canvas.height !== h){
+    canvas.width = w; canvas.height = h;
+  }
+}
+
+/* ------------------------------ ui ------------------------------ */
+
+const list    = document.getElementById("list");
+const capT    = document.getElementById("capTitle");
+const capC    = document.getElementById("capClient");
+const capK    = document.getElementById("capKind");
+const capY    = document.getElementById("capYear");
+const liveMsg = document.getElementById("live");
+const fpsEl   = document.getElementById("fps");
+const q       = document.getElementById("q");
+
+WORKS.forEach((w, i) => {
+  const li = document.createElement("li");
+  const b = document.createElement("button");
+  b.className = "item";
+  b.type = "button";
+  b.dataset.i = i;
+  b.innerHTML = `<span class="n">${String(i+1).padStart(2,"0")}</span><span class="t"></span>`;
+  b.querySelector(".t").textContent = w.t;
+  b.addEventListener("click", () => select(i, true));
+  li.appendChild(b);
+  list.appendChild(li);
+});
+const items = [...list.querySelectorAll(".item")];
+
+/* character scramble — the title re-forms as the geometry does */
+const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ/\\<>*#%$@!?=+-";
+let scrambleTimer = null;
+function scramble(el, text){
+  if(reduced){ el.textContent = text; return; }
+  clearInterval(scrambleTimer);
+  const start = performance.now();
+  const dur = 560;
+  scrambleTimer = setInterval(() => {
+    const k = Math.min(1, (performance.now() - start) / dur);
+    const shown = Math.floor(k * text.length);
+    let out = text.slice(0, shown);
+    for(let i = shown; i < text.length; i++){
+      out += text[i] === " " ? " " : GLYPHS[(Math.random()*GLYPHS.length)|0];
+    }
+    el.textContent = out;
+    if(k >= 1){ clearInterval(scrambleTimer); el.textContent = text; }
+  }, 32);
+}
+
+function select(i, user){
+  i = ((i % N) + N) % N;
+  const w = WORKS[i];
+
+  // always travel forward through the shortest continuous path
+  const cur = state.morphTarget;
+  const base = Math.round(cur);
+  let delta = i - (((base % N) + N) % N);
+  if(delta >  N/2) delta -= N;
+  if(delta < -N/2) delta += N;
+  state.morphTarget = cur + delta;
+
+  if(!reduced){
+    state.shatter = 1;
+    state.spinVel += (delta >= 0 ? 1 : -1) * .55;
+  }
+  state.current = i;
+  if(user){ state.interacted = true; state.idle = 0; }
+
+  items.forEach((el, k) => el.setAttribute("aria-current", k === i ? "true" : "false"));
+  scramble(capT, w.t);
+  capC.textContent = w.client;
+  capK.textContent = w.kind;
+  capY.textContent = w.year;
+  liveMsg.textContent = `${w.t} — ${w.client}, ${w.kind}, ${w.year}`;
+}
+
+/* filter */
+q.addEventListener("input", () => {
+  const v = q.value.trim().toLowerCase();
+  let first = -1;
+  items.forEach((el, i) => {
+    const w = WORKS[i];
+    const hit = !v || (w.t + " " + w.client + " " + w.kind + " " + w.tags).toLowerCase().includes(v);
+    el.classList.toggle("dimmed", !hit);
+    if(hit && first < 0) first = i;
+  });
+  if(v && first >= 0 && first !== state.current) select(first, true);
+});
+
+/* input */
+let wheelLock = 0;
+addEventListener("wheel", (e) => {
+  if(e.target.closest("input")) return;
+  const now = performance.now();
+  if(now < wheelLock) return;
+  if(Math.abs(e.deltaY) < 8) return;
+  wheelLock = now + 520;
+  select(state.current + (e.deltaY > 0 ? 1 : -1), true);
+}, {passive:true});
+
+addEventListener("keydown", (e) => {
+  if(e.target.matches("input")) return;
+  if(e.key === "ArrowDown" || e.key === "ArrowRight"){ e.preventDefault(); select(state.current+1, true); }
+  if(e.key === "ArrowUp"   || e.key === "ArrowLeft"){  e.preventDefault(); select(state.current-1, true); }
+});
+
+/* orbit */
+function pointerDown(e){
+  if(e.target.closest(".ui") && e.target !== document.body) return;
+  state.dragging = true; state.interacted = true; state.idle = 0;
+  state.lastX = e.clientX; state.lastY = e.clientY;
+}
+function pointerMove(e){
+  if(!state.dragging) return;
+  const dx = e.clientX - state.lastX, dy = e.clientY - state.lastY;
+  state.lastX = e.clientX; state.lastY = e.clientY;
+  state.camAT -= dx * .006;
+  state.camYT = Math.max(-.75, Math.min(.75, state.camYT + dy * .0035));
+}
+function pointerUp(){ state.dragging = false; }
+canvas.addEventListener("pointerdown", pointerDown);
+addEventListener("pointermove", pointerMove);
+addEventListener("pointerup", pointerUp);
+addEventListener("pointercancel", pointerUp);
+
+/* touch swipe to change work */
+let tY = null;
+canvas.addEventListener("touchstart", e => { tY = e.touches[0].clientY; }, {passive:true});
+canvas.addEventListener("touchend", e => {
+  if(tY === null) return;
+  const dy = (e.changedTouches[0].clientY - tY);
+  if(Math.abs(dy) > 60) select(state.current + (dy < 0 ? 1 : -1), true);
+  tY = null;
+}, {passive:true});
+
+/* ------------------------------ loop ------------------------------ */
+
+let t0 = null, lastT = 0, frames = 0, fpsAcc = 0;
+
+function frame(now){
+  requestAnimationFrame(frame);
+  // The first rAF timestamp can precede a performance.now() taken during parse,
+  // so anchor the clock on the first frame and clamp dt on both ends. A negative
+  // dt turns every Math.pow decay below into exponential growth.
+  if(t0 === null){ t0 = now; lastT = now; }
+  const dt = Math.max(0, Math.min(.05, (now - lastT) / 1000));
+  lastT = now;
+  const time = (now - t0) / 1000;
+
+  // fps meter
+  frames++; fpsAcc += dt;
+  if(fpsAcc > .5){
+    const fps = frames / fpsAcc;
+    fpsEl.textContent = Math.round(fps) + " FPS";
+    // adaptive resolution — raymarching is fill-rate bound, so trade pixels for frames
+    if(fps < 44 && state.quality > .5)      state.quality = Math.max(.5, state.quality - .09);
+    else if(fps > 57 && state.quality < 1)  state.quality = Math.min(1, state.quality + .04);
+    frames = 0; fpsAcc = 0;
+  }
+
+  // idle auto-advance keeps the piece demonstrating itself
+  if(!reduced && !state.dragging){
+    state.idle += dt;
+    if(state.idle > (state.interacted ? 11 : 6)){ state.idle = 0; select(state.current + 1, false); }
+  }
+
+  state.morph  = lerp(state.morph, state.morphTarget, 1 - Math.pow(.0016, dt));
+  state.shatter = Math.max(0, state.shatter - dt * (reduced ? 6 : 1.35));
+
+  state.spinVel *= Math.pow(.06, dt);
+  state.spin += (reduced ? 0 : dt * .16) + state.spinVel * dt;
+
+  state.camA = lerp(state.camA, state.camAT, 1 - Math.pow(.004, dt));
+  state.camY = lerp(state.camY, state.camYT, 1 - Math.pow(.004, dt));
+  state.fade = lerp(state.fade, 1, 1 - Math.pow(.15, dt));
+
+  const drift = reduced ? 0 : Math.sin(time * .21) * .10;
+  const R = 4.15;
+  ro = [Math.sin(state.camA) * R, state.camY + drift, Math.cos(state.camA) * R];
+
+  resize();
+  gl.viewport(0, 0, canvas.width, canvas.height);
+
+  const setAll = (u) => {
+    gl.uniform2f(u.uRes, canvas.width, canvas.height);
+    gl.uniform1f(u.uTime, reduced ? 0 : time);
+    gl.uniform1f(u.uMorph, state.morph);
+    gl.uniform1f(u.uShatter, state.shatter);
+    gl.uniform1f(u.uSpin, state.spin);
+    gl.uniform3f(u.uRo, ro[0], ro[1], ro[2]);
+    gl.uniform3f(u.uTa, ta[0], ta[1], ta[2]);
+    gl.uniform1f(u.uFade, state.fade);
+  };
+
+  gl.bindVertexArray(vao);
+  gl.disable(gl.BLEND);
+  gl.useProgram(progScene);
+  setAll(uScene);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  gl.useProgram(progPts);
+  setAll(uPts);
+  gl.uniform1f(uPts.uCount, PARTICLES);
+  gl.drawArrays(gl.POINTS, 0, PARTICLES);
+}
+
+/* ------------------------------ boot ------------------------------ */
+
+try{
+  if(!gl) throw new Error("WebGL2 unavailable");
+  initGL();
+  resize();
+  select(0, false);
+  requestAnimationFrame(frame);
+}catch(err){
+  console.warn("[PHASE] WebGL2 unavailable — using the static fallback.", err);
+  document.body.classList.add("no-gl");
+  canvas.style.display = "none";
+  select(0, false);
+}
+</script>
+</body>
+</html>
