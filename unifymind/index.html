@@ -256,7 +256,8 @@
 
   /* ---------- footer: the exhale ---------- */
   footer{position:relative; z-index:2; background:var(--ground); border-top:1px solid var(--rule)}
-  .exhale{text-align:center; padding:clamp(70px,11vh,130px) var(--pad) clamp(40px,6vh,70px)}
+  .exhale{text-align:center; padding:clamp(56px,9vh,104px) var(--pad) clamp(38px,5vh,60px)}
+  .exhale p{max-width:none; margin-left:auto; margin-right:auto}
   .fbooks{display:flex; justify-content:center; gap:clamp(18px,4vw,54px); flex-wrap:wrap; margin-bottom:clamp(34px,5vh,54px)}
   .fbooks a{font-family:var(--inscr); font-size:10px; letter-spacing:.3em; text-transform:uppercase;
     color:var(--dim); text-decoration:none; transition:color .3s}
@@ -414,13 +415,13 @@
   <section class="begin solid" id="begin" data-morph="0" data-mood="gold">
     <div class="wrap">
       <p class="ch-label rise" style="justify-content:center">Chapter 08 · The First Page</p>
-      <h2 class="rise" style="margin-bottom:22px">Begin with a page</h2>
-      <p class="rise" id="beginLede">One message when a book is finished. A first chapter
-      when it is ready. Nothing else.</p>
+      <h2 class="rise" style="margin-bottom:22px">Begin with the 7-Day Reset</h2>
+      <p class="rise" id="beginLede">A free reset for ambitious young men. The first step
+      into the world of Self-Mastery.</p>
       <form class="signup rise" id="signup" novalidate>
         <label class="vh" for="email">Email address</label>
         <input id="email" type="email" placeholder="your@email.com" autocomplete="email" required>
-        <button type="submit">Begin</button>
+        <button type="submit">Get the Reset</button>
       </form>
       <p class="note" id="signupNote">This form is not connected to a mailing provider yet.</p>
     </div>
@@ -660,14 +661,14 @@ if(matchMedia("(pointer: fine)").matches && !reduced){
     form.action = MAILERLITE_ACTION;
     form.method = "post";
     document.getElementById("email").name = "fields[email]";
-    note.textContent = "No noise. One click to leave.";
+    note.textContent = "The Reset arrives by email. One click to leave.";
   } else {
-    // Launch law: no dead forms in production. Until the mailing provider is
-    // wired, the first page opens through a real door instead.
+    // Launch law: no dead forms. Until the mailing provider is wired, the
+    // Reset travels through the funnel that already works: the Instagram DM.
     form.outerHTML =
       `<a class="buy rise in" style="margin-top:6px" target="_blank" rel="noopener"
-        href="https://www.instagram.com/unifymind">Follow @unifymind</a>`;
-    note.textContent = "The mailing list opens soon. Until then, Instagram is the door.";
+        href="https://ig.me/m/unifymind">Get the 7-Day Reset</a>`;
+    note.textContent = "Message the word WARRIOR to @unifymind and the Reset comes straight back to you.";
   }
 }
 
