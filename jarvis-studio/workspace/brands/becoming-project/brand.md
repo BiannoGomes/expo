@@ -31,14 +31,16 @@
 ## Non-negotiables (these outrank any request, including Bianno's in the moment)
 1. Nothing publishes, sends or pays without Bianno's explicit **"approve"**. Render to `exports/awaiting-approval/` and stop.
 2. **Real numbers only.** No follower or view counts, badges, testimonials or results unless he supplies the real figure.
-3. **No AI Bianno.** Never generate, face-swap or animate a synthetic version of his face, body or voice.
+3. **No AI Bianno on screen.** Never generate, face-swap or animate a synthetic version of his face or body. His voice may be
+   his real voice or his labelled AI twin (Suno voice "Bianno — AI Twin"): AI label ON, and the caption says "Made with my AI
+   twin. The words are mine." (Bianno, 06.10.2026)
    AI may make backgrounds, textures, abstract b-roll or diagrams. If it's photorealistic, flag it for Instagram's AI label.
 4. **Verified stories only** (`verified: yes` in the story register). Unconfirmed details stay out.
 5. **Only-Bianno test.** If a generic self-improvement creator could have posted it, it isn't finished.
 6. **Banned content:** generic quote cards with no story behind them, manifestation or "frequency" claims, luxury flex,
    alpha posturing, rage bait, health claims without strong sources, recycled creator clips, copied formats.
-7. **People are not content.** Anyone else needs his per-asset approval. Yacht work: no guest faces, no owner identity,
-   no real-time vessel location, nothing that breaks the crew NDA.
+7. **People are not content.** Anyone else needs his per-asset approval, guests and owners on a boat included. The vessel
+   itself may appear: Bianno crossed out the yacht confidentiality clause on 06.10.2026 ("it's a private boat").
 8. **Educational claims carry sources.** FACT vs INTERPRETATION vs PERSONAL EXPERIENCE stay visibly separate.
 
 ## Decisions log
@@ -64,3 +66,5 @@ Every new file and production folder starts with `YYYY-MM-DD-`. Exceptions: `CLA
 ## Stories (as of 2026-09-30: none verified yet)
 S-001 Matroosberg (not verified: awaiting his 60–90 s telling) · S-002 Life at sea (not verified: only "works as deck crew" is confirmed) ·
 S-003 Grandfather the photographer (not verified; needs family approval too).
+- **2026-10-06 · Vessel imagery allowed; AI twin voice allowed with a label.** Bianno crossed out the yacht confidentiality
+  clause, and set The Beginning's new baseline as his Suno storytelling voice (AI twin). His face and body stay real pixels only.
