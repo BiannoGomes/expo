@@ -25,7 +25,8 @@ OpenArt, ElevenLabs, fal, paid Adobe ops). Drafts and renders are free to make.
 
 - Every on-screen number, date, quote or claim is in the project's `facts.md` with a source. `check-facts` passes.
 - Real assets only. Never redraw logos, covers or UI from memory.
-- The sea/NDA rule: no vessel, guests, owner, crew faces or working locations.
+- The sea rule: no guests', owners' or crew faces without their OK. For The Becoming Project the vessel itself may
+  appear (he crossed out the confidentiality clause on 06.10.2026); its name stays off until he answers Q-015.
 - QA gate before "done": facts · brand-lint · HyperFrames lint/check · spec-check · every scene frame read · motion-critic · Bianno watches it.
 - Deliver one verdict, the file path, what to confirm, and **one** next action.
 

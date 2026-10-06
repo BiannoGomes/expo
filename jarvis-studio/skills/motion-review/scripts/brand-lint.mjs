@@ -31,6 +31,7 @@ const all = `${brand}\n${motion}`;
 const noEmDash = /zero em-?dash|no em-?dash/i.test(all);
 const noExclaim = /no exclamation marks?/i.test(all);
 const banned = (brand.match(/banned words:\**\s*([^\n]+)/i)?.[1] ?? '').split(/[,;]/).map((w) => w.replace(/["'“”*.]/g, '').trim().toLowerCase()).filter(Boolean);
+const offFrame = [...all.matchAll(/never put ["“]([^"”]+)["”] on (?:slides or )?frames?/gi)].map((m) => m[1].trim()).filter(Boolean); // e.g. becoming-project: his name never on a frame
 const oneAccent = /one (gold )?accent|one gold phrase|two gold phrases/i.test(all);
 const accentHex = oneAccent ? (motion.match(/`?(#[0-9a-f]{6})`?\s*gold/i)?.[1] ?? motion.match(/gold\s*`?(#[0-9a-f]{6})/i)?.[1] ?? null) : null;
 
@@ -98,6 +99,8 @@ for (const f of files) {
     const texts = [...visible.matchAll(/>([^<]+)</g)].map((m) => ({ t: m[1], i: m.index }));
     if (noExclaim) for (const { t, i } of texts) if (/!/.test(t)) hit('error', 'exclamation', rel, src, i, `brand voice law: no exclamation marks, found in "${t.trim().slice(0, 60)}"`);
     for (const { t, i } of texts) for (const w of banned) if (new RegExp(`\\b${w.replace(/[-]/g, '[- ]?')}\\b`, 'i').test(t)) hit('error', 'banned-word', rel, src, i, `brand voice law: banned word "${w}" in "${t.trim().slice(0, 60)}"`);
+    // letter-spaced wordmarks ("B I A N N O") count too, so compare with the spaces taken out
+    for (const name of offFrame) { const key = name.replace(/\s+/g, '').toLowerCase(); for (const { t, i } of texts) if (t.replace(/[\s\u00a0]+/g, '').toLowerCase().includes(key)) hit('error', 'name-on-frame', rel, src, i, `brand law: never put "${name}" on a frame, found in "${t.trim().slice(0, 60)}". Credits go in the caption`); }
     if (accentHex) {
       const n = (src.match(new RegExp(`class="[^"]*\\b(?:gold|accent)\\b`, 'g')) ?? []).length;
       if (n > 1) hit('warn', 'one-accent', rel, src, 0, `${n} elements carry an accent/gold class: the brand allows ONE accent phrase per frame; verify no two are on screen together`);
@@ -108,7 +111,7 @@ for (const f of files) {
 const errors = out.filter((o) => o.level === 'error');
 if (args.includes('--json')) console.log(JSON.stringify({ palette: [...palette], paletteKnown, noEmDash, files: files.map((f) => relative(dir, f)), findings: out }, null, 2));
 else {
-  console.log(`brand-lint · ${files.length} file(s) · palette ${paletteKnown ? [...palette].join(' ') : 'not checked (no hex in MOTION.md field 1)'}${noEmDash ? ' · zero-em-dash law' : ''}${noExclaim ? ' · no-exclamation law' : ''}${banned.length ? ` · ${banned.length} banned words` : ''}`);
+  console.log(`brand-lint · ${files.length} file(s) · palette ${paletteKnown ? [...palette].join(' ') : 'not checked (no hex in MOTION.md field 1)'}${noEmDash ? ' · zero-em-dash law' : ''}${noExclaim ? ' · no-exclamation law' : ''}${banned.length ? ` · ${banned.length} banned words` : ''}${offFrame.length ? ` · never on frame: ${offFrame.join(', ')}` : ''}`);
   if (!out.length) console.log('✔ no house-rule or brand violations found (static check only; still review frames)');
   for (const o of out) console.log(`${o.level === 'error' ? '✖' : '⚠'} [${o.rule}] ${o.file}:${o.line}  ${o.detail}`);
 }

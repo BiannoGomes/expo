@@ -16,6 +16,7 @@
 - **What it is:** Bianno's personal brand. It's **separate from UnifyMind**: its own voice, its own look, and its
   own Blotato account. Never post Becoming content to the UnifyMind account.
 - **Formats:** A Story Reel · B Notes from the Becoming · C Jarvis Experiments · D One Idea Worth Keeping · E Carousel
+  (06.10.2026: the "Notes from the Becoming" *look* is dropped. Keep the ideas and use his real photos.)
 - **Pillars:** BODY · MIND · SOUL · FUTURE · LOVE · LIFE
 - **Territory:** transformation, self-mastery, adventure, philosophy, psychology, science, discipline,
   **failure and uncertainty** (on-brand on purpose), technology, humanity.
@@ -25,6 +26,8 @@
 - **UK English. No exclamation marks.**
 - **Banned words:** insane, game-changer, unlock
 - Curious, not preachy: "I've been testing…", "I noticed…", "I don't know yet."
+- **Scripts teach the audience.** No "I, I, I": self-focused lines read as cheesy to him. Scripts are written with his
+  two script skills, Soul Intelligence and Evolution (`skills/BIANNO_SCRIPT_*_SKILL.md` in the vault). (06.10.2026)
 - Hooks create curiosity without shouting. Never "Nobody tells you…" or "5 things you NEED…".
 - Full profile: `Jarvis Brain/05 Skills/(C) 2026-07-15 Bianno Writing Voice — Style Profile.md`.
 
@@ -32,21 +35,36 @@
 1. Nothing publishes, sends or pays without Bianno's explicit **"approve"**. Render to `exports/awaiting-approval/` and stop.
 2. **Real numbers only.** No follower or view counts, badges, testimonials or results unless he supplies the real figure.
 3. **No AI Bianno on screen.** Never generate, face-swap or animate a synthetic version of his face or body. His voice may be
-   his real voice or his labelled AI twin (Suno voice "Bianno — AI Twin"): AI label ON, and the caption says "Made with my AI
-   twin. The words are mine." (Bianno, 06.10.2026)
+   his real voice or his labelled AI twin (Suno Persona "Bianno — AI Twin"), with Instagram's AI label ON when posting.
+   **Open, and his call:** whether the caption carries "Made with my AI twin. The words are mine." The vault's `CLAUDE.md`
+   and the AI-twin rule say yes; his 4 Oct start page says no AI line in captions. Ask him per post; never decide it for him.
    AI may make backgrounds, textures, abstract b-roll or diagrams. If it's photorealistic, flag it for Instagram's AI label.
 4. **Verified stories only** (`verified: yes` in the story register). Unconfirmed details stay out.
 5. **Only-Bianno test.** If a generic self-improvement creator could have posted it, it isn't finished.
 6. **Banned content:** generic quote cards with no story behind them, manifestation or "frequency" claims, luxury flex,
    alpha posturing, rage bait, health claims without strong sources, recycled creator clips, copied formats.
-7. **People are not content.** Anyone else needs his per-asset approval, guests and owners on a boat included. The vessel
-   itself may appear: Bianno crossed out the yacht confidentiality clause on 06.10.2026 ("it's a private boat").
+7. **People are not content.** Anyone else needs his per-asset approval, guests and owners on a boat included. Dan and Imran
+   appear only with their OK. The vessel itself may appear: Bianno crossed out the yacht confidentiality clause on
+   06.10.2026 ("it's a private boat"). Its **name** stays off until he answers Q-015.
 8. **Educational claims carry sources.** FACT vs INTERPRETATION vs PERSONAL EXPERIENCE stay visibly separate.
+9. **Never put "Bianno" on slides or frames.** No name on title cards, end cards or captions burned into the picture.
+   Sources and credits go in the post caption, never on screen. (06.10.2026)
+10. **Music on every post. Suno makes the voice only.** The music is our own score: the **Night Watch** tension score
+   (a watch tick that races into each turn, stops dead and hits; opening sting A-E-D, landing E-D-A; nothing below
+   60 Hz). **No piano: he doesn't like it.** Mix: voice -16 LUFS high-passed at 80 Hz, score high-passed at 150 Hz and
+   ducked 12-15 dB under speech, final -14 LUFS and -1 dBTP. Source: the vault's
+   `sources/claude-project/2026-10-03-sound-identity-night-watch-v1.md` and the 06.10 handover.
+11. **Psychedelics are never part of the brand.**
 
 ## Decisions log
 - **2026-09-30 · Real pixels only for his likeness.** Offered the Creator Stack's video-to-video methods (One Take Every
   Move / Every Angle / Motion Hack via Seedance 2.0 or Google Omni); Bianno chose to keep rule 3. Multi-angle edits are
   built from crops of his real take (`edit-kit` multicam), never from a generative re-render of his face.
+- **2026-10-06 · Vessel imagery allowed; AI twin voice allowed with a label.** Bianno crossed out the yacht confidentiality
+  clause, and set The Beginning's new baseline as his Suno storytelling voice (AI twin). His face and body stay real pixels only.
+- **2026-10-06 · From the Cowork handover:** scripts teach the audience (no "I, I, I"); Suno makes the voice only; never
+  "Bianno" on frames; music on every post; no piano; captions and hashtags written for him; scheduling through Blotato
+  (account 75385) only after his "approve". Every post is a reel until post 30; carousels are paused.
 
 ## Out of scope for this brand
 The "Unbelievably Real" hyperreal-character method (Nano Banana Pro + Kling) belongs to Bianno's **separate AI
@@ -66,5 +84,3 @@ Every new file and production folder starts with `YYYY-MM-DD-`. Exceptions: `CLA
 ## Stories (as of 2026-09-30: none verified yet)
 S-001 Matroosberg (not verified: awaiting his 60–90 s telling) · S-002 Life at sea (not verified: only "works as deck crew" is confirmed) ·
 S-003 Grandfather the photographer (not verified; needs family approval too).
-- **2026-10-06 · Vessel imagery allowed; AI twin voice allowed with a label.** Bianno crossed out the yacht confidentiality
-  clause, and set The Beginning's new baseline as his Suno storytelling voice (AI twin). His face and body stay real pixels only.

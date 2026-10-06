@@ -30,18 +30,18 @@
 | 20 | Material | See vault. | CONFIRMED in vault |
 | 21 | Shadows | See vault. | CONFIRMED in vault |
 | 22 | Borders | See vault. | CONFIRMED in vault |
-| 23 | Shapes / motifs | **Gold compass star** · "B I A N N O" wordmark · "THE BECOMING PROJECT" underneath | CONFIRMED (handover) |
+| 23 | Shapes / motifs | **Gold compass star** · "THE BECOMING PROJECT" mark. **Never "Bianno" on a slide or frame** (06.10.2026); sources and credits go in the caption. | CONFIRMED (handover 06.10.2026) |
 | 24 | Image treatment | Real footage first. AI only for backgrounds, textures, abstract b-roll and diagrams; photoreal AI gets flagged for the AI label. **Never an AI person.** | CONFIRMED (handover) |
 | 25 | UI treatment | Jarvis Experiments (format C) show real screens only. | CONFIRMED (real-numbers + no-fake-UI rules) |
-| 26 | Audio | **Bianno's real voice** (voice memos or on-camera). Never a synthetic voice. Music: see playbook. | CONFIRMED (handover) |
+| 26 | Audio | His real voice, or his **labelled AI twin** (Suno makes the voice only). **Music on every post:** the Night Watch tension score (watch tick, a hit on every turn, stings A-E-D / E-D-A, nothing below 60 Hz). **No piano.** Mix rules: brand.md rule 10. | CONFIRMED (handover 06.10.2026) |
 | 27 | Accessibility | Burned-in captions inside the safe zone | CONFIRMED (becoming-video §2) |
 | 28 | Reduced motion | – (video only) | n/a |
-| 29 | Never | 1. An AI version of Bianno. 2. Unverified stories. 3. Fake numbers or badges. 4. Bounce. 5. Generic quote cards, hype words, exclamation marks. | CONFIRMED (handover) |
+| 29 | Never | 1. An AI face or body of Bianno. 2. Unverified stories. 3. Fake numbers or badges. 4. Bounce. 5. Generic quote cards, hype words, exclamation marks. 6. His name on a frame. 7. A piano bed. | CONFIRMED (handover) |
 
 ## 30. Shot-by-shot example
 
 The first real piece is planned in START HERE: **Format A Story Reel** from his 60–90 s Matroosberg telling,
-once it's recorded and verified. The end-card template (gold compass star, wordmark, dark earth, slow fade-in) is
+once it's recorded and verified. The end-card template (gold compass star, "THE BECOMING PROJECT", dark earth, slow fade-in; never his name) is
 the setup test in START HERE §4.
 
 ## Frame tokens (HyperFrames)
