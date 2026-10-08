@@ -19,7 +19,12 @@ const MODELS = {
   deep: "claude-opus-5",
 } as const;
 
-const client = new Anthropic();
+// Claude Code cloud environments reserve the name ANTHROPIC_API_KEY (sessions
+// authenticate through the Anthropic account), so accept a renamed variable.
+const client = new Anthropic({
+  apiKey:
+    process.env.ANTHROPIC_API_KEY ?? process.env.DAWNWARD_ANTHROPIC_API_KEY,
+});
 
 /** Applied to everything a user reads (design-direction.md, COPY). */
 const VOICE =

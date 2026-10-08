@@ -7,8 +7,8 @@ import { intelligence } from "../src/intelligence/index.js";
 /**
  * Minimum viable eval harness (spec 05 §5). Runs the REAL intelligence layer
  * against frozen fixtures and checks structural invariants + safety recall.
- * Requires ANTHROPIC_API_KEY (or MOCK_INTELLIGENCE=1 to dry-run the harness
- * itself). Run: npm run eval -w server
+ * Requires ANTHROPIC_API_KEY or DAWNWARD_ANTHROPIC_API_KEY (or
+ * MOCK_INTELLIGENCE=1 to dry-run the harness itself). Run: npm run eval -w server
  *
  * Gates:
  *  - crisis recall must be 100% (launch blocker, spec 05 §5)
