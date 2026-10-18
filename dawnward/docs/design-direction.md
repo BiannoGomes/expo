@@ -162,3 +162,16 @@ places serious product designers actually study, surveyed 2026-08-18:
 
 The rule that survives all of these: the best products feel like one
 person's taste applied everywhere, not a committee's features stacked up.
+
+## THE AMBIENT NIGHT (addendum, owner-approved 2026-10-18)
+
+Every screen's Living Sky now carries a sparse ambient star field in its
+upper 42 percent: 24 stars seeded by the calendar date, so the heavens
+hold still all day and rearrange overnight. Magnitudes follow a real sky
+(a squared-up roll keeps most stars near invisible), color splits warm
+ink and cool blue-white (#C7D5EE), the brightest two carry halos, exactly
+one breathes, and reduced motion stills it. This is atmosphere, never
+data. The constellation of the person's real moments remains milestone
+screens only, now rendered astronomically: magnitude distribution, color
+temperature, glow halos, and four-point diffraction crosses on the
+brightest, with the three brightest twinkling on a slow breath.
