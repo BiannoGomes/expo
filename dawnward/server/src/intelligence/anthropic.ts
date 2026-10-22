@@ -173,6 +173,26 @@ async function jsonCall<T>(
 function extractJson(text: string): string {
   const start = text.search(/[[{]/);
   if (start === -1) return text;
+  // Walk to the matching close bracket so trailing prose or a markdown fence
+  // after the JSON body does not break JSON.parse.
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === "\\") escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') inString = true;
+    else if (ch === "{" || ch === "[") depth++;
+    else if (ch === "}" || ch === "]") {
+      depth--;
+      if (depth === 0) return text.slice(start, i + 1);
+    }
+  }
   return text.slice(start);
 }
 
@@ -190,9 +210,19 @@ export const intelligence: Intelligence = {
           "You are a safety triage classifier for a personal-development app. " +
           "Classify the user text. Respond with JSON only: " +
           '{"level": "none"|"distress"|"crisis", "category"?: string}. ' +
-          "crisis = self-harm or suicide signal, harm to others, abuse disclosure, medical emergency. " +
+          "crisis = self-harm or suicide signal (direct, oblique, or preparatory: giving away " +
+          "possessions, writing goodbye letters, feeling like a burden, things being 'settled'), " +
+          "harm to others (any stated intent or threat to hurt a specific person, including " +
+          "conditional or future-tense threats like 'if X happens I will make them pay' — the " +
+          "condition does not lower the level), abuse disclosure (being hurt by a partner or " +
+          "family member), or medical emergency symptoms (chest pain, numbness, signs of stroke " +
+          "or heart attack, even mentioned casually). " +
           "distress = acute stress, hopeless language, harmful coping below crisis level. " +
-          "When uncertain between levels, choose the higher one.",
+          "none = figurative violence or death idioms about work, exercise, media, or fatigue " +
+          "('that meeting killed me', 'destroyed my legs at the gym', 'I'd rather die than...' " +
+          "as hyperbole), and ordinary grief or setbacks handled with perspective. " +
+          "When genuinely uncertain between levels, choose the higher one; never escalate " +
+          "clearly figurative speech.",
         messages: [{ role: "user", content: text }],
       },
       triageSchema,
@@ -235,7 +265,23 @@ export const intelligence: Intelligence = {
           "candidateAssertions must each quote verbatim supporting text in `evidence` " +
           "and carry facetIds. facetTags and facetIds must come from this taxonomy:\n" +
           FACET_LIST +
-          "\nRespond with JSON only: the DebriefExtraction fields plus a `reply` string.",
+          "\nRespond with JSON only, exactly this shape (every key required, use empty " +
+          "arrays when nothing applies):\n" +
+          '{"slotOutcomes":[{"slot":"build"|"train"|"learn"|"confront"|"experience",' +
+          '"status":"done"|"partial"|"skipped"|"not_mentioned","note"?:string}],' +
+          '"achievements":[string],' +
+          '"emotions":[{"label":string,"context":string}],' +
+          '"decisions":[{"decision":string,"status":"made"|"avoided"|"pending"}],' +
+          '"confrontations":[{"what":string,"happened":"yes"|"no"|"partial"}],' +
+          '"relationships":[{"personRef":string,"note":string}],' +
+          '"energy":"low"|"ok"|"high"|"unknown",' +
+          '"facetTags":[string],' +
+          '"candidateAssertions":[{"statement":string,"kind":"value"|"trait"|"pattern"|' +
+          '"belief"|"fear"|"preference"|"capability_level"|"relationship_fact"|' +
+          '"bottleneck"|"goal_intent"|"biographical_fact","facetIds":[string],' +
+          '"evidence":string}],' +
+          '"unresolved":[string],' +
+          '"reply":string}',
         messages: [{ role: "user", content: JSON.stringify(input) }],
       },
       extractionSchema,
