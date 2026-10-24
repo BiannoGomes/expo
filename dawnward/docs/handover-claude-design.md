@@ -30,3 +30,30 @@ You are working on the **Dawnward Screens** canvas. Before anything else, read t
 **Quality bar:** every board should survive the question "was this decided or defaulted?" Composition, scale contrast between serif display and small mono labels, generous darkness, one gold focal point per screen. If a board looks like a template, it is wrong.
 
 **Hand back:** the updated canvas with a short note listing boards changed, boards added, and any invented copy, so the engineering session can implement from it.
+
+---
+
+## New creative direction: The Living Universe
+
+Extend the existing Dawnward design system with a coherent planetary universe. Do not replace the current design system or overwrite other sessions' work. Read the Living Universe addendum in `docs/creative-playbook.md` first; it is canon for this direction.
+
+**The language:** planets are life domains (Mind: cool blue with delicate rings. Body: warm and earth-like. Soul: quiet and luminous. Future: a distant destination that gains definition as aspirations clarify). Stars are meaningful moments, gold for the ones the person marked significant. Orbits are defensible or user-confirmed connections. Nebulae are possibility, atmosphere only, in the approved nebula tone `#4A5A7A`, never on components or text. Progress changes the universe itself, always qualitatively: atmosphere, definition and detail may grow; numbers, percentages, meters, streaks, punishment or arbitrary rewards never appear. A planet never shrinks or darkens for inactivity.
+
+**Add these boards** to the Dawnward Screens canvas, each specifying user purpose, interaction, motion behavior, data required, empty state, accessibility and engineering notes:
+
+1. **Universe Overview**: the cinematic, spatial view of the personal cosmos.
+2. **Planet Detail**: one life domain with atmosphere, orbital details and a readable insight panel (what matters, what was learned, the evidence, what remains uncertain, one next action).
+3. **Planet Journey**: the transition from wider universe to planet, spatially continuous.
+4. **Star Memory**: a meaningful experience becoming a star.
+5. **Constellation Connections**: evidence-backed or user-confirmed relationships, inspectable.
+6. **Milestone Reveal**: a restrained planetary or atmospheric change after a genuine milestone.
+7. **Future Universe**: the chosen direction and possible next destinations, clearly aspirations, never predictions.
+8. **Reduced Motion**: a complete static alternative preserving all information and actions.
+9. **Shareable Universe**: a private-by-default story card the user reviews before sharing.
+10. **Motion Storyboard**: keyframes for the five signature moments (the quiet sky opening, camera travel toward a chosen planet, the transition into its readable detail screen, a memory becoming a star, the pullback revealing the interconnected universe), each with camera movement, lighting, duration, easing, user control, performance considerations and a reduced-motion alternative.
+
+Create a convincing 3D visual direction: spatial depth, restrained planetary rotation, atmospheric lighting, layered stars, camera travel, a coherent sense of scale. The boards must remain readable and usable as app screens; the cosmos is the environment, never a replacement for the interface. Avoid neon, purple AI gradients, lens flares, floating icons and space-game HUDs.
+
+Keep the implementation realistic for Expo and React Native: identify which effects the current SVG/Reanimated stack can carry and which genuinely require Skia or a 3D renderer; introduce no dependency before proving the need. A live 3D reference exists: the Dawnward Voyage artifact built in the engineering session.
+
+**Return** the revised canvas plus a concise implementation handover: approved boards, interaction states, motion specifications, any proposed token additions, and unresolved engineering questions.
