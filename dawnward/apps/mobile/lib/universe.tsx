@@ -80,7 +80,7 @@ export const WORLDS: World[] = [
     image: require("../assets/universe/mind.png"),
     domains: ["mental", "career", "creativity", "wealth"],
     slots: ["build", "learn"],
-    x: 172, y: 376, w: 260,
+    x: 172, y: 338, w: 260,
   },
 ];
 
