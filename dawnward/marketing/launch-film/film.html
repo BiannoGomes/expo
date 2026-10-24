@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dawnward, the launch film</title>
+<link rel="stylesheet" href="fonts.css">
+<script src="anime.min.js"></script>
+<style>
+  /* 60 seconds, 1080x1920, deterministic: every state is a pure function of
+     the timeline position, driven by window.SEEK(ms). */
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: #000; }
+  #stage {
+    position: relative; width: 1080px; height: 1920px; overflow: hidden;
+    background: #06080D; font-family: "Albert Sans", sans-serif; color: #ECE9E2;
+  }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+  .w { display: inline-block; opacity: 0; will-change: transform, opacity, filter; }
+
+  /* type roles */
+  .line {
+    position: absolute; left: 90px; right: 90px; text-align: center;
+    font-family: "Cormorant Garamond", Georgia, serif; font-weight: 300;
+    color: #ECE9E2; text-wrap: balance;
+  }
+  .caption {
+    position: absolute; left: 90px; right: 90px; text-align: center;
+    font-family: "Cormorant Garamond", Georgia, serif; font-weight: 400;
+    font-size: 66px; line-height: 1.25; color: #ECE9E2; opacity: 0;
+    text-shadow: 0 2px 24px rgba(4,6,10,.85);
+  }
+  .mono {
+    font-family: "IBM Plex Mono", monospace; text-transform: uppercase;
+    letter-spacing: .32em; color: #79818F;
+  }
+
+  /* the phone */
+  .phoneWrap { position: absolute; left: 50%; top: 50%; width: 560px; height: 1212px;
+    margin: -636px 0 0 -280px; perspective: 1800px; opacity: 0; }
+  .phone { position: absolute; inset: 0; border-radius: 80px; background: #05070B;
+    border: 2px solid #2A2F38; padding: 16px; transform-style: preserve-3d;
+    box-shadow: 0 0 150px -30px rgba(201,169,106,.38), 0 60px 130px -40px rgba(0,0,0,.85); }
+  .phone .screenbox { position: relative; width: 100%; height: 100%; border-radius: 64px; overflow: hidden; background: #0B0E12; }
+  .phone img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+  .phone .notch { position: absolute; left: 50%; top: 36px; width: 148px; height: 40px; margin-left: -74px; border-radius: 22px; background: #05070B; z-index: 5; }
+
+  /* scene 1: the interruption */
+  #s1 { background: #020306; opacity: 1; }
+  #spark { position: absolute; left: 50%; top: 42%; width: 10px; height: 10px; margin: -5px;
+    border-radius: 50%; background: #C9A96A; opacity: 0;
+    box-shadow: 0 0 56px 16px rgba(201,169,106,.6), 0 0 190px 70px rgba(201,169,106,.2); }
+  #s1 .line { top: 52%; font-size: 92px; line-height: 1.16; }
+
+  /* scene 2: the human problem */
+  #s2 .sky, #s5 .sky, #s7 .sky { position: absolute; inset: -60px; width: calc(100% + 120px); height: calc(100% + 120px); object-fit: cover; }
+  #s2 .galaxy { position: absolute; left: 120px; top: 240px; width: 300px; opacity: .8; }
+  #s2 .line { top: 46%; font-size: 84px; line-height: 1.2; }
+
+  /* scene 5: the universe */
+  .world { position: absolute; }
+  #s5 .caption { text-shadow: 0 2px 30px rgba(4,6,10,.95); }
+
+  /* scene 7/8: brand and invitation */
+  #s7 .anchor { position: absolute; left: 50%; top: 40%; width: 14px; height: 14px; margin: -7px;
+    border-radius: 50%; background: #C9A96A; opacity: 0;
+    box-shadow: 0 0 46px 12px rgba(201,169,106,.5), 0 0 160px 60px rgba(201,169,106,.14); }
+  #wordmark { position: absolute; left: 0; right: 0; top: 46%; text-align: center;
+    font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 168px;
+    letter-spacing: .1em; text-indent: .1em; color: #ECE9E2; opacity: 0; }
+  #s8 { background: #04060A; }
+  #s8 .brandline { position: absolute; left: 0; right: 0; top: 760px; text-align: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 30px; letter-spacing: .5em;
+    text-indent: .5em; color: #C9A96A; opacity: 0; }
+  #s8 .line { top: 850px; font-size: 92px; line-height: 1.2; opacity: 0; }
+  #s8 .cta { position: absolute; left: 0; right: 0; top: 1130px; text-align: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 24px; letter-spacing: .32em;
+    text-indent: .32em; color: #79818F; opacity: 0; }
+  #s8 .stars { position: absolute; inset: 0; }
+  #fade { position: absolute; inset: 0; background: #000; opacity: 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 2. THE HUMAN PROBLEM, 4 to 11 s -->
+  <div class="scene" id="s2">
+    <img class="sky" src="assets/nebula-sky.png" alt="">
+    <img class="galaxy" src="assets/galaxy.png" alt="">
+    <div class="line" id="l2a"></div>
+    <div class="line" id="l2b"></div>
+  </div>
+
+  <!-- 3 + 4. FIRST CONTACT and THE DAILY EXPERIENCE, 11 to 31 s -->
+  <div class="scene" id="s3" style="background:#04060A">
+    <div class="phoneWrap" id="pw1">
+      <div class="phone" id="p1">
+        <div class="screenbox">
+          <img id="scrToday" src="assets/today.png" alt="">
+          <img id="scrDebrief" src="assets/debrief.png" alt="">
+        </div>
+        <div class="notch"></div>
+      </div>
+    </div>
+    <div class="caption" style="top:140px" id="c3"></div>
+    <div class="caption" style="top:140px" id="c4a"></div>
+    <div class="caption" style="top:140px" id="c4b"></div>
+    <div class="caption" style="top:140px" id="c4c"></div>
+  </div>
+
+  <!-- 5. THE UNIVERSE REVEAL, 31 to 43 s -->
+  <div class="scene" id="s5">
+    <img class="sky" src="assets/nebula-sky.png" alt="">
+    <div id="cosmos" style="position:absolute; inset:0">
+      <img class="world" src="assets/future.png" style="left: 700px; top: 180px; width: 440px" alt="">
+      <img class="world" src="assets/body.png" style="left: 30px; top: 560px; width: 420px" alt="">
+      <img class="world" src="assets/soul.png" style="left: 60px; top: 1280px; width: 280px" alt="">
+      <img class="world" id="mindWorld" src="assets/mind.png" style="left: 420px; top: 950px; width: 720px" alt="">
+    </div>
+    <div class="phoneWrap" id="pw2">
+      <div class="phone" id="p2">
+        <div class="screenbox">
+          <img id="scrUniverse" src="assets/universe-app.png" alt="" style="opacity:1">
+          <img id="scrWorld" src="assets/world-mind.png" alt="">
+        </div>
+        <div class="notch"></div>
+      </div>
+    </div>
+    <div class="caption" style="top:160px" id="c5a"></div>
+    <div class="caption" style="top:160px" id="c5b"></div>
+  </div>
+
+  <!-- 6. THE EMOTIONAL PAYOFF, 43 to 51 s -->
+  <div class="scene" id="s6" style="background:#04060A">
+    <div class="phoneWrap" id="pw3">
+      <div class="phone">
+        <div class="screenbox"><img src="assets/you.png" alt="" style="opacity:1"></div>
+        <div class="notch"></div>
+      </div>
+    </div>
+    <div class="caption" style="top:140px" id="c6a"></div>
+    <div class="caption" style="top:140px" id="c6b"></div>
+  </div>
+
+  <!-- 7. THE BRAND MOMENT, 51 to 56 s -->
+  <div class="scene" id="s7">
+    <img class="sky" src="assets/nebula-sky.png" alt="" style="opacity:.9">
+    <div class="anchor" id="anchor"></div>
+    <div id="wordmark">Dawnward</div>
+  </div>
+
+  <!-- 8. THE INVITATION, 56 to 60 s -->
+  <div class="scene" id="s8">
+    <svg class="stars" width="1080" height="1920" viewBox="0 0 1080 1920">
+      <circle cx="160" cy="300" r="2" fill="#ECE9E2" opacity=".22"/>
+      <circle cx="420" cy="180" r="1.6" fill="#C7D5EE" opacity=".18"/>
+      <circle cx="760" cy="260" r="2.2" fill="#ECE9E2" opacity=".26"/>
+      <circle cx="930" cy="420" r="1.6" fill="#ECE9E2" opacity=".18"/>
+      <circle cx="240" cy="520" r="1.6" fill="#C7D5EE" opacity=".16"/>
+      <circle cx="540" cy="400" r="3" fill="#C9A96A" opacity=".95"/>
+      <line x1="516" y1="400" x2="564" y2="400" stroke="#C9A96A" stroke-width="1" opacity=".5"/>
+      <line x1="540" y1="376" x2="540" y2="424" stroke="#C9A96A" stroke-width="1" opacity=".5"/>
+      <circle cx="200" cy="1600" r="1.6" fill="#ECE9E2" opacity=".16"/>
+      <circle cx="860" cy="1680" r="1.6" fill="#ECE9E2" opacity=".18"/>
+    </svg>
+    <div class="brandline">Dawnward</div>
+    <div class="line" id="l8"></div>
+    <div class="cta">The sky is being prepared</div>
+  </div>
+
+  <!-- 1. THE INTERRUPTION, 0 to 4 s (on top, fades away) -->
+  <div class="scene" id="s1">
+    <div id="spark"></div>
+    <div class="line" id="l1a"></div>
+    <div class="line" id="l1b"></div>
+  </div>
+
+  <div id="fade"></div>
+</div>
+
+<script>
+function words(id, text) {
+  document.getElementById(id).innerHTML =
+    text.split(" ").map((w) => `<span class="w">${w}</span>`).join(" ");
+}
+words("l1a", "You don't need another routine.");
+words("l1b", "You need a direction.");
+words("l2a", "It's easy to keep moving.");
+words("l2b", "Harder to know where you're going.");
+words("c3", "Make space to understand yourself.");
+words("c4a", "Notice what matters.");
+words("c4b", "Reflect on what you've lived.");
+words("c4c", "Choose your next direction.");
+words("c5a", "Your life isn't a list of tasks.");
+words("c5b", "It's a universe still unfolding.");
+words("c6a", "Understand where you are.");
+words("c6b", "Choose who you're becoming.");
+words("l8", "Become who you are becoming.");
+
+const tl = anime.timeline({ autoplay: false, easing: "easeOutCubic" });
+const wordsIn = (sel, at, stagger = 140) =>
+  tl.add({ targets: `${sel} .w`, opacity: [0, 1], translateY: [26, 0],
+    filter: ["blur(14px)", "blur(0px)"], duration: 700, delay: anime.stagger(stagger) }, at);
+const wordsOut = (sel, at) =>
+  tl.add({ targets: `${sel} .w`, opacity: [1, 0], filter: ["blur(0px)", "blur(10px)"], duration: 450 }, at);
+const capIn = (sel, at) =>
+  tl.add({ targets: `${sel} .w`, opacity: [0, 1], translateY: [18, 0],
+    filter: ["blur(10px)", "blur(0px)"], duration: 550, delay: anime.stagger(110) }, at);
+const capOut = (sel, at) =>
+  tl.add({ targets: sel, opacity: [1, 0], duration: 400 }, at);
+// captions start hidden as blocks; reveal the block with its words
+const capBlock = (sel, at) => tl.add({ targets: sel, opacity: [0, 1], duration: 10 }, at);
+
+/* ---- SCENE 1 · the interruption (0 to 4 s) ---- */
+tl.add({ targets: "#spark", opacity: [0, 1], scale: [0.4, 1], duration: 900, easing: "easeOutQuart" }, 350);
+wordsIn("#l1a", 900, 150);
+wordsOut("#l1a", 2500);
+tl.add({ targets: "#spark", scale: [1, 1.3], duration: 600, easing: "easeInOutSine" }, 2600);
+wordsIn("#l1b", 2800, 130);
+tl.add({ targets: "#s1", opacity: [1, 0], duration: 700, easing: "easeInOutSine" }, 4300);
+
+/* ---- SCENE 2 · the human problem (4 to 11 s) ---- */
+tl.add({ targets: "#s2", opacity: [0, 1], duration: 800, easing: "easeInOutSine" }, 4100);
+tl.add({ targets: "#s2 .sky", scale: [1.1, 1], translateY: [40, 0], duration: 7400, easing: "linear" }, 4100);
+tl.add({ targets: "#s2 .galaxy", translateY: [30, -20], duration: 7400, easing: "linear" }, 4100);
+wordsIn("#l2a", 4900, 130);
+wordsOut("#l2a", 7100);
+wordsIn("#l2b", 7600, 120);
+tl.add({ targets: "#s2", opacity: [1, 0], duration: 700, easing: "easeInOutSine" }, 10700);
+
+/* ---- SCENE 3 · first contact (11 to 20 s) ---- */
+tl.add({ targets: "#s3", opacity: [0, 1], duration: 500 }, 10900);
+tl.add({ targets: "#pw1", opacity: [0, 1], translateY: [620, 0], duration: 1500, easing: "easeOutQuart" }, 11300);
+tl.add({ targets: "#p1", rotateY: [-8, -3], rotateX: [5, 2], duration: 6000, easing: "easeInOutSine" }, 11300);
+tl.add({ targets: "#scrToday", opacity: [0, 1], duration: 500 }, 11400);
+capBlock("#c3", 13400); capIn("#c3", 13400);
+capOut("#c3", 17600);
+
+/* ---- SCENE 4 · the daily experience (20 to 31 s) ---- */
+tl.add({ targets: "#scrToday", scale: [1, 1.05], duration: 8500, easing: "linear" }, 11400);
+capBlock("#c4a", 20400); capIn("#c4a", 20400);
+capOut("#c4a", 23200);
+tl.add({ targets: "#scrDebrief", opacity: [0, 1], duration: 900 }, 23600);
+tl.add({ targets: "#scrDebrief", scale: [1.04, 1], duration: 7000, easing: "linear" }, 23600);
+tl.add({ targets: "#p1", rotateY: [-3, 4], duration: 7000, easing: "easeInOutSine" }, 23600);
+capBlock("#c4b", 24600); capIn("#c4b", 24600);
+capOut("#c4b", 27400);
+capBlock("#c4c", 27900); capIn("#c4c", 27900);
+capOut("#c4c", 30300);
+tl.add({ targets: "#s3", opacity: [1, 0], duration: 600, easing: "easeInOutSine" }, 30700);
+
+/* ---- SCENE 5 · the universe reveal (31 to 43 s) ---- */
+tl.add({ targets: "#s5", opacity: [0, 1], duration: 600 }, 30900);
+// the real interface first
+tl.add({ targets: "#pw2", opacity: [0, 1], duration: 500 }, 30900);
+tl.add({ targets: "#p2", rotateY: [3, 0], duration: 3000, easing: "easeInOutSine" }, 30900);
+// the cosmos holds still behind, dark
+tl.add({ targets: "#cosmos", opacity: [0, 0], duration: 10 }, 0);
+capBlock("#c5a", 31900); capIn("#c5a", 31900);
+capOut("#c5a", 34600);
+// the escape: the phone recedes, the universe takes the frame
+tl.add({ targets: "#pw2", scale: [1, 2.6], translateY: [0, 340], opacity: [1, 0], duration: 2000, easing: "easeInOutCubic" }, 34600);
+tl.add({ targets: "#cosmos", opacity: [0, 1], duration: 1400, easing: "easeInOutSine" }, 34900);
+tl.add({ targets: "#s5 .sky", scale: [1.06, 1], duration: 7800, easing: "linear" }, 34600);
+capBlock("#c5b", 36400); capIn("#c5b", 36400);
+capOut("#c5b", 39200);
+// travel: the whole cosmos moves toward Mind
+tl.add({ targets: "#cosmos", translateX: [0, -420], translateY: [0, -560], scale: [1, 2.1], duration: 3400, easing: "easeInOutCubic" }, 38200);
+// arrival: Mind's real interface
+tl.add({ targets: "#pw3x", opacity: [0, 0], duration: 10 }, 0);
+tl.add({ targets: "#cosmos", opacity: [1, 0], duration: 900, easing: "easeInOutSine" }, 41400);
+tl.add({ targets: "#pw2", scale: [2.6, 1], translateY: [340, 0], opacity: [0, 1], duration: 1200, easing: "easeOutCubic" }, 41300);
+tl.add({ targets: "#scrWorld", opacity: [0, 1], duration: 400 }, 41300);
+tl.add({ targets: "#s5", opacity: [1, 0], duration: 700, easing: "easeInOutSine" }, 42900);
+
+/* ---- SCENE 6 · the emotional payoff (43 to 51 s) ---- */
+tl.add({ targets: "#s6", opacity: [0, 1], duration: 700 }, 43100);
+tl.add({ targets: "#pw3", opacity: [0, 1], duration: 800 }, 43100);
+// a slow breath toward the future-self card
+tl.add({ targets: "#pw3", scale: [1, 1.14], translateY: [0, -120], duration: 7400, easing: "easeInOutSine" }, 43300);
+capBlock("#c6a", 44200); capIn("#c6a", 44200);
+capOut("#c6a", 47000);
+capBlock("#c6b", 47600); capIn("#c6b", 47600);
+tl.add({ targets: "#s6", opacity: [1, 0], duration: 800, easing: "easeInOutSine" }, 50600);
+
+/* ---- SCENE 7 · the brand moment (51 to 56 s) ---- */
+tl.add({ targets: "#s7", opacity: [0, 1], duration: 900, easing: "easeInOutSine" }, 50900);
+tl.add({ targets: "#s7 .sky", scale: [1.05, 1], duration: 5000, easing: "linear" }, 50900);
+tl.add({ targets: "#anchor", opacity: [0, 1], scale: [0.5, 1], duration: 900, easing: "easeOutQuart" }, 51600);
+tl.add({ targets: "#wordmark", opacity: [0, 1], translateY: [20, 0], duration: 1300, easing: "easeOutCubic" }, 52400);
+tl.add({ targets: "#s7", opacity: [1, 0], duration: 700, easing: "easeInOutSine" }, 55600);
+
+/* ---- SCENE 8 · the invitation (56 to 60 s) ---- */
+tl.add({ targets: "#s8", opacity: [0, 1], duration: 600 }, 55900);
+tl.add({ targets: "#s8 .brandline", opacity: [0, 1], duration: 700 }, 56300);
+capBlock("#l8", 56800);
+tl.add({ targets: "#l8 .w", opacity: [0, 1], translateY: [20, 0], filter: ["blur(10px)", "blur(0px)"], duration: 650, delay: anime.stagger(120) }, 56800);
+tl.add({ targets: "#s8 .cta", opacity: [0, 1], duration: 700 }, 58200);
+tl.add({ targets: "#fade", opacity: [0, 1], duration: 700, easing: "easeInSine" }, 59300);
+
+window.FILM_MS = 60000;
+window.SEEK = (ms) => { tl.seek(Math.min(ms, window.FILM_MS)); };
+window.SEEK(0);
+</script>
+</body>
+</html>
