@@ -56,11 +56,15 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="you"
+        name="universe"
         options={{
-          tabBarLabel: ({ focused }) => <TabLabel label="You" focused={focused} />,
+          tabBarLabel: ({ focused }) => <TabLabel label="Universe" focused={focused} />,
         }}
       />
+      {/* The Personal Model lives inside the universe now (owner-approved
+          2026-10-24); the route stays for deep links and the universe's
+          "what I understand about you" door. */}
+      <Tabs.Screen name="you" options={{ href: null }} />
     </Tabs>
   );
 }

@@ -175,3 +175,19 @@ data. The constellation of the person's real moments remains milestone
 screens only, now rendered astronomically: magnitude distribution, color
 temperature, glow halos, and four-point diffraction crosses on the
 brightest, with the three brightest twinkling on a slow breath.
+
+## THE FIVE MOMENTS (addendum, owner-approved 2026-10-24)
+
+The Living Universe (docs/creative-playbook.md addendum) extends the three sanctioned motion moments to five. This list supersedes the earlier one; everything else about motion discipline stands, including press physics and complete reduced-motion alternatives.
+
+1. **The quiet sky.** An imperceptible ambient drift on the universe, continuous, no loop seam. Reduced motion: perfectly still.
+2. **Travel toward a world.** 1600 ms dolly, ease in-out cubic, cancelable at any time. Reduced motion: a 200 ms crossfade or an instant arrival.
+3. **The panel arrives.** 420 ms rise of 24 px, ease-out quart, 80 ms after arrival. Reduced motion: the panel is simply present.
+4. **A star is born.** Unchanged from the original three: 1200 ms after 800 ms of dark, scale .6 to 1.25 to 1, gold holding then cooling. Reduced motion: the star appears already lit.
+5. **The pullback.** 1800 ms dolly out, ease in-out sine, layers fading in by depth staggered 90 ms. Reduced motion: a quiet cut.
+
+The listening pulse remains as interface feedback during voice capture (it is a state indicator, not a scene motion). Worlds rotate only in marketing media, never in the app. The full spec lives on the Motion Storyboard board of the Dawnward Screens canvas.
+
+## THE WORLDS (same addendum)
+
+Planets are domains of life, drawn from the generated artwork in apps/mobile/assets/universe, composited on the night without masks. Body is warm and known; Mind is cool, ringed, the current exploration; Soul is quiet and luminous; Future is a distant point gaining definition. Progress is qualitative only: atmosphere, definition and detail may grow. Numbers, percentages, meters and streaks never appear on or near a world, and a world never shrinks or darkens for inactivity. Nebula #4A5A7A is atmosphere only, never on components or text. The Universe tab replaces You in the bar; the Personal Model remains one door inside it.
