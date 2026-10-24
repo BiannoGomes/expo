@@ -46,9 +46,9 @@
 
   /* scene 1: the interruption */
   #s1 { background: #020306; opacity: 1; }
-  #spark { position: absolute; left: 50%; top: 42%; width: 10px; height: 10px; margin: -5px;
+  #spark { position: absolute; left: 50%; top: 36%; width: 14px; height: 14px; margin: -7px;
     border-radius: 50%; background: #C9A96A; opacity: 0;
-    box-shadow: 0 0 56px 16px rgba(201,169,106,.6), 0 0 190px 70px rgba(201,169,106,.2); }
+    box-shadow: 0 0 70px 22px rgba(201,169,106,.7), 0 0 240px 90px rgba(201,169,106,.24); }
   #s1 .line { top: 52%; font-size: 92px; line-height: 1.16; }
 
   /* scene 2: the human problem */
@@ -294,7 +294,7 @@ tl.add({ targets: "#s8", opacity: [0, 1], duration: 600 }, 55900);
 tl.add({ targets: "#s8 .brandline", opacity: [0, 1], duration: 700 }, 56300);
 capBlock("#l8", 56800);
 tl.add({ targets: "#l8 .w", opacity: [0, 1], translateY: [20, 0], filter: ["blur(10px)", "blur(0px)"], duration: 650, delay: anime.stagger(120) }, 56800);
-tl.add({ targets: "#s8 .cta", opacity: [0, 1], duration: 700 }, 58200);
+tl.add({ targets: "#s8 .cta", opacity: [0, 1], duration: 700 }, 57500);
 tl.add({ targets: "#fade", opacity: [0, 1], duration: 700, easing: "easeInSine" }, 59300);
 
 window.FILM_MS = 60000;
