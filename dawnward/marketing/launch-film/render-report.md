@@ -38,3 +38,39 @@ anime.js v3 timeline (single source of truth for all motion) → Playwright fram
 10. Technical execution: 9. Exact spec, deterministic, two full renders, zero broken frames observed across both contact sheets.
 
 v2 average 8.2. The single highest-leverage improvement remains a composed score.
+
+---
+
+# v3 render report (2026-10-25)
+
+The cut the "proper soundtracks, visual effects, real voice" feedback asked for.
+
+## What changed from v2
+
+- **Founder narration**: nine lines in Bianno's own cloned voice carry the whole film (sources in `../fx/vo/`), with captions recut to echo rather than duplicate them.
+- **Cinematic b-roll**: three Seedance 2.5 clips (ocean at first light, a hand releasing a star, nebula flight) open scene II, carry the emotional payoff in VI and sit under the brand moment in VII. Transcoded to VP9 WebM because the render browser has no H.264 decoder.
+- **FX pack**: whooshes on hard cuts, a riser pair into the universe reveal, soft boom and shimmer on arrival, star-chimes on the two star moments, breath swells under VI and VII, an interface tick on the world arrival.
+- **Score**: the composed A-minor-to-A-major bed, remixed under the narration at 0.52.
+- **Renderer**: per-frame video seeking now waits for the seeked frame to paint (double requestAnimationFrame) before capture; the limiter no longer auto-normalizes to full scale (peaks now -1 dB, -0.7 dB after AAC).
+
+## QC pass
+
+Checked the 20-tile contact sheet (`contact-sheet-v3.jpg`) and full-resolution frames at 35 s and 58 s. One fix applied: audio peaked at 0 dB because ffmpeg's alimiter re-levels by default; disabled, remixed, re-encoded. No dead frames, no black video, captions land clear of the phone, the end card holds the placeholder CTA only.
+
+## Self-score
+
+| Dimension | v2 | v3 |
+| --- | --- | --- |
+| Opening hook | 8 | 9 |
+| Visual craft | 8 | 9 |
+| Motion design | 8 | 9 |
+| Screen authenticity | 9 | 9 |
+| Narrative arc | 8 | 9 |
+| Sound design | 7 | 9 |
+| Voice | 6 | 9 |
+| Typography | 9 | 9 |
+| Brand fidelity | 9 | 9 |
+| Emotional payoff | 8 | 9 |
+| **Mean** | **8.0** | **9.0** |
+
+What would take it past 9: the external ElevenLabs Music track (gated on `api.elevenlabs.io` joining the environment's allowed domains) and a finished CTA once a store destination exists.

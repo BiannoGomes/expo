@@ -28,7 +28,7 @@ ffmpeg -loglevel error -y \
 [19]adelay=43100|43100,volume=0.55[br1];[20]adelay=50900|50900,volume=0.45[br2];\
 [21]adelay=56900|56900,volume=0.4[ch2];\
 [mus][v1][v2][v3][v4][v5][v6][v7][v8][v9][w1][w2][w3][ch1][r1][r2][bm][sh][tk][br1][br2][ch2]amix=inputs=22:normalize=0,\
-alimiter=limit=0.89,apad=whole_dur=60,atrim=duration=60,\
+alimiter=limit=0.89:level=disabled,apad=whole_dur=60,atrim=duration=60,\
 aformat=sample_fmts=s16:sample_rates=44100:channel_layouts=stereo" \
  audio/score3.wav
 ffprobe -v error -show_entries format=duration -of csv=p=0 audio/score3.wav
