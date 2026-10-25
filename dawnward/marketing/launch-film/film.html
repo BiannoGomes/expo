@@ -167,8 +167,7 @@
 
   <!-- 2. THE HUMAN PROBLEM -->
   <div class="scene" id="s2">
-    <img class="sky" src="assets/nebula-sky.png" alt="">
-    <img class="galaxy" src="assets/galaxy.png" alt="">
+    <video class="sky" id="bv1" src="broll/ocean-dawn.webm" data-start="4100" muted playsinline preload="auto"></video>
     <div class="line" id="l2a"></div>
     <div class="line" id="l2b"></div>
   </div>
@@ -284,6 +283,8 @@
 
   <!-- 6. THE EMOTIONAL PAYOFF -->
   <div class="scene" id="s6" style="background:#04060A">
+    <video class="sky" id="bv3" src="broll/hand-star.webm" data-start="43100" muted playsinline preload="auto"></video>
+    <div id="bv3veil" style="position:absolute;inset:0;background:#04060A;opacity:0"></div>
     <div class="glow" id="glow6"></div>
     <div class="phoneWrap" id="pw3">
       <div class="phone">
@@ -297,7 +298,7 @@
 
   <!-- 7. THE BRAND MOMENT -->
   <div class="scene" id="s7">
-    <img class="sky" src="assets/nebula-sky.png" alt="" style="opacity:.9">
+    <video class="sky" id="bv2" src="broll/nebula-flight.webm" data-start="50900" muted playsinline preload="auto"></video>
     <div class="anchor" id="anchor"></div>
     <div id="wordmark">Dawnward</div>
   </div>
@@ -338,15 +339,15 @@ function words(id, text) {
 }
 words("l1a", "You don't need another routine.");
 words("l1b", "You need a direction.");
-words("l2a", "It's easy to keep moving.");
-words("l2b", "Harder to know where you're going.");
-words("c3", "Make space to understand yourself.");
-words("c4a", "Notice what matters.");
-words("c4b", "Reflect on what you've lived.");
+words("l2a", "Meet Dawnward.");
+words("l2b", "It learns you, from your own words.");
+words("c3", "A few quiet moves that matter.");
+words("c4a", "You talk. It listens.");
+words("c4b", "What you live becomes a star.");
 words("c4c", "Choose your next direction.");
-words("c5a", "Your life isn't a list of tasks.");
-words("c5b", "It's a universe still unfolding.");
-words("c6a", "Understand where you are.");
+words("c5a", "Your life becomes a universe.");
+words("c5b", "Watch your worlds grow, as you do.");
+words("c6a", "The picture of who you're becoming.");
 words("c6b", "Choose who you're becoming.");
 words("l8", "Become who you are becoming.");
 
@@ -407,14 +408,14 @@ tl.add({ targets: "#cd1seed", scale: [1.4, 1], duration: 380 }, 18240);
 tl.add({ targets: "#cd1 .ct", color: ["#ECE9E2", "#9AA0A9"], duration: 500 }, 17800);
 
 /* IV · the daily experience: Today slides to the evening */
-capIn("#c4a", 20400);
-capOut("#c4a", 22900);
+capIn("#c4a", 23900);
+capOut("#c4a", 26800);
 streak(23250);
 tl.add({ targets: "#todayApp", translateX: [0, -560], duration: 800, easing: "easeInOutCubic" }, 23400);
 tl.add({ targets: "#debriefApp", translateX: [560, 0], duration: 800, easing: "easeInOutCubic" }, 23400);
 tl.add({ targets: "#p1", rotateY: [-3, 3], duration: 7000, easing: "easeInOutSine" }, 23600);
-capIn("#c4b", 24500);
-capOut("#c4b", 27200);
+capIn("#c4b", 28000);
+capOut("#c4b", 30200);
 /* the debrief types itself, then listens */
 tl.add({ targets: "#caret", opacity: [0, 1], duration: 100 }, 24300);
 tl.add({ targets: "#typed .tc", opacity: [0, 1], duration: 30, delay: anime.stagger(56) }, 24400);
@@ -434,9 +435,7 @@ document.querySelectorAll(".eq i").forEach((bar, i) => {
   tl.add({ targets: bar, scaleY: eqKeys[i].map((v) => ({ value: v, duration: 340 })),
     easing: "easeInOutSine" }, 27950 + i * 60);
 });
-capIn("#c4c", 27900);
 tl.add({ targets: "#reflectBtn", opacity: [0, 1], translateY: [16, 0], duration: 500 }, 29600);
-capOut("#c4c", 30300);
 tl.add({ targets: "#s3", opacity: [1, 0], duration: 600, easing: "easeInOutSine" }, 30700);
 
 /* V · the universe reveal */
@@ -459,8 +458,8 @@ tl.add({ targets: "#goldRing", opacity: [0.8, 0], duration: 900 }, 36500);
 tl.add({ targets: "#arc", strokeDashoffset: [620, 0], duration: 1000, easing: "easeInOutSine" }, 36200);
 tl.add({ targets: "#wBody", translateY: [0, -10], duration: 6000, easing: "easeInOutSine" }, 34900);
 tl.add({ targets: "#mindWorld", translateY: [0, -14], duration: 6000, easing: "easeInOutSine" }, 34900);
-capIn("#c5b", 36400);
-capOut("#c5b", 39000);
+capIn("#c5b", 38800);
+capOut("#c5b", 41600);
 /* travel toward Mind */
 tl.add({ targets: "#cosmos", translateX: [0, -420], translateY: [0, -560], scale: [1, 2.1],
   duration: 3400, easing: "easeInOutCubic" }, 38200);
@@ -475,18 +474,17 @@ tl.add({ targets: "#s5", opacity: [1, 0], duration: 700, easing: "easeInOutSine"
 
 /* VI · the emotional payoff */
 tl.add({ targets: "#s6", opacity: [0, 1], duration: 700 }, 43100);
-tl.add({ targets: "#pw3", opacity: [0, 1], duration: 800 }, 43100);
-tl.add({ targets: "#pw3", scale: [1, 1.14], translateY: [0, -120], duration: 7400, easing: "easeInOutSine" }, 43300);
+tl.add({ targets: "#bv3veil", opacity: [0, 1], duration: 900, easing: "easeInOutSine" }, 46000);
+tl.add({ targets: "#pw3", opacity: [0, 1], duration: 800 }, 46300);
+tl.add({ targets: "#pw3", scale: [1, 1.1], translateY: [0, -90], duration: 4600, easing: "easeInOutSine" }, 46300);
 tl.add({ targets: "#glow6", opacity: [{ value: 0.38, duration: 2500 }, { value: 0.22, duration: 2500 },
   { value: 0.38, duration: 2400 }], easing: "easeInOutSine" }, 43300);
-capIn("#c6a", 44200);
-capOut("#c6a", 47000);
-capIn("#c6b", 47600);
+capIn("#c6a", 47000);
 tl.add({ targets: "#s6", opacity: [1, 0], duration: 800, easing: "easeInOutSine" }, 50600);
 
 /* VII · the brand moment */
 tl.add({ targets: "#s7", opacity: [0, 1], duration: 900, easing: "easeInOutSine" }, 50900);
-tl.add({ targets: "#s7 .sky", scale: [1.05, 1], duration: 5000, easing: "linear" }, 50900);
+
 tl.add({ targets: "#anchor", opacity: [0, 1], scale: [0.5, 1], duration: 900, easing: "easeOutQuart" }, 51600);
 tl.add({ targets: "#wordmark", opacity: [0, 1], translateY: [20, 0], duration: 1300, easing: "easeOutCubic" }, 52400);
 tl.add({ targets: "#s7", opacity: [1, 0], duration: 700, easing: "easeInOutSine" }, 55600);
