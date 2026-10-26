@@ -1,0 +1,32 @@
+{
+  "film": "dawnward-launch-v4",
+  "format": { "width": 1080, "height": 1920, "fps": 30, "duration_s": 60.0 },
+  "renderer": "marketing/launch-film/film2.html via render60 pipeline",
+  "shots": [
+    { "id": "01-device", "start": 0.0, "end": 2.6, "camera": "locked, push 1.00-1.03", "picture": "dark bedroom, phone face down, notification glow pulsing", "vo": { "t": 1.0, "line": "Your phone knows everything about your day." }, "text": null, "sound": ["notification clusters accelerating"], "transition_out": "hard tighten", "assets": ["broll/phone-night.webm"], "purpose": "recognition in 2 s" },
+    { "id": "02-blindspot", "start": 2.6, "end": 6.8, "camera": "locked", "picture": "tighter; glow dies at 4.2; black", "vo": { "t": 4.4, "line": "You don't." }, "text": { "t": 5.4, "mono": "WHERE IS IT ALL GOING?" }, "sound": ["clusters cut dead 4.2", "room tone"], "transition_out": "dissolve to black", "assets": ["broll/phone-night.webm"], "purpose": "the turn" },
+    { "id": "03-question", "start": 6.8, "end": 12.4, "camera": "locked", "picture": "serif line types on black", "vo": null, "text": { "serif": "What actually happened today?", "mono": "NOT THE SCHEDULE. THE DAY." }, "sound": ["room tone", "first motif note 10.8"], "transition_out": "hold", "assets": [], "purpose": "scripted silence #1" },
+    { "id": "04-honest-minute", "start": 12.4, "end": 21.6, "camera": "rig orbit 2 deg over 9 s", "picture": "debrief phone rises in perspective; sentence types; listening bars breathe", "vo": [ { "t": 13.6, "line": "Dawnward asks one real question each evening." }, { "t": 17.4, "line": "And listens." } ], "text": null, "sound": ["music enters under 'listens'", "caret ticks", "EQ breath"], "transition_out": "match cut on word glow", "assets": ["assets/debrief board", "starfield far"], "purpose": "product demo: debrief" },
+    { "id": "05-word-to-star", "start": 21.6, "end": 24.4, "camera": "locked", "picture": "the typed word's glow condenses to one gold star on black", "vo": null, "text": { "mono": "KEPT / OCT 24" }, "sound": ["one chime shared across the cut"], "transition_out": "hard cut", "assets": [], "purpose": "first cause-effect pair" },
+    { "id": "06-morning", "start": 24.4, "end": 31.0, "camera": "rig drift opposite 04", "picture": "Today phone; cards cascade; kept edge draws; corner star", "vo": { "t": 25.2, "line": "Each morning, three quiet moves, drawn from your own words." }, "text": { "t": 28.6, "mono": "NO STREAKS. NO SCORES." }, "sound": ["card ticks", "motif develops"], "transition_out": "pull to dark", "assets": ["assets/today board"], "purpose": "product demo: morning + differentiator" },
+    { "id": "07-suspension", "start": 31.0, "end": 34.6, "camera": "pull back z +320", "picture": "phone shrinks into darkness; vignette closes", "vo": { "t": 31.6, "line": "And slowly, something you've never had." }, "text": null, "sound": ["unresolved suspended chord", "low breath"], "transition_out": "occlusion push begins", "assets": [], "purpose": "resistance before the reveal" },
+    { "id": "08-through-glass", "start": 34.6, "end": 38.2, "camera": "push through, z +320 to -900, ease-in-out 3.6 s", "picture": "camera passes through the screen; frame blurs past; parallax starfield and four worlds resolve at depth", "vo": { "t": 36.2, "line": "A picture of your life you can travel." }, "text": null, "sound": ["chord resolves, full-range soft landing 34.9", "shimmer", "stereo widens"], "transition_out": "continuous", "assets": ["nebula-sky", "star layers x3", "mind/body/soul/future planets"], "purpose": "the one big move, earned" },
+    { "id": "09-worlds", "start": 38.2, "end": 45.8, "camera": "dolly to Mind, hard cut to wide at 41.9 on music", "picture": "Mind world panel (real screen) rises; wide cosmos with labels arriving per planet", "vo": { "t": 42.6, "line": "Watch your worlds change, as you do." }, "text": { "mono_labels": ["MIND", "BODY", "SOUL", "FUTURE"] }, "sound": ["panel tick", "motif warmer"], "transition_out": "hard cut", "assets": ["world-mind capture", "planet stack"], "purpose": "breadth without listing features aloud" },
+    { "id": "10-payoff", "start": 45.8, "end": 52.0, "camera": "locked", "picture": "hand releases a star; veil at 49.0; Personal Model rises through", "vo": { "t": 47.2, "line": "It remembers who you're becoming. Even on the days you forget." }, "text": null, "sound": ["music thins to intimate voicing", "breath swell"], "transition_out": "veil", "assets": ["broll/hand-star.webm", "assets/you board"], "purpose": "emotional payoff" },
+    { "id": "11-brand", "start": 52.0, "end": 56.4, "camera": "locked, clip motion only", "picture": "nebula flight toward warm light; wordmark", "vo": null, "text": { "wordmark": "Dawnward" }, "sound": ["motif resolves to major", "no effects"], "transition_out": "dissolve", "assets": ["broll/nebula-flight.webm"], "purpose": "scripted silence #2, brand" },
+    { "id": "12-invitation", "start": 56.4, "end": 60.0, "camera": "locked", "picture": "end card; fade by 59.3", "vo": { "t": 57.0, "line": "Dawnward." }, "text": { "serif": "Become who you are becoming.", "mono": "COMING SOON" }, "sound": ["final chime 57.4", "silence by 59.4"], "transition_out": "fade to black", "assets": [], "purpose": "honest invitation; destination is an owner dependency" }
+  ],
+  "vo_lines": [
+    "Your phone knows everything about your day.",
+    "You don't.",
+    "Dawnward asks one real question each evening.",
+    "And listens.",
+    "Each morning, three quiet moves, drawn from your own words.",
+    "And slowly, something you've never had.",
+    "A picture of your life you can travel.",
+    "Watch your worlds change, as you do.",
+    "It remembers who you're becoming. Even on the days you forget.",
+    "Dawnward."
+  ],
+  "forbidden": ["whoosh transitions", "caption repeating voice", "invented UI", "store claims", "streak/score/meter imagery", "purple AI gradients"]
+}

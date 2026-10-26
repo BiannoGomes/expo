@@ -10,3 +10,13 @@
 | anime.min.js v3.2.2 | Julian Garnier | MIT (build tooling only, not distributed in the film) |
 
 No stock footage, no third-party music, no testimonial content, no trademarks other than Dawnward's own. Nothing in the film requires clearance beyond the owner's own accounts.
+
+## v4 additions (2026-10-26)
+
+| Asset | Source | Licence/basis |
+| --- | --- | --- |
+| `broll/phone-night.mp4/.webm` | Seedance 2.5 via the owner's Higgsfield account (prompt in film-script context: face-down phone, nightstand, notification glow; no text, no logos, no readable UI) | Owner-generated |
+| `../fx/vo4/v1-10.mp3` | Ten narration lines, owner's cloned voice ("Bianno Voice" element, ElevenLabs engine via Higgsfield) | Owner-generated, owner's own voice |
+| `audio/music4.wav` | Composed in-house by `compose-score2.py` (original work, no samples) | Original |
+| `audio/notif.wav`, `audio/roomtone.wav` | Synthesized in-house (generic two-tone blips, not any platform's trademark sound; brown-noise room tone) | Original |
+| Research references (`../film/research/`) | Studied for technique only; no footage, music or copy reproduced | Analysis only |

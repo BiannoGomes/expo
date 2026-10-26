@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dawnward, the launch film v4</title>
+<link rel="stylesheet" href="fonts.css">
+<script src="anime.min.js"></script>
+<style>
+  /* v4: paired cause-and-effect, real depth. One deterministic timeline (window.SEEK). */
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: #000; }
+  #stage {
+    position: relative; width: 1080px; height: 1920px; overflow: hidden;
+    background: #04060A; font-family: "Albert Sans", sans-serif; color: #ECE9E2;
+    --ground: #0B0E12; --surface: #12161D; --line: #232A34; --ink: #ECE9E2;
+    --dim: #9AA0A9; --faint: #79818F; --gold: #C9A96A; --dawn: #E8A87C;
+  }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+  .w { display: inline-block; opacity: 0; will-change: transform, opacity, filter; }
+  .mono { font-family: "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .24em; }
+  .monoCap { position: absolute; left: 90px; right: 90px; text-align: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 27px; letter-spacing: .34em;
+    text-indent: .34em; color: var(--dim); opacity: 0; }
+  .serifCap { position: absolute; left: 90px; right: 90px; text-align: center;
+    font-family: "Cormorant Garamond", Georgia, serif; font-weight: 300;
+    color: var(--ink); text-wrap: balance; opacity: 0;
+    text-shadow: 0 2px 24px rgba(4,6,10,.85); }
+
+  /* depth rigs */
+  .pers { position: absolute; inset: 0; perspective: 1400px; perspective-origin: 50% 46%; }
+  .rig { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .layer { position: absolute; inset: 0; transform-style: preserve-3d; }
+
+  /* the phone (shared) */
+  .phoneWrap { position: absolute; left: 50%; top: 50%; width: 560px; height: 1212px;
+    margin: -636px 0 0 -280px; opacity: 0; transform-style: preserve-3d; }
+  .phone { position: absolute; inset: 0; border-radius: 80px; background: #05070B;
+    border: 2px solid #2A2F38; padding: 16px; transform-style: preserve-3d;
+    box-shadow: 0 0 150px -30px rgba(201,169,106,.3), 0 60px 130px -40px rgba(0,0,0,.85); }
+  .phone .screenbox { position: relative; width: 100%; height: 100%; border-radius: 64px;
+    overflow: hidden; background: var(--ground); }
+  .phone .notch { position: absolute; left: 50%; top: 36px; width: 148px; height: 40px;
+    margin-left: -74px; border-radius: 22px; background: #05070B; z-index: 9; }
+  .phone .wrap { position: absolute; inset: 14px; border-radius: 66px; pointer-events: none; z-index: 8;
+    box-shadow: inset 0 0 60px -20px rgba(199,213,238,.14); }
+  .groundShadow { position: absolute; left: 50%; bottom: 150px; width: 680px; height: 110px;
+    margin-left: -340px; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,.8), transparent 70%);
+    opacity: 0; filter: blur(18px); }
+
+  /* live app shared */
+  .app { position: absolute; inset: 0; display: flex; flex-direction: column;
+    padding: 90px 32px 0; background: linear-gradient(to bottom, #06080D, #0B0E12 55%); }
+  .app .hdr { display: flex; justify-content: space-between; align-items: baseline; }
+  .app .lbl { font-size: 15px; color: var(--dim); }
+  .app .lblR { font-size: 13px; color: var(--faint); }
+  .app h1 { font-family: "Cormorant Garamond", serif; font-weight: 400; font-size: 46px;
+    line-height: 1.12; margin-top: 12px; color: var(--ink); }
+  .card { position: relative; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 19px; padding: 26px 28px; margin-top: 22px; opacity: 0;
+    box-shadow: inset 0 1px 0 rgba(236,233,226,.04); }
+  .card .cl { font-size: 14px; color: var(--faint); }
+  .card .ct { font-size: 22px; line-height: 1.5; margin-top: 8px; color: var(--ink); }
+  .card .cw { font-size: 18px; line-height: 1.4; margin-top: 7px; color: var(--dim); }
+  .card .edge { position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--gold); transform: scaleY(0); transform-origin: top; border-radius: 2px; }
+  .card .seed { position: absolute; top: 24px; right: 24px; width: 12px; height: 12px;
+    border-radius: 50%; background: var(--gold); opacity: 0;
+    box-shadow: 0 0 16px 4px rgba(201,169,106,.5); }
+  .card.gold { border-color: rgba(201,169,106,.65); }
+  .card .bq { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 28px;
+    line-height: 1.35; color: var(--ink); }
+  .tabbar { margin-top: auto; display: flex; justify-content: space-around;
+    border-top: 1px solid var(--line); padding: 26px 0 40px; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 8px;
+    font-family: "IBM Plex Mono", monospace; font-size: 13px; letter-spacing: .22em; color: var(--faint); }
+  .tab i { width: 5px; height: 5px; border-radius: 50%; background: transparent; }
+  .tab.on { color: var(--gold); }
+  .tab.on i { background: var(--gold); }
+  .field { background: var(--surface); border: 1px solid var(--line); border-radius: 19px;
+    padding: 24px; margin-top: 28px; min-height: 330px; font-size: 22px; line-height: 1.6; color: var(--ink); }
+  .field .tc { opacity: 0; }
+  .caret { display: inline-block; width: 2px; height: 26px; background: var(--gold);
+    vertical-align: -4px; opacity: 0; }
+  .listenRow { display: flex; align-items: center; gap: 14px; margin-top: 24px; opacity: 0; }
+  .ldot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); }
+  .llbl { font-family: "IBM Plex Mono", monospace; font-size: 15px; letter-spacing: .24em; color: var(--gold); }
+  .eq { display: inline-flex; gap: 4px; align-items: flex-end; height: 20px; }
+  .eq i { width: 4px; height: 18px; background: var(--gold); border-radius: 2px;
+    transform-origin: bottom; transform: scaleY(.4); }
+
+  .sky { position: absolute; inset: -60px; width: calc(100% + 120px); height: calc(100% + 120px); object-fit: cover; }
+
+  /* A · the device (0-6.8) */
+  #sA { opacity: 1; background: #010203; }
+  #sA .dark { position: absolute; inset: 0; background: #010203; opacity: 0; }
+  #mA { top: 1210px; }
+
+  /* B · the question (6.8-12.4) */
+  #sB { background: #010203; }
+  #qline { top: 46%; font-size: 92px; line-height: 1.18; opacity: 1; }
+  #qline .qc { opacity: 0; }
+  #mB { top: 58%; }
+
+  /* C1 · the honest minute (12.4-21.6) */
+  #sC1 { background: #04060A; }
+  .starsFar { opacity: .5; }
+
+  /* D · word to star (21.6-24.4) */
+  #sD { background: #020306; }
+  #pairStar { position: absolute; left: 50%; top: 46%; width: 22px; height: 22px; margin: -11px;
+    border-radius: 50%; background: var(--gold); opacity: 0;
+    box-shadow: 0 0 60px 18px rgba(201,169,106,.65), 0 0 220px 80px rgba(201,169,106,.2); }
+  #mD { top: 53%; color: var(--dim); }
+  #wordGlow { position: absolute; left: 50%; top: 46%; width: 16px; height: 16px; margin: -8px;
+    border-radius: 50%; background: var(--gold); opacity: 0; filter: blur(2px);
+    box-shadow: 0 0 40px 14px rgba(201,169,106,.55); z-index: 30; }
+
+  /* C2 · the morning + suspension (24.4-35.4) */
+  #sC2 { background: #04060A; }
+  #vignette { position: absolute; inset: 0; opacity: 0;
+    background: radial-gradient(ellipse at 50% 46%, transparent 30%, rgba(1,2,3,.92) 78%); }
+  #mC2 { top: 1565px; }
+
+  /* E · the universe (34.6-45.8) */
+  #sE { background: #020308; }
+  #sE .neb { position: absolute; left: -400px; top: -700px; width: 1880px; height: 3320px; object-fit: cover; }
+  .world3 { position: absolute; }
+  .wlabel { position: absolute; text-align: center; transform: translateX(-50%);
+    font-family: "IBM Plex Mono", monospace; font-size: 24px; letter-spacing: .4em;
+    text-indent: .4em; color: var(--ink); opacity: 0; text-shadow: 0 2px 18px rgba(2,3,8,.9); }
+  #mindFull { position: absolute; inset: 0; opacity: 0; background: #06080D; }
+  #mindFull .wsky { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  #mindFull .wplanet { position: absolute; left: -12%; top: -14%; width: 134%; }
+  #mindFull .panel { position: absolute; left: 70px; right: 70px; bottom: 150px;
+    background: rgba(11,14,18,.84); border: 1px solid var(--line); border-radius: 34px; padding: 56px; }
+  #mindFull .panel > * { opacity: 0; }
+  #mindFull .plbl { font-family: "IBM Plex Mono", monospace; font-size: 24px; letter-spacing: .26em; color: var(--gold); }
+  #mindFull .pt { font-family: "Cormorant Garamond", serif; font-size: 66px; margin-top: 22px; color: var(--ink); }
+  #mindFull .pb { font-size: 30px; line-height: 1.55; margin-top: 20px; color: var(--dim); }
+
+  /* F · the payoff (45.8-52) */
+  #sF { background: #04060A; }
+  #veilF { position: absolute; inset: 0; background: #04060A; opacity: 0; }
+
+  /* G · the brand (52-56.4) */
+  #wordmark { position: absolute; left: 0; right: 0; top: 46%; text-align: center;
+    font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 168px;
+    letter-spacing: .1em; text-indent: .1em; color: var(--ink); opacity: 0; }
+
+  /* H · the invitation (56.4-60) */
+  #sH { background: #04060A; }
+  #sH .brandline { position: absolute; left: 0; right: 0; top: 760px; text-align: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 30px; letter-spacing: .5em;
+    text-indent: .5em; color: var(--gold); opacity: 0; }
+  #lH { top: 850px; font-size: 92px; line-height: 1.2; }
+  #sH .cta { position: absolute; left: 0; right: 0; top: 1130px; text-align: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 24px; letter-spacing: .32em;
+    text-indent: .32em; color: var(--faint); opacity: 0; }
+  #fade { position: absolute; inset: 0; background: #000; opacity: 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- E · THE UNIVERSE (bottom of stack) -->
+  <div class="scene" id="sE">
+    <div class="pers">
+      <div class="rig" id="rigE">
+        <div class="layer" style="transform: translateZ(-1400px) scale(2.3)">
+          <img class="neb" src="assets/nebula-sky.png" alt=""></div>
+        <div class="layer" id="starsA" style="transform: translateZ(-1000px) scale(1.9)"></div>
+        <div class="layer" style="transform: translateZ(-1100px) scale(2.0)">
+          <img class="world3" src="assets/future.png" style="left: 690px; top: 240px; width: 400px" alt="">
+          <span class="wlabel" id="wlFuture" style="left: 890px; top: 660px">Future</span>
+        </div>
+        <div class="layer" id="starsB" style="transform: translateZ(-600px) scale(1.5)"></div>
+        <div class="layer" style="transform: translateZ(-700px) scale(1.6)">
+          <img class="world3" src="assets/body.png" style="left: 40px; top: 500px; width: 400px" alt="">
+          <span class="wlabel" id="wlBody" style="left: 240px; top: 920px">Body</span>
+        </div>
+        <div class="layer" style="transform: translateZ(-500px) scale(1.42)">
+          <img class="world3" src="assets/soul.png" style="left: 90px; top: 1270px; width: 260px" alt="">
+          <span class="wlabel" id="wlSoul" style="left: 215px; top: 1550px">Soul</span>
+        </div>
+        <div class="layer" style="transform: translateZ(-350px) scale(1.3)">
+          <img class="world3" id="mindWorld" src="assets/mind.png" style="left: 430px; top: 930px; width: 640px" alt="">
+          <span class="wlabel" id="wlMind" style="left: 750px; top: 1600px; color: var(--gold)">Mind</span>
+        </div>
+        <div class="layer" id="starsC" style="transform: translateZ(-300px) scale(1.24)"></div>
+      </div>
+    </div>
+    <div id="mindFull">
+      <img class="wsky" src="assets/nebula-sky.png" alt="">
+      <img class="wplanet" src="assets/mind.png" alt="">
+      <div class="panel">
+        <div class="mono plbl">Mind · the current exploration</div>
+        <div class="pt">The world of clarity.</div>
+        <div class="pb">Connections appear here between what you read, what you write and what you believe. The rings are the thoughts that keep returning, settling into orbit.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C1 · THE HONEST MINUTE -->
+  <div class="scene" id="sC1">
+    <div class="pers">
+      <div class="rig" id="rigC1">
+        <div class="layer starsFar" id="starsC1" style="transform: translateZ(-600px) scale(1.5)"></div>
+        <div class="groundShadow" id="gs1"></div>
+        <div class="phoneWrap" id="pwC1">
+          <div class="phone" id="pC1">
+            <div class="screenbox">
+              <div class="app">
+                <div class="hdr"><span class="mono lbl" style="color:#79818F">Evening debrief</span></div>
+                <h1>What happened?</h1>
+                <div style="font-size:21px; line-height:1.5; color:var(--dim); margin-top:14px">
+                  What would make tonight feel like you actually lived today?</div>
+                <div class="field"><span id="typed"></span><span class="caret" id="caret"></span></div>
+                <div class="listenRow" id="listenRow">
+                  <span class="ldot" id="ldot"></span><span class="llbl">Listening</span>
+                  <span class="eq"><i></i><i></i><i></i><i></i><i></i></span>
+                  <span style="font-size:17px;color:var(--dim);margin-left:auto">Tap when you're done.</span>
+                </div>
+                <div class="tabbar">
+                  <span class="tab">TODAY<i></i></span>
+                  <span class="tab on">DEBRIEF<i></i></span>
+                  <span class="tab">UNIVERSE<i></i></span>
+                </div>
+              </div>
+            </div>
+            <div class="wrap"></div>
+            <div class="notch"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="wordGlow"></div>
+  </div>
+
+  <!-- D · WORD TO STAR -->
+  <div class="scene" id="sD">
+    <div id="pairStar"></div>
+    <div class="monoCap" id="mD">Kept · Oct 24</div>
+  </div>
+
+  <!-- C2 · THE MORNING + SUSPENSION -->
+  <div class="scene" id="sC2">
+    <div class="pers">
+      <div class="rig" id="rigC2">
+        <div class="layer starsFar" id="starsC2" style="transform: translateZ(-600px) scale(1.5)"></div>
+        <div class="groundShadow" id="gs2"></div>
+        <div class="phoneWrap" id="pwC2">
+          <div class="phone" id="pC2">
+            <div class="screenbox">
+              <div class="app">
+                <div class="hdr">
+                  <span class="mono lbl">Good morning, Bianno</span>
+                  <span class="mono lblR">Sat 25 Oct</span>
+                </div>
+                <h1>Your evolution today</h1>
+                <div class="card" id="cd1">
+                  <span class="edge" id="cd1edge"></span><span class="seed" id="cd1seed"></span>
+                  <div class="mono cl">One thing to train</div>
+                  <div class="ct" id="cd1t">40 minutes of open-water prep</div>
+                  <div class="cw">your body keeps the promises your mind makes</div>
+                </div>
+                <div class="card" id="cd2">
+                  <div class="mono cl">One thing to build</div>
+                  <div class="ct">Ship the first chapter to your editor</div>
+                  <div class="cw">the campaign turns on finished things</div>
+                </div>
+                <div class="card" id="cd3">
+                  <div class="mono cl">One thing to experience</div>
+                  <div class="ct">Watch the light change, phone elsewhere</div>
+                  <div class="cw">presence is a trainable thing</div>
+                </div>
+                <div class="card gold" id="cd4">
+                  <div class="bq">You keep commitments you write down.</div>
+                  <div class="cw">Why I think this: I have seen this in your days 4 times now.</div>
+                </div>
+                <div class="tabbar">
+                  <span class="tab on">TODAY<i></i></span>
+                  <span class="tab">DEBRIEF<i></i></span>
+                  <span class="tab">UNIVERSE<i></i></span>
+                </div>
+              </div>
+            </div>
+            <div class="wrap"></div>
+            <div class="notch"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="monoCap" id="mC2">No streaks. No scores.</div>
+    <div id="vignette"></div>
+  </div>
+
+  <!-- F · THE PAYOFF -->
+  <div class="scene" id="sF">
+    <video class="sky" id="bvF" src="broll/hand-star.webm" data-start="45800" muted playsinline preload="auto"></video>
+    <div id="veilF"></div>
+    <div class="phoneWrap" id="pwF">
+      <div class="phone">
+        <div class="screenbox"><img src="assets/you.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></div>
+        <div class="wrap"></div>
+        <div class="notch"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- G · THE BRAND -->
+  <div class="scene" id="sG">
+    <video class="sky" id="bvG" src="broll/nebula-flight.webm" data-start="52000" muted playsinline preload="auto"></video>
+    <div id="wordmark">Dawnward</div>
+  </div>
+
+  <!-- H · THE INVITATION -->
+  <div class="scene" id="sH">
+    <svg style="position:absolute;inset:0" width="1080" height="1920" viewBox="0 0 1080 1920">
+      <circle cx="160" cy="300" r="2" fill="#ECE9E2" opacity=".22"/>
+      <circle cx="420" cy="180" r="1.6" fill="#C7D5EE" opacity=".18"/>
+      <circle cx="760" cy="260" r="2.2" fill="#ECE9E2" opacity=".26"/>
+      <circle cx="930" cy="420" r="1.6" fill="#ECE9E2" opacity=".18"/>
+      <circle cx="540" cy="400" r="3" fill="#C9A96A" opacity=".95"/>
+      <line x1="516" y1="400" x2="564" y2="400" stroke="#C9A96A" stroke-width="1" opacity=".5"/>
+      <line x1="540" y1="376" x2="540" y2="424" stroke="#C9A96A" stroke-width="1" opacity=".5"/>
+      <circle cx="200" cy="1600" r="1.6" fill="#ECE9E2" opacity=".16"/>
+      <circle cx="860" cy="1680" r="1.6" fill="#ECE9E2" opacity=".18"/>
+    </svg>
+    <div class="brandline">Dawnward</div>
+    <div class="serifCap" id="lH"></div>
+    <div class="cta">Coming soon</div>
+  </div>
+
+  <!-- B · THE QUESTION -->
+  <div class="scene" id="sB">
+    <div class="serifCap" id="qline"></div>
+    <div class="monoCap" id="mB">Not the schedule. The day.</div>
+  </div>
+
+  <!-- A · THE DEVICE (top layer at open) -->
+  <div class="scene" id="sA">
+    <video class="sky" id="bvA" src="broll/phone-night.webm" data-start="0" muted playsinline preload="auto"></video>
+    <div class="dark" id="darkA"></div>
+    <div class="monoCap" id="mA">Where is it all going?</div>
+  </div>
+
+  <div id="fade"></div>
+</div>
+
+<script>
+function words(id, text) {
+  document.getElementById(id).innerHTML =
+    text.split(" ").map((w) => `<span class="w">${w}</span>`).join(" ");
+}
+words("lH", "Become who you are becoming.");
+
+// B: the question types itself, char by char
+const qText = "What actually happened today?";
+document.getElementById("qline").innerHTML =
+  qText.split("").map((c) => `<span class="qc">${c === " " ? "&nbsp;" : c}</span>`).join("");
+
+// C1: the typed reflection
+const typedText = "Today I sent the chapter. Scared, but I did it.";
+document.getElementById("typed").innerHTML =
+  typedText.split("").map((c) => `<span class="tc">${c === " " ? "&nbsp;" : c}</span>`).join("");
+
+// deterministic star sheets (seeded, same every load)
+function seededStars(el, n, seed, size, color) {
+  let s = seed;
+  const rnd = () => (s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296;
+  const frag = [];
+  for (let i = 0; i < n; i++) {
+    const x = (rnd() * 1080) | 0, y = (rnd() * 1920) | 0;
+    const r = (size * (0.5 + rnd())).toFixed(1), o = (0.1 + rnd() * 0.3).toFixed(2);
+    frag.push(`<circle cx="${x}" cy="${y}" r="${r}" fill="${color}" opacity="${o}"/>`);
+  }
+  el.innerHTML = `<svg width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;inset:0">${frag.join("")}</svg>`;
+}
+seededStars(document.getElementById("starsA"), 90, 11, 1.4, "#ECE9E2");
+seededStars(document.getElementById("starsB"), 60, 29, 1.8, "#C7D5EE");
+seededStars(document.getElementById("starsC"), 34, 47, 2.3, "#ECE9E2");
+seededStars(document.getElementById("starsC1"), 40, 61, 1.5, "#C7D5EE");
+seededStars(document.getElementById("starsC2"), 40, 61, 1.5, "#C7D5EE");
+
+const tl = anime.timeline({ autoplay: false, easing: "easeOutCubic" });
+const capIn = (sel, at, st = 110) => {
+  tl.add({ targets: sel, opacity: [0, 1], duration: 10 }, at);
+  tl.add({ targets: `${sel} .w`, opacity: [0, 1], translateY: [18, 0],
+    filter: ["blur(10px)", "blur(0px)"], duration: 550, delay: anime.stagger(st) }, at);
+};
+const monoIn = (sel, at) => tl.add({ targets: sel, opacity: [0, 1], translateY: [10, 0], duration: 600 }, at);
+const monoOut = (sel, at) => tl.add({ targets: sel, opacity: [1, 0], duration: 400 }, at);
+
+/* ===== A · THE DEVICE (0 - 6.8) ===== */
+tl.add({ targets: "#bvA", scale: [1, 1.03], duration: 2600, easing: "linear" }, 0);
+/* hard tighten on "You don't." */
+tl.add({ targets: "#bvA", scale: [1.14, 1.18], duration: 2400, easing: "linear" }, 2600);
+/* the glow dies */
+tl.add({ targets: "#darkA", opacity: [0, 0.93], duration: 500, easing: "easeOutQuart" }, 4200);
+monoIn("#mA", 5400);
+monoOut("#mA", 6500);
+tl.add({ targets: "#darkA", opacity: [0.93, 1], duration: 500 }, 5900);
+tl.add({ targets: "#sA", opacity: [1, 0], duration: 400, easing: "easeInOutSine" }, 6600);
+
+/* ===== B · THE QUESTION (6.8 - 12.4) ===== */
+tl.add({ targets: "#sB", opacity: [0, 1], duration: 300 }, 6800);
+tl.add({ targets: "#qline .qc", opacity: [0, 1], duration: 30, delay: anime.stagger(62) }, 7300);
+monoIn("#mB", 9800);
+tl.add({ targets: "#sB", opacity: [1, 0], duration: 500, easing: "easeInOutSine" }, 11900);
+
+/* ===== C1 · THE HONEST MINUTE (12.4 - 21.6) ===== */
+tl.add({ targets: "#sC1", opacity: [0, 1], duration: 500 }, 12400);
+tl.add({ targets: "#rigC1", rotateY: [-1.6, 1.6], duration: 9200, easing: "easeInOutSine" }, 12400);
+tl.add({ targets: "#pwC1", opacity: [0, 1], translateY: [90, 0], duration: 1300, easing: "easeOutQuart" }, 12700);
+tl.add({ targets: "#pC1", rotateX: [6, 2], rotateY: [-5, -1], duration: 8600, easing: "easeInOutSine" }, 12700);
+tl.add({ targets: "#gs1", opacity: [0, 0.7], duration: 1300 }, 12800);
+tl.add({ targets: "#caret", opacity: [0, 1], duration: 100 }, 14200);
+tl.add({ targets: "#typed .tc", opacity: [0, 1], duration: 30, delay: anime.stagger(50) }, 14500);
+tl.add({ targets: "#caret", opacity: [1, 0], duration: 200 }, 17100);
+tl.add({ targets: "#listenRow", opacity: [0, 1], translateY: [16, 0], duration: 500 }, 17600);
+tl.add({ targets: "#ldot", opacity: [{ value: 0.3, duration: 400 }, { value: 1, duration: 400 },
+  { value: 0.3, duration: 400 }, { value: 1, duration: 400 }], easing: "easeInOutSine" }, 17800);
+const eqKeys = [
+  [0.4, 1.0, 0.5, 0.9, 0.35, 1.0],
+  [0.7, 0.4, 1.0, 0.5, 0.9, 0.45],
+  [0.5, 0.9, 0.4, 1.0, 0.55, 0.85],
+  [0.9, 0.5, 0.8, 0.45, 1.0, 0.6],
+  [0.45, 0.85, 0.6, 0.95, 0.4, 0.9],
+];
+document.querySelectorAll("#sC1 .eq i").forEach((bar, i) => {
+  tl.add({ targets: bar, scaleY: eqKeys[i].map((v) => ({ value: v, duration: 340 })),
+    easing: "easeInOutSine" }, 17850 + i * 60);
+});
+/* the word's light leaves the glass */
+tl.add({ targets: "#wordGlow", opacity: [0, 1], scale: [0.4, 1.3], duration: 360, easing: "easeOutQuart" }, 21150);
+/* hard match cut */
+tl.add({ targets: "#sC1", opacity: [1, 0], duration: 16 }, 21584);
+
+/* ===== D · WORD TO STAR (21.6 - 24.4) ===== */
+tl.add({ targets: "#sD", opacity: [0, 1], duration: 16 }, 21584);
+tl.add({ targets: "#pairStar", opacity: [0, 1], scale: [1.3, 1], duration: 700, easing: "easeOutQuart" }, 21600);
+tl.add({ targets: "#pairStar", scale: [1, 1.12], duration: 1600, easing: "easeInOutSine" }, 22400);
+monoIn("#mD", 22500);
+/* hard cut out */
+tl.add({ targets: "#sD", opacity: [1, 0], duration: 16 }, 24384);
+
+/* ===== C2 · THE MORNING (24.4 - 31.0) ===== */
+tl.add({ targets: "#sC2", opacity: [0, 1], duration: 16 }, 24384);
+tl.add({ targets: "#pwC2", opacity: [0, 1], duration: 16 }, 24384);
+tl.add({ targets: "#gs2", opacity: [0, 0.7], duration: 400 }, 24400);
+tl.add({ targets: "#rigC2", rotateY: [1.6, -1.6], duration: 10200, easing: "easeInOutSine" }, 24400);
+tl.add({ targets: "#pC2", rotateX: [4, 1.5], rotateY: [4, 0.5], duration: 9800, easing: "easeInOutSine" }, 24400);
+tl.add({ targets: ["#cd1", "#cd2", "#cd3"], opacity: [0, 1], translateY: [44, 0],
+  duration: 650, delay: anime.stagger(240), easing: "easeOutQuart" }, 24700);
+tl.add({ targets: "#cd4", opacity: [0, 1], translateY: [36, 0], duration: 650 }, 25650);
+/* a card is kept */
+tl.add({ targets: "#cd1edge", scaleY: [0, 1], duration: 450, easing: "easeOutQuart" }, 27500);
+tl.add({ targets: "#cd1seed", opacity: [0, 1], scale: [0.5, 1.4], duration: 420, easing: "easeOutQuart" }, 27700);
+tl.add({ targets: "#cd1seed", scale: [1.4, 1], duration: 380 }, 28140);
+tl.add({ targets: "#cd1t", color: ["#ECE9E2", "#9AA0A9"], duration: 500 }, 27700);
+monoIn("#mC2", 28600);
+monoOut("#mC2", 30600);
+
+/* ===== the suspension (31.0 - 34.6) ===== */
+tl.add({ targets: "#pwC2", scale: [1, 0.62], translateY: [0, 70], duration: 3400, easing: "easeInOutSine" }, 31000);
+tl.add({ targets: "#gs2", opacity: [0.7, 0.2], duration: 3400 }, 31000);
+tl.add({ targets: "#vignette", opacity: [0, 0.75], duration: 3400, easing: "easeInOutSine" }, 31000);
+tl.add({ targets: "#starsC2", opacity: [0.5, 0.15], duration: 3400 }, 31000);
+
+/* ===== through the glass (34.3 - 35.6) ===== */
+tl.add({ targets: "#pwC2", scale: [0.62, 7], translateY: [70, 480], duration: 1300, easing: "easeInCubic" }, 34300);
+tl.add({ targets: "#pwC2", opacity: [1, 0], filter: ["blur(0px)", "blur(26px)"], duration: 650, easing: "easeInQuart" }, 34950);
+tl.add({ targets: "#sC2", opacity: [1, 0], duration: 300 }, 35400);
+
+/* ===== E · THE UNIVERSE (34.6 - 45.8) ===== */
+tl.add({ targets: "#sE", opacity: [0, 1], duration: 900, easing: "easeInOutSine" }, 34600);
+/* the one big move: the camera keeps travelling forward out of the push */
+tl.add({ targets: "#rigE", translateZ: [0, 620], duration: 3600, easing: "easeOutCubic" }, 34700);
+/* dolly on toward Mind */
+tl.add({ targets: "#rigE", translateZ: [620, 1000], translateX: [0, -180], translateY: [0, -240],
+  duration: 3400, easing: "easeInOutCubic" }, 38400);
+/* arrival: the Mind world, full bleed */
+tl.add({ targets: "#mindFull", opacity: [0, 1], duration: 700, easing: "easeInOutSine" }, 40900);
+tl.add({ targets: "#mindFull .panel > *", opacity: [0, 1], translateY: [22, 0],
+  duration: 520, delay: anime.stagger(130), easing: "easeOutQuart" }, 41200);
+/* hard cut on the music: back to the wide sky */
+tl.add({ targets: "#mindFull", opacity: [1, 0], duration: 16 }, 43284);
+tl.add({ targets: "#rigE", translateZ: [1000, 140], translateX: [-180, 0], translateY: [-240, 0], duration: 16 }, 43284);
+tl.add({ targets: "#rigE", translateZ: [140, 250], duration: 2500, easing: "linear" }, 43300);
+/* the labels arrive, never spoken */
+tl.add({ targets: ["#wlMind", "#wlBody", "#wlSoul", "#wlFuture"], opacity: [0, 1], translateY: [10, 0],
+  duration: 550, delay: anime.stagger(300) }, 43500);
+tl.add({ targets: "#sE", opacity: [1, 0], duration: 500, easing: "easeInOutSine" }, 45800);
+
+/* ===== F · THE PAYOFF (45.8 - 52.0) ===== */
+tl.add({ targets: "#sF", opacity: [0, 1], duration: 600 }, 45800);
+tl.add({ targets: "#veilF", opacity: [0, 1], duration: 900, easing: "easeInOutSine" }, 49000);
+tl.add({ targets: "#pwF", opacity: [0, 1], duration: 800 }, 49300);
+tl.add({ targets: "#pwF", scale: [1, 1.08], translateY: [40, -50], duration: 2700, easing: "easeInOutSine" }, 49300);
+tl.add({ targets: "#sF", opacity: [1, 0], duration: 700, easing: "easeInOutSine" }, 51900);
+
+/* ===== G · THE BRAND (52.0 - 56.4) ===== */
+tl.add({ targets: "#sG", opacity: [0, 1], duration: 800, easing: "easeInOutSine" }, 52000);
+tl.add({ targets: "#wordmark", opacity: [0, 1], translateY: [20, 0], duration: 1300, easing: "easeOutCubic" }, 53200);
+tl.add({ targets: "#sG", opacity: [1, 0], duration: 600, easing: "easeInOutSine" }, 56200);
+
+/* ===== H · THE INVITATION (56.4 - 60.0) ===== */
+tl.add({ targets: "#sH", opacity: [0, 1], duration: 500 }, 56400);
+tl.add({ targets: "#sH .brandline", opacity: [0, 1], duration: 700 }, 56700);
+capIn("#lH", 57000, 120);
+tl.add({ targets: "#sH .cta", opacity: [0, 1], duration: 700 }, 57900);
+tl.add({ targets: "#fade", opacity: [0, 1], duration: 700, easing: "easeInSine" }, 59300);
+
+window.FILM_MS = 60000;
+window.SEEK = (ms) => { tl.seek(Math.min(ms, window.FILM_MS)); };
+window.SEEK(0);
+</script>
+</body>
+</html>
