@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dawnward complaint reel</title>
+<link rel="stylesheet" href="../launch-film/fonts.css">
+<script src="../launch-film/anime.min.js"></script>
+<script src="reels.js"></script>
+<style>
+  /* Complaint to fix, ~10.5 s, cut to the owner's Suno track (bar downbeat at 2.52 s = track 15.12 s). */
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: #000; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #05070B;
+    font-family: "Albert Sans", sans-serif; color: #ECE9E2;
+    --ground: #0B0E12; --surface: #12161D; --line: #232A34; --ink: #ECE9E2; --dim: #9AA0A9;
+    --faint: #79818F; --gold: #C9A96A; --red: #C46A5E; }
+  .scene { position: absolute; inset: 0; opacity: 0; overflow: hidden; }
+  .mono { font-family: "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .24em; }
+
+  /* 1 · the complaint */
+  #sA { opacity: 1; background: radial-gradient(ellipse at 50% 40%, #10141B, #05070B 70%); }
+  #review { position: absolute; left: 60px; right: 110px; top: 560px; padding: 70px 66px 62px;
+    background: #F4F2EE; color: #1A1C20; border-radius: 34px;
+    box-shadow: 0 40px 120px -30px rgba(0,0,0,.9); transform-origin: 50% 40%; }
+  #stars { display: flex; gap: 10px; margin-bottom: 30px; }
+  #stars svg { width: 60px; height: 60px; }
+  #quote { font-family: "Albert Sans", sans-serif; font-weight: 500; font-size: 68px; line-height: 1.2; letter-spacing: -.01em; }
+  #quote .w { opacity: 0; display: inline-block; }
+  #who { margin-top: 40px; font-family: "IBM Plex Mono", monospace; font-size: 26px; letter-spacing: .14em;
+    text-transform: uppercase; color: #6B7079; }
+  #sticker { position: absolute; left: 66px; top: 440px; font-family: "IBM Plex Mono", monospace; font-size: 32px;
+    letter-spacing: .3em; color: var(--red); opacity: 0; }
+
+  /* 2 · the fix: caption band */
+  #band { position: absolute; left: 0; right: 0; top: 0; height: 470px; z-index: 50; opacity: 0;
+    background: linear-gradient(to bottom, #05070B 0%, #05070B 66%, rgba(5,7,11,0) 100%); }
+  .cap { position: absolute; left: 80px; right: 140px; top: 190px; z-index: 60; opacity: 0;
+    font-family: "Cormorant Garamond", Georgia, serif; font-size: 66px; line-height: 1.12; color: var(--ink);
+    text-wrap: balance; }
+  .cap .w { display: inline-block; opacity: 0; }
+  #timer { position: absolute; right: 140px; top: 120px; z-index: 60; font-family: "IBM Plex Mono", monospace;
+    font-size: 24px; letter-spacing: .2em; color: var(--gold); opacity: 0; }
+
+  /* live app */
+  .app { position: absolute; left: 0; top: 0; width: 528px; height: 1180px; display: flex; flex-direction: column;
+    padding: 90px 32px 0; transform-origin: 0 0; background: linear-gradient(to bottom, #06080D, #0B0E12 55%); }
+  .app .hdr { display: flex; justify-content: space-between; align-items: baseline; }
+  .app .lbl { font-size: 15px; color: var(--dim); }
+  .app .lblR { font-size: 13px; color: var(--faint); }
+  .app h1 { font-family: "Cormorant Garamond", serif; font-weight: 400; font-size: 46px; line-height: 1.12; margin-top: 12px; }
+  .field { background: var(--surface); border: 1px solid var(--line); border-radius: 19px; padding: 24px; margin-top: 28px;
+    min-height: 220px; font-size: 24px; line-height: 1.55; }
+  .tc { opacity: 0; }
+  .caret { display: inline-block; width: 2px; height: 27px; background: var(--gold); vertical-align: -4px; }
+  .listenRow { display: flex; align-items: center; gap: 14px; margin-top: 24px; opacity: 0; }
+  .ldot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); }
+  .llbl { font-family: "IBM Plex Mono", monospace; font-size: 15px; letter-spacing: .24em; color: var(--gold); }
+  .eq { display: inline-flex; gap: 4px; align-items: flex-end; height: 20px; }
+  .eq i { width: 4px; height: 18px; background: var(--gold); border-radius: 2px; transform-origin: bottom; transform: scaleY(.35); }
+  .card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 19px;
+    padding: 24px 26px; margin-top: 20px; opacity: 0; }
+  .card .cl { font-size: 14px; color: var(--faint); }
+  .card .ct { font-size: 22px; line-height: 1.45; margin-top: 8px; }
+  .card .cw { font-size: 18px; line-height: 1.4; margin-top: 6px; color: var(--dim); }
+  .card .edge { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--gold);
+    transform: scaleY(0); transform-origin: top; border-radius: 2px; }
+  .card .seed { position: absolute; top: 22px; right: 22px; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--gold); opacity: 0; box-shadow: 0 0 16px 4px rgba(201,169,106,.55); }
+  .card.gold { border-color: rgba(201,169,106,.65); }
+  .card .bq { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 28px; line-height: 1.3; }
+  .dispute { display: inline-block; margin-top: 14px; font-size: 18px; color: var(--red); padding: 8px 14px;
+    border-radius: 12px; background: #161A21; }
+
+  /* end tag */
+  #sZ { background: #04060A; }
+  #zMark { position: absolute; left: 0; right: 0; top: 760px; text-align: center; font-family: "Cormorant Garamond", serif;
+    font-weight: 300; font-size: 150px; letter-spacing: .08em; text-indent: .08em; opacity: 0; }
+  #zLine { position: absolute; left: 90px; right: 90px; top: 990px; text-align: center; font-family: "Cormorant Garamond", serif;
+    font-size: 56px; color: var(--dim); opacity: 0; }
+  #zCta { position: absolute; left: 0; right: 0; top: 1160px; text-align: center; font-family: "IBM Plex Mono", monospace;
+    font-size: 36px; letter-spacing: .32em; text-indent: .32em; color: var(--gold); opacity: 0; }
+  #zStar { position: absolute; left: 50%; top: 660px; width: 14px; height: 14px; margin: -7px; border-radius: 50%;
+    background: var(--gold); opacity: 0; box-shadow: 0 0 50px 14px rgba(201,169,106,.6); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- FIX scenes (only the chosen one is shown) -->
+  <div class="scene" id="fx-debrief">
+    <div class="app" id="appDeb">
+      <div class="hdr"><span class="mono lbl">Evening debrief</span><span class="mono lblR">Tonight</span></div>
+      <h1>What happened?</h1>
+      <div style="font-size:21px; line-height:1.5; color:var(--dim); margin-top:12px">What would make tonight feel like you actually lived today?</div>
+      <div class="field"><span id="typed"></span><span class="caret" id="caret"></span></div>
+      <div class="listenRow" id="listenRow"><span class="ldot"></span><span class="llbl">Listening</span>
+        <span class="eq"><i></i><i></i><i></i><i></i><i></i></span></div>
+    </div>
+  </div>
+  <div class="scene" id="fx-today">
+    <div class="app" id="appTod">
+      <div class="hdr"><span class="mono lbl">Good morning</span><span class="mono lblR">Today</span></div>
+      <h1>Your evolution today</h1>
+      <div class="card" id="t1"><span class="edge" id="t1edge"></span><span class="seed" id="t1seed"></span>
+        <div class="mono cl">One thing to train</div><div class="ct" id="t1t">40 minutes of open-water prep</div>
+        <div class="cw">your body keeps the promises your mind makes</div></div>
+      <div class="card" id="t2"><div class="mono cl">One thing to build</div><div class="ct">Ship the first chapter to your editor</div>
+        <div class="cw">the campaign turns on finished things</div></div>
+      <div class="card" id="t3"><div class="mono cl">One thing to experience</div><div class="ct">Watch the light change, phone elsewhere</div>
+        <div class="cw">presence is a trainable thing</div></div>
+    </div>
+  </div>
+  <div class="scene" id="fx-evidence">
+    <div class="app" id="appEv">
+      <div class="hdr"><span class="mono lbl">Personal model</span><span class="mono lblR">Settings</span></div>
+      <h1>What I understand<br>about you</h1>
+      <div class="card gold" id="e1"><div class="mono cl">Probably true</div>
+        <div class="bq">You keep commitments you write down.</div>
+        <div class="cw">Why I think this: I have seen this in your days 4 times now.</div>
+        <span class="dispute" id="eDisp">That's not right</span></div>
+    </div>
+  </div>
+
+  <!-- the complaint (top layer at open) -->
+  <div class="scene" id="sA">
+    <div id="sticker">1-star review</div>
+    <div id="review">
+      <div id="stars"></div>
+      <div id="quote"></div>
+      <div id="who"></div>
+    </div>
+  </div>
+
+  <div class="scene" id="sZ">
+    <div id="zStar"></div><div id="zMark">Dawnward</div><div id="zLine"></div><div id="zCta"></div>
+  </div>
+
+  <div id="band"></div>
+  <div id="timer">0:05</div>
+  <div class="cap" id="c1"></div>
+  <div class="cap" id="c2"></div>
+</div>
+<script>
+const P = new URLSearchParams(location.search);
+const R = window.REELS[P.get("id") || Object.keys(window.REELS)[0]];
+const words = (el, t) => { el.innerHTML = t.split(" ").map((w) => `<span class="w">${w}</span>`).join(" "); };
+
+const star = (on) => `<svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 6 6.5.9-4.7 4.6 1.1 6.5L12 17.5l-5.8 3.1 1.1-6.5L2.6 9.5l6.5-.9z" fill="${on ? "#E0A12B" : "#D9D6CF"}"/></svg>`;
+document.getElementById("stars").innerHTML = [1, 2, 3, 4, 5].map((i) => star(i <= R.stars)).join("");
+document.getElementById("sticker").textContent = `${R.stars}-star review`;
+words(document.getElementById("quote"), `“${R.quote}”`);
+document.getElementById("who").textContent = R.who;
+words(document.getElementById("c1"), R.cap1);
+words(document.getElementById("c2"), R.cap2);
+document.getElementById("zLine").textContent = R.endLine || "A journal you talk to.";
+document.getElementById("zCta").textContent = R.cta || "Comment TELL";
+const typed = R.typed || "Snapped at my sister again. Don't know why.";
+document.getElementById("typed").innerHTML = typed.split("").map((c) => `<span class="tc">${c}</span>`).join("");
+
+const fx = `#fx-${R.fix}`;
+const BEAT = 939, CUT = 2520;          // cut lands on the swell downbeat
+const tl = anime.timeline({ autoplay: false, easing: "easeOutCubic" });
+const capIn = (sel, at) => { tl.add({ targets: sel, opacity: [0, 1], duration: 10 }, at);
+  tl.add({ targets: `${sel} .w`, opacity: [0, 1], translateY: [14, 0], duration: 380, delay: anime.stagger(60) }, at); };
+
+/* 1 · complaint: visible on frame 0, words already in, slow push */
+document.querySelectorAll("#quote .w").forEach((w) => (w.style.opacity = 1));
+document.getElementById("sticker").style.opacity = 1;
+tl.add({ targets: "#review", scale: [1, 1.045], rotate: [-0.6, 0.4], duration: CUT, easing: "linear" }, 0);
+tl.add({ targets: "#sA", opacity: [1, 0], duration: 16 }, CUT);
+
+/* 2 · the fix, full screen */
+tl.add({ targets: fx, opacity: [0, 1], duration: 16 }, CUT);
+tl.add({ targets: ["#band", "#timer"], opacity: [0, 1], duration: 16 }, CUT);
+capIn("#c1", CUT + 120);
+const clock = { s: 5 };
+tl.add({ targets: clock, s: [5, 0], duration: 5000, easing: "linear",
+  update: () => { document.getElementById("timer").textContent = "0:0" + Math.ceil(clock.s); } }, CUT);
+
+if (R.fix === "debrief") {
+  tl.add({ targets: "#appDeb", translateX: [0, -10], translateY: [360, 330], scale: [2.045, 2.1], duration: 6000, easing: "linear" }, CUT);
+  tl.add({ targets: "#typed .tc", opacity: [0, 1], duration: 20, delay: anime.stagger(48) }, CUT + 300);
+  tl.add({ targets: "#caret", opacity: 0, duration: 100 }, CUT + 2600);
+  tl.add({ targets: "#listenRow", opacity: [0, 1], translateY: [12, 0], duration: 400 }, CUT + 2700);
+  document.querySelectorAll(".eq i").forEach((bar, i) => {
+    tl.add({ targets: bar, scaleY: [0.35, 1, 0.5, 0.9, 0.4, 1, 0.6].map((v) => ({ value: v, duration: 360 })), easing: "easeInOutSine" }, CUT + 2700 + i * 70);
+  });
+} else if (R.fix === "today") {
+  tl.add({ targets: "#appTod", translateX: [91, 91], translateY: [430, 380], scale: [1.7, 1.72], duration: 6000, easing: "linear" }, CUT);
+  tl.add({ targets: ["#t1", "#t2", "#t3"], opacity: [0, 1], translateY: [34, 0], duration: 520, delay: anime.stagger(BEAT / 2), easing: "easeOutQuart" }, CUT + 100);
+  tl.add({ targets: "#t1edge", scaleY: [0, 1], duration: 450, easing: "easeOutQuart" }, CUT + 2400);
+  tl.add({ targets: "#t1seed", opacity: [0, 1], scale: [0.4, 1.5], duration: 420 }, CUT + 2500);
+  tl.add({ targets: "#t1seed", scale: [1.5, 1], duration: 380 }, CUT + 2920);
+  tl.add({ targets: "#t1t", color: ["#ECE9E2", "#9AA0A9"], duration: 500 }, CUT + 2500);
+} else if (R.fix === "evidence") {
+  tl.add({ targets: "#appEv", translateX: [0, -10], translateY: [380, 350], scale: [2.045, 2.1], duration: 6000, easing: "linear" }, CUT);
+  tl.add({ targets: "#e1", opacity: [0, 1], translateY: [30, 0], duration: 600, easing: "easeOutQuart" }, CUT + 300);
+  tl.add({ targets: "#eDisp", backgroundColor: ["#161A21", "#2A1E1D"], scale: [1, 1.08, 1], duration: 600 }, CUT + 3000);
+}
+tl.add({ targets: "#c1", opacity: [1, 0], duration: 260 }, CUT + 2900);
+capIn("#c2", CUT + 3200);
+
+/* 3 · end tag */
+const END = CUT + 5900;
+tl.add({ targets: [fx, "#band", "#timer", "#c2"], opacity: 0, duration: 16 }, END);
+tl.add({ targets: "#sZ", opacity: [0, 1], duration: 16 }, END);
+tl.add({ targets: "#zStar", opacity: [0, 1], scale: [2, 1], duration: 600, easing: "easeOutQuart" }, END);
+tl.add({ targets: "#zMark", opacity: [0, 1], translateY: [14, 0], duration: 700 }, END + 100);
+tl.add({ targets: "#zLine", opacity: [0, 1], duration: 600 }, END + 500);
+tl.add({ targets: "#zCta", opacity: [0, 1], duration: 600 }, END + 900);
+
+window.FILM_MS = END + 2600;
+window.SEEK = (ms) => tl.seek(Math.min(ms, window.FILM_MS));
+window.SEEK(0);
+</script>
+</body>
+</html>
