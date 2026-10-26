@@ -1,5 +1,20 @@
-// One entry per complaint video. Quotes must be verbatim from a real, sourced review (see research/review-mining.md).
+// One entry per complaint video. Every quote is verbatim from a real public review,
+// sourced in research/review-mining.md and the Notion Proof Vault. Competitors are never named.
 window.REELS = {
-  "test": { stars: 1, quote: "PLACEHOLDER layout test, not a real review, never publish", who: "TEST ONLY", fix: "debrief",
-    cap1: "Here, it asks you one question.", cap2: "And you can just talk.", endLine: "A journal you talk to.", cta: "Comment TELL" },
+  "retell": { stars: 2, quote: "I have to constantly correct it and retell the same info over and over again.",
+    who: "Real review of an AI journal", fix: "evidence",
+    cap1: "Here, it shows you why it thinks something.", cap2: "Wrong? One tap: That's not right.",
+    endLine: "A journal that remembers you.", cta: "Comment TELL" },
+  "homework": { stars: 1, quote: "It turned my anxiety into homework",
+    who: "Real review of a journaling app", fix: "today",
+    cap1: "Here, it's three small steps.", cap2: "From your own words. That's all.",
+    endLine: "A journal you talk to.", cta: "Comment TELL" },
+  "pings": { stars: 1, quote: "Pushing 5 notifications at 4:40 Am",
+    who: "Real review of a journaling app", fix: "today",
+    cap1: "No streaks. No scores.", cap2: "Nothing here nags you.",
+    endLine: "Growth that doesn't guilt you.", cta: "Comment TELL" },
+  "tea": { stars: 2, quote: "the only piece of advice I get, no matter if it’s work related or home, is a cozy blanket & a cup of tea.",
+    who: "Real review of an AI journal", fix: "today",
+    cap1: "Here, every step comes from what you said.", cap2: "Not a blanket. Not a cup of tea.",
+    endLine: "A journal you talk to.", cta: "Comment TELL" },
 };
