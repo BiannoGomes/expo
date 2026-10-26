@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dawnward, the launch film v5</title>
+<link rel="stylesheet" href="fonts.css">
+<script src="anime.min.js"></script>
+<style>
+  /* v5: cut to the Suno track "Emotional build" (beat 0.9387 s, phase 0.10).
+     Product first, metaphor second. Captions live in the top safe band. */
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: #000; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden;
+    background: #05070B; font-family: "Albert Sans", sans-serif; color: #ECE9E2;
+    --ground: #0B0E12; --surface: #12161D; --line: #232A34; --ink: #ECE9E2;
+    --dim: #9AA0A9; --faint: #79818F; --gold: #C9A96A; --dawn: #E8A87C; }
+  .scene { position: absolute; inset: 0; opacity: 0; overflow: hidden; }
+  .mono { font-family: "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .24em; }
+  .sky { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px); object-fit: cover; }
+
+  /* caption band: top safe zone, above every platform overlay */
+  #band { position: absolute; left: 0; right: 0; top: 0; height: 520px; z-index: 50; opacity: 1;
+    background: linear-gradient(to bottom, #05070B 0%, #05070B 68%, rgba(5,7,11,0) 100%); }
+  .cap { position: absolute; left: 80px; right: 140px; top: 200px; z-index: 60; text-align: left;
+    font-family: "Cormorant Garamond", Georgia, serif; font-weight: 400; font-size: 64px;
+    line-height: 1.14; color: var(--ink); opacity: 0; text-wrap: balance;
+    text-shadow: 0 2px 22px rgba(4,6,10,.9); }
+  .cap.mono { font-family: "IBM Plex Mono", monospace; font-size: 30px; letter-spacing: .3em;
+    line-height: 1.5; color: var(--gold); top: 230px; }
+  .w { display: inline-block; opacity: 0; }
+
+  /* live app (528 wide), shown full-bleed */
+  .app { position: absolute; left: 0; top: 0; width: 528px; height: 1180px; display: flex;
+    flex-direction: column; padding: 90px 32px 0; transform-origin: 0 0;
+    background: linear-gradient(to bottom, #06080D, #0B0E12 55%); }
+  .app .hdr { display: flex; justify-content: space-between; align-items: baseline; }
+  .app .lbl { font-size: 15px; color: var(--dim); }
+  .app .lblR { font-size: 13px; color: var(--faint); }
+  .app h1 { font-family: "Cormorant Garamond", serif; font-weight: 400; font-size: 46px;
+    line-height: 1.12; margin-top: 12px; color: var(--ink); }
+  .field { background: var(--surface); border: 1px solid var(--line); border-radius: 19px;
+    padding: 24px; margin-top: 28px; min-height: 250px; font-size: 24px; line-height: 1.55; color: var(--ink); }
+  .tc { opacity: 0; }
+  .tc.pre { opacity: 1; }
+  .caret { display: inline-block; width: 2px; height: 27px; background: var(--gold); vertical-align: -4px; }
+  .listenRow { display: flex; align-items: center; gap: 14px; margin-top: 24px; opacity: 0; }
+  .ldot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); }
+  .llbl { font-family: "IBM Plex Mono", monospace; font-size: 15px; letter-spacing: .24em; color: var(--gold); }
+  .eq { display: inline-flex; gap: 4px; align-items: flex-end; height: 20px; }
+  .eq i { width: 4px; height: 18px; background: var(--gold); border-radius: 2px; transform-origin: bottom; transform: scaleY(.35); }
+  .card { position: relative; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 19px; padding: 24px 26px; margin-top: 20px; opacity: 0; }
+  .card .cl { font-size: 14px; color: var(--faint); }
+  .card .ct { font-size: 22px; line-height: 1.45; margin-top: 8px; color: var(--ink); }
+  .card .cw { font-size: 18px; line-height: 1.4; margin-top: 6px; color: var(--dim); }
+  .card .edge { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--gold);
+    transform: scaleY(0); transform-origin: top; border-radius: 2px; }
+  .card .seed { position: absolute; top: 22px; right: 22px; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--gold); opacity: 0; box-shadow: 0 0 16px 4px rgba(201,169,106,.55); }
+  .card.gold { border-color: rgba(201,169,106,.65); }
+  .card .bq { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 28px; line-height: 1.3; color: var(--ink); }
+
+  /* phone */
+  .phone { position: absolute; left: 50%; top: 50%; width: 560px; height: 1212px; margin: -560px 0 0 -280px;
+    border-radius: 80px; background: #05070B; border: 2px solid #2A2F38; padding: 16px;
+    box-shadow: 0 0 160px -30px rgba(201,169,106,.32), 0 70px 140px -40px rgba(0,0,0,.9); }
+  .phone .screen { position: relative; width: 100%; height: 100%; border-radius: 64px; overflow: hidden; background: var(--ground); }
+  .phone .screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .phone .notch { position: absolute; left: 50%; top: 36px; width: 148px; height: 40px; margin-left: -74px;
+    border-radius: 22px; background: #05070B; }
+
+  /* cosmos */
+  .pers { position: absolute; inset: 0; perspective: 1400px; perspective-origin: 50% 50%; }
+  .rig { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .layer { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .planet { position: absolute; opacity: .32; }
+  .wl { position: absolute; transform: translateX(-50%); font-family: "IBM Plex Mono", monospace;
+    font-size: 30px; letter-spacing: .42em; text-indent: .42em; color: var(--ink); opacity: 0;
+    text-shadow: 0 2px 18px rgba(2,3,8,.95); white-space: nowrap; }
+  #mindFull { position: absolute; inset: 0; opacity: 0; background: #06080D; }
+  #mindFull .wsky { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  #mindFull .wplanet { position: absolute; left: -14%; top: 6%; width: 128%; }
+  #mindFull .panel { position: absolute; left: 70px; right: 150px; top: 1030px;
+    background: rgba(11,14,18,.86); border: 1px solid var(--line); border-radius: 34px; padding: 48px; }
+  #mindFull .panel > * { opacity: 0; }
+  #mindFull .plbl { font-family: "IBM Plex Mono", monospace; font-size: 22px; letter-spacing: .26em; color: var(--gold); }
+  #mindFull .pt { font-family: "Cormorant Garamond", serif; font-size: 62px; margin-top: 18px; }
+  #mindFull .pb { font-size: 28px; line-height: 1.5; margin-top: 16px; color: var(--dim); }
+
+  /* end */
+  #wordmark { position: absolute; left: 0; right: 0; top: 820px; text-align: center;
+    font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 170px;
+    letter-spacing: .08em; text-indent: .08em; color: var(--ink); opacity: 0; }
+  #soon { position: absolute; left: 0; right: 0; top: 1080px; text-align: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 30px; letter-spacing: .5em; text-indent: .5em;
+    color: #B9BEC6; opacity: 0; }
+  #endStar { position: absolute; left: 50%; top: 700px; width: 14px; height: 14px; margin: -7px; border-radius: 50%;
+    background: var(--gold); opacity: 0; box-shadow: 0 0 50px 14px rgba(201,169,106,.6), 0 0 180px 60px rgba(201,169,106,.18); }
+  #fade { position: absolute; inset: 0; background: #000; opacity: 0; z-index: 90; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1 · DEBRIEF, full bleed (0 - 9.49) -->
+  <div class="scene" id="s1" style="opacity:1">
+    <div class="app" id="debrief">
+      <div class="hdr"><span class="mono lbl">Evening debrief</span><span class="mono lblR">Tue 14 Oct</span></div>
+      <h1>What happened?</h1>
+      <div style="font-size:21px; line-height:1.5; color:var(--dim); margin-top:12px">
+        What would make tonight feel like you actually lived today?</div>
+      <div class="field"><span id="typed"></span><span class="caret" id="caret"></span></div>
+      <div class="listenRow" id="listenRow">
+        <span class="ldot" id="ldot"></span><span class="llbl">Listening</span>
+        <span class="eq"><i></i><i></i><i></i><i></i><i></i></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 · PERSONAL MODEL, full bleed (9.49 - 13.24) -->
+  <div class="scene" id="s2" style="background:#0B0E12">
+    <div id="youWrap" style="position:absolute; left:0; top:0; width:1080px; height:2337px">
+      <img src="assets/you.png" alt="" style="position:absolute; left:0; top:0; width:1080px; height:2337px">
+      <div id="youGlow" style="position:absolute; left:67px; top:1572px; width:944px; height:429px; border:2px solid #C9A96A; border-radius:34px; opacity:0;
+        box-shadow: 0 0 70px -6px rgba(201,169,106,.55), inset 0 0 40px -10px rgba(201,169,106,.25)"></div>
+    </div>
+  </div>
+
+  <!-- 3 · FIRST LIGHT (13.24 - 15.12) -->
+  <div class="scene" id="s3">
+    <video class="sky" id="vOcean" src="broll/ocean-dawn.webm" data-start="13240" data-offset="3.2" data-rate="1" muted playsinline preload="auto"></video>
+  </div>
+
+  <!-- 4 · TODAY, full bleed (15.12 - 23.57) -->
+  <div class="scene" id="s4">
+    <div class="app" id="today">
+      <div class="hdr"><span class="mono lbl">Good morning</span><span class="mono lblR">Wed 15 Oct</span></div>
+      <h1>Your evolution today</h1>
+      <div class="card" id="cd1"><span class="edge" id="cd1edge"></span><span class="seed" id="cd1seed"></span>
+        <div class="mono cl">One thing to train</div><div class="ct" id="cd1t">40 minutes of open-water prep</div>
+        <div class="cw">your body keeps the promises your mind makes</div></div>
+      <div class="card" id="cd2"><div class="mono cl">One thing to build</div>
+        <div class="ct">Ship the first chapter to your editor</div><div class="cw">the campaign turns on finished things</div></div>
+      <div class="card" id="cd3"><div class="mono cl">One thing to experience</div>
+        <div class="ct">Watch the light change, phone elsewhere</div><div class="cw">presence is a trainable thing</div></div>
+      <div class="card gold" id="cd4"><div class="bq">You keep commitments you write down.</div>
+        <div class="cw">Why I think this: I have seen this in your days 4 times now.</div></div>
+    </div>
+  </div>
+
+  <!-- 5 · UNIVERSE TAB in the phone (23.57 - 30.6) -->
+  <div class="scene" id="s5">
+    <img class="sky" src="assets/nebula-sky.png" alt="" style="filter: blur(6px) brightness(.55)">
+    <div class="phone" id="ph5"><div class="screen"><img src="assets/universe-app.png" alt=""></div><div class="notch"></div></div>
+  </div>
+
+  <!-- 6 · COSMOS (29.9 - 31.75, then 33.89 - 39.52) -->
+  <div class="scene" id="s6" style="background:#020308">
+    <div class="pers"><div class="rig" id="rig">
+      <div class="layer" style="transform: translateZ(-1400px) scale(2.3)"><img src="assets/nebula-sky.png" alt="" style="position:absolute; left:-400px; top:-700px; width:1880px; height:3320px; object-fit:cover; filter: brightness(1.45) saturate(1.1)"></div>
+      <div class="layer" id="starsA" style="transform: translateZ(-1000px) scale(1.9)"></div>
+      <div class="layer" style="transform: translateZ(-1100px) scale(2.0)">
+        <img class="planet" id="pFuture" src="assets/future.png" alt="" style="left:500px; top:260px; width:380px">
+        <span class="wl" id="lFuture" style="left:690px; top:650px">FUTURE</span></div>
+      <div class="layer" id="starsB" style="transform: translateZ(-600px) scale(1.5)"></div>
+      <div class="layer" style="transform: translateZ(-700px) scale(1.6)">
+        <img class="planet" id="pBody" src="assets/body.png" alt="" style="left:40px; top:560px; width:400px">
+        <span class="wl" id="lBody" style="left:240px; top:980px">BODY</span></div>
+      <div class="layer" style="transform: translateZ(-500px) scale(1.42)">
+        <img class="planet" id="pSoul" src="assets/soul.png" alt="" style="left:90px; top:1150px; width:260px">
+        <span class="wl" id="lSoul" style="left:220px; top:1420px">SOUL</span></div>
+      <div class="layer" style="transform: translateZ(-350px) scale(1.3)">
+        <img class="planet" id="pMind" src="assets/mind.png" alt="" style="left:420px; top:820px; width:620px">
+        <span class="wl" id="lMind" style="left:730px; top:1420px; color:#C9A96A">MIND</span></div>
+      <div class="layer" id="starsC" style="transform: translateZ(-300px) scale(1.24)"></div>
+    </div></div>
+    <div id="mindFull">
+      <img class="wsky" src="assets/nebula-sky.png" alt="">
+      <img class="wplanet" src="assets/mind.png" alt="">
+      <div class="panel">
+        <div class="plbl">MIND · THE CURRENT EXPLORATION</div>
+        <div class="pt">The world of clarity.</div>
+        <div class="pb">Connections between what you read, what you write and what you believe.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7 · THE KEPT MOMENT (31.75 - 33.89) -->
+  <div class="scene" id="s7">
+    <video class="sky" id="vHand" src="broll/hand-star.webm" data-start="31750" data-offset="0.6" data-rate="1" muted playsinline preload="auto"></video>
+  </div>
+
+  <!-- 8 · THE FALL (45.16 - 54.54) -->
+  <div class="scene" id="s8">
+    <video class="sky" id="vNeb" src="broll/nebula-flight.webm" data-start="45160" data-offset="0" data-rate="0.62" muted playsinline preload="auto"></video>
+  </div>
+
+  <!-- 9 · END (54.54 - 60) -->
+  <div class="scene" id="s9" style="background:#04060A">
+    <div id="endStar"></div>
+    <div id="wordmark">Dawnward</div>
+    <div id="soon">Coming soon</div>
+  </div>
+
+  <div id="band"></div>
+  <div class="cap" id="c1"></div>
+  <div class="cap" id="c2"></div>
+  <div class="cap" id="c3"></div>
+  <div class="cap" id="c4"></div>
+  <div class="cap" id="c5"></div>
+  <div class="cap" id="c6"></div>
+  <div class="cap mono" id="m1">Private. Never sold.</div>
+  <div class="cap" id="c7"></div>
+  <div class="cap" id="c8"></div>
+  <div id="fade"></div>
+</div>
+
+<script>
+const words = (id, t) => { document.getElementById(id).innerHTML = t.split(" ").map((w) => `<span class="w">${w}</span>`).join(" "); };
+words("c1", "Ever go to bed not sure how your day really went?");
+words("c2", "Dawnward is a journal you talk to.");
+words("c3", "It listens. Night after night.");
+words("c4", "And slowly, it understands you. And shows you why.");
+words("c5", "Every morning: three small steps, from your own words.");
+words("c6", "Your days, shown as a sky that grows with you.");
+words("c7", "No streaks. No scores. No guilt.");
+words("c8", "Just you, understood.");
+
+const confession = "Snapped at my sister again. Don't know why.";
+const PRE = 13;
+document.getElementById("typed").innerHTML = confession.split("").map((c, i) =>
+  `<span class="tc${i < PRE ? " pre" : ""}">${c}</span>`).join("");
+
+function seededStars(el, n, seed, size, color) {
+  let s = seed; const r = () => (s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296;
+  let h = ""; for (let i = 0; i < n; i++) h += `<circle cx="${(r()*1080)|0}" cy="${(r()*1920)|0}" r="${(size*(0.5+r())).toFixed(1)}" fill="${color}" opacity="${(0.12+r()*0.35).toFixed(2)}"/>`;
+  el.innerHTML = `<svg width="1080" height="1920" style="position:absolute;inset:0">${h}</svg>`;
+}
+seededStars(document.getElementById("starsA"), 110, 11, 1.4, "#ECE9E2");
+seededStars(document.getElementById("starsB"), 70, 29, 1.8, "#C7D5EE");
+seededStars(document.getElementById("starsC"), 36, 47, 2.4, "#ECE9E2");
+
+const B = (n) => Math.round((0.10 + 0.9387 * n) * 1000);  // beat n in ms
+const tl = anime.timeline({ autoplay: false, easing: "easeOutCubic" });
+const show = (sel, at) => tl.add({ targets: sel, opacity: [0, 1], duration: 16 }, at);
+const hide = (sel, at) => tl.add({ targets: sel, opacity: [1, 0], duration: 16 }, at);
+const capIn = (sel, at, pre = false) => {
+  tl.add({ targets: sel, opacity: [0, 1], duration: 10 }, at);
+  tl.add({ targets: `${sel} .w`, opacity: [0, 1], translateY: pre ? [0, 0] : [14, 0],
+    duration: pre ? 10 : 420, delay: anime.stagger(pre ? 0 : 70) }, at);
+};
+const capOut = (sel, at) => tl.add({ targets: sel, opacity: [1, 0], duration: 260 }, at);
+
+/* 1 · DEBRIEF: the confession is mid-typing on frame 0, caption already up */
+document.querySelectorAll("#c1, #c1 .w").forEach((e) => (e.style.opacity = 1));
+tl.add({ targets: "#debrief", translateX: [0, -12], translateY: [300, 250], scale: [2.045, 2.1], duration: 9490, easing: "linear" }, 0);
+tl.add({ targets: "#typed .tc:not(.pre)", opacity: [0, 1], duration: 20, delay: anime.stagger(62) }, 120);
+tl.add({ targets: "#caret", opacity: [{ value: 0, duration: 250 }, { value: 1, duration: 250 }, { value: 0, duration: 250 }, { value: 1, duration: 250 }] }, 2400);
+capOut("#c1", 3700);
+capIn("#c2", 3950);
+tl.add({ targets: "#listenRow", opacity: [0, 1], translateY: [12, 0], duration: 450 }, B(5));
+tl.add({ targets: "#caret", opacity: 0, duration: 120 }, B(5));
+const eqA = [0.35, 1, 0.5, 0.9, 0.4, 1, 0.55, 0.95, 0.4, 0.85, 0.5];
+document.querySelectorAll(".eq i").forEach((bar, i) => {
+  tl.add({ targets: bar, scaleY: eqA.map((v, k) => ({ value: eqA[(k + i * 2) % eqA.length], duration: 420 })),
+    easing: "easeInOutSine" }, B(5) + i * 70);
+});
+tl.add({ targets: "#ldot", opacity: [{ value: .3, duration: 469 }, { value: 1, duration: 469 }, { value: .3, duration: 469 }, { value: 1, duration: 469 }, { value: .3, duration: 469 }] }, B(5));
+capOut("#c2", 6350);
+capIn("#c3", 6600);
+hide("#s1", B(10));
+
+/* 2 · PERSONAL MODEL: pan from the title down to the evidence card */
+show("#s2", B(10));
+capOut("#c3", B(10));
+tl.add({ targets: "#youWrap", translateY: [180, -720], duration: 3900, easing: "easeInOutCubic" }, B(10));
+capIn("#c4", 9550);
+/* the "probably true" card sits at 1708-2155 in the scaled image */
+tl.add({ targets: "#youGlow", opacity: [0, 1], duration: 450 }, 12600);
+capOut("#c4", 14100);
+hide("#s2", B(15));
+
+/* 3 · FIRST LIGHT */
+show("#s3", B(15));
+hide("#s3", B(16));
+
+/* 4 · TODAY: hard cut on the first swell, cards land on the beats */
+show("#s4", B(16));
+capIn("#c5", B(16) + 250);
+tl.add({ targets: ["#cd1", "#cd2", "#cd3"], opacity: [0, 1], translateY: [36, 0], duration: 600, delay: anime.stagger(939), easing: "easeOutQuart" }, B(16));
+tl.add({ targets: "#cd4", opacity: [0, 1], translateY: [30, 0], duration: 600, easing: "easeOutQuart" }, B(19));
+tl.add({ targets: "#today", translateX: [91, 91], translateY: [420, -160], scale: [1.7, 1.7], duration: 8450, easing: "easeInOutSine" }, B(16));
+tl.add({ targets: "#cd1edge", scaleY: [0, 1], duration: 450, easing: "easeOutQuart" }, B(22));
+tl.add({ targets: "#cd1seed", opacity: [0, 1], scale: [0.4, 1.5], duration: 420, easing: "easeOutQuart" }, B(22) + 120);
+tl.add({ targets: "#cd1seed", scale: [1.5, 1], duration: 400 }, B(22) + 540);
+tl.add({ targets: "#cd1t", color: ["#ECE9E2", "#9AA0A9"], duration: 500 }, B(22) + 120);
+capOut("#c5", B(25) - 300);
+hide("#s4", B(25));
+
+/* 5 · UNIVERSE TAB: the phone appears, then we travel into it */
+show("#s5", B(25));
+capIn("#c6", B(25) + 300);
+tl.add({ targets: "#ph5", scale: [0.86, 1.02], translateY: [60, 0], duration: B(31) - B(25), easing: "easeInOutSine" }, B(25));
+capOut("#c6", B(31) - 300);
+tl.add({ targets: "#ph5", scale: [1.02, 5.5], translateY: [0, 120], duration: 1300, easing: "easeInCubic" }, B(31));
+tl.add({ targets: "#ph5", opacity: [1, 0], filter: ["blur(0px)", "blur(18px)"], duration: 500, easing: "easeInQuad" }, B(31) + 800);
+show("#s6", B(31) + 1100);
+tl.add({ targets: "#rig", translateZ: [-200, 120], duration: 1700, easing: "easeOutCubic" }, B(31) + 1100);
+hide("#s5", B(31) + 1300);
+
+/* 7 · THE KEPT MOMENT: hard cut to the hand on the climb onset */
+show("#s7", 31750);
+hide("#s7", B(36));
+
+/* 6 · THE CLIMAX: the worlds bloom on the downbeats */
+tl.add({ targets: "#rig", translateZ: [120, 420], duration: B(40) - B(36), easing: "easeOutCubic" }, B(36));
+[["#pMind", "#lMind"], ["#pBody", "#lBody"], ["#pSoul", "#lSoul"], ["#pFuture", "#lFuture"]].forEach(([p, l], k) => {
+  tl.add({ targets: p, opacity: [0.32, 1], scale: [0.9, 1], duration: 900, easing: "easeOutQuart" }, B(36 + k));
+  tl.add({ targets: l, opacity: [0, 1], translateY: [10, 0], duration: 500 }, B(36 + k) + 150);
+});
+/* dolly toward Mind, arrive inside the Mind world */
+tl.add({ targets: ".wl", opacity: 0, duration: 400 }, B(40));
+tl.add({ targets: "#rig", translateZ: [420, 900], translateX: [0, -150], translateY: [0, -170], duration: B(42) - B(40), easing: "easeInOutCubic" }, B(40));
+tl.add({ targets: "#mindFull", opacity: [0, 1], duration: 600, easing: "easeInOutSine" }, B(42) - 300);
+tl.add({ targets: "#mindFull .wplanet", scale: [1.06, 1], duration: B(48) - B(42), easing: "linear" }, B(42) - 300);
+tl.add({ targets: "#mindFull .panel > *", opacity: [0, 1], translateY: [20, 0], duration: 520, delay: anime.stagger(470), easing: "easeOutQuart" }, B(43));
+hide("#s6", B(48));
+
+/* 8 · THE FALL: privacy, then the voice returns */
+show("#s8", B(48));
+capIn("#m1", 45500);
+capOut("#m1", 47300);
+capIn("#c7", 47600);
+capOut("#c7", 51650);
+capIn("#c8", 51850);
+capOut("#c8", 54200);
+tl.add({ targets: "#s8", opacity: [1, 0], duration: 900, easing: "easeInSine" }, 53600);
+
+/* 9 · END: the wordmark lands on the last accent */
+show("#s9", B(58));
+tl.add({ targets: "#band", opacity: [1, 0], duration: 400 }, 54250);
+tl.add({ targets: "#endStar", opacity: [0, 1], scale: [2.2, 1], duration: 700, easing: "easeOutQuart" }, B(58) - 80);
+tl.add({ targets: "#wordmark", opacity: [0, 1], translateY: [16, 0], duration: 900, easing: "easeOutCubic" }, B(58));
+tl.add({ targets: "#soon", opacity: [0, 1], duration: 700 }, 55200);
+tl.add({ targets: "#fade", opacity: [0, 1], duration: 900, easing: "easeInSine" }, 58950);
+
+window.FILM_MS = 60000;
+window.SEEK = (ms) => { tl.seek(Math.min(ms, window.FILM_MS)); };
+window.SEEK(0);
+</script>
+</body>
+</html>
