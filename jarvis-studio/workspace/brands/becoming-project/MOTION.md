@@ -8,12 +8,12 @@
 
 | # | Field | Value | State |
 |---|---|---|---|
-| 1 | Colour palette | In the vault tokens CSS. The handover names a **dark earth background** and a **gold** star. | CONFIRMED in vault (hex values not handed over) |
+| 1 | Colour palette | The vault tokens CSS is canonical, but its hex values were never handed over. Until it's read, use the values from Reel 01 v5, the build Bianno liked (06.10.2026): night `#04070B` · abyss `#05080C` · ocean `#13283D` · line gold `#D8A45F` · pale gold `#E8C99B` · lit cream `#F2E3C4` · ink `#F2EDE4` · stone `#EFE9DF` · dim `#D9D2C6` · mist `#9AA1A9` · passivity grey `#808891` · wall `#D6E4F5` · teal `#6E9C98`. One accent per frame: the gold. | PROPOSED: de facto values from Reel 01 v5 `build_v5.py` (Bianno liked its gold line, 06.10.2026). Confirm, or replace with the vault CSS |
 | 2 | Colour hierarchy | See vault §. | CONFIRMED in vault |
-| 3 | Typography | Brand fonts per the visual system, downloaded to `brand/fonts/` (Google Fonts, woff2) | CONFIRMED in vault |
+| 3 | Typography | Cinzel (caps titles and keywords), Cormorant Garamond with italic (hook, lines, word-by-word captions), Inter (tracked labels and the mark). All SIL OFL 1.1. Local copies: `workspace/library/becoming/fonts/`. | CONFIRMED in vault (families); local files added 27.10.2026 |
 | 4 | Font sizes | See vault. | CONFIRMED in vault |
 | 5 | Weight hierarchy | See vault. | CONFIRMED in vault |
-| 6 | Tracking | Wordmark set spaced: **"B I A N N O"** | CONFIRMED (handover) |
+| 6 | Tracking | The mark **"THE BECOMING PROJECT"** in Inter, tracked about .5em. **Never his name on a frame**, spaced or not. Cinzel keywords about .12–.18em. Never tween letter-spacing. | CONFIRMED (Bianno, 06.10.2026, Cowork handover: "Never put 'Bianno' on slides or frames"; replaces the 30.09 spaced wordmark) |
 | 7 | Leading | See vault. | CONFIRMED in vault |
 | 8 | Spacing / safe zone | Text and captions inside **x 80–940, y 250–1500**. Covers: the centre 1080×1440. | CONFIRMED (handover) |
 | 9 | Frame rate | 30 fps | CONFIRMED (handover) |
