@@ -1,0 +1,9 @@
+# Renders and review output never go in the repo (and anything made from his real photos stays in the scratchpad).
+renders/
+review/
+snapshots/
+*.mp4
+*.mov
+*.wav
+*.webm
+node_modules/

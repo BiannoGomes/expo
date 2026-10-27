@@ -1,0 +1,124 @@
+{
+  "$comment": "Hello: the end-to-end proof of the Becoming motion library. Synthetic only, demo copy. index.html reads this file at load (synchronous XHR, before the timeline is registered). Times are seconds of composition time. plate.src (null here) swaps the code-drawn sea for an image file inside the composition folder: for scratchpad copies only, never with a real photo in the repo.",
+  "duration": 8,
+  "plate": {
+    "seed": 11,
+    "glow": "dawn",
+    "horizonY": 1180,
+    "fadeIn": [
+      0.3,
+      2.3
+    ],
+    "push": [
+      1.0,
+      1.07
+    ],
+    "src": null
+  },
+  "grain": {
+    "seed": 5,
+    "amount": 0.05
+  },
+  "line": {
+    "seed": 7,
+    "y": 1180,
+    "x0": 240,
+    "rest": 860,
+    "x1": 1150,
+    "ignite": 0.05,
+    "igniteDur": 0.25,
+    "draw": [
+      0.3,
+      2.3
+    ],
+    "turn": 5.8,
+    "continueDur": 1.1,
+    "jolt": 10,
+    "joltUp": 0.06,
+    "joltDown": 0.45
+  },
+  "hook": {
+    "text": "Become the man you would be *proud* to meet.",
+    "top": 600,
+    "at": 0.8,
+    "stagger": 0.2725
+  },
+  "captions": {
+    "words": [
+      {
+        "text": "Every",
+        "start": 3.6,
+        "end": 3.74
+      },
+      {
+        "text": "frame",
+        "start": 3.76,
+        "end": 3.9
+      },
+      {
+        "text": "here",
+        "start": 3.92,
+        "end": 4.04
+      },
+      {
+        "text": "is",
+        "start": 4.06,
+        "end": 4.14
+      },
+      {
+        "text": "drawn",
+        "start": 4.16,
+        "end": 4.3
+      },
+      {
+        "text": "by",
+        "start": 4.32,
+        "end": 4.4
+      },
+      {
+        "text": "code.",
+        "start": 4.42,
+        "end": 4.56
+      },
+      {
+        "text": "Nothing",
+        "start": 4.7,
+        "end": 4.838
+      },
+      {
+        "text": "in",
+        "start": 4.858,
+        "end": 4.917
+      },
+      {
+        "text": "it",
+        "start": 4.937,
+        "end": 4.996
+      },
+      {
+        "text": "is",
+        "start": 5.016,
+        "end": 5.075
+      },
+      {
+        "text": "a",
+        "start": 5.095,
+        "end": 5.139
+      },
+      {
+        "text": "photograph.",
+        "start": 5.159,
+        "end": 5.36
+      }
+    ],
+    "outAt": 5.4,
+    "outDur": 0.18
+  },
+  "mark": {
+    "at": 6.4
+  },
+  "fade": {
+    "at": 7.1,
+    "dur": 0.8
+  }
+}

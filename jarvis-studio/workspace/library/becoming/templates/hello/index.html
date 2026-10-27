@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Hello · Becoming motion library proof</title>
+    <!-- tools/build.sh stages tokens.css, fonts/, vendor/ and lib/ beside this file (root-relative: lint rejects "../"). -->
+    <link rel="stylesheet" href="tokens.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="lib/becoming-motion.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #04070B; }
+      #photo { object-fit: cover; }
+      #fade { background: #04070B; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="bm-frame" data-composition-id="main" data-start="0" data-duration="8" data-fps="30" data-width="1080" data-height="1920">
+      <canvas id="sea" class="bm-plate" width="1188" height="2112"></canvas>
+      <div id="scrim" class="bm-scrim"></div>
+      <canvas id="grain" class="bm-grain" width="1080" height="1920"></canvas>
+      <svg id="lines" class="bm-lines" viewBox="0 0 1080 1920" width="1080" height="1920" aria-hidden="true"></svg>
+      <canvas id="head" class="bm-layer" width="1080" height="1920"></canvas>
+      <div id="hook" class="bm-hook"></div>
+      <div id="caps" class="bm-captions"></div>
+      <div id="end" class="bm-layer"></div>
+      <div id="fade" class="bm-layer"></div>
+    </div>
+    <script>
+      // HELLO · the end-to-end proof of the Becoming motion library (synthetic only; all copy is demo copy).
+      // Built from BM (lib/becoming-motion.js) and scored by Night Watch (cue.json). Every value comes from data.json.
+      //  0.05      the gold light ignites centre-left on the horizon; the opening sting A-E-D fires on it (stingAt .05)
+      //  0.3-2.6   the point draws a jittered gold line along the horizon (y 1180) while the sea plate fades up
+      //  0.8-3.2   the hook rises word by word
+      //  3.6-5.4   two caption lines demo the word flash (chunks of up to 4 words); gone at the dead stop (5.38)
+      //  5.8       the turn: the hit lands, the line jolts once and continues past the right edge
+      //  6.4       the mark fades in with the landing sting E-D-A; fade to black by 7.9
+      (function () {
+        // data.json is read synchronously so the timeline exists before the renderer asks for it.
+        var req = new XMLHttpRequest();
+        req.open("GET", "data.json", false);
+        req.send(null);
+        var D = JSON.parse(req.responseText);
+
+        var tl = gsap.timeline({ paused: true });
+        BM.track(tl);
+        var P = D.plate, Ln = D.line, H = D.hook, C = D.captions;
+
+        // ---- plate: the code-drawn sea (time-driven canvas), or a photo override for scratchpad builds only ----
+        var plateSel = "#sea";
+        if (P.src) {
+          var img = document.createElement("img");
+          img.id = "photo"; img.className = "bm-plate"; img.src = P.src; img.alt = "";
+          img.style.transformOrigin = "50% " + ((P.horizonY + 96) / 2112 * 100).toFixed(2) + "%";
+          var sea = document.getElementById("sea");
+          sea.parentNode.replaceChild(img, sea);
+          plateSel = "#photo";
+        } else {
+          BM.onTime(BM.seaPlate("#sea", { seed: P.seed, glow: P.glow, horizonY: P.horizonY }));
+        }
+        BM.onTime(BM.grain("#grain", { seed: D.grain.seed, amount: D.grain.amount }));
+        gsap.set(plateSel, { scale: P.push[0] });   // same transform on a fresh page as after any seek (see the jolt note)
+        tl.fromTo(plateSel, { opacity: 0 }, { opacity: 1, duration: P.fadeIn[1], ease: "power1.out", immediateRender: false }, P.fadeIn[0]);
+        tl.fromTo(plateSel, { scale: P.push[0] }, { scale: P.push[1], duration: D.duration - P.fadeIn[0], ease: "none", immediateRender: false }, P.fadeIn[0]);
+
+        // ---- the gold line: one jittered path from the point to past the right edge, drawn in two stages ----
+        var pts = BM.wob(Ln.x0, Ln.x1, Ln.y, { rng: BM.rng(Ln.seed) });
+        var line = BM.goldPath("#lines", "horizon", pts);
+        var L = BM.pathLength(pts);
+        // fraction of the length at which the line rests before the turn (constrained, short of the edge)
+        var restF = 0, acc = 0;
+        for (var i = 0; i + 1 < pts.length; i++) {
+          var seg = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
+          if (pts[i + 1][0] >= Ln.rest) { restF = (acc + seg * (Ln.rest - pts[i][0]) / (pts[i + 1][0] - pts[i][0])) / L; break; }
+          acc += seg;
+        }
+        BM.drawOn(tl, line, Ln.draw[0], Ln.draw[1], "power2.out", { from: 0, to: restF });
+        BM.drawOn(tl, line, Ln.turn, Ln.continueDur, "power2.out", { from: restF, to: 1 });
+
+        // the point of light: the head of the line. Painted on its own canvas from composition time, with the same ease
+        // as the stroke, so it sits on the stroke's end on every frame. (An SVG <circle> moved by attributes left a faint
+        // 2-level remnant at its old position on some renders and not others: measured; see README, determinism.)
+        var headCanvas = document.getElementById("head"), hg = headCanvas.getContext("2d");
+        var ease = gsap.parseEase("power2.out"), easeIn = gsap.parseEase("power1.out"), easeIO = gsap.parseEase("power1.inOut");
+        function drawnFraction(t) {
+          if (t <= Ln.draw[0]) return 0;
+          if (t < Ln.draw[0] + Ln.draw[1]) return restF * ease((t - Ln.draw[0]) / Ln.draw[1]);
+          if (t <= Ln.turn) return restF;
+          if (t < Ln.turn + Ln.continueDur) return restF + (1 - restF) * ease((t - Ln.turn) / Ln.continueDur);
+          return 1;
+        }
+        function pointAt(f) {
+          var want = f * L, run = 0;
+          for (var k = 0; k + 1 < pts.length; k++) {
+            var s = Math.hypot(pts[k + 1][0] - pts[k][0], pts[k + 1][1] - pts[k][1]);
+            if (run + s >= want) { var u = s ? (want - run) / s : 0; return [pts[k][0] + (pts[k + 1][0] - pts[k][0]) * u, pts[k][1] + (pts[k + 1][1] - pts[k][1]) * u]; }
+            run += s;
+          }
+          return pts[pts.length - 1];
+        }
+        // ignite: opacity 0 -> 1 and radius 3 -> 6 over igniteDur (power1.out), then the radius settles to 4 over .6 s
+        function headLook(t) {
+          var u = (t - Ln.ignite) / Ln.igniteDur;
+          if (u <= 0) return { a: 0, r: 3 };
+          if (u < 1) return { a: easeIn(u), r: 3 + 3 * easeIn(u) };
+          var v = Math.min(1, (t - Ln.ignite - Ln.igniteDur) / 0.6);
+          return { a: 1, r: 6 - 2 * easeIO(v) };
+        }
+        BM.onTime(function (t) {
+          var p = pointAt(drawnFraction(t)), h = headLook(t);
+          hg.setTransform(1, 0, 0, 1, 0, 0);
+          hg.clearRect(0, 0, headCanvas.width, headCanvas.height);
+          if (h.a <= 0) return;
+          hg.globalAlpha = h.a;
+          hg.fillStyle = BM.color.cream;
+          hg.beginPath(); hg.arc(p[0], p[1], h.r, 0, Math.PI * 2); hg.fill();
+          hg.globalAlpha = 1;
+        });
+        // the turn: one jolt (up and settle, no bounce), then the line continues past the edge.
+        // Set the line layer's transform before the timeline exists: otherwise it is "none" on a fresh page but
+        // "translate(0px, 0px)" once any seek has passed the jolt, and that changes how the stroke ends rasterise
+        // (measured: 1-4 px at the line's ends differed between renders, depending on each worker's seek history).
+        gsap.set("#lines, #head", { y: 0 });
+        tl.fromTo("#lines, #head", { y: 0 }, { y: -Ln.jolt, duration: Ln.joltUp, ease: "power2.out", immediateRender: false }, Ln.turn);
+        tl.fromTo("#lines, #head", { y: -Ln.jolt }, { y: 0, duration: Ln.joltDown, ease: "power2.inOut", immediateRender: false }, Ln.turn + Ln.joltUp);
+
+        // ---- the hook, word by word (Cormorant 500 96 px, centred in the safe zone) ----
+        document.getElementById("hook").style.top = H.top + "px";
+        BM.revealWords(tl, "#hook", H.text, { at: H.at, stagger: H.stagger });
+
+        // ---- captions: v5 chunking and pale-gold word flash; the box clears at the dead stop ----
+        BM.captions(tl, "#caps", C.words);
+        tl.fromTo("#caps", { opacity: 1 }, { opacity: 0, duration: C.outDur, ease: "power1.out", immediateRender: false }, C.outAt);
+
+        // ---- the mark, then fade to black ----
+        BM.mark("#end", { at: D.mark.at, tl: tl });
+        tl.fromTo("#fade", { opacity: 0 }, { opacity: 1, duration: D.fade.dur, ease: "power1.in", immediateRender: false }, D.fade.at);
+
+        tl.set({}, {}, D.duration);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,89 @@
+/* Becoming motion tokens · PROPOSED (27.10.2026)
+   De facto values from Reel 01 v5 (the build Bianno liked, 06.10.2026), as recorded in
+   brands/becoming-project/MOTION.md field 1. The vault tokens CSS is canonical once it is read.
+   Mirrors tokens.json and BM.color / BM.timing in lib/becoming-motion.js.
+
+   Use: copy this file, fonts/, vendor/ and lib/ to the composition root (paths are root-relative:
+   HyperFrames lint rejects "../" asset paths), then <link rel="stylesheet" href="tokens.css">.
+   Legibility on plates comes from the scrim. Text shadows stay dark with a blur of 2 px or less
+   (brand-lint reads a blur of 3 px or more as glow, whatever its colour). */
+
+/* ---- fonts (SIL OFL 1.1, texts in fonts/) · family names are the real ones (brand-lint: generic-font-name) ---- */
+@font-face { font-family: "Cinzel"; font-style: normal; font-weight: 500; font-display: block; src: url("fonts/cinzel-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cinzel"; font-style: normal; font-weight: 600; font-display: block; src: url("fonts/cinzel-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 500; font-display: block; src: url("fonts/cormorant-garamond-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 600; font-display: block; src: url("fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 500; font-display: block; src: url("fonts/cormorant-garamond-latin-500-italic.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 400; font-display: block; src: url("fonts/inter-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 500; font-display: block; src: url("fonts/inter-latin-500-normal.woff2") format("woff2"); }
+
+:root {
+  /* palette: exactly the 13 values brand-lint checks (plus pure black/white and transparency) */
+  --bm-night: #04070B;
+  --bm-abyss: #05080C;
+  --bm-ocean: #13283D;
+  --bm-gold: #D8A45F;       /* the line; the one accent */
+  --bm-pale-gold: #E8C99B;  /* emphasis, caption flash */
+  --bm-cream: #F2E3C4;      /* lit */
+  --bm-ink: #F2EDE4;        /* text */
+  --bm-stone: #EFE9DF;      /* hero caps */
+  --bm-dim: #D9D2C6;        /* keywords, labels */
+  --bm-mist: #9AA1A9;
+  --bm-grey: #808891;       /* passivity line */
+  --bm-wall: #D6E4F5;
+  --bm-teal: #6E9C98;
+
+  /* type */
+  --bm-caps: "Cinzel", serif;
+  --bm-serif: "Cormorant Garamond", serif;
+  --bm-sans: "Inter", sans-serif;
+  --bm-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+
+  /* canvas and safe zone (repo preset "becoming": text inside x 80-940, y 250-1500) */
+  --bm-width: 1080px;
+  --bm-height: 1920px;
+  --bm-safe-x0: 80px;
+  --bm-safe-x1: 940px;
+  --bm-safe-y0: 250px;
+  --bm-safe-y1: 1500px;
+  --bm-safe-width: 860px;
+  --bm-horizon-y: 1180px;
+  --bm-mark-y: 1450px;
+}
+
+/* ---- frame ---- */
+.bm-frame { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--bm-night); }
+.bm-layer { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }
+
+/* plates: 1188x2112 overscan (10 %) like v5, so a 1.00 -> 1.07 push never shows an edge */
+.bm-plate { position: absolute; left: -54px; top: -96px; width: 1188px; height: 2112px; opacity: 0; }
+/* grain sits above plates and below type */
+.bm-grain { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }
+/* v5 shade over every plate, in night */
+.bm-scrim {
+  position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(4, 7, 11, 0.72) 0%, rgba(4, 7, 11, 0.35) 30%, rgba(4, 7, 11, 0.25) 50%, rgba(4, 7, 11, 0.7) 70%, rgba(4, 7, 11, 0.94) 100%);
+}
+/* the gold line lives in one full-frame SVG; paths are built by BM.goldPath */
+.bm-lines { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; pointer-events: none; }
+
+/* ---- type roles (text blocks fill the safe zone; centred text sits on its axis, x 510) ---- */
+.bm-safe { position: absolute; left: 80px; width: 860px; }
+.bm-hook { position: absolute; left: 80px; width: 860px; text-align: center; font-family: var(--bm-serif); font-weight: 500; font-size: 96px; line-height: 1.08; color: var(--bm-ink); text-shadow: var(--bm-text-shadow); text-wrap: balance; }
+.bm-body { position: absolute; left: 80px; width: 860px; text-align: center; font-family: var(--bm-serif); font-weight: 400; font-size: 74px; line-height: 1.1; color: var(--bm-ink); text-shadow: var(--bm-text-shadow); text-wrap: balance; }
+.bm-em { font-family: var(--bm-serif); font-style: italic; font-weight: 500; color: var(--bm-pale-gold); }
+.bm-title { position: absolute; left: 80px; width: 860px; text-align: center; font-family: var(--bm-caps); font-weight: 500; font-size: 112px; letter-spacing: 0.12em; padding-left: 0.12em; text-transform: uppercase; color: var(--bm-stone); white-space: nowrap; }
+.bm-keyword { position: absolute; left: 80px; width: 860px; text-align: center; font-family: var(--bm-caps); font-weight: 500; font-size: 58px; letter-spacing: 0.18em; padding-left: 0.18em; text-transform: uppercase; color: var(--bm-dim); text-shadow: var(--bm-text-shadow); }
+.bm-label { font-family: var(--bm-sans); font-weight: 500; font-size: 22px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bm-dim); }
+
+/* word spans built by BM.revealWords / BM.captions: inline-block so y can move them; start hidden */
+.bm-w { display: inline-block; opacity: 0; }
+
+/* captions: v5 Cormorant 600 64 px, chunks of up to 4 words; the box sits inside the safe zone (bottom <= 1500) */
+.bm-captions { position: absolute; left: 80px; width: 860px; top: 1330px; height: 160px; }
+.bm-cap { position: absolute; left: 0; top: 0; width: 860px; text-align: center; font-family: var(--bm-serif); font-weight: 600; font-size: 64px; line-height: 1.08; color: var(--bm-ink); opacity: 0; text-shadow: var(--bm-text-shadow); text-wrap: balance; }
+.bm-cw { display: inline-block; opacity: 0; color: var(--bm-ink); }
+
+/* the end mark (BM.mark): Inter 24 px, .5em, gold. Never his name on a frame. */
+.bm-mark { position: absolute; left: 80px; width: 860px; top: 1450px; text-align: center; font-family: var(--bm-sans); font-weight: 500; font-size: 24px; line-height: 1.2; letter-spacing: 0.5em; padding-left: 0.5em; text-transform: uppercase; color: var(--bm-gold); opacity: 0; white-space: nowrap; }
