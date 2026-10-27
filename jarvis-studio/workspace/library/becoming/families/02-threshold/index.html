@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>02 · The Threshold · Becoming motion family</title>
+    <!-- tools/build.sh stages tokens.css, fonts/, vendor/ and lib/ beside this file (root-relative: lint rejects "../"). -->
+    <link rel="stylesheet" href="tokens.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="lib/becoming-motion.js"></script>
+    <script src="data.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #04070B; }
+      #before, #after { overflow: hidden; }
+      #before { opacity: 0; }
+      #before .bm-plate, #after .bm-plate { opacity: 1; }
+      #coldsea { filter: saturate(0.25) brightness(0.92); }
+      #fade { background: #04070B; opacity: 0; }
+      .th-kw { position: absolute; text-align: center; font-family: var(--bm-caps); font-weight: 500; font-size: 58px; line-height: 1.1;
+               letter-spacing: 0.18em; padding-left: 0.18em; text-transform: uppercase; text-shadow: var(--bm-text-shadow); white-space: nowrap; opacity: 0; }
+      #phrase { top: 1160px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="bm-frame" data-composition-id="main" data-start="0" data-duration="9.5" data-fps="30" data-width="1080" data-height="1920">
+      <div id="before" class="bm-layer">
+        <canvas id="coldsea" class="bm-plate" width="1188" height="2112"></canvas>
+        <div id="cold" class="bm-layer"></div>
+      </div>
+      <div id="after" class="bm-layer">
+        <canvas id="warmsea" class="bm-plate" width="1188" height="2112"></canvas>
+        <div id="warm" class="bm-layer"></div>
+      </div>
+      <div id="scrim" class="bm-scrim"></div>
+      <canvas id="grain" class="bm-grain" width="1080" height="1920"></canvas>
+      <canvas id="fx" class="bm-layer" width="1080" height="1920"></canvas>
+      <svg id="lines" class="bm-lines" viewBox="0 0 1080 1920" width="1080" height="1920" aria-hidden="true"></svg>
+      <canvas id="head" class="bm-layer" width="1080" height="1920"></canvas>
+      <div id="kwBefore" class="th-kw"></div>
+      <div id="kwAfter" class="th-kw"></div>
+      <div id="phrase" class="bm-body"></div>
+      <div id="end" class="bm-layer"></div>
+      <div id="fade" class="bm-layer"></div>
+    </div>
+    <script>
+      // 02 · THE THRESHOLD · gold line behaviour: meets a wall, strains, passes through.
+      // Every value comes from data.js (window.DATA). Timing map for the default data (vertical divider, hold 1.28):
+      //  0.05       the gold point ignites at the left on the given (grey) path; opening sting A-E-D (cue stingAt .05)
+      //  0.1-0.9    the cold, tight world fades up on the left; the right is closed (black)
+      //  0.25-2.4   the line runs left to right along the grey path, linear, into the unseen wall
+      //  0.9-1.6    keyword 1 (GIVEN) rises in the cold world
+      //  2.4        contact: the dashed wall appears (wall token, dash 8 12, opacity .5) and bends (up to ~16 px) where the line presses
+      //  2.4-3.68   strain: small, quickening x jolts into the wall (the tick races)
+      //  3.68-4.1   dead stop: everything holds still (the score's bed is gated shut)
+      //  4.1        the hit (cue turns [4.1]): the wall dissolves dash by dash; the line passes through to past the edge
+      //  4.2-5.35   a precise vertical divider sweeps right and reveals the second state: the warm, open dawn sea
+      //  ~4.7       keyword 2 (TESTED) rises as the divider passes it
+      //  5.3-6.9    one Cormorant line, word by word; the landing sting E-D-A lands on its last word (cue land 6.9)
+      //  7.5        the mark; 8.8-9.5 fade to black
+      // All painters are pure functions of composition time (BM.onTime): line length, wall, divider and masks.
+      (function () {
+        var D = window.DATA;
+        var tl = gsap.timeline({ paused: true });
+        BM.track(tl);
+        var W = 1080, H = 1920;
+        var vert = D.divider !== "horizontal";
+        var Ln = D.line, Wl = D.wall, Th = D.through, Sw = D.sweep, S = D.states;
+        // u: along the travel axis, v: across. vertical divider: (x, y) = (u, v); horizontal divider: (x, y) = (v, u)
+        function XY(u, v) { return vert ? [u, v] : [v, u]; }
+        var UMAX = vert ? W : H;
+
+        // ---- times (derived from data; the cue must match) ----
+        var contact = Ln.run[0] + Ln.run[1];
+        var stopAt = contact + Wl.hold;
+        var turn = Math.round((stopAt + 0.42) * 30) / 30;           // the hit, on a frame
+        var words = D.phrase.text.split(/\s+/).filter(Boolean).length;
+        var land = D.phrase.at + (words - 1) * D.phrase.stagger;
+        // the picture moves on the hit's own frame: the frame shown at `turn` already carries the first step through
+        // (measured in the first render: with no lead the first moving frame was turn + 1 frame, 33 ms after the hit)
+        var hitV = turn - (Th.lead || 0);
+        window.THRESHOLD_TIMES = { contact: contact, stop: stopAt, turn: turn, land: land };
+
+        var easeNone = gsap.parseEase("none"), easeThrough = gsap.parseEase(Th.ease), easeSweep = gsap.parseEase(Sw.ease);
+        var e2o = gsap.parseEase("power2.out"), e2io = gsap.parseEase("power2.inOut"), e1o = gsap.parseEase("power1.out");
+        function clamp(x, a, b) { return x < a ? a : x > b ? b : x; }
+
+        // ---- plates: the cold world (before) and the warm open sea (after) ----
+        var coldDraw = BM.seaPlate("#coldsea", { seed: S.before.seed, glow: "none", density: 0.7, swell: 0.6, horizonY: vert ? Ln.v : S.after.horizonV });
+        var warmSel = "#warmsea";
+        if (D.plate && D.plate.src) {                                 // scratchpad builds only: a photo for the after state
+          var img = document.createElement("img"); img.id = "warmphoto"; img.className = "bm-plate"; img.src = D.plate.src; img.alt = "";
+          var ws = document.getElementById("warmsea"); ws.parentNode.replaceChild(img, ws); warmSel = "#warmphoto";
+          img.style.transformOrigin = "50% " + (((vert ? Ln.v : S.after.horizonV) + 96) / 2112 * 100).toFixed(2) + "%";
+        } else {
+          BM.onTime(BM.seaPlate("#warmsea", { seed: S.after.seed, glow: S.after.glow, glowX: S.after.glowX, horizonY: vert ? Ln.v : S.after.horizonV }));
+        }
+        BM.onTime(coldDraw);
+        BM.onTime(BM.grain("#grain", { seed: D.grain.seed, amount: D.grain.amount }));
+        // tightness: darkness presses in from both sides of the line, leaving a narrow band of cold world around it
+        var c = BM.rgba("night", S.before.tight), dir = vert ? "180deg" : "90deg", lv = Ln.v;
+        document.getElementById("cold").style.background =
+          "linear-gradient(" + dir + ", " + c + " 0px, " + c + " " + (lv - 560) + "px, " + BM.rgba("mist", 0.07) + " " + (lv - 260) + "px, " +
+          BM.rgba("mist", 0.15) + " " + lv + "px, " + BM.rgba("mist", 0.05) + " " + (lv + 220) + "px, " + c + " " + (lv + 520) + "px, " + c + " " + UMAX * 2 + "px)";
+        // openness: a wide, soft warm wash over the after state's sky, centred on its light (no glow on type)
+        document.getElementById("warm").style.background = "radial-gradient(ellipse 900px 620px at " + S.after.glowX + "px " +
+          (vert ? Ln.v : S.after.horizonV) + "px, " + BM.rgba("gold", S.after.wash) + " 0%, " + BM.rgba("gold", S.after.wash * 0.35) + " 45%, " + BM.rgba("gold", 0) + " 100%)";
+        tl.fromTo("#before", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out", immediateRender: false }, 0.1);
+        gsap.set(warmSel, { scale: S.after.push[0] });
+        tl.fromTo(warmSel, { scale: S.after.push[0] }, { scale: S.after.push[1], duration: D.duration - turn, ease: "none", immediateRender: false }, turn);
+
+        // ---- strain: quickening jolts into the wall between contact and the dead stop (seeded, pure function of t) ----
+        var jr = BM.rng(Ln.seed + 101), jolts = [], jt = contact + 0.12;
+        while (jt < stopAt - 0.06) {
+          var k = (jt - contact) / Wl.hold;
+          jolts.push({ t: jt, a: (0.35 + 0.65 * k) * Wl.bend * (0.8 + 0.4 * jr()) });
+          jt += (0.36 - 0.22 * k) * (0.85 + 0.3 * jr());
+        }
+        function press(t) {                                           // how far the head (and the wall) is pushed, px
+          if (t < contact) return 0;
+          var tt = Math.min(t, stopAt);                               // the dead stop holds the last state still
+          var base = Wl.press * clamp((tt - contact) / Wl.hold, 0, 1), p = 0;
+          for (var i = 0; i < jolts.length; i++) {
+            var J = jolts[i], d = tt - J.t;
+            if (d < 0) break;
+            if (d < 0.05) p = Math.max(p, J.a * e2o(d / 0.05));
+            else if (d < 0.21) p = Math.max(p, J.a * (1 - e2io((d - 0.05) / 0.16)));
+          }
+          return base + p;
+        }
+
+        // ---- the gold line: one jittered path from u0 to past the far edge ----
+        var lr = BM.rng(Ln.seed);
+        var uv = BM.wob(Ln.u0, Ln.u1, Ln.v, { rng: lr });                // [u, v] pairs
+        var pts = uv.map(function (p) { return XY(p[0], p[1]); });
+        var line = BM.goldPath("#lines", "threshold", pts);
+        var L = BM.pathLength(pts);
+        var cum = [0];
+        for (var i = 1; i < uv.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+        function lenAtU(u) {                                          // path length up to the point whose u is `u`
+          if (u <= uv[0][0]) return 0;
+          for (var k = 0; k + 1 < uv.length; k++) if (uv[k + 1][0] >= u) return cum[k] + (cum[k + 1] - cum[k]) * (u - uv[k][0]) / (uv[k + 1][0] - uv[k][0]);
+          return L;
+        }
+        function vAtU(u) {
+          for (var k = 0; k + 1 < uv.length; k++) if (uv[k + 1][0] >= u) return uv[k][1] + (uv[k + 1][1] - uv[k][1]) * (u - uv[k][0]) / (uv[k + 1][0] - uv[k][0]);
+          return uv[uv.length - 1][1];
+        }
+        var contactU = Wl.at - Wl.gap;
+        function headU(t) {
+          if (t <= Ln.run[0]) return Ln.u0;
+          if (t < contact) return Ln.u0 + (contactU - Ln.u0) * easeNone((t - Ln.run[0]) / Ln.run[1]);
+          if (t < hitV) return contactU + press(t);
+          var from = contactU + press(turn);
+          return from + (Ln.u1 - from) * easeThrough(clamp((t - hitV) / Th.dur, 0, 1));
+        }
+        var hidden = (Math.ceil(L) + 2).toFixed(1) + "px";
+        // the divider of the second state
+        function divider(t) {
+          var s = clamp((t - hitV - Sw.delay) / Sw.dur, 0, 1);
+          return Wl.at + (UMAX + 2 - Wl.at) * easeSweep(s);
+        }
+        function crossTime(u) {                                       // first time the divider reaches u (bisection on the ease)
+          var a = 0, b = 1, target = clamp((u - Wl.at) / (UMAX + 2 - Wl.at), 0, 1);
+          for (var n = 0; n < 30; n++) { var m = (a + b) / 2; if (easeSweep(m) < target) a = m; else b = m; }
+          return hitV + Sw.delay + b * Sw.dur;
+        }
+
+        // ---- grey given path (passivity grey, 3 px): from the frame edge to the wall, fading out before it ----
+        var greyPts = BM.wob(-20, Ln.u0, Ln.v, { rng: BM.rng(Ln.seed + 7) }).concat(uv.filter(function (p) { return p[0] > Ln.u0 && p[0] < Wl.at; }));
+        // wall dashes (along v, full frame), each with its own dissolve delay
+        var dr = BM.rng(Ln.seed + 211), dashes = [], period = Wl.dash[0] + Wl.dash[1];
+        for (var vv = -4; vv < (vert ? H : W) + 4; vv += period) dashes.push({ v: vv, delay: dr() * 0.35 + Math.abs(vv + Wl.dash[0] / 2 - Ln.v) / 2600 });
+
+        var fx = document.getElementById("fx").getContext("2d");
+        var head = document.getElementById("head"), hg = head.getContext("2d");
+        var before = document.getElementById("before"), after = document.getElementById("after");
+
+        BM.onTime(function (t) {
+          // gold line length
+          var u = headU(t), f = lenAtU(u) / L;
+          line.style.strokeDashoffset = t < Ln.ignite || f <= 0 ? hidden : (L * (1 - f)).toFixed(2) + "px";
+
+          // masks: the cold world fades softly into the closed side before the hit (so the wall stays unseen), then its
+          // edge sharpens onto the wall; the warm state shows between the wall and the sweeping divider
+          var soft = 240 * (1 - e2io(clamp((t - hitV) / (Sw.delay + Sw.dur * 0.6), 0, 1)));
+          var m = "linear-gradient(" + (vert ? "90deg" : "180deg") + ", #000 0px, #000 " + (Wl.at - soft).toFixed(1) + "px, transparent " + Wl.at + "px)";
+          before.style.webkitMaskImage = m; before.style.maskImage = m;
+          var d = divider(t);
+          after.style.clipPath = d <= Wl.at + 0.01 ? "inset(0 100% 0 0)" :
+            (vert ? "inset(0px " + (W - d).toFixed(1) + "px 0px " + Wl.at + "px)" : "inset(" + Wl.at + "px 0px " + (H - d).toFixed(1) + "px 0px)");
+
+          fx.setTransform(1, 0, 0, 1, 0, 0);
+          fx.clearRect(0, 0, W, H);
+          // grey given path, under the gold
+          var gA = 0.55 * e1o(clamp((t - 0.1) / 0.8, 0, 1));
+          if (gA > 0) {
+            fx.lineWidth = 3; fx.lineCap = "round"; fx.strokeStyle = BM.color.grey;
+            for (var i = 0; i + 1 < greyPts.length; i++) {
+              var fade = clamp((Wl.at - 12 - greyPts[i][0]) / 170, 0, 1);
+              if (fade <= 0) break;
+              var a0 = XY(greyPts[i][0], greyPts[i][1]), a1 = XY(greyPts[i + 1][0], greyPts[i + 1][1]);
+              fx.globalAlpha = gA * fade; fx.beginPath(); fx.moveTo(a0[0], a0[1]); fx.lineTo(a1[0], a1[1]); fx.stroke();
+            }
+          }
+          // the wall: appears on contact, bends with the press, dissolves dash by dash on the hit
+          if (t >= contact) {
+            var appear = clamp((t - contact) / Wl.appear, 0, 1), p = press(Math.min(t, turn));
+            fx.lineWidth = 2; fx.lineCap = "butt"; fx.strokeStyle = BM.color.wall;
+            for (var j = 0; j < dashes.length; j++) {
+              var q = dashes[j], out = 1 - e1o(clamp((t - hitV - q.delay) / Wl.dissolve, 0, 1));
+              var a = Wl.opacity * appear * out;
+              if (a <= 0.003) continue;
+              var mid = q.v + Wl.dash[0] / 2, off = p * Math.exp(-((mid - Ln.v) * (mid - Ln.v)) / (2 * Wl.bendSigma * Wl.bendSigma));
+              var p0 = XY(Wl.at + off, q.v), p1 = XY(Wl.at + off, q.v + Wl.dash[0]);
+              fx.globalAlpha = a; fx.beginPath(); fx.moveTo(p0[0], p0[1]); fx.lineTo(p1[0], p1[1]); fx.stroke();
+            }
+          }
+          // the precise divider edge (hairline) while it sweeps
+          if (d > Wl.at + 0.5 && d < UMAX) {
+            var s = clamp((t - hitV - Sw.delay) / Sw.dur, 0, 1), ea = Sw.edgeOpacity * Math.min(1, s / 0.08) * Math.min(1, (1 - s) / 0.25);
+            fx.globalAlpha = ea; fx.fillStyle = BM.color.ink;
+            if (vert) fx.fillRect(d - 1, 0, 1.5, H); else fx.fillRect(0, d - 1, W, 1.5);
+          }
+          fx.globalAlpha = 1;
+
+          // the head: a cream point at the line's end, igniting at Ln.ignite
+          hg.setTransform(1, 0, 0, 1, 0, 0);
+          hg.clearRect(0, 0, W, H);
+          var ig = (t - Ln.ignite) / Ln.igniteDur;
+          if (ig > 0 && u < UMAX + 10) {
+            var r = ig < 1 ? 3 + 3 * e1o(ig) : 6 - 2 * e2io(clamp((t - Ln.ignite - Ln.igniteDur) / 0.6, 0, 1));
+            var hp = XY(u, vAtU(u));
+            hg.globalAlpha = ig < 1 ? e1o(ig) : 1; hg.fillStyle = BM.color.cream;
+            hg.beginPath(); hg.arc(hp[0], hp[1], r, 0, Math.PI * 2); hg.fill();
+            hg.globalAlpha = 1;
+          }
+        });
+
+        // ---- type: two Cinzel keywords (one per state) and one Cormorant line ----
+        function placeKw(id, k, text, color) {
+          var e = document.getElementById(id), half = Math.min(k.x - 80, 940 - k.x);
+          e.textContent = text; e.style.left = (k.x - half) + "px"; e.style.width = (2 * half) + "px"; e.style.top = k.y + "px";
+          e.style.color = BM.color[color];
+          return e;
+        }
+        var K = D.keywords;
+        placeKw("kwBefore", K.before, S.before.keyword, S.before.color);
+        placeKw("kwAfter", K.after, S.after.keyword, S.after.color);
+        tl.fromTo("#kwBefore", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out", immediateRender: false }, K.before.at);
+        var kwAt = crossTime(vert ? K.after.x : K.after.y) + K.after.lag;
+        tl.fromTo("#kwAfter", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out", immediateRender: false }, kwAt);
+        window.THRESHOLD_TIMES.kwAfter = kwAt;
+        var ph = document.getElementById("phrase");
+        ph.style.top = D.phrase.top + "px";
+        if (D.phrase.left != null) { ph.style.left = D.phrase.left + "px"; ph.style.width = D.phrase.width + "px"; }   // keep clear of a vertical line
+        BM.revealWords(tl, "#phrase", D.phrase.text, { at: D.phrase.at, stagger: D.phrase.stagger });
+
+        if (D.mark.show) BM.mark("#end", { at: D.mark.at, tl: tl });
+        tl.fromTo("#fade", { opacity: 0 }, { opacity: 1, duration: D.fade.dur, ease: "power1.in", immediateRender: false }, D.fade.at);
+
+        tl.set({}, {}, D.duration);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>01 · The Horizon · Becoming signature family</title>
+    <!-- tools/build.sh stages tokens.css, fonts/, vendor/ and lib/ beside this file (root-relative: lint rejects "../"). -->
+    <link rel="stylesheet" href="tokens.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="lib/becoming-motion.js"></script>
+    <script src="data.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #04070B; }
+      /* plate-sized layers (1188x2112 overscan at -54, -96) so the push never shows an edge; both push together */
+      .hz-plate { position: absolute; left: -54px; top: -96px; width: 1188px; height: 2112px; pointer-events: none; }
+      #photo { display: none; }
+      #fade { background: #04070B; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="bm-frame" data-composition-id="main" data-start="0" data-duration="10" data-fps="30" data-width="1080" data-height="1920">
+      <canvas id="world" class="hz-plate" width="1188" height="2112"></canvas>
+      <div id="scrim" class="bm-scrim"></div>
+      <canvas id="grain" class="bm-grain" width="1080" height="1920"></canvas>
+      <canvas id="line" class="hz-plate" width="1188" height="2112"></canvas>
+      <div id="hook" class="bm-hook"></div>
+      <div id="fade" class="bm-layer"></div>
+    </div>
+    <script>
+      // 01 · THE HORIZON · gold line behaviour: it ignites and becomes the horizon. Every value comes from data.js.
+      //  0.05      a point of gold light ignites left of centre on the horizon; the opening sting A-E-D fires on it
+      //  0.3-3.0   the head travels right past the edge drawing a jittered line (a quieter arm reaches left from 0.8);
+      //            the sea exists only where the line has passed: each column of the plate opens up and down from it
+      //  3.2-5.2   one phrase rises word by word above the line
+      //  5.8-7.5   the hand-over: the stroke cools gold -> cream, thins and fades into the plate's own lit horizon
+      //            while the camera pushes 1.00 -> 1.04
+      //  7.5-9.3   hold · 9.3-9.9 dip to black
+      // Every canvas is a pure function of composition time (BM.onTime); no SVG element moves.
+      (function () {
+        var D = window.DATA;
+        var S = D.states[D.state] || D.states.still;
+        var P = D.plate, Ln = D.line, R = D.reveal, HO = D.handover, PU = D.push;
+        var PW = BM.plate.width, PH = BM.plate.height, OX = -BM.plate.left, OY = -BM.plate.top;   // 1188, 2112, 54, 96
+        var hyF = P.horizonY, hy = hyF + OY;                       // horizon: frame y and plate-canvas y
+
+        var tl = gsap.timeline({ paused: true });
+        BM.track(tl);
+        function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+        var lineEase = gsap.parseEase(Ln.ease), out2 = gsap.parseEase("power2.out"), out1 = gsap.parseEase("power1.out");
+        var io1 = gsap.parseEase("power1.inOut"), sineIO = gsap.parseEase("sine.inOut"), in2 = gsap.parseEase("power2.in");
+
+        // ---- the head positions (frame x), as pure functions of t ----
+        function headR(t) { return Ln.x0 + (Ln.xRight - Ln.x0) * lineEase(clamp((t - Ln.right[0]) / Ln.right[1], 0, 1)); }
+        function headL(t) { return Ln.x0 + (Ln.xLeft - Ln.x0) * lineEase(clamp((t - Ln.left[0]) / Ln.left[1], 0, 1)); }
+        // when did the line first pass frame x? (bisection on the monotonic head functions; computed once per column)
+        function passTime(x) {
+          if (Math.abs(x - Ln.x0) < 0.5) return Ln.ignite;
+          var right = x > Ln.x0, f = right ? headR : headL;
+          var a = right ? Ln.right[0] : Ln.left[0], b = a + (right ? Ln.right[1] : Ln.left[1]);
+          if (right ? f(b) < x : f(b) > x) return Infinity;
+          for (var k = 0; k < 40; k++) { var m = (a + b) / 2; if (right ? f(m) >= x : f(m) <= x) b = m; else a = m; }
+          return Math.max(Ln.ignite, b);
+        }
+        var COL = R.column, nCol = Math.ceil(PW / COL), colPass = [];
+        for (var c = 0; c < nCol; c++) colPass.push(passTime(c * COL + COL / 2 - OX));
+
+        // ---- the plate source: the code sea painted off screen, or a photo (scratchpad builds only) ----
+        var src = null, seaDraw = null, photo = null;
+        if (P.type === "photo" && P.src) {
+          photo = document.createElement("img");
+          photo.id = "photo"; photo.alt = ""; photo.src = P.src;
+          document.getElementById("root").appendChild(photo);
+          photo.onload = function () { BM.seek(tl.time()); };   // repaint once the pixels exist
+        } else {
+          src = document.createElement("canvas"); src.width = PW; src.height = PH;
+          seaDraw = BM.seaPlate(src, { seed: P.seed, glow: S.glow, horizonY: hyF, glowX: P.glowX, density: S.density, swell: S.swell });
+        }
+        function drawPlate(g) {
+          if (seaDraw) { g.drawImage(src, 0, 0); return; }
+          if (!photo || !photo.complete || !photo.naturalWidth) return;
+          var iw = photo.naturalWidth, ih = photo.naturalHeight, k = Math.max(PW / iw, PH / ih);
+          g.drawImage(photo, (PW - iw * k) / 2, (PH - ih * k) / 2, iw * k, ih * k);
+        }
+
+        // ---- the world: the plate, masked to where the line has passed, with the head's light spilling on it ----
+        var world = document.getElementById("world"), wg = world.getContext("2d");
+        var mask = document.createElement("canvas"); mask.width = PW; mask.height = PH;
+        var mg = mask.getContext("2d");
+        world.style.transformOrigin = "50% " + (hy / PH * 100).toFixed(3) + "%";
+        function handoverU(t) { return sineIO(clamp((t - HO.at) / HO.dur, 0, 1)); }
+        function paintWorld(t) {
+          if (seaDraw) seaDraw(t);
+          wg.setTransform(1, 0, 0, 1, 0, 0);
+          wg.globalCompositeOperation = "source-over"; wg.globalAlpha = 1;
+          wg.clearRect(0, 0, PW, PH);
+          if (t < Ln.ignite) return;
+          drawPlate(wg);
+          // mask: each column opens from the horizon (up and down, soft ends) once the line has passed it
+          mg.setTransform(1, 0, 0, 1, 0, 0); mg.globalAlpha = 1;
+          mg.clearRect(0, 0, PW, PH);
+          var full = true, hR = headR(t), hL = headL(t);
+          for (var c = 0; c < nCol; c++) {
+            var age = t - colPass[c];
+            if (!(age > 0)) { full = false; continue; }
+            // vertical opening by age; horizontal feather by distance behind the leading head (a slow head would
+            // otherwise leave a hard vertical edge: seen at 1.5 s in the first render)
+            var cx = c * COL + COL / 2 - OX, dist = Math.min(hR - cx, cx - hL);   // to the nearer head: no seam at x0
+            var e = out2(clamp(age / R.grow, 0, 1)), a = out1(clamp(age / R.fadeIn, 0, 1)) * sineIO(clamp(dist / R.feather + 0.15, 0, 1));
+            var up = 24 + e * R.up, dn = 16 + e * R.down, y0 = hy - up - R.soft, y1 = hy + dn + R.soft;
+            if (a < 1 || y0 > 0 || y1 < PH) full = false;
+            var gr = mg.createLinearGradient(0, y0, 0, y1), span = y1 - y0;
+            gr.addColorStop(0, "rgba(0,0,0,0)");
+            gr.addColorStop(R.soft / span, "rgba(0,0,0,1)");
+            gr.addColorStop(1 - R.soft / span, "rgba(0,0,0,1)");
+            gr.addColorStop(1, "rgba(0,0,0,0)");
+            mg.globalAlpha = a; mg.fillStyle = gr;
+            mg.fillRect(c * COL, y0, COL, span);
+          }
+          if (!full) {
+            wg.globalCompositeOperation = "destination-in";
+            wg.drawImage(mask, 0, 0);
+          }
+          wg.globalCompositeOperation = "lighter";
+          // light spilling up and down from the head while it is on screen (illumination on the water, not a glow on type)
+          var hx = headR(t) + OX, hA = headLook(t).a * (1 - clamp((headR(t) - 1000) / 160, 0, 1));
+          if (hA > 0.01) {
+            wg.save(); wg.translate(hx, hy); wg.scale(1, R.spill.sy);
+            var rg = wg.createRadialGradient(0, 0, 0, 0, 0, R.spill.r);
+            rg.addColorStop(0, BM.rgba("gold", R.spill.alpha * hA));
+            rg.addColorStop(0.4, BM.rgba("gold", R.spill.alpha * 0.35 * hA));
+            rg.addColorStop(1, BM.rgba("gold", 0));
+            wg.fillStyle = rg; wg.fillRect(-R.spill.r, -R.spill.r, 2 * R.spill.r, 2 * R.spill.r);
+            wg.restore();
+          }
+          // the plate's own horizon brightens as the stroke hands over to it
+          var sA = HO.seamAlpha * S.seam * handoverU(t);
+          if (sA > 0.005) {
+            var hg = wg.createLinearGradient(0, 0, PW, 0);
+            hg.addColorStop(0, BM.rgba("paleGold", sA * 0.35));
+            hg.addColorStop(P.glowX / PW, BM.rgba("cream", sA));
+            hg.addColorStop(1, BM.rgba("paleGold", sA * 0.35));
+            wg.fillStyle = hg; wg.fillRect(0, hy - 0.75, PW, 1.5);
+            var hz = wg.createLinearGradient(0, hy - 14, 0, hy + 14);
+            hz.addColorStop(0, BM.rgba("paleGold", 0)); hz.addColorStop(0.5, BM.rgba("paleGold", sA * 0.22)); hz.addColorStop(1, BM.rgba("paleGold", 0));
+            wg.fillStyle = hz; wg.fillRect(0, hy - 14, PW, 28);
+          }
+          wg.globalCompositeOperation = "source-over";
+        }
+
+        // ---- the gold line: drawn on a plate-sized canvas (pushed with the world, so it stays on the horizon) ----
+        var lc = document.getElementById("line"), lg = lc.getContext("2d");
+        lc.style.transformOrigin = world.style.transformOrigin;
+        var ptsR = BM.wob(Ln.x0, Ln.xRight, hyF, { step: S.step, amp: S.amp, rng: BM.rng(Ln.seed) });
+        var ptsL = BM.wob(Ln.xLeft, Ln.x0, hyF, { step: S.step, amp: S.amp, rng: BM.rng(Ln.seed + 1) }).reverse();
+        ptsL[0][1] = ptsR[0][1];                                     // both arms leave the same point
+        if (ptsL.length > 2 && ptsL[0][0] - ptsL[1][0] < S.step / 2) ptsL.splice(1, 1);   // no short kinked segment at x0
+        var trem = BM.rng(Ln.seed + 2), phR = ptsR.map(function () { return trem() * 6.283; }), phL = ptsL.map(function () { return trem() * 6.283; });
+        function yAt(p, ph, t) { return p[1] + (S.tremor ? S.tremor * Math.sin(6.283 * S.tremorHz * t + ph) : 0); }
+        // the drawn part of one arm: every point up to the head, plus the head itself (interpolated)
+        function arm(pts, ph, hx, dir, t) {
+          var out = [[pts[0][0], yAt(pts[0], ph[0], t)]];
+          for (var i = 1; i < pts.length; i++) {
+            var x = pts[i][0];
+            if ((x - hx) * dir <= 0) { out.push([x, yAt(pts[i], ph[i], t)]); continue; }
+            var x0 = pts[i - 1][0], u = (hx - x0) / (x - x0);
+            var yA = yAt(pts[i - 1], ph[i - 1], t), yB = yAt(pts[i], ph[i], t);
+            out.push([hx, yA + (yB - yA) * u]);
+            break;
+          }
+          return out;
+        }
+        // the point of light: ignites (opacity 0 -> 1, r 3 -> 6 over igniteDur), settles to r 4 over .6 s
+        function headLook(t) {
+          var u = (t - Ln.ignite) / Ln.igniteDur;
+          if (u <= 0) return { a: 0, r: 3 };
+          if (u < 1) return { a: out1(u), r: 3 + 3 * out1(u) };
+          var v = Math.min(1, (t - Ln.ignite - Ln.igniteDur) / 0.6);
+          return { a: 1, r: 6 - 2 * io1(v) };
+        }
+        function stroke(points) {
+          if (points.length < 2) return;
+          lg.beginPath();
+          lg.moveTo(points[0][0] + OX, points[0][1] + OY);
+          for (var i = 1; i < points.length; i++) lg.lineTo(points[i][0] + OX, points[i][1] + OY);
+          lg.stroke();
+        }
+        function paintLine(t) {
+          lg.setTransform(1, 0, 0, 1, 0, 0);
+          lg.globalAlpha = 1;
+          lg.clearRect(0, 0, PW, PH);
+          if (t < Ln.ignite) return;
+          var u = handoverU(t), fadeA = 1 - in2(u);                 // cools, thins, and goes into the plate by HO end
+          if (fadeA <= 0.002) return;
+          lg.lineCap = "round"; lg.lineJoin = "round";
+          lg.strokeStyle = BM.mix("gold", "cream", u);
+          lg.lineWidth = Ln.width + (Ln.widthEnd - Ln.width) * u;
+          lg.globalAlpha = fadeA;
+          var hx = headR(t), lx = headL(t);
+          var right = arm(ptsR, phR, hx, 1, t), tip = right[right.length - 1];
+          stroke(right);
+          if (lx < Ln.x0 - 0.5) stroke(arm(ptsL, phL, lx, -1, t));
+          var h = headLook(t);
+          if (h.a > 0 && hx < 1080 + 20) {
+            lg.globalAlpha = h.a * fadeA;
+            lg.fillStyle = BM.color.cream;
+            lg.beginPath(); lg.arc(tip[0] + OX, tip[1] + OY, h.r, 0, Math.PI * 2); lg.fill();
+          }
+          lg.globalAlpha = 1;
+        }
+
+        BM.onTime(paintWorld);
+        BM.onTime(paintLine);
+        BM.onTime(BM.grain("#grain", { seed: D.grain.seed, amount: D.grain.amount }));
+
+        // ---- the push: world and line together, origin on the horizon (set at build time: seek-history independent) ----
+        gsap.set("#world, #line", { scale: PU.from });
+        tl.fromTo("#world, #line", { scale: PU.from }, { scale: PU.to, duration: PU.dur, ease: PU.ease, immediateRender: false }, PU.at);
+
+        // ---- the phrase, word by word above the line ----
+        document.getElementById("hook").style.top = D.phrase.top + "px";
+        BM.revealWords(tl, "#hook", D.phrase.text, { times: D.phrase.times, lead: 0 });
+
+        // ---- dip to black ----
+        tl.fromTo("#fade", { opacity: 0 }, { opacity: 1, duration: D.dip.dur, ease: "power1.in", immediateRender: false }, D.dip.at);
+
+        tl.set({}, {}, D.duration);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>
