@@ -48,67 +48,22 @@
       {
         "text": "Every",
         "start": 3.6,
-        "end": 3.74
+        "end": 3.92
       },
       {
         "text": "frame",
-        "start": 3.76,
-        "end": 3.9
-      },
-      {
-        "text": "here",
-        "start": 3.92,
-        "end": 4.04
-      },
-      {
-        "text": "is",
-        "start": 4.06,
-        "end": 4.14
-      },
-      {
-        "text": "drawn",
-        "start": 4.16,
+        "start": 3.98,
         "end": 4.3
       },
       {
-        "text": "by",
-        "start": 4.32,
-        "end": 4.4
+        "text": "is",
+        "start": 4.36,
+        "end": 4.5
       },
       {
         "text": "code.",
-        "start": 4.42,
-        "end": 4.56
-      },
-      {
-        "text": "Nothing",
-        "start": 4.7,
-        "end": 4.838
-      },
-      {
-        "text": "in",
-        "start": 4.858,
-        "end": 4.917
-      },
-      {
-        "text": "it",
-        "start": 4.937,
-        "end": 4.996
-      },
-      {
-        "text": "is",
-        "start": 5.016,
-        "end": 5.075
-      },
-      {
-        "text": "a",
-        "start": 5.095,
-        "end": 5.139
-      },
-      {
-        "text": "photograph.",
-        "start": 5.159,
-        "end": 5.36
+        "start": 4.56,
+        "end": 4.95
       }
     ],
     "outAt": 5.4,
