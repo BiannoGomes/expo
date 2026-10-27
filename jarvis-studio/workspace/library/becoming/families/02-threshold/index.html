@@ -50,13 +50,14 @@
       //  0.1-0.9    the cold, tight world fades up on the left; the right is closed (black)
       //  0.25-2.4   the line runs left to right along the grey path, linear, into the unseen wall
       //  0.9-1.6    keyword 1 (GIVEN) rises in the cold world
-      //  2.4        contact: the dashed wall appears (wall token, dash 8 12, opacity .5) and bends (up to ~16 px) where the line presses
-      //  2.4-3.68   strain: small, quickening x jolts into the wall (the tick races)
+      //  2.4        contact: the dashed wall appears (wall token, dash 8 12, opacity .55, 2.5 px) and bulges (up to ~56 px) where the line presses
+      //  2.4-3.68   strain: quickening x jolts of 20-40 px into the wall on a 16 px steady press (the tick races)
       //  3.68-4.1   dead stop: everything holds still (the score's bed is gated shut)
       //  4.1        the hit (cue turns [4.1]): the wall dissolves dash by dash; the line passes through to past the edge
       //  4.2-5.35   a precise vertical divider sweeps right and reveals the second state: the warm, open dawn sea
       //  ~4.7       keyword 2 (TESTED) rises as the divider passes it
       //  5.3-6.9    one Cormorant line, word by word; the landing sting E-D-A lands on its last word (cue land 6.9)
+      //  ~7.27      the crossing completes: the seam feathers (150 px) and the tested world floods left until it fills the frame
       //  7.5        the mark; 8.8-9.5 fade to black
       // All painters are pure functions of composition time (BM.onTime): line length, wall, divider and masks.
       (function () {
@@ -103,8 +104,9 @@
           "linear-gradient(" + dir + ", " + c + " 0px, " + c + " " + (lv - 560) + "px, " + BM.rgba("mist", 0.07) + " " + (lv - 260) + "px, " +
           BM.rgba("mist", 0.15) + " " + lv + "px, " + BM.rgba("mist", 0.05) + " " + (lv + 220) + "px, " + c + " " + (lv + 520) + "px, " + c + " " + UMAX * 2 + "px)";
         // openness: a wide, soft warm wash over the after state's sky, centred on its light (no glow on type)
-        document.getElementById("warm").style.background = "radial-gradient(ellipse 900px 620px at " + S.after.glowX + "px " +
+        document.getElementById("warm").style.background = "radial-gradient(ellipse " + (S.after.washSize || [900, 620])[0] + "px " + (S.after.washSize || [900, 620])[1] + "px at " + S.after.glowX + "px " +
           (vert ? Ln.v : S.after.horizonV) + "px, " + BM.rgba("gold", S.after.wash) + " 0%, " + BM.rgba("gold", S.after.wash * 0.35) + " 45%, " + BM.rgba("gold", 0) + " 100%)";
+        if (S.after.exposure && S.after.exposure !== 1) document.querySelector(warmSel).style.filter = "brightness(" + S.after.exposure + ")";
         tl.fromTo("#before", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out", immediateRender: false }, 0.1);
         gsap.set(warmSel, { scale: S.after.push[0] });
         tl.fromTo(warmSel, { scale: S.after.push[0] }, { scale: S.after.push[1], duration: D.duration - turn, ease: "none", immediateRender: false }, turn);
@@ -113,7 +115,7 @@
         var jr = BM.rng(Ln.seed + 101), jolts = [], jt = contact + 0.12;
         while (jt < stopAt - 0.06) {
           var k = (jt - contact) / Wl.hold;
-          jolts.push({ t: jt, a: (0.35 + 0.65 * k) * Wl.bend * (0.8 + 0.4 * jr()) });
+          jolts.push({ t: jt, a: Math.min(Wl.bend, (0.55 + 0.45 * k) * Wl.bend * (0.9 + 0.2 * jr())) });   // 20-40 px, growing
           jt += (0.36 - 0.22 * k) * (0.85 + 0.3 * jr());
         }
         function press(t) {                                           // how far the head (and the wall) is pushed, px
@@ -155,6 +157,15 @@
           return from + (Ln.u1 - from) * easeThrough(clamp((t - hitV) / Th.dur, 0, 1));
         }
         var hidden = (Math.ceil(L) + 2).toFixed(1) + "px";
+        // the take-over: after the phrase is fully on, the seam feathers and the after state's near edge moves to Tk.to
+        var Tk = D.take || null, easeTake = gsap.parseEase((Tk && Tk.ease) || "power2.inOut");
+        var takeAt = Tk ? Math.round((land + 0.23 + Tk.after) * 30) / 30 : Infinity;   // the last word is fully on at land + 0.23
+        function nearEdge(t) {                                        // [edge u, feather px] of the after state's near side
+          if (!Tk || t <= takeAt) return [Wl.at, 0];
+          var s = easeTake(clamp((t - takeAt) / Tk.dur, 0, 1));
+          return [Wl.at + (Tk.to - Wl.at) * s, Tk.feather * Math.min(1, s * 3)];
+        }
+        window.THRESHOLD_TAKE = takeAt;
         // the divider of the second state
         function divider(t) {
           var s = clamp((t - hitV - Sw.delay) / Sw.dur, 0, 1);
@@ -186,9 +197,17 @@
           var soft = 240 * (1 - e2io(clamp((t - hitV) / (Sw.delay + Sw.dur * 0.6), 0, 1)));
           var m = "linear-gradient(" + (vert ? "90deg" : "180deg") + ", #000 0px, #000 " + (Wl.at - soft).toFixed(1) + "px, transparent " + Wl.at + "px)";
           before.style.webkitMaskImage = m; before.style.maskImage = m;
-          var d = divider(t);
-          after.style.clipPath = d <= Wl.at + 0.01 ? "inset(0 100% 0 0)" :
-            (vert ? "inset(0px " + (W - d).toFixed(1) + "px 0px " + Wl.at + "px)" : "inset(" + Wl.at + "px 0px " + (H - d).toFixed(1) + "px 0px)");
+          var d = divider(t), ne = nearEdge(t);
+          if (d <= Wl.at + 0.01) { after.style.clipPath = "inset(0 100% 0 0)"; after.style.webkitMaskImage = after.style.maskImage = "none"; }
+          else if (ne[1] <= 0) {
+            after.style.webkitMaskImage = after.style.maskImage = "none";
+            after.style.clipPath = vert ? "inset(0px " + (W - d).toFixed(1) + "px 0px " + Wl.at + "px)" : "inset(" + Wl.at + "px 0px " + (H - d).toFixed(1) + "px 0px)";
+          } else {                                                    // feathered near edge (the divider has long left the frame)
+            after.style.clipPath = "none";
+            var e0 = ne[0] - ne[1] / 2, e1 = ne[0] + ne[1] / 2;
+            var am = "linear-gradient(" + (vert ? "90deg" : "180deg") + ", transparent 0px, transparent " + e0.toFixed(1) + "px, #000 " + e1.toFixed(1) + "px, #000 " + (UMAX + 4) + "px)";
+            after.style.webkitMaskImage = am; after.style.maskImage = am;
+          }
 
           fx.setTransform(1, 0, 0, 1, 0, 0);
           fx.clearRect(0, 0, W, H);
@@ -206,7 +225,7 @@
           // the wall: appears on contact, bends with the press, dissolves dash by dash on the hit
           if (t >= contact) {
             var appear = clamp((t - contact) / Wl.appear, 0, 1), p = press(Math.min(t, turn));
-            fx.lineWidth = 2; fx.lineCap = "butt"; fx.strokeStyle = BM.color.wall;
+            fx.lineWidth = Wl.stroke || 2; fx.lineCap = "butt"; fx.strokeStyle = BM.color.wall;
             for (var j = 0; j < dashes.length; j++) {
               var q = dashes[j], out = 1 - e1o(clamp((t - hitV - q.delay) / Wl.dissolve, 0, 1));
               var a = Wl.opacity * appear * out;

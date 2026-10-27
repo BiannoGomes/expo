@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>07 · The Reveal · Becoming motion family</title>
+    <!-- tools/build.sh stages tokens.css, fonts/, vendor/ and lib/ beside this file (root-relative: lint rejects "../"). -->
+    <link rel="stylesheet" href="tokens.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="lib/becoming-motion.js"></script>
+    <script src="data.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #04070B; }
+      #photo { object-fit: cover; }
+      #fade { background: #04070B; opacity: 0; }
+      #word, #echo { opacity: 0; }
+      .rv-l { position: absolute; top: 0; font-family: var(--bm-caps); font-weight: 500; line-height: 1; white-space: pre;
+              color: var(--bm-stone); text-shadow: var(--bm-text-shadow); }
+      .rv-frag { position: absolute; left: 80px; width: 860px; text-align: center; font-family: var(--bm-serif); font-weight: 500;
+                 color: var(--bm-ink); text-shadow: var(--bm-text-shadow); white-space: nowrap; }
+      #line { font-style: italic; font-weight: 500; font-size: 70px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="bm-frame" data-composition-id="main" data-start="0" data-duration="11" data-fps="30" data-width="1080" data-height="1920">
+      <canvas id="sea" class="bm-plate" width="1188" height="2112"></canvas>
+      <div id="scrim" class="bm-scrim"></div>
+      <canvas id="grain" class="bm-grain" width="1080" height="1920"></canvas>
+      <canvas id="head" class="bm-layer" width="1080" height="1920"></canvas>
+      <div id="echo" class="bm-layer"></div>
+      <div id="word" class="bm-layer"></div>
+      <div id="sent" class="bm-layer"></div>
+      <div id="line" class="bm-body"></div>
+      <div id="end" class="bm-layer"></div>
+      <div id="fade" class="bm-layer"></div>
+    </div>
+    <script>
+      // 07 · THE REVEAL · gold line behaviour: drops in as the mark that changes the meaning.
+      // Every value comes from data.js (window.DATA). Timing map, mode 'word' (default data, revision 1):
+      //  0.05       a point of light (the pen, waiting) ignites at y 400 above the word; opening sting A-E-D (cue stingAt .05)
+      //  0.15-1.15  the dark sea plate fades up; 0.55-1.45 IMPOSSIBLE rises in stone (Cinzel 104 px, baseline 880)
+      //  1.0-3.58   ticks, racing into the turn
+      //  3.58-4.0   dead stop: the score, the plate and the grain all freeze; at 3.62 the pen falls (power2.in, 0.38 s),
+      //             a tapered ink stroke (3 px at the tail, 6 px at the tip) painted on the head canvas
+      //  4.0        the hit (cue turns [4.0]): the line touches down between I and M as the apostrophe
+      //  4.04-4.79  the line's tail lifts away; what remains settles to the 8.5 px mark
+      //  4.05-5.15  the letters part to make room (x per letter, power3.inOut); the word relights stone -> cream;
+      //             a faint echo of IMPOSSIBLE (opacity .12) is held 4.0-4.4 and gone by 4.55
+      //  5.05       landing sting E-D-A on the settled I'M POSSIBLE (cue land)
+      //  5.6-8.0    one concrete action in Cormorant, two lines, word by word (2.5 words/s); 8.7 the mark; 10.3-11 fade
+      // Mode 'sentence': fragments at their times; the pen falls on the turn and runs on as the underline (5 px) of the
+      // reframing word, which arrives on the hit; the other fragments dim a little. See README for both maps.
+      (function () {
+        var D = window.DATA;
+        var tl = gsap.timeline({ paused: true });
+        BM.track(tl);
+        var P = D.plate, Pt = D.point, PEN = D.pen;
+        var AX = BM.safe.axisX;
+        var turn = D.turn, stopT = turn - D.deadStop;
+
+        // ---- time with the dead stop frozen out: the plate and grain hold still while the score stops dead ----
+        function frozen(t) { return t < stopT ? t : (t < turn ? stopT : t - D.deadStop); }
+
+        // ---- plate: the code-drawn sea, or a photo override for scratchpad builds only ----
+        var plateSel = "#sea";
+        if (P.src) {
+          var img = document.createElement("img");
+          img.id = "photo"; img.className = "bm-plate"; img.src = P.src; img.alt = "";
+          img.style.transformOrigin = "50% " + ((P.horizonY + 96) / 2112 * 100).toFixed(2) + "%";
+          var seaC = document.getElementById("sea");
+          seaC.parentNode.replaceChild(img, seaC);
+          plateSel = "#photo";
+        } else {
+          var sea = BM.seaPlate("#sea", { seed: P.seed, glow: P.glow, horizonY: P.horizonY, glowX: P.glowX });
+          BM.onTime(function (t) { sea(frozen(t)); });
+        }
+        var grain = BM.grain("#grain", { seed: D.grain.seed, amount: D.grain.amount });
+        BM.onTime(function (t) { grain(frozen(t)); });
+        gsap.set(plateSel, { scale: P.push[0] });
+        tl.fromTo(plateSel, { opacity: 0 }, { opacity: P.opacity, duration: P.fadeIn[1], ease: "power1.out", immediateRender: false }, P.fadeIn[0]);
+        tl.fromTo(plateSel, { scale: P.push[0] }, { scale: P.push[1], duration: D.duration - P.fadeIn[0], ease: "none", immediateRender: false }, P.fadeIn[0]);
+
+        function adv(table, ch, size) {
+          var a = table[ch];
+          if (a == null) throw new Error("07-reveal: no measured advance for '" + ch + "' (add it to DATA.metrics)");
+          return a / 1000 * size;
+        }
+        function chars(s) { var out = []; for (var i = 0; i < s.length; i++) out.push(s.charAt(i)); return out; }
+        // a hand-drawn vertical: a point every 14 px, x jittered (seeded), both ends exact
+        function fallPoints(x, y0, y1, jitter, rng) {
+          var n = Math.max(1, Math.floor((y1 - y0) / 14)), pts = [[x, y0]];
+          for (var k = 1; k < n; k++) pts.push([x + (rng() * 2 - 1) * jitter, y0 + (y1 - y0) * k / n]);
+          pts.push([x, y1]);
+          return pts;
+        }
+        function lengthTo(pts, idx) { return BM.pathLength(pts.slice(0, idx + 1)); }
+        function pointAtLen(pts, want) {
+          var run = 0;
+          for (var k = 0; k + 1 < pts.length; k++) {
+            var s = Math.hypot(pts[k + 1][0] - pts[k][0], pts[k + 1][1] - pts[k][1]);
+            if (run + s >= want) { var u = s ? (want - run) / s : 0; return [pts[k][0] + (pts[k + 1][0] - pts[k][0]) * u, pts[k][1] + (pts[k + 1][1] - pts[k][1]) * u]; }
+            run += s;
+          }
+          return pts[pts.length - 1];
+        }
+
+        var pts, keep, fallLen, penX, headOff;    // the pen's path, the length that stays as the mark, the fall length
+        var T = { mode: D.mode, sting: Pt.ignite, stop: +stopT.toFixed(3), turn: turn, land: D.land };
+
+        if (D.mode === "word") {
+          // ================= mode 'word': a mark enters the word and the letters part to make room =================
+          var Wd = D.word, s = Wd.size, tr = Wd.tracking * s, cin = D.metrics.cinzel500;
+          var from = chars(Wd.from), to = chars(Wd.to);
+          var baseOff = (s - (cin.ascent + cin.descent) / 1000 * s) / 2 + cin.ascent / 1000 * s;   // line-height 1
+          var b = Wd.baseline, top = b - baseOff;
+          function layout(cs) { var x = 0, xs = []; cs.forEach(function (c, i) { xs.push(x); x += adv(cin, c, s) + (i < cs.length - 1 ? tr : 0); }); return { xs: xs, w: x }; }
+          var A = layout(from), B = layout(to);
+          var left0 = AX - A.w / 2;
+          // map `to` characters onto `from` letters (the mark and spaces are new)
+          var markIdx = to.indexOf(Wd.markChar), map = [], k = 0;
+          to.forEach(function (c, i) {
+            if (i === markIdx || c === " ") { map.push(-1); return; }
+            if (from[k] !== c) throw new Error("07-reveal: '" + Wd.to + "' without the mark and spaces must spell '" + Wd.from + "'");
+            map.push(k++);
+          });
+          if (k !== from.length) throw new Error("07-reveal: '" + Wd.to + "' must use every letter of '" + Wd.from + "'");
+          var before = map.slice(0, markIdx).filter(function (v) { return v >= 0; }).length;   // letters before the mark
+          // anchor: the mark lands in the gap where it enters the old word, so it never cuts a letter
+          var gapC = left0 + A.xs[before - 1] + adv(cin, from[before - 1], s) + tr / 2;
+          var markRel = B.xs[markIdx] + 0.11 * s;                   // ink centre of the ’ glyph (measured bbox 31..188 / 1000)
+          var leftT = gapC - markRel;
+          if (leftT < BM.safe.x0) leftT = BM.safe.x0;
+          if (leftT + B.w > BM.safe.x1) leftT = BM.safe.x1 - B.w;
+          penX = leftT + markRel + 0.01 * s;
+          T.wordStart = [+left0.toFixed(1), +(left0 + A.w).toFixed(1)];
+          T.wordEnd = [+leftT.toFixed(1), +(leftT + B.w).toFixed(1)];
+
+          var wordBox = document.getElementById("word"), echoBox = document.getElementById("echo"), spans = [];
+          to.forEach(function (c, i) {
+            if (map[i] < 0) return;
+            var sp = document.createElement("span");
+            sp.className = "rv-l"; sp.textContent = c;
+            sp.style.fontSize = s + "px"; sp.style.top = top + "px";
+            var x1 = leftT + B.xs[i], x0 = left0 + A.xs[map[i]];
+            sp.style.left = x1.toFixed(2) + "px";
+            gsap.set(sp, { x: x0 - x1 });                          // built in the old place: same state after any seek
+            wordBox.appendChild(sp);
+            spans.push({ el: sp, dx: x0 - x1 });
+            var e = document.createElement("span");
+            e.className = "rv-l"; e.textContent = c;
+            e.style.fontSize = s + "px"; e.style.top = top + "px"; e.style.left = x0.toFixed(2) + "px";
+            echoBox.appendChild(e);
+          });
+          gsap.set("#word", { y: 0 });
+          tl.fromTo("#word", { opacity: 0, y: Wd.inY }, { opacity: Wd.stoneOpacity, y: 0, duration: Wd.inDur, ease: "power2.out", immediateRender: false }, Wd.at);
+          // the letters part: one x tween per letter, all on the same slow power3.inOut (no overshoot)
+          var partAt = turn + Wd.part.delay;
+          spans.forEach(function (o) {
+            tl.fromTo(o.el, { x: o.dx }, { x: 0, duration: Wd.part.dur, ease: Wd.part.ease, immediateRender: false }, partAt);
+          });
+          // relight: stone, a little unlit -> lit cream at full opacity
+          tl.fromTo("#word", { opacity: Wd.stoneOpacity }, { opacity: 1, duration: Wd.relight.dur, ease: "power1.inOut", immediateRender: false }, turn + Wd.relight.delay);
+          tl.fromTo("#word .rv-l", { color: BM.color.stone }, { color: BM.color.cream, duration: Wd.relight.dur, ease: "power1.inOut", immediateRender: false }, turn + Wd.relight.delay);
+          // the echo: the old word stays where it was, faint, for a moment
+          tl.fromTo("#echo", { opacity: 0 }, { opacity: Wd.echo.opacity, duration: 1 / 30, ease: "none", immediateRender: false }, turn);
+          tl.fromTo("#echo", { opacity: Wd.echo.opacity }, { opacity: 0, duration: Wd.echo.dur, ease: "power1.in", immediateRender: false }, turn + Wd.echo.hold);
+          T.settled = +(partAt + Wd.part.dur).toFixed(3);
+
+          // the pen's path: straight down from the point, then the apostrophe's curl
+          var yA = b - 0.80 * s;
+          var curl = [[penX, yA], [penX, yA + 0.08 * s], [penX - 0.012 * s, yA + 0.165 * s], [penX - 0.034 * s, yA + 0.235 * s]];
+          var fall = fallPoints(penX, Pt.y, yA, PEN.jitter, BM.rng(PEN.seed));
+          pts = fall.concat(curl.slice(1));
+          keep = BM.pathLength(curl);
+          fallLen = BM.pathLength(pts);                            // the whole path is drawn by the time of the hit
+        } else {
+          // ================= mode 'sentence': the reframing word arrives on the hit, the line becomes its underline ===
+          var S = D.sentence, z = S.size, cor = D.metrics.cormorant500, lh = S.lineHeight * z;
+          var bOff = (lh - (cor.ascent + cor.descent) / 1000 * z) / 2 + cor.ascent / 1000 * z;
+          var sent = document.getElementById("sent"), frags = [];
+          S.fragments.forEach(function (f, i) {
+            var d = document.createElement("div");
+            d.className = "rv-frag"; d.style.top = (S.top + i * lh).toFixed(1) + "px"; d.style.fontSize = z + "px"; d.style.lineHeight = S.lineHeight;
+            sent.appendChild(d);
+            var nW = f.text.split(/\s+/).filter(Boolean).length, times = [];
+            for (var j = 0; j < nW; j++) times.push(f.at == null ? turn + (j - S.reframe.word) * f.stagger : f.at + j * f.stagger);
+            BM.revealWords(tl, d, f.text, { times: times });
+            frags.push({ el: d, times: times });
+          });
+          // underline geometry from the measured advances (the line is centred on the safe axis)
+          var rf = S.fragments[S.reframe.fragment], words = rf.text.split(/\s+/).filter(Boolean);
+          function width(str) { var w = 0; chars(str).forEach(function (c) { w += adv(cor, c, z); }); return w; }
+          var lineW = width(words.join(" ")), prefix = width(words.slice(0, S.reframe.word).join(" ") + (S.reframe.word ? " " : ""));
+          var wordTxt = words[S.reframe.word].replace(/[.,;:?…]+$/, "");
+          var xs = AX - lineW / 2 + prefix, xe = xs + width(wordTxt);
+          var yU = S.top + S.reframe.fragment * lh + bOff + PEN.underline * z;
+          // the pen falls in the left margin (never through the earlier lines), turns at the baseline and runs on
+          // under the reframing word; once the tail lifts, only the underline (xs .. xe) stays
+          var r = 10, fx = PEN.x != null ? PEN.x : BM.safe.x0 + 40;
+          var fallS = fallPoints(fx, Pt.y, yU - r, PEN.jitter, BM.rng(PEN.seed));
+          var arc = [];
+          for (var q = 1; q <= 4; q++) { var a = Math.PI / 2 * q / 4; arc.push([fx + r - r * Math.cos(a), yU - r + r * Math.sin(a)]); }
+          var run = [[xe + 6, yU]];
+          pts = fallS.concat(arc, run);
+          fallLen = BM.pathLength(fallS.concat(arc));             // drawn at the hit: the pen touches the line
+          keep = (xe + 6) - (xs - 4);
+          penX = fx;
+          T.underline = [+xs.toFixed(1), +(xe + 6).toFixed(1), +yU.toFixed(1)];
+          T.reframeWord = frags[S.reframe.fragment].times[S.reframe.word];
+          // the other fragments step back a little once the reframe has landed
+          frags.forEach(function (f, i) {
+            if (i === S.reframe.fragment) return;
+            tl.fromTo(f.el, { opacity: 1 }, { opacity: S.dimOthers.to, duration: S.dimOthers.dur, ease: "power1.inOut", immediateRender: false }, turn + S.dimOthers.delay);
+          });
+        }
+
+        // ---- the gold line: drawn down from the point, it lands on the hit, then its tail lifts and the mark stays ----
+        // Painted from composition time on the head canvas (not an SVG stroke) so its width can vary along its length:
+        // a taper from widthTop at the tail to widthTip at the falling tip reads as ink from a pen, not a ruled line.
+        // Once the pen touches down, the whole stroke settles to markWidth while the tail lifts away.
+        var Ltot = BM.pathLength(pts), fF = fallLen / Ltot;
+        var fallAt = turn - PEN.fall;
+        var runEnd = turn + (fF < 1 ? PEN.run : 0);
+        var retAt = runEnd + PEN.retract.delay, retEnd = retAt + PEN.retract.dur;
+        T.fall = +fallAt.toFixed(3); T.retract = [+retAt.toFixed(3), +retEnd.toFixed(3)];
+
+        var hc = document.getElementById("head"), hg = hc.getContext("2d");
+        var eIn = gsap.parseEase(PEN.fallEase), eRun = gsap.parseEase(PEN.runEase || "power2.out");
+        var eRet = gsap.parseEase(PEN.retract.ease);
+        var e1 = gsap.parseEase("power1.out"), eIO = gsap.parseEase("power1.inOut");
+        function tipLen(t) {
+          if (t <= fallAt) return 0;
+          if (t < turn) return fallLen * eIn((t - fallAt) / PEN.fall);
+          if (fF < 1 && t < runEnd) return fallLen + (Ltot - fallLen) * eRun((t - turn) / PEN.run);
+          return Ltot;
+        }
+        function tailLen(t) {                    // the tail lifts away: 0 until retAt, then the whole path but `keep`
+          if (t <= retAt) return 0;
+          return (Ltot - keep) * eRet(Math.min(1, (t - retAt) / PEN.retract.dur));
+        }
+        function settle(t) {                     // 0 = tapered stroke, 1 = the uniform mark
+          if (t <= turn) return 0;
+          return eRet(Math.min(1, (t - turn) / (retEnd - turn)));
+        }
+        function look(t) {
+          var u = (t - Pt.ignite) / Pt.igniteDur;
+          if (u <= 0) return { a: 0, r: 3 };
+          var a = u < 1 ? e1(u) : 1, rad = u < 1 ? 3 + 3 * e1(u) : 6 - 2 * eIO(Math.min(1, (t - Pt.ignite - Pt.igniteDur) / 0.6));
+          if (t > runEnd) a *= Math.max(0, 1 - (t - runEnd) / 0.2);   // the tip goes out as the line becomes the mark
+          return { a: a, r: rad };
+        }
+        BM.onTime(function (t) {
+          hg.setTransform(1, 0, 0, 1, 0, 0);
+          hg.clearRect(0, 0, hc.width, hc.height);
+          var s1 = tipLen(t), s0 = tailLen(t);
+          if (s1 > s0 + 0.5) {
+            var b = settle(t), span = s1 - s0, step = 2, prev = pointAtLen(pts, s0);
+            hg.strokeStyle = BM.color.gold; hg.lineCap = "round"; hg.lineJoin = "round";
+            for (var sl = s0 + step; ; sl += step) {
+              var at = Math.min(sl, s1), p2 = pointAtLen(pts, at);
+              var u = (at - s0) / span, wTaper = PEN.widthTop + (PEN.widthTip - PEN.widthTop) * u;
+              hg.lineWidth = wTaper + (PEN.markWidth - wTaper) * b;
+              hg.beginPath(); hg.moveTo(prev[0], prev[1]); hg.lineTo(p2[0], p2[1]); hg.stroke();
+              prev = p2;
+              if (at >= s1) break;
+            }
+          }
+          var h = look(t);
+          if (h.a <= 0) return;
+          var p = pointAtLen(pts, s1);
+          hg.globalAlpha = h.a;
+          hg.fillStyle = BM.color[Pt.color];
+          hg.beginPath(); hg.arc(p[0], p[1], h.r, 0, Math.PI * 2); hg.fill();
+          hg.globalAlpha = 1;
+        });
+
+        // ---- the closing line (word mode), the mark, the fade ----
+        if (D.line) {
+          var ln = document.getElementById("line");
+          ln.style.top = D.line.top + "px";
+          BM.revealWords(tl, "#line", D.line.text, { at: D.line.at, stagger: D.line.stagger });
+          var nl = D.line.text.split(/\s+/).filter(Boolean).length;
+          T.lineLastWord = +(D.line.at + (nl - 1) * D.line.stagger).toFixed(3);
+        }
+        if (D.mark.show) BM.mark("#end", { at: D.mark.at, tl: tl });
+        tl.fromTo("#fade", { opacity: 0 }, { opacity: 1, duration: D.fade.dur, ease: "power1.in", immediateRender: false }, D.fade.at);
+
+        window.REVEAL_TIMES = T;
+        tl.set({}, {}, D.duration);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

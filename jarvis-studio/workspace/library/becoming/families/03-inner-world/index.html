@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>03 · The Inner World · Becoming signature family</title>
+    <!-- tools/build.sh stages tokens.css, fonts/, vendor/ and lib/ beside this file (root-relative: lint rejects "../"). -->
+    <link rel="stylesheet" href="tokens.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="lib/becoming-motion.js"></script>
+    <script src="data.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #05080C; }
+      #root { background: #05080C; }
+      #photo { object-fit: cover; }
+      #label { position: absolute; left: 80px; width: 860px; text-align: center; opacity: 0; text-shadow: var(--bm-text-shadow); }
+      #fade { background: #04070B; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="bm-frame" data-composition-id="main" data-start="0" data-duration="12" data-fps="30" data-width="1080" data-height="1920">
+      <canvas id="sea" class="bm-plate" width="1188" height="2112"></canvas>
+      <div id="scrim" class="bm-scrim"></div>
+      <canvas id="lens" class="bm-layer" width="1080" height="1920"></canvas>
+      <canvas id="line" class="bm-layer" width="1080" height="1920"></canvas>
+      <canvas id="grain" class="bm-grain" width="1080" height="1920"></canvas>
+      <div id="label" class="bm-label"></div>
+      <div id="hook" class="bm-hook"></div>
+      <div id="fade" class="bm-layer"></div>
+    </div>
+    <script>
+      // 03 · THE INNER WORLD · gold line behaviour: scattered strands gather into one line. Every value comes from data.js.
+      //  0.15        the lens comes up out of the dark (radius 340 -> 380 over 0.5 s, never from zero); opening sting A-E-D on it
+      //  0.15-0.85   faint ink and mist strands fade up with it: a slow, flowing, sheared field (scattered attention)
+      //  0.7         "ILLUSTRATION" label above the lens (it is a picture of something invisible, not a record)
+      //  1.4-4.0     the flow bends until every strand runs horizontally; the watch tick starts at 4.0 and races
+      //  4.2-5.5     the strands converge on the lens's centre line (outer strands fade, 7 survive) and warm towards gold
+      //  5.5         the strands become one crisp gold line: the cue's turn (dead stop from 5.08, hit on 5.5)
+      //  5.95-7.55   the iris: the lens opens to the plate and the line runs on as its horizon, past both edges
+      //  6.5-9.22    one line (7 words), word by word, above the horizon; landing sting on its last word (9.0)
+      //  11.25-11.85 dip to black
+      // Everything that moves is a canvas painted from composition time (BM.onTime). The field is one cheap WebGL1
+      // fragment shader (BM.shader): contour lines of a blended stream function, no particles, no simulation.
+      (function () {
+        var D = window.DATA;
+        var LZ = D.lens, ST = D.strands, LN = D.line, IR = D.iris, P = D.plate, PH = D.phrase;
+        var ret = D.returnToPlate !== false;
+        var tl = gsap.timeline({ paused: true });
+        BM.track(tl);
+
+        function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+        function prog(t, span) { return clamp((t - span[0]) / span[1], 0, 1); }
+        var out1 = gsap.parseEase("power1.out"), io1 = gsap.parseEase("power1.inOut"), io2 = gsap.parseEase("power2.inOut");
+        var sineIO = gsap.parseEase("sine.inOut"), sineO = gsap.parseEase("sine.out");
+        function rgb(tok) { var h = BM.color[tok]; return [parseInt(h.substr(1, 2), 16) / 255, parseInt(h.substr(3, 2), 16) / 255, parseInt(h.substr(5, 2), 16) / 255]; }
+
+        // ---- the plate (hidden behind the lens canvas until the iris opens) ----
+        var plateSel = "#sea";
+        if (P.type === "photo" && P.src) {
+          var img = document.createElement("img");
+          img.id = "photo"; img.className = "bm-plate"; img.src = P.src; img.alt = "";
+          var sea = document.getElementById("sea");
+          sea.parentNode.replaceChild(img, sea);
+          plateSel = "#photo";
+        } else {
+          BM.onTime(BM.seaPlate("#sea", { seed: P.seed, glow: P.glow, horizonY: P.horizonY, glowX: P.glowX }));
+        }
+        document.querySelector(plateSel).style.transformOrigin = "50% " + ((P.horizonY + 96) / 2112 * 100).toFixed(3) + "%";
+        gsap.set(plateSel, { opacity: ret ? 1 : 0, scale: P.push[2] });
+        if (ret) tl.fromTo(plateSel, { scale: P.push[2] }, { scale: P.push[3], duration: P.push[1], ease: "none", immediateRender: false }, P.push[0]);
+
+        // ---- the lens and its field: one fragment shader ----
+        var FRAG = [
+          "precision highp float;",
+          "uniform float u_time; uniform vec2 u_res;",
+          "uniform vec2 u_c; uniform float u_r, u_r0, u_soft, u_lens, u_open, u_rim, u_rimIn, u_tint;",
+          "uniform float u_align, u_gather, u_strand, u_gold, u_conflict, u_seed, u_n, u_nk, u_freq, u_shear, u_width, u_alpha, u_dither, u_drift;",
+          "uniform vec3 c_abyss, c_ocean, c_ink, c_mist, c_gold;",
+          "float h12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }",
+          "float vn(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);",
+          "  return mix(mix(h12(i), h12(i + vec2(1.0, 0.0)), u.x), mix(h12(i + vec2(0.0, 1.0)), h12(i + vec2(1.0, 1.0)), u.x), u.y); }",
+          "float fbm(vec2 p){ return vn(p) * 0.65 + vn(p * 2.03 + 7.1) * 0.35; }",
+          // stream function: its contour lines are the strands. Scattered = tangled noise; conflicting = two opposing
+          // shears meeting in a seam; both blend to q.y (every strand horizontal), then a gain pulls them to q.y = 0
+          "float field(vec2 q){",
+          "  vec2 s = vec2(u_seed * 13.7, u_seed * 7.3); float t = u_time;",
+          "  vec2 qs = vec2(q.x + u_shear * q.y, q.y);",
+          "  float sc = (fbm(qs * u_freq + s + vec2(t * 0.035, -t * 0.02)) - 0.5) * 2.4 + q.y * (0.3 + u_shear) + q.x * u_shear * 0.5;",
+          "  float w = smoothstep(-0.3, 0.3, q.y + 0.25 * (fbm(q * 1.1 + s) - 0.5));",
+          "  float cf = mix(q.y * 0.7 + q.x * 0.75, q.y * 0.7 - q.x * 0.75, w) + (fbm(q * 1.6 + s + t * 0.03) - 0.5) * 0.45;",
+          "  return mix(mix(sc, cf, u_conflict), q.y, u_align);",
+          "}",
+          "float bayer2(vec2 a){ a = floor(a); return fract(dot(a, vec2(0.5, a.y * 0.75))); }",
+          "float bayer4(vec2 a){ return bayer2(0.5 * a) * 0.25 + bayer2(a); }",
+          "void main(){",
+          "  vec2 p = vec2(gl_FragCoord.x, u_res.y - gl_FragCoord.y);",
+          "  float d = length(p - u_c);",
+          "  float inL = (1.0 - smoothstep(u_r - u_soft, u_r, d)) * u_lens;",
+          "  vec3 col = mix(c_abyss, mix(c_abyss, c_ocean, u_tint * (1.0 - smoothstep(0.0, u_r, d))), inL);",
+          "  float A = 1.0 - inL * u_open;",
+          "  vec3 pm = col * A;",
+          "  float rim = (1.0 - smoothstep(0.0, 1.3, abs(d - (u_r - 1.5)))) * u_rim * u_rimIn;",
+          "  pm = c_mist * rim + pm * (1.0 - rim); A = rim + A * (1.0 - rim);",
+          "  if (u_strand > 0.001 && inL > 0.001) {",
+          "    float K = u_n / (1.0 - 0.985 * u_gather);",
+          "    vec2 q = (p - u_c) / u_r0;",
+          "    float f0 = field(q) * K;",
+          "    float fx = field(q + vec2(1.0 / u_r0, 0.0)) * K, fy = field(q + vec2(0.0, 1.0 / u_r0)) * K;",
+          "    float g = max(length(vec2(fx - f0, fy - f0)), 1e-4);",
+          "    float idx = floor(f0 + 0.5), fr = abs(f0 - idx);",
+          "    float dpx = fr / g;",
+          "    float I = 1.0 - smoothstep(u_width * 0.5, u_width * 0.5 + 1.0, dpx);",
+          "    float hs = h12(vec2(idx * 1.37, u_seed + 4.0));",
+          "    float nk = mix(u_n, u_nk, smoothstep(0.0, 0.45, u_gather));",
+          "    float keep = 1.0 - smoothstep(nk - 2.5, nk + 0.5, abs(idx));",
+          "    float dir = (u_conflict > 0.5 && q.y < 0.0) ? -1.0 : 1.0;",
+          "    float dash = smoothstep(0.34, 0.56, vn(vec2(q.x * 2.6 + hs * 31.0 - u_time * u_drift * dir, idx * 1.7 + u_seed)));",
+          "    dash = mix(dash, 1.0, u_gather);",
+          "    float a = I * (0.4 + 0.6 * hs) * dash * keep * u_strand * u_alpha * inL;",
+          "    a = mix(a, step(bayer4(gl_FragCoord.xy) * 0.94 + 0.03, a * 1.25) * 0.8, u_dither * (1.0 - u_gather));",  // offset: a = 0 must stay 0 (draft 2 showed a 4 px dot grid over the whole lens)
+          "    vec3 sc = mix(c_mist, c_ink, step(0.5, hs));",
+          "    float near = exp(-abs(p.y - u_c.y) / 26.0);",
+          "    sc = mix(sc, c_gold, clamp(u_gold * (0.35 + 0.65 * near), 0.0, 1.0));",
+          "    a = clamp(a * (1.0 + u_gold * near), 0.0, 1.0);",
+          "    pm = sc * a + pm * (1.0 - a); A = a + A * (1.0 - a);",
+          "  }",
+          "  gl_FragColor = vec4(pm, A);",
+          "}"
+        ].join("\n");
+        var shade = BM.shader("#lens", FRAG, {
+          alpha: true,
+          uniforms: {
+            u_c: [LZ.cx, LZ.cy], u_r0: LZ.r, u_tint: LZ.tint, u_conflict: D.field === "conflicting" ? 1 : 0, u_seed: D.seed,
+            u_n: ST.n, u_nk: ST.nGather == null ? ST.n : ST.nGather, u_freq: ST.freq == null ? 1.35 : ST.freq, u_shear: ST.shear || 0, u_width: ST.width, u_alpha: ST.alpha, u_dither: ST.dither, u_drift: ST.drift,
+            c_abyss: rgb("abyss"), c_ocean: rgb("ocean"), c_ink: rgb("ink"), c_mist: rgb("mist"), c_gold: rgb("gold")
+          }
+        });
+
+        // the lens radius over time: up out of the dark, then (if returning) the iris opens past every corner
+        function lensR(t) {
+          var r = LZ.rFrom + (LZ.r - LZ.rFrom) * sineO(prog(t, LZ.in));
+          if (ret) r += (IR.rTo - LZ.r) * io2(prog(t, [IR.at, IR.dur]));
+          return r;
+        }
+        BM.onTime(function (t) {
+          var r = lensR(t);
+          shade(t, {
+            u_r: r, u_soft: LZ.soft + 0.3 * (r - LZ.r),
+            u_lens: out1(prog(t, LZ.in)),
+            u_rimIn: out1(prog(t, [LZ.in[0], LZ.rimIn || LZ.in[1]])),
+            u_open: ret ? io1(prog(t, IR.open)) : 0,
+            u_rim: LZ.rim * (ret ? 1 - io1(prog(t, IR.rimOut)) : 1),
+            u_align: sineIO(prog(t, ST.align)),
+            u_gather: io2(prog(t, ST.gather)),
+            u_gold: (ST.goldMax == null ? 1 : ST.goldMax) * io1(prog(t, ST.gold)),
+            u_strand: out1(prog(t, ST.in)) * (1 - io1(prog(t, ST.out)))
+          });
+        });
+
+        // ---- the gold line: crisp, hand-drawn (BM.wob), clipped to the lens with soft ends; it lands on the horizon ----
+        var lc = document.getElementById("line"), lg = lc.getContext("2d");
+        var pts = BM.wob(LN.x0, LN.x1, LZ.cy, { step: LN.step, amp: LN.amp, rng: BM.rng(LN.seed) });
+        var clip = document.createElement("canvas"); clip.width = 1080; clip.height = 1920;
+        var cg = clip.getContext("2d");
+        BM.onTime(function (t) {
+          lg.setTransform(1, 0, 0, 1, 0, 0); lg.globalCompositeOperation = "source-over"; lg.globalAlpha = 1;
+          lg.clearRect(0, 0, 1080, 1920);
+          var a = out1(prog(t, [LN.at - (LN.lead || 0), LN.inDur]));
+          if (a <= 0) return;
+          lg.globalAlpha = a; lg.strokeStyle = BM.color.gold; lg.lineWidth = LN.width; lg.lineCap = "round"; lg.lineJoin = "round";
+          lg.beginPath(); lg.moveTo(pts[0][0], pts[0][1]);
+          for (var i = 1; i < pts.length; i++) lg.lineTo(pts[i][0], pts[i][1]);
+          lg.stroke();
+          // the soft ends: the line exists only inside the lens (its chord), feathered over the lens edge
+          var r = lensR(t), soft = LZ.soft + 0.3 * (r - LZ.r);
+          if (LZ.cx - r + soft > -10 || LZ.cx + r - soft < 1090) {
+            cg.setTransform(1, 0, 0, 1, 0, 0); cg.clearRect(0, 0, 1080, 1920);
+            var rg = cg.createRadialGradient(LZ.cx, LZ.cy, Math.max(0, r - soft * 1.6), LZ.cx, LZ.cy, Math.max(1, r - soft * 0.2));
+            rg.addColorStop(0, "rgba(0,0,0,1)"); rg.addColorStop(1, "rgba(0,0,0,0)");
+            cg.fillStyle = rg; cg.fillRect(0, LZ.cy - 20, 1080, 40);
+            lg.globalAlpha = 1; lg.globalCompositeOperation = "destination-in";
+            lg.drawImage(clip, 0, 0);
+          }
+          lg.globalCompositeOperation = "source-over";
+        });
+        // the line rides the plate's push (origin on the horizon, so it stays on it)
+        lc.style.transformOrigin = LZ.cx + "px " + LZ.cy + "px";
+        gsap.set("#line", { scale: P.push[2] });
+        if (ret) tl.fromTo("#line", { scale: P.push[2] }, { scale: P.push[3], duration: P.push[1], ease: "none", immediateRender: false }, P.push[0]);
+
+        BM.onTime(BM.grain("#grain", { seed: D.grain.seed, amount: D.grain.amount }));
+
+        // ---- the label: what the lens is ----
+        var lab = document.getElementById("label");
+        lab.textContent = D.label.text; lab.style.top = (ret ? D.label.top : (D.label.topNoReturn || D.label.top)) + "px";
+        gsap.set(lab, { y: 0 });
+        tl.fromTo(lab, { opacity: 0 }, { opacity: 0.85, duration: D.label.in[1], ease: "power1.out", immediateRender: false }, D.label.in[0]);
+        if (ret) tl.fromTo(lab, { opacity: 0.85 }, { opacity: 0, duration: D.label.out[1], ease: "power1.in", immediateRender: false }, D.label.out[0]);
+
+        // ---- the one line, word by word ----
+        document.getElementById("hook").style.top = (ret ? PH.top : PH.topNoReturn) + "px";
+        // one start time per word, or the extra words would show from frame 0 (seen in the first draft: "direction." sat on
+        // screen from t = 0 because the phrase had six words and five times). Fail loudly instead.
+        var nWords = PH.text.split(/\s+/).filter(Boolean).length;
+        if (PH.times.length !== nWords) throw new Error("data.js phrase: " + nWords + " words but " + PH.times.length + " times");
+        BM.revealWords(tl, "#hook", PH.text, { times: PH.times, lead: PH.lead || 0 });
+
+        // ---- dip to black ----
+        tl.fromTo("#fade", { opacity: 0 }, { opacity: 1, duration: D.dip.dur, ease: "power1.in", immediateRender: false }, D.dip.at);
+
+        tl.set({}, {}, D.duration);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

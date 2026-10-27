@@ -19,7 +19,7 @@
     </style>
   </head>
   <body>
-    <div id="root" class="bm-frame" data-composition-id="main" data-start="0" data-duration="10" data-fps="30" data-width="1080" data-height="1920">
+    <div id="root" class="bm-frame" data-composition-id="main" data-start="0" data-duration="8.5" data-fps="30" data-width="1080" data-height="1920">
       <canvas id="world" class="hz-plate" width="1188" height="2112"></canvas>
       <div id="scrim" class="bm-scrim"></div>
       <canvas id="grain" class="bm-grain" width="1080" height="1920"></canvas>
@@ -33,9 +33,11 @@
       //  0.3-3.0   the head travels right past the edge drawing a jittered line (a quieter arm reaches left from 0.8);
       //            the sea exists only where the line has passed: each column of the plate opens up and down from it
       //  3.2-5.2   one phrase rises word by word above the line
-      //  5.8-7.5   the hand-over: the stroke cools gold -> cream, thins and fades into the plate's own lit horizon
-      //            while the camera pushes 1.00 -> 1.04
-      //  7.5-9.3   hold · 9.3-9.9 dip to black
+      //  2.6-5.2   with both heads off frame, the rest of the sky opens (flat, every column at once)
+      //  5.8-7.5   the hand-over: the stroke morphs into the plate's own lit horizon (jitter -> straight, 4 -> 1.5 px,
+      //            gold -> cream, fading as the seam rises: one line becoming another); a linear push 1.00 -> 1.05 runs
+      //            from 5.2 to the end
+      //  7.8-8.4   dip to black · 8.4-8.5 black
       // Every canvas is a pure function of composition time (BM.onTime); no SVG element moves.
       (function () {
         var D = window.DATA;
@@ -53,17 +55,7 @@
         // ---- the head positions (frame x), as pure functions of t ----
         function headR(t) { return Ln.x0 + (Ln.xRight - Ln.x0) * lineEase(clamp((t - Ln.right[0]) / Ln.right[1], 0, 1)); }
         function headL(t) { return Ln.x0 + (Ln.xLeft - Ln.x0) * lineEase(clamp((t - Ln.left[0]) / Ln.left[1], 0, 1)); }
-        // when did the line first pass frame x? (bisection on the monotonic head functions; computed once per column)
-        function passTime(x) {
-          if (Math.abs(x - Ln.x0) < 0.5) return Ln.ignite;
-          var right = x > Ln.x0, f = right ? headR : headL;
-          var a = right ? Ln.right[0] : Ln.left[0], b = a + (right ? Ln.right[1] : Ln.left[1]);
-          if (right ? f(b) < x : f(b) > x) return Infinity;
-          for (var k = 0; k < 40; k++) { var m = (a + b) / 2; if (right ? f(m) >= x : f(m) <= x) b = m; else a = m; }
-          return Math.max(Ln.ignite, b);
-        }
-        var COL = R.column, nCol = Math.ceil(PW / COL), colPass = [];
-        for (var c = 0; c < nCol; c++) colPass.push(passTime(c * COL + COL / 2 - OX));
+        var COL = R.column, nCol = Math.ceil(PW / COL);
 
         // ---- the plate source: the code sea painted off screen, or a photo (scratchpad builds only) ----
         var src = null, seaDraw = null, photo = null;
@@ -74,7 +66,7 @@
           photo.onload = function () { BM.seek(tl.time()); };   // repaint once the pixels exist
         } else {
           src = document.createElement("canvas"); src.width = PW; src.height = PH;
-          seaDraw = BM.seaPlate(src, { seed: P.seed, glow: S.glow, horizonY: hyF, glowX: P.glowX, density: S.density, swell: S.swell });
+          seaDraw = BM.seaPlate(src, { seed: P.seed, glow: S.glow, horizonY: hyF, glowX: (S.glowX != null ? S.glowX : P.glowX), density: S.density, swell: S.swell });
         }
         function drawPlate(g) {
           if (seaDraw) { g.drawImage(src, 0, 0); return; }
@@ -88,7 +80,13 @@
         var mask = document.createElement("canvas"); mask.width = PW; mask.height = PH;
         var mg = mask.getContext("2d");
         world.style.transformOrigin = "50% " + (hy / PH * 100).toFixed(3) + "%";
-        function handoverU(t) { return sineIO(clamp((t - HO.at) / HO.dur, 0, 1)); }
+        var growE = gsap.parseEase(R.growEase || "power2.out");
+        var riseE = gsap.parseEase((R.rise && R.rise.ease) || "sine.inOut");
+        var WA = D.water || { alpha: 0, depth: 0 };
+        if (D.scrim) document.getElementById("scrim").style.background = "linear-gradient(180deg, " + BM.rgba("night", 0.72) + " 0%, " +
+          BM.rgba("night", 0.35) + " 30%, " + BM.rgba("night", 0.25) + " 50%, " + BM.rgba("night", D.scrim.at70) + " 70%, " + BM.rgba("night", D.scrim.at100) + " 100%)";   // sine.inOut: a fan that hugs the line near the head, not a box
+        var hoE = gsap.parseEase(HO.ease || "sine.inOut");
+        function handoverU(t) { return hoE(clamp((t - HO.at) / HO.dur, 0, 1)); }
         function paintWorld(t) {
           if (seaDraw) seaDraw(t);
           wg.setTransform(1, 0, 0, 1, 0, 0);
@@ -96,19 +94,37 @@
           wg.clearRect(0, 0, PW, PH);
           if (t < Ln.ignite) return;
           drawPlate(wg);
+          // the water's own light: a soft wash below the horizon in plate tones (teal -> ocean), masked like the plate
+          if (WA.alpha > 0) {
+            wg.globalCompositeOperation = "lighter";
+            var wgr = wg.createLinearGradient(0, hy, 0, hy + WA.depth);
+            wgr.addColorStop(0, BM.rgba("teal", WA.alpha));
+            wgr.addColorStop(0.45, BM.rgba("ocean", WA.alpha * 1.6));
+            wgr.addColorStop(1, BM.rgba("ocean", 0));
+            wg.fillStyle = wgr; wg.fillRect(0, hy, PW, WA.depth);
+            wg.globalCompositeOperation = "source-over";
+          }
           // mask: each column opens from the horizon (up and down, soft ends) once the line has passed it
           mg.setTransform(1, 0, 0, 1, 0, 0); mg.globalAlpha = 1;
           mg.clearRect(0, 0, PW, PH);
           var full = true, hR = headR(t), hL = headL(t);
+          var igA = out1(clamp((t - Ln.ignite) / R.fadeIn, 0, 1));
+          var eT = growE(clamp((t - Ln.ignite) / R.grow, 0, 1));
+          var rE = R.rise ? riseE(clamp((t - R.rise.at) / R.rise.dur, 0, 1)) : 0, rise = rE * (R.rise ? R.rise.up : 0), riseDn = rE * (R.rise ? R.rise.down || 0 : 0);
           for (var c = 0; c < nCol; c++) {
-            var age = t - colPass[c];
-            if (!(age > 0)) { full = false; continue; }
-            // vertical opening by age; horizontal feather by distance behind the leading head (a slow head would
-            // otherwise leave a hard vertical edge: seen at 1.5 s in the first render)
-            var cx = c * COL + COL / 2 - OX, dist = Math.min(hR - cx, cx - hL);   // to the nearer head: no seam at x0
-            var e = out2(clamp(age / R.grow, 0, 1)), a = out1(clamp(age / R.fadeIn, 0, 1)) * sineIO(clamp(dist / R.feather + 0.15, 0, 1));
-            var up = 24 + e * R.up, dn = 16 + e * R.down, y0 = hy - up - R.soft, y1 = hy + dn + R.soft;
-            if (a < 1 || y0 > 0 || y1 < PH) full = false;
+            // signed distance to the nearer head: >= 0 between the heads (passed), < 0 ahead of them. The feather runs
+            // across the head on both arms (and on the left before its arm starts), so no column edge is ever hard
+            // (revision 1: a hard vertical edge at x 265 at 1.0 s, under the slow left arm)
+            var cx = c * COL + COL / 2 - OX;
+            var sd = cx >= hL && cx <= hR ? Math.min(hR - cx, cx - hL) : -(cx > hR ? cx - hR : hL - cx);
+            var a = igA * sineIO(clamp(sd / R.feather + R.lead, 0, 1));
+            if (a < 1) full = false;
+            if (a <= 0.002) continue;
+            // band height: one opening for the whole line (time since ignition), tapered to the heads by distance, so it
+            // hugs the horizon and stays flat behind the heads instead of peaking over the ignition point (revision 1)
+            var e = eT * sineIO(clamp(sd / R.taper, 0, 1));
+            var up = 24 + e * R.up + rise, dn = 16 + e * R.down + riseDn, y0 = hy - up - R.soft, y1 = hy + dn + R.soft;
+            if (y0 > 0 || y1 < PH) full = false;
             var gr = mg.createLinearGradient(0, y0, 0, y1), span = y1 - y0;
             gr.addColorStop(0, "rgba(0,0,0,0)");
             gr.addColorStop(R.soft / span, "rgba(0,0,0,1)");
@@ -156,7 +172,8 @@
         ptsL[0][1] = ptsR[0][1];                                     // both arms leave the same point
         if (ptsL.length > 2 && ptsL[0][0] - ptsL[1][0] < S.step / 2) ptsL.splice(1, 1);   // no short kinked segment at x0
         var trem = BM.rng(Ln.seed + 2), phR = ptsR.map(function () { return trem() * 6.283; }), phL = ptsL.map(function () { return trem() * 6.283; });
-        function yAt(p, ph, t) { return p[1] + (S.tremor ? S.tremor * Math.sin(6.283 * S.tremorHz * t + ph) : 0); }
+        // the hand-over flattens the line onto the seam's straight horizon: jitter and tremor scale by (1 - u)
+        function yAt(p, ph, t) { var k = 1 - handoverU(t); return hyF + k * (p[1] - hyF + (S.tremor ? S.tremor * Math.sin(6.283 * S.tremorHz * t + ph) : 0)); }
         // the drawn part of one arm: every point up to the head, plus the head itself (interpolated)
         function arm(pts, ph, hx, dir, t) {
           var out = [[pts[0][0], yAt(pts[0], ph[0], t)]];
@@ -190,7 +207,7 @@
           lg.globalAlpha = 1;
           lg.clearRect(0, 0, PW, PH);
           if (t < Ln.ignite) return;
-          var u = handoverU(t), fadeA = 1 - in2(u);                 // cools, thins, and goes into the plate by HO end
+          var u = handoverU(t), fadeA = 1 - u;                      // fades at the rate the seam rises (both 50 % at mid-window)
           if (fadeA <= 0.002) return;
           lg.lineCap = "round"; lg.lineJoin = "round";
           lg.strokeStyle = BM.mix("gold", "cream", u);

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>04 · The Memory Fragment · Becoming signature family</title>
+    <!-- tools/build.sh stages tokens.css, fonts/, vendor/ and lib/ beside this file (root-relative: lint rejects "../"). -->
+    <link rel="stylesheet" href="tokens.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="lib/becoming-motion.js"></script>
+    <script src="data.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #04070B; }
+      /* plate-sized layers (1188x2112 overscan at -54, -96) so the push never shows an edge; both push together */
+      .mf-push { position: absolute; left: -54px; top: -96px; width: 1188px; height: 2112px; pointer-events: none; }
+      .mf-push canvas { position: absolute; left: 0; top: 0; width: 1188px; height: 2112px; }
+      #photo { display: none; }
+      /* a lighter shade than bm-scrim: the still must stay a picture; the top keeps the phrase legible */
+      #scrim { background: linear-gradient(180deg, rgba(4, 7, 11, 0.62) 0%, rgba(4, 7, 11, 0.3) 28%, rgba(4, 7, 11, 0) 46%, rgba(4, 7, 11, 0) 70%, rgba(4, 7, 11, 0.45) 100%); }
+      #stamp { position: absolute; font-family: var(--bm-sans); font-weight: 500; letter-spacing: 0.16em; line-height: 1; color: var(--bm-cream); text-shadow: var(--bm-text-shadow); white-space: nowrap; opacity: 0; }
+      #hook { font-style: italic; }
+      #fade { background: #04070B; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="bm-frame" data-composition-id="main" data-start="0" data-duration="9" data-fps="30" data-width="1080" data-height="1920">
+      <div id="still" class="mf-push"><canvas id="plate" width="1188" height="2112"></canvas></div>
+      <div id="scrim" class="bm-layer"></div>
+      <canvas id="grain" class="bm-grain" width="1080" height="1920"></canvas>
+      <div id="over" class="mf-push"><canvas id="line" width="1188" height="2112"></canvas><div id="stamp"></div></div>
+      <div id="hook" class="bm-hook"></div>
+      <div id="fade" class="bm-layer"></div>
+    </div>
+    <script>
+      // 04 · THE MEMORY FRAGMENT · gold line behaviour: it underlines a date, then traces the memory's contour.
+      // Every value comes from data.js.
+      //  0.05-1.4  the still assembles from horizontal slices: each fades in from black at its own time, a few px out of
+      //            register, and slides home; the black seams between them close (memory assembling, never a glitch)
+      //  0-9       push 1.00 -> 1.07 (linear) on the still and everything printed on it · seeded grain on top
+      //  1.5       the date stamp appears in the dark water under the horizon (a clearly fake placeholder in the demo)
+      //  2.0       the gold light ignites at the stamp's left; the opening sting fires on it; the line underlines the
+      //            date and ends on the headland's foot, where the contour starts (2.9)
+      //  3.7-6.4   the line leaves the date: its head traces the ridge past the right edge (first tick on 3.7), its
+      //            tail erases the underline (the date is let go; the shape is kept)
+      //  3.3-6.06  one italic Cormorant line rises word by word; the stamp recedes while "not the date." arrives;
+      //            the landing sting falls on "date."
+      //  8.3-8.9   dip to black
+      // Every moving thing is painted on a canvas from composition time (BM.onTime); no SVG element moves.
+      (function () {
+        var D = window.DATA;
+        var P = D.plate, Ln = D.line, PU = D.push;
+        var PW = BM.plate.width, PH = BM.plate.height, OX = -BM.plate.left, OY = -BM.plate.top;   // 1188, 2112, 54, 96
+        function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+        function U(t, a, d) { return clamp((t - a) / d, 0, 1); }
+        var out1 = gsap.parseEase("power1.out"), out2 = gsap.parseEase("power2.out"), out3 = gsap.parseEase("power3.out");
+        var io1 = gsap.parseEase("power1.inOut"), sineIO = gsap.parseEase("sine.inOut");
+
+        var tl = gsap.timeline({ paused: true });
+        BM.track(tl);
+
+        // ---- the still, painted once into an offscreen plate-sized canvas ----
+        var src = document.createElement("canvas"); src.width = PW; src.height = PH;
+        var sg = src.getContext("2d");
+        var contourP = D.contour.map(function (p) { return [p[0] + OX, p[1] + OY]; });   // plate px
+        function paintCode() {
+          var sea = document.createElement("canvas"); sea.width = PW; sea.height = PH;
+          var seaDraw = BM.seaPlate(sea, { seed: P.seed, glow: P.glow, glowX: P.glowX, horizonY: P.horizonY, density: P.density });
+          seaDraw(P.freezeAt);                       // a still: the water is frozen at one instant
+          sg.drawImage(sea, 0, 0);
+          // the headland: its ridge is exactly `contour`; filled down to its shore (contour[0]'s y, or just under the
+          // horizon if that is higher), so its foot sits in the water in front of the horizon
+          var hy = P.horizonY + OY, top = Math.min.apply(null, contourP.map(function (p) { return p[1]; }));
+          var base = Math.max(hy + 6, contourP[0][1]);
+          var body = sg.createLinearGradient(0, top, 0, base + 30);
+          body.addColorStop(0, BM.mix("abyss", "ocean", 0.5));
+          body.addColorStop(0.6, BM.mix("night", "ocean", 0.35));
+          body.addColorStop(1, BM.color.night);
+          sg.beginPath();
+          sg.moveTo(contourP[0][0], contourP[0][1]);
+          for (var i = 1; i < contourP.length; i++) sg.lineTo(contourP[i][0], contourP[i][1]);
+          sg.lineTo(PW + 10, contourP[contourP.length - 1][1]);
+          sg.lineTo(PW + 10, base); sg.lineTo(contourP[0][0], base);
+          sg.closePath(); sg.fillStyle = body; sg.fill();
+          // its shore: a faint wet edge where the headland meets the water
+          sg.beginPath(); sg.moveTo(contourP[0][0], base); sg.lineTo(PW + 10, base);
+          sg.strokeStyle = BM.rgba("mist", 0.12); sg.lineWidth = 1.5; sg.stroke();
+          // the lit edge of the ridge, faint (the slope that faces the light): the contour the line will trace
+          sg.beginPath(); sg.moveTo(contourP[0][0], contourP[0][1]);
+          for (var j = 1; j < contourP.length; j++) sg.lineTo(contourP[j][0], contourP[j][1]);
+          sg.strokeStyle = BM.rgba("mist", 0.28); sg.lineWidth = 1.5; sg.stroke();
+        }
+        if (P.type === "photo" && P.src) {
+          var photo = document.createElement("img");
+          photo.id = "photo"; photo.alt = ""; photo.src = P.src;
+          document.getElementById("root").appendChild(photo);
+          photo.onload = function () {               // cover-fit to the overscan plate, then repaint
+            var s = Math.max(PW / photo.naturalWidth, PH / photo.naturalHeight), w = photo.naturalWidth * s, h = photo.naturalHeight * s;
+            sg.drawImage(photo, (PW - w) / 2, (PH - h) / 2, w, h);
+            BM.seek(tl.time());
+          };
+        } else paintCode();
+
+        // ---- assembly: slices painted from composition time onto the visible plate canvas ----
+        var plate = document.getElementById("plate"), pg = plate.getContext("2d");
+        var n = D.slices === 2 || D.slices === 3 ? D.slices : 1;
+        var cuts = n > 1 ? D.cuts[n].map(function (y) { return y + OY; }) : [];
+        var bands = [], edges = [0].concat(cuts, [PH]);
+        for (var b = 0; b < n; b++) bands.push({ y0: edges[b], y1: edges[b + 1], s: D.sliceIn[Math.min(b, D.sliceIn.length - 1)] });
+        BM.onTime(function (t) {
+          pg.setTransform(1, 0, 0, 1, 0, 0); pg.globalAlpha = 1;
+          pg.fillStyle = BM.color.night; pg.fillRect(0, 0, PW, PH);
+          var gap = n > 1 ? D.seam.px * (1 - out2(U(t, D.seam.at, D.seam.dur))) : 0;
+          for (var k = 0; k < bands.length; k++) {
+            var B = bands[k], a = out1(U(t, B.s.at, B.s.fade));
+            if (a <= 0) continue;
+            var dx = n > 1 ? B.s.dx * (1 - out3(U(t, B.s.at, B.s.settle))) : 0;
+            var y0 = B.y0 + (k > 0 ? gap / 2 : 0), y1 = B.y1 - (k < n - 1 ? gap / 2 : 0);
+            pg.globalAlpha = a;
+            pg.drawImage(src, 0, y0, PW, y1 - y0, dx, y0, PW, y1 - y0);
+          }
+          pg.globalAlpha = 1;
+        });
+        BM.onTime(BM.grain("#grain", { seed: D.grain.seed, amount: D.grain.amount }));
+
+        // ---- the push: the still and the overlay (stamp + line) scale together about the same frame point ----
+        var origin = (PU.origin[0] + OX) + "px " + (PU.origin[1] + OY) + "px";
+        gsap.set("#still, #over", { scale: PU.from, transformOrigin: origin });   // same transform on a fresh page as after any seek
+        tl.fromTo("#still, #over", { scale: PU.from }, { scale: PU.to, duration: D.duration, ease: "none", immediateRender: false }, 0);
+
+        // ---- the stamp ----
+        var stamp = document.getElementById("stamp"), hasStamp = typeof D.stamp === "string" && D.stamp.length > 0;
+        if (hasStamp) {
+          stamp.textContent = D.stamp;
+          stamp.style.left = (D.stampBox.x + OX) + "px"; stamp.style.top = (D.stampBox.y + OY) + "px";
+          stamp.style.fontSize = D.stampBox.size + "px";
+          tl.fromTo(stamp, { opacity: 0 }, { opacity: 1, duration: D.stampIn.dur, ease: "power1.out", immediateRender: false }, D.stampIn.at);
+          tl.fromTo(stamp, { opacity: 1 }, { opacity: D.stampFade.to, duration: D.stampFade.dur, ease: "power1.inOut", immediateRender: false }, D.stampFade.at);
+        }
+
+        // ---- the gold line: one polyline (underline, ridge); a window [tail, head] of it is drawn ----
+        // The underline ends where the contour starts (underline1 = contour[0]), so every gold pixel sits on the
+        // underline or on a contour that is really in the image. If data puts them apart, a straight joining stroke
+        // is drawn (Revision 1 removed the free bezier climb across the sea).
+        var r = BM.rng(Ln.seed), pts = [], Lu = 0, Lc = 0;
+        if (hasStamp) {
+          var u0 = [Ln.underline0[0] + OX, Ln.underline0[1] + OY], u1 = [Ln.underline1[0] + OX, Ln.underline1[1] + OY];
+          var under = BM.wob(u0[0], u1[0], u0[1], { step: 14, amp: 1.2, rng: r });
+          var e = contourP[0], uEnd = under[under.length - 1];
+          pts = Math.hypot(e[0] - uEnd[0], e[1] - uEnd[1]) > 1 ? under.concat(BM.poly([uEnd, e], { step: 12, amp: 0.8, rng: r }).slice(1)) : under;
+          Lu = BM.pathLength(under); Lc = BM.pathLength(pts);
+        }
+        var ridge = BM.poly(contourP, { step: 12, amp: 1.2, rng: r });
+        pts = pts.length ? pts.concat(ridge.slice(1)) : ridge;
+        var cum = [0];
+        for (var i2 = 1; i2 < pts.length; i2++) cum.push(cum[i2 - 1] + Math.hypot(pts[i2][0] - pts[i2 - 1][0], pts[i2][1] - pts[i2 - 1][1]));
+        var L = cum[cum.length - 1];
+        function at(sLen) {
+          sLen = clamp(sLen, 0, L);
+          var lo = 0, hi = pts.length - 1;
+          while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (cum[mid] <= sLen) lo = mid; else hi = mid; }
+          var seg = cum[hi] - cum[lo], f = seg ? (sLen - cum[lo]) / seg : 0;
+          return [pts[lo][0] + (pts[hi][0] - pts[lo][0]) * f, pts[lo][1] + (pts[hi][1] - pts[lo][1]) * f, hi];
+        }
+        // head and tail as lengths along the polyline, pure functions of t
+        var travel0 = hasStamp ? Ln.travel[0] : Ln.ignite;
+        function head(t) {
+          if (t < Ln.ignite) return -1;
+          if (hasStamp && t < Ln.travel[0]) return Lu * out2(U(t, Ln.underline[0], Ln.underline[1]));
+          return Lu + (L - Lu) * sineIO(U(t, travel0, Ln.travel[1]));
+        }
+        function tail(t, h) {
+          if (!hasStamp) return 0;
+          return Math.min(Lc * io1(U(t, Ln.tail[0], Ln.tail[1])), Math.max(0, h - 40));
+        }
+        var lc = document.getElementById("line"), lg = lc.getContext("2d");
+        BM.onTime(function (t) {
+          lg.setTransform(1, 0, 0, 1, 0, 0);
+          lg.clearRect(0, 0, PW, PH);
+          var h = head(t);
+          if (h < 0) return;
+          var a = tail(t, h);
+          if (h - a > 0.5) {
+            var p0 = at(a), p1 = at(h);
+            lg.beginPath(); lg.moveTo(p0[0], p0[1]);
+            for (var k = p0[2]; k < p1[2]; k++) lg.lineTo(pts[k][0], pts[k][1]);
+            lg.lineTo(p1[0], p1[1]);
+            lg.strokeStyle = BM.color.gold; lg.lineWidth = Ln.width; lg.lineCap = "round"; lg.lineJoin = "round";
+            lg.stroke();
+          }
+          // the point of light at the head: ignites (radius 3 -> 6), settles to 4, rides the head out of frame
+          var ui = U(t, Ln.ignite, Ln.igniteDur), rr = ui < 1 ? 3 + 3 * out1(ui) : 6 - 2 * io1(U(t, Ln.ignite + Ln.igniteDur, 0.6));
+          var ph = at(h);
+          lg.globalAlpha = out1(ui);
+          lg.fillStyle = BM.color.cream;
+          lg.beginPath(); lg.arc(ph[0], ph[1], rr, 0, Math.PI * 2); lg.fill();
+          lg.globalAlpha = 1;
+        });
+
+        // ---- the phrase: italic Cormorant, word by word at speaking pace ----
+        var hook = document.getElementById("hook");
+        hook.style.top = D.phrase.top + "px"; hook.style.fontSize = D.phrase.size + "px";
+        BM.revealWords(tl, "#hook", D.phrase.text, { times: D.phrase.times });
+
+        // ---- dip ----
+        tl.fromTo("#fade", { opacity: 0 }, { opacity: 1, duration: D.dip.dur, ease: "power1.in", immediateRender: false }, D.dip.at);
+
+        tl.set({}, {}, D.duration);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

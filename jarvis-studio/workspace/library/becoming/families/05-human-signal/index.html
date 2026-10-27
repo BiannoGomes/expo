@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>05 · The Human Signal · Becoming motion family</title>
+    <!-- tools/build.sh stages tokens.css, fonts/, vendor/ and lib/ beside this file (root-relative: lint rejects "../"). -->
+    <link rel="stylesheet" href="tokens.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="lib/becoming-motion.js"></script>
+    <script src="data.js"></script>
+    <script src="envelope.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #04070B; }
+      #photo { object-fit: cover; }
+      #fade { background: #04070B; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="bm-frame" data-composition-id="main" data-start="0" data-duration="11" data-fps="30" data-width="1080" data-height="1920">
+      <canvas id="sea" class="bm-plate" width="1188" height="2112"></canvas>
+      <div id="scrim" class="bm-scrim"></div>
+      <canvas id="grain" class="bm-grain" width="1080" height="1920"></canvas>
+      <canvas id="signal" class="bm-layer" width="1080" height="1920"></canvas>
+      <div id="phrase" class="bm-hook"></div>
+      <div id="end" class="bm-layer"></div>
+      <div id="fade" class="bm-layer"></div>
+    </div>
+    <script>
+      // 05 · THE HUMAN SIGNAL · gold line behaviour: a bridge between two lights that answers or fades.
+      // Every value comes from data.js (window.DATA) and envelope.js (the score's own loudness, measured per frame).
+      // Timing map for the default data (variant 'both', 11 s):
+      //  0.05       the gold light ignites on the left of the horizon and speaks at once: its line reaches right as a
+      //             waveform carrying the opening sting A-E-D (cue stingAt .05); the sea fades up
+      //  0.3-0.75   the pale light appears on the right (alpha .95)
+      //  0.05-1.65  first bid: the front reaches 46 % of the gap; the ripple decays with the bells to a small residual
+      //  2.88-3.3   no answer: the score stops dead (silent turn, cue turns [3.3], hits off); the line freezes on 2.88
+      //  3.3-4.6    the line greys to passivity grey, sinks 64 px and fades; the pale light dims; the pad darkens
+      //  4.1-5.6    second bid: the gold light reaches again, a soft swell driven by the heartbeat (4.15, 4.39, 5.2, 5.44)
+      //  5.6        the answer: the pale light brightens and reaches back carrying the landing sting E-D-A (cue land 5.6)
+      //  6.1        the fronts meet at the midpoint: one steady connected line; both lights brighten (6.1-7.0)
+      //  6.24-8.46  the phrase (6 words) rises word by word (2.5 words/s); its first word lands with the sting's A and soft low D
+      //  8.9        the mark; 10.3-11 fade to black
+      (function () {
+        var D = window.DATA, ENV = (window.SIGNAL_ENV && window.SIGNAL_ENV.variants[D.variant]) || null;
+        var tl = gsap.timeline({ paused: true });
+        BM.track(tl);
+        var P = D.plate, LI = D.lights, W = D.wave;
+
+        // ---- plate: the code-drawn dark sea (time-driven), or a photo override for scratchpad builds only ----
+        var plateSel = "#sea";
+        if (P.src) {
+          var img = document.createElement("img");
+          img.id = "photo"; img.className = "bm-plate"; img.src = P.src; img.alt = "";
+          img.style.transformOrigin = "50% " + ((P.horizonY + 96) / 2112 * 100).toFixed(2) + "%";
+          var sea = document.getElementById("sea");
+          sea.parentNode.replaceChild(img, sea);
+          plateSel = "#photo";
+        } else {
+          BM.onTime(BM.seaPlate("#sea", { seed: P.seed, glow: P.glow, horizonY: P.horizonY, density: P.density }));
+        }
+        BM.onTime(BM.grain("#grain", { seed: D.grain.seed, amount: D.grain.amount }));
+        gsap.set(plateSel, { scale: P.push[0] });
+        tl.fromTo(plateSel, { opacity: 0 }, { opacity: 1, duration: P.fadeIn[1], ease: "power1.out", immediateRender: false }, P.fadeIn[0]);
+        tl.fromTo(plateSel, { scale: P.push[0] }, { scale: P.push[1], duration: D.duration - P.fadeIn[0], ease: "none", immediateRender: false }, P.fadeIn[0]);
+
+        // ---- the signal: lights + waveforms, painted on one canvas from composition time ----
+        var cv = document.getElementById("signal"), g = cv.getContext("2d");
+        var out2 = gsap.parseEase("power2.out"), out1 = gsap.parseEase("power1.out"), io1 = gsap.parseEase("power1.inOut"), io2 = gsap.parseEase("power2.inOut");
+        var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
+        var smooth = function (x) { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); };
+        var Y = LI.y, gap = LI.b.x - LI.a.x;
+        function hex(c) { var h = BM.color[c] || c; return [parseInt(h.substr(1, 2), 16), parseInt(h.substr(3, 2), 16), parseInt(h.substr(5, 2), 16)]; }
+        function mixRgb(a, b, u) { return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u]; }
+        function css(c, a) { return "rgba(" + Math.round(c[0]) + "," + Math.round(c[1]) + "," + Math.round(c[2]) + "," + a.toFixed(3) + ")"; }
+        var GOLD = hex("gold"), GREY = hex("grey"), CREAM = hex("cream");
+        // a fixed, seeded hand-drawn jitter along the gap (same at every frame: the line is drawn, not noisy)
+        var jr = BM.rng(W.seed), JIT = [];
+        for (var j = 0; j <= Math.ceil(gap / 16) + 1; j++) JIT.push((jr() * 2 - 1) * W.jitter);
+        function jitter(d) { var k = d / 16, i = Math.floor(k), u = k - i; return JIT[i] + (JIT[Math.min(JIT.length - 1, i + 1)] - JIT[i]) * u; }
+        // the measured envelope of a layer at composition time s (0 outside the render)
+        // optional per-layer softening (wave.soften[layer] = {attack, release} in s): a one-pole follower over the
+        // measured frames, computed once, so a sharp thump becomes a swell. Pure data -> data (deterministic).
+        var SOFT = {};
+        if (ENV) Object.keys(ENV).forEach(function (layer) {
+          var src = ENV[layer], o = (W.soften || {})[layer];
+          if (!Array.isArray(src) || !o) { SOFT[layer] = src; return; }
+          var ka = 1 - Math.exp(-1 / (30 * o.attack)), kr = 1 - Math.exp(-1 / (30 * o.release)), y = 0, out = [];
+          for (var i = 0; i < src.length; i++) { y += (src[i] - y) * (src[i] > y ? ka : kr); out.push(y); }
+          SOFT[layer] = out;
+        });
+        function env(layer, s) {
+          if (!ENV) return 0;
+          var a = SOFT[layer], k = s * 30, i = Math.floor(k);
+          if (i < 0 || i >= a.length - 1) return 0;
+          return a[i] + (a[i + 1] - a[i]) * (k - i);
+        }
+        // per-bid normaliser: the loudest frame of its layer inside its window maps to 1
+        function windowPeak(layer, at, len) { var m = 1e-6; for (var s = at; s <= at + len; s += 1 / 30) m = Math.max(m, env(layer, s)); return m; }
+        var GAMMA = W.gamma;
+        function prepare(b, dir, x0) {
+          return { b: b, dir: dir, x0: x0, reachPx: b.reach * gap, peak: windowPeak(b.env, b.at, b.envLen), gamma: GAMMA[b.env] || 1 };
+        }
+        var bids = D.bids.map(function (b) { return prepare(b, 1, LI.a.x); });
+        var reply = D.reply ? prepare(D.reply, -1, LI.b.x) : null;
+        var C = D.connect;
+        // the front's distance from its light at t, and the time the front passed distance d (inverse of power2.out)
+        function front(q, t) { return q.reachPx * out2(clamp((t - q.b.at) / q.b.dur, 0, 1)); }
+        function passed(q, d) { var p = clamp(d / q.reachPx, 0, 1); return q.b.at + q.b.dur * (1 - Math.cbrt(1 - p)); }
+        // amplitude at distance d: the light's envelope, replayed from when the front passed d
+        function amp(q, d, t) {
+          var s = t - passed(q, d); if (s < 0 || s > q.b.envLen) return 0;
+          var e = env(q.b.env, q.b.at + s) / q.peak;
+          e = Math.pow(clamp(e, 0, 1), q.gamma) * (1 - smooth((s - (q.b.envLen - 0.5)) / 0.5));
+          var F = front(q, t), a0 = e * W.amp * (q.b.ampScale || 1);
+          // a waiting bid keeps a small residual ripple (it is still reaching) until it freezes on the dead stop
+          if (q.b.residual) a0 = Math.max(a0, q.b.residual * smooth(s / 0.4));
+          return a0 * smooth((F - d) / W.headTaper) * smooth(d / W.rootTaper);
+        }
+        function wavePts(q, t, extraY) {
+          var F = front(q, t), pts = [];
+          var k = 2 * Math.PI / W.lambda, w = 2 * Math.PI * W.phaseSpeed / W.lambda;
+          for (var d = 0; d <= F + 0.01; d += W.step) {
+            var dd = Math.min(d, F), x = q.x0 + q.dir * dd;
+            var ux = x - LI.a.x;
+            pts.push([x, Y + jitter(ux) + extraY + amp(q, dd, t) * Math.sin(k * dd - w * (t - q.b.at))]);
+            if (dd === F) break;
+          }
+          if (pts.length && pts[pts.length - 1][0] !== q.x0 + q.dir * F) { var ux2 = F * q.dir + q.x0 - LI.a.x; pts.push([q.x0 + q.dir * F, Y + jitter(ux2) + extraY]); }
+          return pts;
+        }
+        function stroke(pts, color, alpha, width) {
+          if (pts.length < 2 || alpha <= 0.002) return;
+          g.strokeStyle = css(color, alpha); g.lineWidth = width; g.lineCap = "round"; g.lineJoin = "round";
+          g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
+          for (var i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]);
+          g.stroke();
+        }
+        // the steady connection: after contact the two halves are one line; a slow, small ripple keeps it alive
+        function steady(t) {
+          if (!C || t < C.at) return 0;
+          return smooth((t - C.at) / C.settle);
+        }
+        function light(x, color, alpha, r, haloA) {
+          if (alpha <= 0) return;
+          var rg = g.createRadialGradient(x, Y, 0, x, Y, LI.halo);
+          rg.addColorStop(0, css(color, haloA * alpha)); rg.addColorStop(1, css(color, 0));
+          g.fillStyle = rg; g.fillRect(x - LI.halo, Y - LI.halo, 2 * LI.halo, 2 * LI.halo);
+          g.fillStyle = css(color, alpha); g.beginPath(); g.arc(x, Y, r, 0, Math.PI * 2); g.fill();
+        }
+        var missed = D.bids.filter(function (b) { return b.missed; })[0] || null;
+        BM.onTime(function (t) {
+          g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cv.width, cv.height);
+          var lit = steady(t);
+          // bids from the gold light
+          bids.forEach(function (q) {
+            if (t < q.b.at) return;
+            var color = GOLD, alpha = 1, dy = 0;
+            if (q.b.missed && t >= q.b.missAt) {
+              var u = clamp((t - q.b.missAt) / q.b.sinkDur, 0, 1);
+              color = mixRgb(GOLD, GREY, smooth(u / 0.45));
+              dy = q.b.sinkY * io2(u);
+              alpha = 1 - io1(clamp((u - 0.25) / 0.75, 0, 1));
+            }
+            // freezeAt: the line stops on the frame the score stops dead, and stays exactly that shape as it greys
+            var tw = (q.b.freezeAt != null && t > q.b.freezeAt) ? q.b.freezeAt : t;
+            var pts = wavePts(q, tw, dy);
+            if (lit > 0 && !q.b.missed) {
+              // the steady ripple, shared with the reply half so the join is continuous
+              var k2 = 2 * Math.PI / C.steadyLambda, w2 = 2 * Math.PI * C.steadySpeed / C.steadyLambda;
+              pts = pts.map(function (p) { return [p[0], p[1] + lit * C.steadyAmp * Math.sin(k2 * (p[0] - LI.a.x) - w2 * (t - C.at))]; });
+            }
+            stroke(pts, color, alpha, W.width);
+          });
+          // the answer from the pale light, toward the gold one; it turns gold as the two become one line
+          if (reply && t >= reply.b.at) {
+            var rp = wavePts(reply, t, 0);
+            if (lit > 0) {
+              var k3 = 2 * Math.PI / C.steadyLambda, w3 = 2 * Math.PI * C.steadySpeed / C.steadyLambda;
+              rp = rp.map(function (p) { return [p[0], p[1] + lit * C.steadyAmp * Math.sin(k3 * (p[0] - LI.a.x) - w3 * (t - C.at))]; });
+            }
+            stroke(rp, mixRgb(hex(LI.b.color), GOLD, lit), 1, W.replyWidth);
+          }
+          // the gold light: ignites (radius 3 -> 6.5 -> rest), brightens on the connection
+          var A = LI.a, ua = (t - A.ignite) / A.igniteDur;
+          if (ua > 0) {
+            var aA = ua < 1 ? out1(ua) : 1;
+            var rA = ua < 1 ? LI.r * (0.35 + 0.85 * out1(ua)) : LI.r * (1.2 - 0.2 * io1(clamp((t - A.ignite - A.igniteDur) / 0.6, 0, 1)));
+            rA += (LI.litR - LI.r) * lit;
+            light(A.x, mixRgb(hex(A.color), CREAM, LI.litMix * lit), aA, rA, LI.haloA + (LI.haloLitA - LI.haloA) * lit);
+          }
+          // the pale light: appears quietly, dims while the bid goes unanswered, brightens as it answers
+          var B = LI.b, ub = clamp((t - B.appear) / B.appearDur, 0, 1);
+          if (ub > 0) {
+            var aB = B.alpha * out1(ub);
+            if (missed && t >= missed.missAt) aB *= 1 - (1 - LI.dimTo) * io1(clamp((t - missed.missAt) / 1.0, 0, 1));
+            if (reply && t >= reply.b.at) aB += (1 - aB) * out2(clamp((t - reply.b.at) / 0.35, 0, 1));
+            var rB = LI.r + (LI.litR - LI.r) * lit;
+            light(B.x, mixRgb(hex(B.color), CREAM, LI.litMix * lit), aB, rB, LI.haloA + (LI.haloLitA - LI.haloA) * lit);
+          }
+        });
+
+        // ---- the phrase, word by word (Cormorant 500 96 px, centred in the safe zone) ----
+        var phrase = document.getElementById("phrase");
+        phrase.style.top = D.phrase.top + "px";
+        BM.revealWords(tl, "#phrase", D.phrase.text, { at: D.phrase.at, stagger: D.phrase.stagger });
+
+        // ---- the mark, then fade to black ----
+        if (D.mark.show) BM.mark("#end", { at: D.mark.at, tl: tl });
+        tl.fromTo("#fade", { opacity: 0 }, { opacity: 1, duration: D.fade.dur, ease: "power1.in", immediateRender: false }, D.fade.at);
+
+        tl.set({}, {}, D.duration);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

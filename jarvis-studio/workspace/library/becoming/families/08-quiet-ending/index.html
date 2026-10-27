@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>08 · The Quiet Ending · Becoming signature family</title>
+    <!-- tools/build.sh stages tokens.css, fonts/, vendor/ and lib/ beside this file (root-relative: lint rejects "../"). -->
+    <link rel="stylesheet" href="tokens.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="lib/becoming-motion.js"></script>
+    <script src="data.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #04070B; }
+      #photo { object-fit: cover; }
+      #q { font-style: italic; color: var(--bm-cream); }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="bm-frame" data-composition-id="main" data-start="0" data-duration="8" data-fps="30" data-width="1080" data-height="1920">
+      <canvas id="sea" class="bm-plate" width="1188" height="2112"></canvas>
+      <div id="scrim" class="bm-scrim"></div>
+      <canvas id="grain" class="bm-grain" width="1080" height="1920"></canvas>
+      <svg id="lines" class="bm-lines" viewBox="0 0 1080 1920" width="1080" height="1920" aria-hidden="true"></svg>
+      <canvas id="head" class="bm-layer" width="1080" height="1920"></canvas>
+      <div id="caps" class="bm-captions"></div>
+      <div id="q" class="bm-hook"></div>
+      <div id="end" class="bm-layer"></div>
+    </div>
+    <script>
+      // 08 · THE QUIET ENDING · gold line behaviour: it runs past the edge and goes nowhere; the last frame stays open.
+      // Every value comes from data.js. Default timing (8 s):
+      //  0.0-2.3   already on a dim sea plate: the last caption of the piece it closes ("The change is quiet.")
+      //  1.3-3.3   density drops: the plate and the grain fade down (never to black); ticks keep the old pace
+      //  3.0-3.8   the question rises word by word, Cormorant italic, cream, centred; the landing sting E-D-A is on
+      //            "Who" / "you" / "becoming?" (the soft low D with the last word); from here the ticks slow to silence
+      //  3.85-6.95 the gold line draws from x 70 under the question, speeds up, crosses the right edge (~6.4) and keeps
+      //            going: the frame cuts it, it never ends inside the picture
+      //  5.2-6.1   the mark "THE BECOMING PROJECT" fades in small at y 1450
+      //  6.4-8.0   held open: near silence (bell tail only), no fade to black
+      // Painted canvases (plate, grain, head) are pure functions of composition time (BM.onTime); no SVG element moves.
+      (function () {
+        var D = window.DATA;
+        var P = D.plate, G = D.grain, Q = D.question, Ln = D.line, M = D.mark;
+        var tl = gsap.timeline({ paused: true });
+        BM.track(tl);
+
+        // keyframes [[t, v], ...] -> tweens (power1.inOut between keys); the value at t = 0 is set at build time
+        function keyed(sel, prop, keys) {
+          var s = {}; s[prop] = keys[0][1]; gsap.set(sel, s);
+          for (var i = 0; i + 1 < keys.length; i++) {
+            var a = keys[i], b = keys[i + 1]; if (a[1] === b[1]) continue;
+            var f = {}, t = { duration: b[0] - a[0], ease: "power1.inOut", immediateRender: false }; f[prop] = a[1]; t[prop] = b[1];
+            tl.fromTo(sel, f, t, a[0]);
+          }
+        }
+
+        // ---- plate: the code-drawn dim sea, or a photo (scratchpad builds only) ----
+        var plateSel = "#sea";
+        if (P.type === "photo" && P.src) {
+          var img = document.createElement("img");
+          img.id = "photo"; img.className = "bm-plate"; img.src = P.src; img.alt = "";
+          img.style.transformOrigin = "50% " + ((P.horizonY + 96) / 2112 * 100).toFixed(2) + "%";
+          var sea = document.getElementById("sea");
+          sea.parentNode.replaceChild(img, sea);
+          plateSel = "#photo";
+        } else {
+          BM.onTime(BM.seaPlate("#sea", { seed: P.seed, glow: P.glow, glowX: P.glowX, horizonY: P.horizonY, density: P.density, swell: P.swell }));
+        }
+        BM.onTime(BM.grain("#grain", { seed: G.seed, amount: G.amount }));
+        keyed(plateSel, "opacity", P.opacity);
+        keyed("#grain", "opacity", G.opacity);
+        gsap.set(plateSel, { scale: P.push[0] });
+        tl.fromTo(plateSel, { scale: P.push[0] }, { scale: P.push[1], duration: D.duration, ease: "none", immediateRender: false }, 0);
+
+        // ---- the closing caption of the previous piece ----
+        if (D.captions && D.captions.length) BM.captions(tl, "#caps", D.captions);
+
+        // ---- the question ----
+        var qb = document.getElementById("q");
+        qb.style.top = Q.top + "px";
+        qb.style.fontSize = Q.size + "px";
+        BM.revealWords(tl, "#q", Q.text, { times: Q.times });
+
+        // ---- the gold line: from x0 past the right edge; the frame cuts it ----
+        var pts = BM.wob(Ln.x0, Ln.x1, Ln.y, { rng: BM.rng(Ln.seed) });
+        var line = BM.goldPath("#lines", "away", pts, { width: Ln.width });
+        BM.drawOn(tl, line, Ln.at, Ln.dur, Ln.ease);
+        var L = BM.pathLength(pts), ease = gsap.parseEase(Ln.ease);
+        function pointAt(f) {
+          var want = f * L, run = 0;
+          for (var k = 0; k + 1 < pts.length; k++) {
+            var s = Math.hypot(pts[k + 1][0] - pts[k][0], pts[k + 1][1] - pts[k][1]);
+            if (run + s >= want) { var u = s ? (want - run) / s : 0; return [pts[k][0] + (pts[k + 1][0] - pts[k][0]) * u, pts[k][1] + (pts[k + 1][1] - pts[k][1]) * u]; }
+            run += s;
+          }
+          return pts[pts.length - 1];
+        }
+        // the head: a small cream point on the stroke's end, painted from composition time (no moving SVG element)
+        var hc = document.getElementById("head"), hg = hc.getContext("2d");
+        BM.onTime(function (t) {
+          hg.setTransform(1, 0, 0, 1, 0, 0);
+          hg.clearRect(0, 0, hc.width, hc.height);
+          var u = (t - Ln.at) / Ln.dur;
+          if (u <= 0 || u >= 1) return;
+          var p = pointAt(ease(u));
+          if (p[0] > 1080 + Ln.head * 2) return;
+          hg.globalAlpha = Math.min(1, u * 12);
+          hg.fillStyle = BM.color.cream;
+          hg.beginPath(); hg.arc(p[0], p[1], Ln.head, 0, Math.PI * 2); hg.fill();
+          hg.globalAlpha = 1;
+        });
+
+        // ---- the mark ----
+        if (M && M.show) BM.mark("#end", { at: M.at, y: M.y, tl: tl });
+
+        tl.set({}, {}, D.duration);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

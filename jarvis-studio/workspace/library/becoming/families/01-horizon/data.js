@@ -2,17 +2,19 @@
 // 01 · THE HORIZON · every value the piece uses. A scratchpad build may swap this one file (real photo, real line).
 // Times are composition seconds; x/y are FRAME pixels (1080x1920) unless a comment says otherwise.
 window.DATA = {
-  duration: 10,
+  duration: 8.5,
 
   // the vault's "The sea, four ways": 'still' | 'trembling' | 'jagged' | 'gone'
   state: "still",
   states: {
     // amp/step: the line's hand-drawn jitter (BM.wob) · tremor: px of live vertical shake at tremorHz
-    // swell/density/glow: the code plate (BM.seaPlate) · seam: how bright the plate's own horizon is after the hand-over
-    still:     { amp: 1.6, step: 18, tremor: 0,   tremorHz: 0, swell: 0.6, density: 0.85, glow: "dawn", seam: 1.0 },
-    trembling: { amp: 2.4, step: 16, tremor: 1.6, tremorHz: 6, swell: 1.25, density: 1.0, glow: "dawn", seam: 0.8 },
-    jagged:    { amp: 7.5, step: 24, tremor: 0,   tremorHz: 0, swell: 1.8, density: 1.25, glow: "moon", seam: 0.6 },
-    gone:      { amp: 2.0, step: 16, tremor: 0,   tremorHz: 0, swell: 0.45, density: 0.7, glow: "none", seam: 0.0 }
+    // swell/density/glow: the code plate (BM.seaPlate); optional glowX overrides plate.glowX (the moon sits at glowX + 170,
+    // 360 px above the horizon: at the default 640 it touched "horizon?" in the jagged draft, so jagged moves it right)
+    // · seam: how bright the plate's own horizon is after the hand-over
+    still:     { amp: 1.6, step: 18, tremor: 0,   tremorHz: 0, swell: 0.6, density: 1.0, glow: "dawn", seam: 1.0 },
+    trembling: { amp: 2.4, step: 16, tremor: 1.6, tremorHz: 6, swell: 1.25, density: 1.1, glow: "dawn", seam: 0.8 },
+    jagged:    { amp: 7.5, step: 24, tremor: 0,   tremorHz: 0, swell: 1.8, density: 1.25, glow: "moon", seam: 0.6, glowX: 770 },
+    gone:      { amp: 2.0, step: 16, tremor: 0,   tremorHz: 0, swell: 0.45, density: 0.8, glow: "none", seam: 0.0 }
   },
 
   // plate: type 'code' (BM.seaPlate) or 'photo' (src = an image inside the composition folder, scratchpad builds only).
@@ -31,17 +33,30 @@ window.DATA = {
     width: 4, widthEnd: 1.5
   },
 
-  // the sea exists only where the line has passed: per column, the plate opens up and down from the horizon
-  reveal: { up: 1340, down: 900, grow: 1.5, fadeIn: 0.3, feather: 170, soft: 260, column: 4,
-            spill: { r: 120, sy: 3.4, alpha: 0.2 } },
+  // the sea exists only where the line has passed. Per column the plate opens from the horizon: a horizon-hugging band
+  // (up/down, opened over `grow` s from ignition, tapered to zero over `taper` px towards each head, so it keeps pace with
+  // the head and never peaks over the ignition point); the feather is signed (it runs 60 px
+  // ahead of each head and 50 px behind it, on both arms, so no column edge is hard). Once both heads are off frame,
+  // `rise` opens the rest of the sky for every column at once (flat top, no cone).
+  reveal: { up: 300, down: 260, grow: 1.0, growEase: "sine.inOut", taper: 150, fadeIn: 0.25, feather: 110, lead: 0.55, soft: 260, column: 4,
+            rise: { up: 1040, down: 760, at: 2.6, dur: 2.6, ease: "sine.inOut" },
+            spill: { r: 120, sy: 2.0, alpha: 0.2 } },
+  // the water's own light (revision 1: the sea read as near-black). A soft additive wash below the horizon in plate
+  // tones, revealed by the same mask; and the scrim's lower stops (tokens.css: .7 at 70 %, .94 at 100 %) eased for this piece
+  water: { alpha: 0.24, depth: 700 },
+  scrim: { at70: 0.5, at100: 0.82 },
 
-  // one phrase, word by word above the line (Cormorant 500 96 px). times = when each word starts to rise; "or" and
-  // "horizon?" sit on the Night Watch ticks at 4.5 and 5.0 (cue tickFrom 4.0, a tick every .5 s; measured)
-  phrase: { text: "An edge,\nor a *horizon*?", top: 720, times: [3.2, 3.6, 4.5, 4.75, 5.0] },
+  // one phrase, word by word above the line (Cormorant 500 96 px). times = when each word starts to rise ("An edge,"
+  // is fully up by 3.67 and holds alone before "or" over the 0.8 s readability floor); "or" and "horizon?" sit on
+  // the two Night Watch ticks at 4.5 and 5.0 (cue tickFrom 4.5); the landing sting falls on "horizon?" at 5.0
+  phrase: { text: "An edge,\nor a *horizon*?", top: 720, times: [3.15, 3.45, 4.5, 4.75, 5.0] },
 
-  // the hand-over: the stroke cools and thins into the plate's own horizon while the camera pushes
-  handover: { at: 5.8, dur: 1.7, seamAlpha: 0.55 },
-  push: { at: 5.8, dur: 1.7, from: 1.0, to: 1.04, ease: "sine.inOut" },
+  // the hand-over: one line becoming another. Over the whole window (sine.inOut) the stroke's jitter flattens to the
+  // seam's straight line, its width goes 4 -> 1.5 px and its colour gold -> cream, while it fades at the same rate
+  // as the plate's seam comes up underneath (both about 50 % at the midpoint, 6.65 s)
+  handover: { at: 5.8, dur: 1.7, seamAlpha: 0.55, ease: "sine.inOut" },
+  // linear push (the grammar's push) from the phrase's settle to the end, so the hold never stands still
+  push: { at: 5.2, dur: 3.3, from: 1.0, to: 1.05, ease: "none" },
 
-  dip: { at: 9.3, dur: 0.6 }
+  dip: { at: 7.8, dur: 0.6 }
 };

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>06 · The Idea Made Visible · Becoming motion family</title>
+    <!-- tools/build.sh stages tokens.css, fonts/, vendor/ and lib/ beside this file (root-relative: lint rejects "../"). -->
+    <link rel="stylesheet" href="tokens.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="lib/becoming-motion.js"></script>
+    <script src="data.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #04070B; }
+      #bg { opacity: 0; }
+      #fade { background: #04070B; opacity: 0; }
+      #labels text { font-family: "Cinzel", serif; text-transform: uppercase; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="bm-frame" data-composition-id="main" data-start="0" data-duration="12" data-fps="30" data-width="1080" data-height="1920">
+      <div id="bg" class="bm-layer"></div>
+      <canvas id="stars" class="bm-layer" width="1080" height="1920"></canvas>
+      <canvas id="corona" class="bm-layer" width="1080" height="1920"></canvas>
+      <canvas id="grain" class="bm-grain" width="1080" height="1920"></canvas>
+      <canvas id="loop" class="bm-layer" width="1080" height="1920"></canvas>
+      <svg id="labels" class="bm-lines" viewBox="0 0 1080 1920" width="1080" height="1920" aria-hidden="true"><defs id="arcs"></defs></svg>
+      <div id="phrase" class="bm-body"></div>
+      <div id="end" class="bm-layer"></div>
+      <div id="fade" class="bm-layer"></div>
+    </div>
+    <script>
+      // 06 · THE IDEA MADE VISIBLE · gold line behaviour: travels a loop and closes it into a ring.
+      // Every value comes from data.js (window.DATA). Timing map for the default data (variant 'loop', 12 s):
+      //  0.3        the gold point ignites on STATE (12 o'clock); the opening sting A-E-D fires on it
+      //             (cue stingAt .3); STATE lights; the deep-ocean radial and the starfield fade up (0.3-1.3)
+      //  0.6-1.4    the other four words fade up dim (mist) on the circle
+      //  0.6        the head sets off clockwise from rest
+      //  1.9        CHOICE reached on the first tick (cue tickFrom 1.9): the node flashes, the word lights
+      //  2.898      ACTION reached on tick 2      3.840  EVIDENCE on tick 4      4.648  IDENTITY on tick 6
+      //             (every arrival is on a bright "tick"; only the off-beat "tock" sounds between two words)
+      //  4.65-6.08  the last leg, IDENTITY back towards STATE, under the racing ticks
+      //  6.08       dead stop: the score stops dead and the head stops dead, 28 degrees short of where it began,
+      //             held as a brighter 7 px node
+      //  6.5        the hit (cue turns [6.5]): the line closes the ring in 0.1 s (from one frame before the hit); the ring becomes the eclipse ring
+      //             (a dark disc and a dark-to-gold radial corona, 6.5-7.6)
+      //  6.9-9.52   the phrase rises word by word (2.5 words/s); the landing sting E-D-A lands on its first word (cue land 6.9)
+      //  10.0       the mark; 11.6-12.0 dip to black
+      (function () {
+        var D = window.DATA, RG = D.ring, LB = D.labels, ND = D.nodes, CUE = D.cue;
+        var tl = gsap.timeline({ paused: true });
+        BM.track(tl);
+        var n = D.steps.length, closed = D.close !== "open";
+        var turn = CUE.turns[0], stopAt = turn - 0.42;
+        var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
+        var out1 = gsap.parseEase("power1.out"), out2 = gsap.parseEase("power2.out"), io1 = gsap.parseEase("power1.inOut");
+        var rad = function (deg) { return deg * Math.PI / 180; };
+
+        // ---- the watch tick schedule: the same loop as lib/night-watch.js (render(), "the watch tick") ----
+        function tickTimes(c) {
+          var Dd = c.duration, turns = c.turns || [], land = c.land == null ? Infinity : c.land, fade = c.fade == null ? 1.4 : c.fade;
+          var t = c.tickFrom == null ? 0.9 : c.tickFrom, i = 0, outEnd = Dd - fade * 0.5, res = [];
+          while (t < outEnd) {
+            var next = undefined; for (var q = 0; q < turns.length; q++) if (turns[q] > t - 1e-3) { next = turns[q]; break; }
+            if (next !== undefined && t > next - 0.42) { t = next + 0.7; continue; }
+            var iv = 0.5, vel = 0.5 + 0.06 * (i % 2 === 0 ? 1 : 0);
+            if (next !== undefined) { var d = next - 0.42 - t; if (d < 4) { var k = 1 - d / 4; iv = 0.5 - 0.39 * k * k; vel += 0.25 * k; } }
+            if (t >= land) { var kk = clamp((t - land) / Math.max(1, outEnd - land), 0, 1); iv = 0.5 + 1.1 * kk; vel *= 1 - kk; if (vel < 0.03) break; }
+            res.push(t); t += iv; i++;
+          }
+          return res;
+        }
+        var TICKS = tickTimes(CUE);
+        // the moment each step is reached: step 0 on the ignition, the others on their named tick
+        var reach = D.steps.map(function (s, k) { return k === 0 ? D.ignite.at : TICKS[D.reachTicks[k]]; });
+        window.LOOP_REACH = reach;
+
+        // ---- background: the deep-ocean radial (static), faded up on the ignition ----
+        var bg = document.getElementById("bg");
+        bg.style.background = "radial-gradient(circle at " + RG.cx + "px " + RG.cy + "px, " + BM.color.ocean + " 0%, " +
+          BM.color.abyss + " 58%, " + BM.color.night + " 100%)";
+        tl.fromTo("#bg, #stars", { opacity: 0 }, { opacity: 1, duration: D.bg.fadeIn[1], ease: "power1.out", immediateRender: false }, D.bg.fadeIn[0]);
+        gsap.set("#stars", { opacity: 0 });
+
+        // ---- a seeded, faint starfield (painted from composition time; a slow, small twinkle) ----
+        (function () {
+          var S = D.stars, cv = document.getElementById("stars"), g = cv.getContext("2d"), r = BM.rng(S.seed), list = [];
+          var keep = RG.R * S.keepOut;
+          while (list.length < S.count) {
+            var x = r() * 1080, y = r() * 1920, a = S.alpha[0] + (S.alpha[1] - S.alpha[0]) * r() * r();
+            var s = S.size[0] + (S.size[1] - S.size[0]) * r(), ph = r() * 6.283, hz = 0.15 + 0.35 * r(), warm = r() < 0.25;
+            if (Math.hypot(x - RG.cx, y - RG.cy) < keep) continue;   // none inside the ring or its corona
+            list.push([x, y, a, s, ph, hz, warm]);
+          }
+          BM.onTime(function (t) {
+            g.setTransform(1, 0, 0, 1, 0, 0);
+            g.clearRect(0, 0, cv.width, cv.height);
+            for (var i = 0; i < list.length; i++) {
+              var p = list[i], tw = 1 - S.twinkle * (0.5 + 0.5 * Math.sin(6.283 * p[5] * t + p[4]));
+              g.fillStyle = BM.rgba(p[6] ? "paleGold" : "mist", p[2] * tw);
+              g.beginPath(); g.arc(p[0], p[1], p[3], 0, 6.283); g.fill();
+            }
+          });
+        })();
+        BM.onTime(BM.grain("#grain", { seed: D.grain.seed, amount: D.grain.amount }));
+
+        // ---- geometry: the step nodes, and the hand-drawn path as a function of travelled degrees ----
+        var stepDeg = 360 / n;
+        function angAt(a) { return rad(RG.startAngle + a); }
+        var OP = D.open, total = closed ? 360 : 360 + OP.extra;
+        function radiusAt(a) {   // open loop: the line starts to widen 30 degrees before it would meet itself
+          if (closed) return RG.R;
+          var u = clamp((a - 330) / (total - 330), 0, 1);
+          return RG.R + OP.grow * u * u;
+        }
+        // a seeded jitter per degree, wrapped at 360 so a closed ring meets itself exactly
+        var jr = BM.rng(RG.seed), JIT = [];
+        for (var j = 0; j < 360; j++) JIT.push((jr() * 2 - 1) * RG.jitter);
+        for (j = 360; j <= Math.ceil(total) + 1; j++) JIT.push((jr() * 2 - 1) * RG.jitter);
+        function jitAt(a) {
+          var i0 = Math.floor(a), f = a - i0;
+          var a0 = closed ? JIT[i0 % 360] : JIT[i0], a1 = closed ? JIT[(i0 + 1) % 360] : JIT[i0 + 1];
+          return a0 + (a1 - a0) * f;
+        }
+        function pointAt(a) { var rr = radiusAt(a) + jitAt(a), th = angAt(a); return [RG.cx + rr * Math.cos(th), RG.cy + rr * Math.sin(th)]; }
+        var nodesXY = D.steps.map(function (s, k) { var th = angAt(k * stepDeg); return [RG.cx + RG.R * Math.cos(th), RG.cy + RG.R * Math.sin(th)]; });
+
+        // ---- travelled degrees as a function of time: a monotone cubic through (reach_k, k * step) ----
+        // from rest at move.start; it speeds up with the racing ticks; it stops dead at stopAt (the score's dead stop),
+        // `gap` degrees short of the start; on the turn it closes (or, open, carries on past the start, widening).
+        var KT = [D.move.start], KA = [0];
+        for (var k = 1; k < n; k++) { KT.push(reach[k]); KA.push(k * stepDeg); }
+        KT.push(stopAt); KA.push(360 - RG.gap);
+        var m = [], dl = [];
+        for (k = 0; k + 1 < KT.length; k++) dl.push((KA[k + 1] - KA[k]) / (KT[k + 1] - KT[k]));
+        m.push(0);
+        for (k = 1; k + 1 < KT.length; k++) m.push(dl[k - 1] * dl[k] <= 0 ? 0 : 2 / (1 / dl[k - 1] + 1 / dl[k]));
+        m.push(dl[dl.length - 1]);
+        for (k = 0; k < dl.length; k++) {   // Fritsch-Carlson limiter: no overshoot, so the head never runs backwards
+          var al = m[k] / dl[k], be = m[k + 1] / dl[k], s2 = al * al + be * be;
+          if (s2 > 9) { var tau = 3 / Math.sqrt(s2); m[k] = tau * al * dl[k]; m[k + 1] = tau * be * dl[k]; }
+        }
+        function travelled(t) {
+          if (t <= KT[0]) return 0;
+          var t0c = turn - (closed ? D.closeLead : 0);
+          if (t >= t0c) {
+            if (closed) return 360 - RG.gap + RG.gap * out2(clamp((t - t0c) / D.closeDur, 0, 1));
+            return 360 - RG.gap + (total - 360 + RG.gap) * out2(clamp((t - turn) / OP.dur, 0, 1));
+          }
+          if (t >= stopAt) return 360 - RG.gap;
+          for (var i = 0; i + 1 < KT.length; i++) if (t <= KT[i + 1]) {
+            var h = KT[i + 1] - KT[i], u = (t - KT[i]) / h, u2 = u * u, u3 = u2 * u;
+            return (2 * u3 - 3 * u2 + 1) * KA[i] + (u3 - 2 * u2 + u) * h * m[i] + (-2 * u3 + 3 * u2) * KA[i + 1] + (u3 - u2) * h * m[i + 1];
+          }
+          return 360 - RG.gap;
+        }
+        window.LOOP_TRAVELLED = travelled;
+
+        // ---- the line, the nodes and the head: one canvas painted from composition time ----
+        var lc = document.getElementById("loop"), lg = lc.getContext("2d");
+        var GOLD = BM.color.gold;
+        function headLook(t) {
+          var u = (t - D.ignite.at) / D.ignite.dur;
+          if (u <= 0) return { a: 0, r: 3 };
+          if (u < 1) return { a: out1(u), r: 3 + 3 * out1(u) };
+          var v = Math.min(1, (t - D.ignite.at - D.ignite.dur) / 0.6), r = 6 - 2 * io1(v);
+          // after the ring closes, the head is absorbed into the line
+          var endAt = closed ? turn - D.closeLead + D.closeDur : turn + OP.dur;
+          var fadeU = clamp((t - endAt) / 0.4, 0, 1);
+          // the dead stop: the held head swells to a brighter node (nodes.stopR) so the gap reads at feed size
+          if (ND.stopR && t >= stopAt - 0.1) r = r + (ND.stopR - r) * out2(clamp((t - stopAt + 0.1) / 0.12, 0, 1));
+          return { a: 1 - out1(fadeU), r: r };
+        }
+        function nodeLook(k, t) {
+          var tr = reach[k], fl = LB.flashDur, st = LB.settleDur;
+          var appear = k === 0 ? clamp((t - D.ignite.at) / 0.3, 0, 1) : clamp((t - LB.fadeIn[0]) / LB.fadeIn[1], 0, 1);
+          if (t < tr - LB.lead) return { c: "mist", a: ND.dimAlpha * appear, r: ND.r };
+          var u = t - (tr - LB.lead);
+          if (u < fl) return { c: "paleGold", a: 1, r: ND.r + (ND.flashR - ND.r) * out2(u / fl) };
+          var w = clamp((u - fl) / st, 0, 1);
+          return { c: w < 0.5 ? "paleGold" : "gold", a: 1, r: ND.flashR + (ND.litR - ND.flashR) * out2(w) };
+        }
+        BM.onTime(function (t) {
+          lg.setTransform(1, 0, 0, 1, 0, 0);
+          lg.clearRect(0, 0, lc.width, lc.height);
+          var A = travelled(t), h = headLook(t);
+          if (A > 0.05) {
+            lg.strokeStyle = GOLD; lg.lineWidth = RG.width; lg.lineCap = "round"; lg.lineJoin = "round";
+            lg.beginPath();
+            var p0 = pointAt(0); lg.moveTo(p0[0], p0[1]);
+            for (var a = 1; a < A; a += 1) { var p = pointAt(a); lg.lineTo(p[0], p[1]); }
+            var pe = pointAt(A); lg.lineTo(pe[0], pe[1]);
+            if (closed && A >= 360 - 1e-6) lg.closePath();
+            lg.stroke();
+          }
+          for (var k = 0; k < n; k++) {
+            var L = nodeLook(k, t); if (L.a <= 0) continue;
+            lg.fillStyle = BM.rgba(L.c, L.a);
+            lg.beginPath(); lg.arc(nodesXY[k][0], nodesXY[k][1], L.r, 0, 6.283); lg.fill();
+          }
+          if (h.a > 0) {
+            var hp = pointAt(A);
+            lg.fillStyle = BM.rgba("cream", h.a);
+            lg.beginPath(); lg.arc(hp[0], hp[1], h.r, 0, 6.283); lg.fill();
+          }
+        });
+
+        // ---- the eclipse: on the turn the closed ring takes a dark disc and a dark-to-gold radial corona ----
+        (function () {
+          var C = D.corona, cv = document.getElementById("corona"), g = cv.getContext("2d");
+          var Ro = RG.R * C.outer, R = RG.R;
+          BM.onTime(function (t) {
+            g.setTransform(1, 0, 0, 1, 0, 0);
+            g.clearRect(0, 0, cv.width, cv.height);
+            if (!closed) return;
+            var k = out2(clamp((t - turn) / C.dur, 0, 1));
+            if (k <= 0) return;
+            var rg = g.createRadialGradient(RG.cx, RG.cy, 0, RG.cx, RG.cy, Ro);
+            rg.addColorStop(0, BM.rgba("night", C.disc * k));
+            rg.addColorStop((R - 14) / Ro, BM.rgba("night", C.disc * k));
+            rg.addColorStop((R - 2) / Ro, BM.mix("night", "gold", 0.35, C.disc * k));
+            rg.addColorStop(R / Ro, BM.rgba("gold", C.ringA * k));
+            rg.addColorStop((R + 14) / Ro, BM.rgba("gold", C.ringA * 0.45 * k));
+            rg.addColorStop((R * 1.32) / Ro, BM.rgba("gold", C.ringA * 0.12 * k));
+            rg.addColorStop((R * 1.65) / Ro, BM.rgba("gold", C.ringA * 0.03 * k));
+            rg.addColorStop(1, BM.rgba("gold", 0));
+            g.fillStyle = rg;
+            g.beginPath(); g.arc(RG.cx, RG.cy, Ro, 0, 6.283); g.fill();
+          });
+        })();
+
+        // ---- the step words: Cinzel caps on upright arcs (textPath) or level beside a side node ----
+        var SVGNS = "http://www.w3.org/2000/svg", svg = document.getElementById("labels"), defs = document.getElementById("arcs");
+        var labelEls = [];
+        D.steps.forEach(function (word, k) {
+          var thD = RG.startAngle + k * stepDeg, th = rad(thD), sn = Math.sin(th), cs = Math.cos(th);
+          var tx = document.createElementNS(SVGNS, "text");
+          tx.setAttribute("font-size", String(LB.size));
+          tx.setAttribute("font-weight", String(LB.weight));
+          tx.setAttribute("letter-spacing", LB.tracking);
+          tx.setAttribute("id", "step" + k);
+          if (LB.mode !== "arc" && Math.abs(sn) < 0.5) {
+            // level, beside the node, reading outwards from the ring
+            tx.setAttribute("x", (nodesXY[k][0] + (cs > 0 ? LB.sideGap : -LB.sideGap)).toFixed(1));
+            tx.setAttribute("y", (nodesXY[k][1] + LB.sideDy).toFixed(1));
+            tx.setAttribute("text-anchor", cs > 0 ? "start" : "end");
+            tx.textContent = word;
+          } else {
+            var top = sn < 0, rr = top ? RG.R + LB.gap : RG.R + LB.gap + LB.capH, sp = rad(LB.arcSpan);
+            var a0 = top ? th - sp : th + sp, a1 = top ? th + sp : th - sp;
+            var x0 = RG.cx + rr * Math.cos(a0), y0 = RG.cy + rr * Math.sin(a0), x1 = RG.cx + rr * Math.cos(a1), y1 = RG.cy + rr * Math.sin(a1);
+            var arc = document.createElementNS(SVGNS, "path");
+            arc.setAttribute("id", "arc" + k);
+            arc.setAttribute("d", "M" + x0.toFixed(1) + "," + y0.toFixed(1) + " A" + rr + "," + rr + " 0 0 " + (top ? 1 : 0) + " " + x1.toFixed(1) + "," + y1.toFixed(1));
+            defs.appendChild(arc);
+            var tp = document.createElementNS(SVGNS, "textPath");
+            tp.setAttribute("href", "#arc" + k);
+            tp.setAttribute("startOffset", "50%");
+            tp.setAttribute("text-anchor", "middle");
+            tp.textContent = word;
+            tx.appendChild(tp);
+          }
+          svg.appendChild(tx);
+          labelEls.push(tx);
+          // dim (mist) -> flash pale gold -> settle to ink, on the moment the line reaches the step
+          var first = k === 0;
+          gsap.set(tx, { opacity: 0, fill: BM.color[first ? LB.lit : LB.dim] });
+          if (first) {
+            tl.fromTo(tx, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out", immediateRender: false }, D.ignite.at);
+          } else {
+            tl.fromTo(tx, { opacity: 0 }, { opacity: 1, duration: LB.fadeIn[1], ease: "power1.out", immediateRender: false }, LB.fadeIn[0] + 0.06 * k);
+            tl.fromTo(tx, { fill: BM.color[LB.dim] }, { fill: BM.color[LB.flash], duration: LB.flashDur, ease: "power2.out", immediateRender: false }, reach[k] - LB.lead);
+            tl.fromTo(tx, { fill: BM.color[LB.flash] }, { fill: BM.color[LB.lit], duration: LB.settleDur, ease: "power2.out", immediateRender: false }, reach[k] - LB.lead + LB.flashDur);
+          }
+        });
+
+        // ---- the phrase, word by word (Cormorant 400 74 px), its first word on the landing sting ----
+        var ph = document.getElementById("phrase");
+        ph.style.top = D.phrase.top + "px";
+        BM.revealWords(tl, "#phrase", D.phrase.text, { at: D.phrase.at, stagger: D.phrase.stagger });
+
+        // ---- the mark, then the dip to black ----
+        if (D.mark.show) BM.mark("#end", { at: D.mark.at, tl: tl });
+        tl.fromTo("#fade", { opacity: 0 }, { opacity: 1, duration: D.fade.dur, ease: "power1.in", immediateRender: false }, D.fade.at);
+
+        tl.set({}, {}, D.duration);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>
