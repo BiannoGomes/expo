@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dawnward · The Living Universe</title>
+<meta name="description" content="Dawnward is a journal you talk to. Each evening it asks one real question; each morning it gives you three small steps from your own words; slowly it understands you, and shows you why.">
+<meta name="theme-color" content="#04060A">
+<link rel="stylesheet" href="fonts.css">
+<style>
+  :root { --ground:#0B0E12; --void:#04060A; --surface:#12161D; --line:#232A34; --ink:#ECE9E2; --dim:#9AA0A9; --faint:#79818F; --gold:#C9A96A; --fade:0;
+    --display:"Cormorant Garamond", Georgia, serif; --body:"Albert Sans", system-ui, sans-serif; --label:"IBM Plex Mono", ui-monospace, monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--void); color: var(--ink); font-family: var(--body); overflow: hidden; overscroll-behavior: none; touch-action: none; -webkit-font-smoothing: antialiased; }
+  ::selection { background: rgba(201,169,106,.35); color: var(--ink); }
+  :focus-visible { outline: 1.5px solid var(--gold); outline-offset: 4px; border-radius: 6px; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  #stage { position: fixed; inset: 0; }
+  #stage canvas { display: block; opacity: 0; transition: opacity 1.2s ease; }
+  .ready #stage canvas { opacity: 1; }
+  .ui { position: fixed; z-index: 10; }
+
+  /* top bar */
+  #top { top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 22px 28px; pointer-events: none; }
+  #top > * { pointer-events: auto; }
+  .mark { font-family: var(--label); font-size: 12px; letter-spacing: .42em; text-transform: uppercase; color: var(--dim); }
+  .tools { display: flex; gap: 10px; }
+  .chip { font-family: var(--label); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--dim);
+    padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; display: inline-flex; align-items: center; gap: 8px;
+    transition: color .3s, border-color .3s; }
+  .chip:hover { color: var(--ink); border-color: #3a4352; }
+  .chip b { font-weight: 400; } .chip .short { display: none; }
+  .chip i { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); transition: background .3s, box-shadow .3s; }
+  .chip[aria-pressed="true"] i { background: var(--gold); box-shadow: 0 0 10px rgba(201,169,106,.7); }
+
+  /* chapters */
+  #nav { right: 26px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; }
+  .dot { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 6px 0; color: var(--faint); }
+  .dot span { font-family: var(--label); font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; opacity: 0; transform: translateX(6px); transition: opacity .3s, transform .3s; }
+  .dot i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; transition: background .3s, transform .3s; }
+  .dot:hover span, .dot:focus-visible span, .dot.cur span { opacity: 1; transform: none; }
+  .dot.cur { color: var(--ink); } .dot.cur i { background: var(--gold); transform: scale(1.4); }
+
+  /* caption */
+  #caption { left: 50%; bottom: 13vh; width: min(760px, 86vw); transform: translate(-50%, 10px); text-align: center;
+    font-family: var(--display); font-weight: 400; font-size: clamp(26px, 3.1vw, 40px); line-height: 1.18; text-wrap: balance;
+    opacity: 0; transition: opacity .7s ease, transform .9s cubic-bezier(.16,1,.3,1); pointer-events: none;
+    text-shadow: 0 2px 30px rgba(4,6,10,.95); }
+  #caption.on { opacity: 1; transform: translate(-50%, 0); }
+  #hint { left: 50%; bottom: 6vh; transform: translateX(-50%); font-family: var(--label); font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--faint);
+    opacity: 0; transition: opacity 1s; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  #hint.on { opacity: 1; }
+  #hint i { width: 1px; height: 34px; background: linear-gradient(var(--gold), transparent); animation: drip 2.4s ease-in-out infinite; }
+  @keyframes drip { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+  #begin { pointer-events: auto; color: var(--dim); font: inherit; letter-spacing: inherit; text-transform: inherit; }
+
+  /* world labels */
+  #labels { inset: 0; pointer-events: none; }
+  .wlabel { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 12px;
+    opacity: 0; transition: opacity .6s; pointer-events: none; }
+  .wlabel.on { opacity: 1; pointer-events: auto; }
+  .wlabel .n { font-family: var(--display); font-size: 26px; color: var(--ink); text-shadow: 0 2px 18px rgba(2,3,8,.95); }
+  .wlabel .m { font-family: var(--label); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--dim); }
+  .wlabel:hover .n, .wlabel:focus-visible .n { color: var(--gold); }
+
+  /* world panel: the real world screen's copy */
+  #panel { right: 4vw; top: 50%; width: min(420px, 90vw); transform: translate(24px, -50%); opacity: 0; pointer-events: none;
+    background: rgba(11,14,18,.88); border: 1px solid var(--line); border-radius: 22px; padding: 34px 34px 30px;
+    transition: opacity .5s ease .08s, transform .42s cubic-bezier(.25,1,.5,1) .08s; }
+  #panel.open { opacity: 1; transform: translate(0, -50%); pointer-events: auto; }
+  #panel .plbl { font-family: var(--label); font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); }
+  #panel .pt { font-family: var(--display); font-size: 34px; line-height: 1.12; margin-top: 14px; }
+  #panel .pb { font-size: 15.5px; line-height: 1.6; color: var(--dim); margin-top: 14px; }
+  #panel .pm { font-family: var(--display); font-style: italic; font-size: 21px; line-height: 1.35; color: var(--gold); margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+  #panel .pf { font-size: 13px; color: var(--faint); margin-top: 8px; }
+  #panel .pf:empty { display: none; }
+  #panel .demo { font-family: var(--label); font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--faint); margin-top: 18px; }
+  #panel .close { margin-top: 20px; font-family: var(--label); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--dim); }
+  #panel .close:hover { color: var(--ink); }
+
+  #demo { left: 50%; top: 13vh; transform: translateX(-50%); font-family: var(--label); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--faint); opacity: 0; transition: opacity .6s; }
+  #demo.on { opacity: 1; }
+  #hubhint { left: 50%; bottom: 9vh; transform: translateX(-50%); font-family: var(--label); font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim); opacity: 0; transition: opacity .8s; pointer-events: none; white-space: nowrap; }
+  #hubhint.on { opacity: 1; }
+
+  /* end */
+  #end { inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; opacity: 0; pointer-events: none; padding: 24px; }
+  #end.on { pointer-events: auto; }
+  #end .star { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 40px 12px rgba(201,169,106,.45); margin-bottom: 44px; }
+  #end h1 { font-family: var(--display); font-weight: 300; font-size: clamp(54px, 9vw, 120px); letter-spacing: .1em; text-indent: .1em; }
+  #end p.line { font-family: var(--display); font-size: clamp(22px, 2.6vw, 32px); color: var(--dim); margin-top: 10px; }
+  #end a.cta { margin-top: 42px; display: inline-block; font-family: var(--label); font-size: 12px; letter-spacing: .26em; text-transform: uppercase; color: var(--void);
+    background: var(--gold); padding: 16px 26px; border-radius: 999px; text-decoration: none; transition: transform .25s, box-shadow .25s; }
+  #end a.cta:hover { transform: translateY(-1px); box-shadow: 0 10px 30px -8px rgba(201,169,106,.55); }
+  #end .note { margin-top: 16px; font-size: 13.5px; color: var(--faint); }
+  #end .replay { margin-top: 28px; font-family: var(--label); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--dim); }
+
+  #fadeBlack { position: fixed; inset: 0; background: #000; opacity: var(--fade); pointer-events: none; z-index: 30; }
+
+  /* the text version: the whole story without WebGL, motion or sound */
+  #story { position: fixed; inset: 0; overflow-y: auto; background: var(--void); z-index: 40; padding: 12vh 24px 18vh; display: none; touch-action: pan-y; }
+  #story.show { display: block; }
+  #story article { max-width: 620px; margin: 0 auto; }
+  #story h2 { font-family: var(--display); font-weight: 400; font-size: 36px; line-height: 1.15; margin: 64px 0 14px; }
+  #story p { color: var(--dim); line-height: 1.7; font-size: 17px; }
+  #story img { width: min(320px, 70vw); display: block; margin: 26px auto; border-radius: 28px; border: 1px solid var(--line); }
+  #story .close-story { position: fixed; top: 22px; right: 28px; }
+  .no-webgl #story { display: block; } .no-webgl #story .close-story { display: none; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 760px) {
+    #nav { right: 50%; top: auto; bottom: 22px; transform: translateX(50%); flex-direction: row; gap: 14px; }
+    .dot span { display: none; }
+    #caption { bottom: 17vh; }
+    #panel { left: 12px; right: 12px; top: auto; bottom: 12px; width: auto; transform: translateY(30px); padding: 26px 24px 22px; }
+    #panel.open { transform: none; }
+    #panel .pt { font-size: 28px; }
+    #top { padding: 16px 16px; }
+    .mark { letter-spacing: .3em; font-size: 11px; }
+    .chip { padding: 8px 11px; letter-spacing: .16em; font-size: 10px; white-space: nowrap; }
+    .chip .long { display: none; } .chip .short { display: inline; }
+    #hubhint { bottom: 64px; }
+    .wlabel .m { display: none; } .wlabel .n { font-size: 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) { #hint i { animation: none; } #caption { transition: opacity .3s; } }
+
+  /* the film: 1080x1920, captions in the top safe band, no interface chrome */
+  .film #top, .film #nav, .film #hint, .film #hubhint, .film .close, .film #panel .demo { display: none !important; }
+  .film #stage canvas, .film #caption { transition: none !important; }
+  .film #caption { top: 210px; bottom: auto; width: 880px; font-size: 64px; transform: translate(-50%, 0); }
+  .film #panel { left: 70px; right: 70px; top: auto; bottom: 330px; width: auto; transform: none; transition: none; padding: 48px; border-radius: 30px; }
+  .film #panel .plbl { font-size: 22px; } .film #panel .pt { font-size: 60px; } .film #panel .pb { font-size: 28px; } .film #panel .pm { font-size: 36px; } .film #panel .pf { font-size: 22px; }
+  .film .wlabel .n { font-size: 46px; } .film .wlabel .m { font-size: 17px; } .film .wlabel { transition: opacity .5s; }
+  .film #demo { top: auto; bottom: 330px; font-size: 18px; transition: none; }
+  .film #end { transition: none; } .film #end h1 { font-size: 150px; } .film #end p.line { font-size: 54px; }
+  .film #end a.cta { font-size: 24px; padding: 26px 40px; } .film #end .note { font-size: 24px; } .film #end .replay { display: none; }
+</style>
+<script>
+  if (new URLSearchParams(location.search).has("film")) document.documentElement.classList.add("film");
+  try { const c = document.createElement("canvas"); if (!(c.getContext("webgl2") || c.getContext("webgl"))) document.documentElement.classList.add("no-webgl"); } catch (e) { document.documentElement.classList.add("no-webgl"); }
+</script>
+</head>
+<body>
+<a class="sr" href="#story" id="skip">Skip to the text version of this story</a>
+<div id="stage" aria-hidden="true"></div>
+
+<header id="top" class="ui">
+  <span class="mark">Dawnward</span>
+  <div class="tools">
+    <button class="chip" id="textv" type="button" aria-controls="story"><b class="long">Text version</b><b class="short">Text</b></button>
+    <button class="chip" id="sound" type="button" aria-pressed="false" aria-label="Sound"><i></i><span>Sound off</span></button>
+  </div>
+</header>
+
+<nav id="nav" class="ui" aria-label="Chapters"></nav>
+<div id="labels" class="ui" aria-label="Worlds"></div>
+<p id="caption" class="ui" aria-live="polite"></p>
+<div id="hint" class="ui"><button id="begin" type="button">Scroll, swipe or tap to begin</button><i></i></div>
+<div id="demo" class="ui">Demonstration content</div>
+<p id="hubhint" class="ui">Tap a world to visit it</p>
+
+<aside id="panel" class="ui" aria-hidden="true" aria-label="World">
+  <div class="plbl"></div>
+  <div class="pt"></div>
+  <div class="pb"></div>
+  <div class="pm"></div>
+  <div class="pf"></div>
+  <div class="demo">Demonstration content</div>
+  <button class="close" type="button">← Back to your sky</button>
+</aside>
+
+<section id="end" class="ui" aria-label="Dawnward">
+  <div class="star"></div>
+  <h1>Dawnward</h1>
+  <p class="line">Become who you are becoming.</p>
+  <a class="cta" id="ctaLink" target="_blank" rel="noopener">Follow the build</a>
+  <p class="note" id="ctaNote"></p>
+  <button class="replay" id="replay" type="button">Begin again</button>
+</section>
+<div id="fadeBlack"></div>
+
+<section id="story" aria-label="Dawnward, the text version">
+  <button class="chip close-story" type="button" id="closeStory">Back to the universe</button>
+  <article>
+    <p class="mark">Dawnward</p>
+    <h2>It begins with one honest moment.</h2>
+    <p>Dawnward is a journal you talk to. Each evening it asks one real question, "What happened?", and listens while you talk or type.</p>
+    <img data-src="img/debrief.webp" alt="The evening debrief screen: What happened? A field to talk or type, and a listening indicator.">
+    <h2>Each morning, three small steps.</h2>
+    <p>One thing to train, one to build, one to experience, drawn from your own words. No streaks. No scores. No guilt.</p>
+    <img data-src="img/today.webp" alt="The Today screen with three small moves and a kept commitment.">
+    <h2>Your life, as four worlds.</h2>
+    <p><b>Mind</b>, the world of clarity. <b>Body</b>, the world where promises become physical. <b>Soul</b>, the quiet, luminous world. <b>Future</b>, the direction you chose: an aspiration you wrote, never a prediction. Each world changes as you do.</p>
+    <img data-src="img/universe-app.webp" alt="The Universe screen: four planets named Mind, Body, Soul and Future.">
+    <h2>And slowly, it understands you. And shows you why.</h2>
+    <p>Every insight shows its evidence, like "I have seen this in your days 4 times now", and one tap says "That's not right". Your reflections are never sold and never train anyone else's AI.</p>
+    <img data-src="img/you.webp" alt="What I understand about you: insights with their reasons, demonstration content.">
+    <h2>Become who you are becoming.</h2>
+    <p>Dawnward is in private testing. Nothing to download yet. <a href="https://www.instagram.com/bianno.becoming/" style="color:var(--gold)" target="_blank" rel="noopener">Follow the build on Instagram</a>.</p>
+  </article>
+</section>
+<script>
+  (function () {
+    const story = document.getElementById("story"), asset = window.DW_ASSETS || ((p) => "assets/" + p);
+    const fill = () => story.querySelectorAll("img[data-src]").forEach((i) => { i.src = asset(i.dataset.src); i.removeAttribute("data-src"); });
+    const open = () => { fill(); story.classList.add("show"); story.focus && story.setAttribute("tabindex", "-1"); story.focus(); };
+    document.getElementById("textv").onclick = open;
+    document.getElementById("skip").onclick = (e) => { e.preventDefault(); open(); };
+    document.getElementById("closeStory").onclick = () => story.classList.remove("show");
+    if (document.documentElement.classList.contains("no-webgl")) fill();
+  })();
+</script>
+<script src="app.js"></script>
+</body>
+</html>

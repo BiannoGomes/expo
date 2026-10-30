@@ -1,0 +1,5 @@
+node_modules/
+dist/*
+!dist/dawnward-universe.html
+probe/
+film/audio/stem-*.wav

@@ -1,0 +1,15 @@
+{
+  "name": "dawnward-experience",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --watch"
+  },
+  "dependencies": {
+    "axe-core": "^4.10.2",
+    "esbuild": "^0.25.11",
+    "playwright-core": "^1.49.1",
+    "three": "^0.187.0"
+  }
+}
