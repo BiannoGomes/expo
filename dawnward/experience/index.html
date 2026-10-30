@@ -6,6 +6,7 @@
 <title>Dawnward · The Living Universe</title>
 <meta name="description" content="Dawnward is a journal you talk to. Each evening it asks one real question; each morning it gives you three small steps from your own words; slowly it understands you, and shows you why.">
 <meta name="theme-color" content="#04060A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%2304060A%22/%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%224%22 fill=%22%23C9A96A%22/%3E%3C/svg%3E">
 <link rel="stylesheet" href="fonts.css">
 <style>
   :root { --ground:#0B0E12; --void:#04060A; --surface:#12161D; --line:#232A34; --ink:#ECE9E2; --dim:#9AA0A9; --faint:#79818F; --gold:#C9A96A; --fade:0;
@@ -85,7 +86,8 @@
 
   /* end */
   #end { inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; opacity: 0; pointer-events: none; padding: 24px; }
-  #end.on { pointer-events: auto; }
+  #end.on a, #end.on button { pointer-events: auto; } /* the section itself never blocks the header */
+  #top { z-index: 20; }
   #end .star { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 40px 12px rgba(201,169,106,.45); margin-bottom: 44px; }
   #end h1 { font-family: var(--display); font-weight: 300; font-size: clamp(54px, 9vw, 120px); letter-spacing: .1em; text-indent: .1em; }
   #end p.line { font-family: var(--display); font-size: clamp(22px, 2.6vw, 32px); color: var(--dim); margin-top: 10px; }
@@ -153,6 +155,7 @@
 </header>
 
 <nav id="nav" class="ui" aria-label="Chapters"></nav>
+<main id="experience" aria-label="Dawnward, the Living Universe">
 <div id="labels" class="ui" aria-label="Worlds"></div>
 <p id="caption" class="ui" aria-live="polite"></p>
 <div id="hint" class="ui"><button id="begin" type="button">Scroll, swipe or tap to begin</button><i></i></div>
@@ -178,6 +181,7 @@
   <button class="replay" id="replay" type="button">Begin again</button>
 </section>
 <div id="fadeBlack"></div>
+</main>
 
 <section id="story" aria-label="Dawnward, the text version">
   <button class="chip close-story" type="button" id="closeStory">Back to the universe</button>

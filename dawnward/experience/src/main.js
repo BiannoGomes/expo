@@ -272,6 +272,16 @@ const worldObjs = worlds.map((w) => {
   return { w, g, planet, atmo, base: v3(...w.pos) };
 });
 
+function placeWorlds(tSec) {
+  // Orbit: worlds drift slowly. Placed before the camera solve, which aims at them.
+  // Portrait screens draw the worlds in and stack them taller.
+  const kx = camera.aspect < 0.75 ? 0.45 : 1, ky = camera.aspect < 0.75 ? 1.35 : 1;
+  worldObjs.forEach((o, i) => {
+    const ang = tSec * 6.283 / 90 + i * 1.7;
+    o.g.position.set(o.base.x * kx + Math.cos(ang) * 0.5, o.base.y * ky + Math.sin(ang * 0.8) * 0.35, o.base.z);
+  });
+}
+
 /* ------------------------------------------------------------- camera rig */
 // One continuous path. Positions are functions of story time s, never jumps.
 const HUB = { pos: v3(0, 0, -6), look: v3(0, 0, -40) };
@@ -459,6 +469,7 @@ const tmpPos = v3(0, 0, 0), tmpLook = v3(0, 0, 0);
 function frame(st) {
   const { s, t, focusAmt: fa, bloom } = st;
   const tSec = t / 1000;
+  placeWorlds(tSec);
   // camera first: everything placed relative to it reads this frame's pose.
   // camera: the story path, mixed toward the focused world by gravity
   const c = cameraFor(s, t);
@@ -516,6 +527,9 @@ function frame(st) {
   const uniOn = s > 1.8;
   const dimU = 1 - smooth(3.3, 3.9, s) * 0.45 - smooth(4.4, 4.95, s) * 0.5;
   for (const p of [starsFar, starsMid, starsNear]) { p.material.uniforms.uTime.value = t; p.material.uniforms.uAlpha.value = dimU; }
+  // the passage: near stars brighten while we travel, so depth reads
+  starsNear.material.uniforms.uAlpha.value = dimU * (1 + 1.2 * smooth(2.0, 2.3, s) * (1 - smooth(2.7, 3.0, s)));
+  starsMid.material.uniforms.uAlpha.value = dimU * (1 + 0.6 * smooth(2.0, 2.3, s) * (1 - smooth(2.7, 3.0, s)));
   nebula.material.opacity = 0.85 * dimU;
   keptStar.material.opacity = smooth(2.15, 2.45, s) * dimU * (0.85 + 0.15 * Math.sin(tSec * 0.98));
   worldObjs.forEach((o, i) => {
@@ -526,10 +540,6 @@ function frame(st) {
     o.planet.scale.setScalar(o.w.size * mix(motion.emergence.scaleFrom, 1, b) * (hoverKey === o.w.key ? 1.03 : 1));
     o.atmo.material.opacity = b * dimU * (o.w.key === "future" ? 0.14 : 0.28) * breath * (isF ? 1.25 : 1);
     o.atmo.scale.setScalar(o.w.size * 1.9 * breath);
-    const ang = tSec * 6.283 / 90 + i * 1.7;
-    // portrait screens: draw the worlds in, stack them taller
-    const kx = camera.aspect < 0.75 ? 0.45 : 1, ky = camera.aspect < 0.75 ? 1.35 : 1;
-    o.g.position.set(o.base.x * kx + Math.cos(ang) * 0.5, o.base.y * ky + Math.sin(ang * 0.8) * 0.35, o.base.z);
   });
 
 
@@ -563,7 +573,7 @@ const innerWidthF = () => (FILM ? 1080 : innerWidth);
 const innerHeightF = () => (FILM ? 1920 : innerHeight);
 
 /* ------------------------------------------------------------- run loops */
-const bloomFor = (s) => worlds.map((_, i) => easeOutQuart(smooth(2.55 + i * 0.07, 2.95 + i * 0.07, s)));
+const bloomFor = (s) => worlds.map((_, i) => Math.max(0.26 * smooth(1.95, 2.35, s), easeOutQuart(smooth(2.55 + i * 0.07, 2.95 + i * 0.07, s))));
 async function boot() {
   const [debrief, today, you] = await Promise.all(["debrief", "today", "you"].map(imgLoad));
   Object.assign(shots, { debrief, today, you });

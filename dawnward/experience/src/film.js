@@ -19,8 +19,8 @@ const S_KEYS = [
   [22.6, 2.62, easeOutQuart],        // drifting deep into the sky
   [B(35), 2.95, easeInOutSine],      // gathering toward the climax
   [beat.climax, 3.0, easeOutQuart],  // the hub
-  [B(48), 3.0, null],                // hold through the sustain (worlds visited)
-  [47.6, 3.92, easeInOutCubic],      // the phone returns, human scale
+  [46.0, 3.0, null],                 // hold through the sustain (worlds visited)
+  [48.2, 3.92, easeInOutCubic],      // the phone returns, human scale
   [53.4, 4.25, easeInOutSine],       // the personal revelation holds
   [beat.accent, 4.85, easeInOutCubic],
   [56.0, 5.0, easeOutQuart],
@@ -39,7 +39,7 @@ function sAt(t) {
 // Visits: the camera goes to a world, its panel opens, then it returns.
 const VISITS = [
   { key: "mind", from: 23.57, to: 30.14 },
-  { key: "future", from: B(40), to: B(47) },
+  { key: "future", from: B(40), to: B(46), back: 3.0 },
 ];
 
 export function filmState(ms) {
@@ -47,17 +47,20 @@ export function filmState(ms) {
   const s = sAt(t);
   let focusKey = null, focusAmt = 0, panelOpen = false;
   for (const v of VISITS) {
-    if (t >= v.from && t <= v.to + 1.6) {
+    if (t >= v.from && t <= v.to + (v.back || 2.2)) {
       focusKey = v.key;
-      focusAmt = easeInOutCubic(seg(t, v.from, v.from + 1.9)) * (1 - easeInOutCubic(seg(t, v.to, v.to + 1.6)));
-      panelOpen = t > v.from + 1.3 && t < v.to;
+      // approach 2.6 s, return 2.2 s: Gravity, never a lurch
+      focusAmt = easeInOutCubic(seg(t, v.from, v.from + 2.6)) * (1 - easeInOutCubic(seg(t, v.to, v.to + (v.back || 2.2))));
+      panelOpen = t > v.from + 2.0 && t < v.to;
     }
   }
   // Mind is lit when we first visit it; the others bloom one per downbeat at the climax.
+  // Through the glass, the worlds are already there, dim, waiting to bloom.
+  const wait = 0.26 * easeOutQuart(seg(t, 14.4, 17.5));
   const bloom = worlds.map((w, i) => {
-    if (w.key === "mind") return easeOutQuart(seg(t, 21.7, 23.6));
+    if (w.key === "mind") return Math.max(wait, easeOutQuart(seg(t, 21.7, 23.6)));
     const order = { body: 0, soul: 1, future: 2 }[w.key];
-    return easeOutQuart(seg(t, beat.climax + order * beat.period, beat.climax + order * beat.period + 1.3));
+    return Math.max(wait, easeOutQuart(seg(t, beat.climax + order * beat.period, beat.climax + order * beat.period + 1.3)));
   });
   const end = t >= beat.accent;
   const endAmt = easeOutQuart(seg(t, beat.accent, beat.accent + 1.0));
