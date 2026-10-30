@@ -10,7 +10,11 @@
 <link rel="stylesheet" href="fonts.css">
 <style>
   :root { --ground:#0B0E12; --void:#04060A; --surface:#12161D; --line:#232A34; --ink:#ECE9E2; --dim:#9AA0A9; --faint:#79818F; --gold:#C9A96A; --fade:0;
-    --display:"Cormorant Garamond", Georgia, serif; --body:"Albert Sans", system-ui, sans-serif; --label:"IBM Plex Mono", ui-monospace, monospace; }
+    --display:"Source Serif 4", Georgia, serif; --body:"Source Sans 3", system-ui, sans-serif; --label:"Source Sans 3", system-ui, sans-serif;
+    /* motion tokens (src/tokens.js motion.tokens) */
+    --t-quick:240ms; --t-base:420ms; --t-slow:900ms; --e-standard:cubic-bezier(.65,0,.35,1); --e-settle:cubic-bezier(.16,1,.3,1); --e-enter:cubic-bezier(.33,1,.68,1);
+    /* glass */
+    --glass-bg:rgba(16,20,27,.58); --glass-line:rgba(236,233,226,.11); --glass-blur:24px; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; background: var(--void); color: var(--ink); font-family: var(--body); overflow: hidden; overscroll-behavior: none; touch-action: pinch-zoom; -webkit-font-smoothing: antialiased; }
   ::selection { background: rgba(201,169,106,.35); color: var(--ink); }
@@ -167,6 +171,74 @@
   .film #demo { left: 50%; transform: translateX(-50%); top: auto; bottom: 110px; font-size: 18px; transition: none; }
   .film #end { transition: none; } .film #end h2 { font-size: 150px; } .film #end p.line { font-size: 54px; }
   .film #end a.cta { font-size: 24px; padding: 26px 40px; } .film #end .handle { font-size: 34px; margin-top: 30px; } .film #end .note { font-size: 26px; } .film #end .replay { display: none; }
+  /* 2.0: one human type system. Labels are sentence case, never spaced capitals. */
+  .mark { font-family: var(--display); font-size: 20px; letter-spacing: .01em; text-transform: none; color: var(--ink); }
+  .chip, .dot span, .wlabel .m, #panel .plbl, #panel .demo, #panel .close, #panel .pbel .blbl, #demo, #hubhint, #hint, #begin, #end a.cta, #end .replay, #end .handle, #story .demo {
+    text-transform: none; letter-spacing: .01em; font-family: var(--label); }
+  .chip { font-size: 14px; font-weight: 600; } .dot span { font-size: 13px; font-weight: 600; }
+  .wlabel .m { font-size: 13px; } #panel .plbl { font-size: 14px; font-weight: 600; } #panel .pbel .blbl { font-size: 13px; font-weight: 600; }
+  #panel .demo, #demo, #story .demo { font-size: 13px; } #hubhint, #hint, #begin { font-size: 14px; }
+  #panel .close { font-size: 14px; font-weight: 600; } #end a.cta { font-size: 15px; font-weight: 600; } #end .handle { font-size: 16px; } #end .replay { font-size: 14px; }
+  #end h2 { letter-spacing: .02em; text-indent: 0; font-weight: 400; }
+  /* glass surfaces: the panel and chips float over the sky */
+  #panel, .chip { background: var(--glass-bg); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.25); backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
+    border-color: var(--glass-line); box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 30px 80px -24px rgba(0,0,0,.75); }
+  #panel { transition: opacity var(--t-base) var(--e-enter), transform var(--t-slow) var(--e-settle); }
+  #panel .pnav { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; }
+  #panel .pnav button { font: 600 14px var(--label); color: var(--dim); padding: 10px 0; }
+  #panel .pnav button:hover { color: var(--ink); }
+  .film #panel .pnav { display: none; }
+  [data-quality="low"] #panel, [data-quality="low"] .chip { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(11,14,18,.94); }
+  .film #panel { -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+  /* the Memory Constellation (prototype) */
+  #momentsBtn { left: 50%; bottom: calc(9vh + 44px); transform: translateX(-50%); opacity: 0; pointer-events: none; transition: opacity var(--t-base) var(--e-enter); color: var(--ink); }
+  #momentsBtn.on { opacity: 1; pointer-events: auto; }
+  #momentsBtn small { font: 400 12px var(--label); color: var(--faint); margin-left: 4px; }
+  .film #momentsBtn { display: none; }
+  #moments { position: fixed; inset: 0; z-index: 35; display: grid; grid-template-rows: auto 1fr auto; padding: 22px 28px 20px; gap: 12px;
+    background: rgba(4,6,10,.86); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); opacity: 0; pointer-events: none; transition: opacity var(--t-base) var(--e-enter); }
+  #moments.open { opacity: 1; pointer-events: auto; }
+  [data-quality="low"] #moments { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(4,6,10,.96); }
+  .mo-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; max-width: 1100px; width: 100%; margin: 0 auto; }
+  .mo-proto { font: 600 13px var(--label); color: var(--gold); }
+  #moments h2 { font: 400 clamp(30px, 3.4vw, 42px)/1.1 var(--display); margin-top: 6px; outline: none; }
+  .mo-sub { color: var(--dim); font-size: 15px; margin-top: 6px; max-width: 52ch; }
+  .mo-close { font: 600 14px var(--label); color: var(--dim); padding: 10px 14px; border: 1px solid var(--glass-line); border-radius: 999px; }
+  .mo-body { position: relative; min-height: 0; display: grid; place-items: center; }
+  .mo-sky { width: min(78vh, 92vw); height: min(78vh, 92vw); max-height: 100%; }
+  .mo-link { stroke: rgba(236,233,226,.22); stroke-width: 1.4; stroke-dasharray: 3 5; }
+  .mo-link.hi { stroke: rgba(201,169,106,.75); stroke-dasharray: none; stroke-width: 1.8; }
+  .mo-star { cursor: pointer; } .mo-star.sel circle:last-child { stroke: var(--ink); stroke-width: 2; }
+  .mo-list { display: none; list-style: none; width: min(640px, 100%); max-height: 100%; overflow-y: auto; }
+  .mo-list button { display: grid; gap: 2px; text-align: left; width: 100%; padding: 12px 4px; border-bottom: 1px solid var(--line); }
+  .mo-list .d { font: 600 13px var(--label); color: var(--faint); } .mo-list .t { font: 400 18px/1.35 var(--display); }
+  .mo-list button[aria-current="true"] .t { color: var(--gold); }
+  #moments.as-list .mo-sky { display: none; } #moments.as-list .mo-list { display: block; }
+  .mo-card { position: absolute; right: max(28px, calc((100vw - 1100px) / 2)); top: 50%; transform: translateY(-50%); width: min(360px, 90vw);
+    background: var(--glass-bg); border: 1px solid var(--glass-line); border-radius: 22px; padding: 22px; max-height: 70vh; overflow-y: auto; }
+  .mo-card:empty { display: none; }
+  .mo-meta { font: 600 13px var(--label); color: var(--faint); } .mo-text { font: 400 22px/1.3 var(--display); margin-top: 8px; }
+  .mo-h { font: 600 13px var(--label); color: var(--dim); margin-top: 18px; }
+  .mo-why { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 14.5px; line-height: 1.5; }
+  .mo-basis, .mo-other { color: var(--dim); font-size: 13.5px; margin-top: 4px; } .mo-none { color: var(--faint); font-size: 14px; margin-top: 14px; }
+  .mo-reject { color: #C98A84; font: 600 14px var(--label); padding: 8px 0 0; }
+  .mo-remove { margin-top: 18px; color: var(--dim); font: 600 14px var(--label); padding: 8px 0; }
+  .mo-foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; max-width: 1100px; width: 100%; margin: 0 auto; font: 600 14px var(--label); color: var(--dim); }
+  .mo-switch { display: inline-flex; gap: 10px; align-items: center; cursor: pointer; } .mo-switch input { width: 18px; height: 18px; accent-color: #C9A96A; }
+  .mo-view { font: 600 14px var(--label); color: var(--dim); padding: 10px 0; }
+  .mo-toast { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%); background: rgba(11,14,18,.96); border: 1px solid var(--glass-line); border-radius: 999px;
+    padding: 10px 18px; font-size: 14px; opacity: 0; transition: opacity var(--t-base); pointer-events: none; max-width: 92vw; }
+  .mo-toast.on { opacity: 1; pointer-events: auto; } .mo-undo { color: var(--gold); font-weight: 600; margin-left: 8px; }
+  @media (max-width: 760px) {
+    #moments { padding: 16px; } .mo-sky { width: 92vw; height: 92vw; }
+    .mo-card { position: fixed; left: 12px; right: 12px; top: auto; bottom: 92px; transform: none; width: auto; max-height: 42vh; }
+    .mo-foot { position: relative; z-index: 2; }
+    #moments.has-card .mo-body { padding-bottom: 44vh; } #moments.has-card .mo-sky { width: min(92vw, 34vh); height: min(92vw, 34vh); }
+    #moments.has-card .mo-list { max-height: 30vh; }
+    .mo-toast { bottom: auto; top: 14px; }
+    #momentsBtn { bottom: 108px; }
+  }
 </style>
 <script>
   if (new URLSearchParams(location.search).has("film")) document.documentElement.classList.add("film");
@@ -194,6 +266,7 @@
 <div id="hint" class="ui" inert><button id="begin" type="button">Scroll, swipe or tap to begin</button><i></i></div>
 <div id="demo" class="ui" aria-hidden="true">Demonstration content</div>
 <p id="hubhint" class="ui">Tap a world to visit it</p>
+<button id="momentsBtn" class="ui chip" type="button" inert>Your moments <small>prototype</small></button>
 
 <div id="panel" class="ui" role="dialog" aria-labelledby="pt" inert>
   <div class="plbl"></div>
@@ -207,6 +280,7 @@
   </div>
   <div class="pmove"><p class="pm"></p><p class="pbc"></p></div>
   <p class="demo">Demonstration content</p>
+  <div class="pnav"><button class="prev" type="button"></button><button class="next" type="button"></button></div>
   <button class="close" type="button">← Back to your sky</button>
 </div>
 

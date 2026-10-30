@@ -4,6 +4,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { color, motion, chapters, worlds, cta, beat } from "./tokens.js";
 import { createSound } from "./sound.js";
 import { filmState, filmCaptions, FILM_MS } from "./film.js";
+import { createConstellation } from "./constellation.js";
 
 const { easeOutQuart, easeInOutCubic, easeInOutSine } = motion.ease;
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -36,6 +37,7 @@ renderer.setClearColor(color.void, 1);
 stageEl.appendChild(renderer.domElement);
 
 const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400);
+let baseFov = 34;
 const phoneScene = new THREE.Scene();
 const uniScene = new THREE.Scene();
 uniScene.fog = new THREE.FogExp2(0x04060a, 0.0045);
@@ -344,12 +346,46 @@ keptStar.position.set(-1.6, 1.9, -16);
 keptStar.scale.setScalar(2.2);
 uniScene.add(keptStar);
 
+// A world: the app's own planet art, given an atmosphere that hugs its real
+// silhouette (sampled from the art's alpha, brighter toward its light) and a
+// faint limb glow inside the edge. Bounded: 12 taps per pixel, no post pass.
+const planetShader = (w) => new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false,
+  uniforms: {
+    uMap: { value: tex(`img/${w.key}.webp`) }, uOpacity: { value: 0 }, uTint: { value: new THREE.Color(w.look.rim) },
+    uLight: { value: new THREE.Vector2(...w.look.light).normalize() }, uR: { value: w.look.reach }, uGlow: { value: w.look.glow }, uLimb: { value: w.look.limb },
+    uQuality: { value: 1 },
+  },
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+  fragmentShader: `varying vec2 vUv; uniform sampler2D uMap; uniform float uOpacity; uniform vec3 uTint; uniform vec2 uLight; uniform float uR; uniform float uGlow; uniform float uLimb; uniform float uQuality;
+    void main(){
+      vec4 c = texture2D(uMap, vUv);
+      float halo = 0.0, inner = 1.0; // low quality: the art alone, no glow
+      if (uQuality > 0.5) {
+        inner = 0.0;
+        for (int i = 0; i < 12; i++) {
+          float an = float(i) * 0.5236; vec2 d = vec2(cos(an), sin(an));
+          float lit = 0.35 + 0.65 * max(dot(-d, uLight), 0.0); // the side facing the light scatters more
+          halo += texture2D(uMap, vUv + d * uR).a * lit;
+          inner += texture2D(uMap, vUv + d * uR * 0.35).a;
+        }
+        halo /= 12.0; inner /= 12.0;
+      }
+      float outside = halo * (1.0 - c.a);
+      float limb = c.a * (1.0 - inner) * uLimb;
+      vec3 rgb = c.rgb * c.a + uTint * (limb + outside * uGlow);
+      float a = clamp(c.a + outside * uGlow * 0.85, 0.0, 1.0);
+      gl_FragColor = vec4(rgb / max(a, 1e-3), a * uOpacity);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+    }`,
+});
 const worldObjs = worlds.map((w) => {
   const g = new THREE.Group();
   g.position.set(...w.pos);
   const atmo = new THREE.Sprite(new THREE.SpriteMaterial({ map: softGlow, color: new THREE.Color(w.tint), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0 }));
   atmo.scale.setScalar(w.size * 1.9);
-  const planet = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex(`img/${w.key}.webp`), transparent: true, depthWrite: false, opacity: 0 }));
+  const planet = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), planetShader(w)); // billboarded each frame
   planet.scale.setScalar(w.size);
   planet.userData.key = w.key;
   g.add(atmo, planet);
@@ -416,10 +452,12 @@ function pushFor(s) {
   if (s < 1.8) return bump(1.02, 1.14, 1.7, 1.79, s); // one push across both screens; the height slide follows the screen
   return bump(3.95, 4.2, 4.42, 4.62, s);
 }
+// Each world is approached its own way (tokens.js worlds[].look.approach):
+// Mind on an arc, Body low and direct, Soul adrift, Future from far away on a long lens.
 function focusPose(wo) {
   const p = wo.g.position.clone();
   const dir = p.clone().sub(HUB.pos).normalize();
-  const pos = p.clone().sub(dir.multiplyScalar(wo.w.size * (wo.w.key === "future" ? 1.05 : 1.55)));
+  const pos = p.clone().sub(dir.multiplyScalar(wo.w.size * wo.w.look.distance));
   if (camera.aspect < 0.75) {
     // portrait: the world centred in the upper half, its panel below
     pos.y -= wo.w.size * 0.1;
@@ -470,8 +508,12 @@ const END_LINE = `Dawnward. Become who you are becoming. ${cta.note} ${cta.label
 
 /* ------------------------------------------------------------- world focus */
 let focusKey = null, focusAmt = 0, hoverKey = null;
+let travel = null;
 function selectWorld(key) {
+  if (!FILM && focusKey && focusKey !== key) travel = { pos: camera.position.clone(), look: lookNow.clone(), fov: camera.fov, k: 0 };
   focusKey = key;
+  panel.querySelector(".prev").textContent = `← ${worlds[(worlds.findIndex((w) => w.key === key) + 3) % 4].name}`;
+  panel.querySelector(".next").textContent = `${worlds[(worlds.findIndex((w) => w.key === key) + 1) % 4].name} →`;
   const wo = worldObjs.find((o) => o.w.key === key);
   if (!wo) return;
   const w = wo.w;
@@ -521,7 +563,11 @@ panel.querySelector(".disp").addEventListener("click", () => {
 /* --------------------------------------------------------------- story time */
 let s = 0, target = 0, vel = 0, lastInput = 0; // lastInput 0 = the visitor has not moved yet
 const story = $("story");
-const storyOpen = () => story.classList.contains("show");
+const moments = FILM ? { isOpen: false } : createConstellation({
+  onOpen: () => { $("top").inert = true; nav.inert = true; },
+  onClose: () => { $("top").inert = false; nav.inert = false; },
+});
+const storyOpen = () => story.classList.contains("show") || moments.isOpen;
 let swapT = 0;
 const nearestIndex = (v) => chapters.reduce((a, c, i) => (Math.abs(c.rest - v) < Math.abs(chapters[a].rest - v) ? i : a), 0);
 const goTo = (v, cut = false) => {
@@ -569,6 +615,9 @@ if (!FILM) {
   addEventListener("keydown", (e) => {
     if (storyOpen()) return;
     if (e.key === "Escape" && focusKey) { closeWorld(); return; }
+    if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && (focusKey || (s > 2.85 && s < 3.4))) {
+      e.preventDefault(); stepWorld(e.key === "ArrowRight" ? 1 : -1); return;
+    }
     if (focusKey) return;
     const t = e.target; // Space and Enter on a control belong to that control
     if (e.key === " " && t && t.closest && t.closest("button, a, input")) return;
@@ -579,14 +628,37 @@ if (!FILM) {
   $("begin").addEventListener("click", () => goTo(chapters[1].rest));
 }
 
+function stepWorld(dir) {
+  const i = focusKey ? worlds.findIndex((w) => w.key === focusKey) : dir > 0 ? -1 : 0;
+  selectWorld(worlds[(i + dir + 4) % 4].key);
+}
+const momentsBtn = $("momentsBtn");
+if (!FILM) momentsBtn.addEventListener("click", () => moments.open(momentsBtn));
+panel.querySelector(".prev").addEventListener("click", () => stepWorld(-1));
+panel.querySelector(".next").addEventListener("click", () => stepWorld(1));
+
 /* -------------------------------------------------------------- pointer */
+// drag at the hub to look around the worlds (a click still selects)
+let yaw = 0, yawTarget = 0, drag = null;
+renderer.domElement.addEventListener("pointerdown", (e) => {
+  if (FILM || focusKey || !(s > 2.6 && s < 3.4)) return;
+  drag = { x: e.clientX, y0: yawTarget, moved: false };
+});
+addEventListener("pointermove", (e) => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x;
+  if (Math.abs(dx) > 6) drag.moved = true;
+  yawTarget = clamp(drag.y0 - dx * 0.0035, -0.45, 0.45);
+});
+addEventListener("pointerup", () => { if (drag && drag.moved) suppressClick = performance.now(); drag = null; });
+let suppressClick = 0;
 const pointer = new THREE.Vector2(0, 0), pointerS = new THREE.Vector2(0, 0);
 const ray = new THREE.Raycaster();
 addEventListener("pointermove", (e) => {
   pointer.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
 });
 renderer.domElement.addEventListener("click", (e) => {
-  if (FILM) return;
+  if (FILM || performance.now() - suppressClick < 60) return;
   const pt = new THREE.Vector2((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
   if (s > 2.75 && s < 3.6) {
     ray.setFromCamera(pt, camera);
@@ -610,6 +682,28 @@ soundBtn.addEventListener("click", async () => {
   soundBtn.querySelector("span").textContent = on ? "Sound on" : "Sound off";
 });
 
+/* ----------------------------------------------------------- quality tiers */
+// Chosen once from this device's first frames (median frame time), or forced
+// with ?quality=low|medium|high. Low: pixel ratio 1, far stars off, no
+// atmosphere taps, solid glass. The film always renders at high.
+const quality = { tier: FILM ? "high" : params.get("quality") || "auto", dts: [] };
+function applyTier(t) {
+  quality.tier = t;
+  document.documentElement.dataset.quality = t;
+  if (FILM) return;
+  const cap = t === "low" ? 1 : t === "medium" ? 1.5 : innerWidth < 760 ? 1.5 : 2;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, cap));
+  starsFar.visible = t !== "low";
+  resize();
+}
+function sampleQuality(dtMs) {
+  if (quality.tier !== "auto") return;
+  quality.dts.push(dtMs);
+  if (quality.dts.length < 90) return;
+  const m = quality.dts.slice(20).sort((a, b) => a - b)[35]; // median, skipping the warm-up
+  applyTier(m > 34 ? "low" : m > 22 ? "medium" : "high");
+}
+
 /* -------------------------------------------------------------- resize */
 function resize() {
   const w = FILM ? 1080 : innerWidth, h = FILM ? 1920 : innerHeight;
@@ -617,7 +711,7 @@ function resize() {
   renderer.domElement.style.width = `${w}px`; renderer.domElement.style.height = `${h}px`;
   camera.aspect = w / h;
   // Portrait screens: widen the lens so the phone and worlds stay framed.
-  camera.fov = w / h < 0.75 ? 46 : 34;
+  baseFov = camera.fov = w / h < 0.75 ? 46 : 34;
   camera.updateProjectionMatrix();
   const dpr = renderer.getPixelRatio();
   rtSize.w = Math.round(w * dpr * 0.75); rtSize.h = Math.round(h * dpr * 0.75);
@@ -627,9 +721,12 @@ function resize() {
 }
 addEventListener("resize", resize);
 resize();
+if (quality.tier !== "auto") applyTier(quality.tier); else document.documentElement.dataset.quality = "auto";
 
 /* ------------------------------------------------------------- the frame */
 const lp = [];
+const ORBIT_PIVOT = v3(0, 0, -36), UP = v3(0, 1, 0);
+const lookNow = v3(0, 0, -40);
 const tmpPos = v3(0, 0, 0), tmpLook = v3(0, 0, 0), tmpV = v3(0, 0, 0), lv0 = v3(0, 0, 0), lv1 = v3(0, 0, 0);
 function frame(st) {
   const { s, t, focusAmt: fa, bloom } = st;
@@ -647,12 +744,33 @@ function frame(st) {
     tmpPos.lerp(v3(0, py, pz), pushE); tmpLook.lerp(v3(0, py, 0), pushE);
   }
   const fk = st.focusKey || focusKey;
+  let fov = baseFov;
   if (fk && fa > 0) {
-    const f = focusPose(worldObjs.find((o) => o.w.key === fk));
-    tmpPos.lerp(f.pos, easeInOutCubic(fa)); tmpLook.lerp(f.look, easeInOutCubic(fa));
+    const wo = worldObjs.find((o) => o.w.key === fk), f = focusPose(wo), e = easeInOutCubic(fa), z = wo.w.size;
+    tmpPos.lerp(f.pos, e); tmpLook.lerp(f.look, e);
+    const mid = Math.sin(Math.PI * e); // zero at both ends, so the travel's endpoints never move
+    switch (wo.w.look.approach) {
+      case "arc": tmpPos.x -= mid * z * 0.45; break;                        // Mind: swings round on an arc
+      case "low": tmpPos.y -= mid * z * 0.3; tmpLook.y += mid * z * 0.08; break; // Body: comes in low, looking up
+      case "drift": if (!REDUCED) tmpPos.y += e * Math.sin(tSec * 0.5) * z * 0.04; break; // Soul: never quite still
+      case "tele": fov = mix(baseFov, baseFov * 0.62, e); tmpPos.lerp(wo.g.position, -0.35 * e); break; // Future: from far, on a long lens
+    }
   }
+  // a world-to-world move starts from wherever the camera was, never jumps
+  if (st.travel && st.travel.k < 1) {
+    const k = easeInOutCubic(st.travel.k);
+    tmpPos.lerpVectors(st.travel.pos, tmpPos, k); tmpLook.lerpVectors(st.travel.look, tmpLook, k);
+    fov = mix(st.travel.fov, fov, k);
+  }
+  // orbital look-around at the hub: drag or swipe sideways swings the view around the worlds
+  const yw = (st.yaw || 0) * smooth(2.6, 2.95, s) * (1 - smooth(3.3, 3.6, s)) * (1 - easeInOutCubic(fa));
+  if (yw) {
+    tmpPos.sub(ORBIT_PIVOT).applyAxisAngle(UP, yw).add(ORBIT_PIVOT);
+    tmpLook.sub(ORBIT_PIVOT).applyAxisAngle(UP, yw).add(ORBIT_PIVOT);
+  }
+  if (camera.fov !== fov) { camera.fov = fov; camera.updateProjectionMatrix(); }
   if (!FILM && s >= 2.45) { const k = smooth(2.45, 2.75, s); tmpLook.x += pointerS.x * 1.2 * k; tmpLook.y += pointerS.y * 0.8 * k; }
-  camera.position.copy(tmpPos); camera.lookAt(tmpLook);
+  camera.position.copy(tmpPos); camera.lookAt(tmpLook); lookNow.copy(tmpLook);
   // light
   const li = smooth(0.05, 0.5, s) * (1 - smooth(0.78, 1.02, s));
   lightShader.uniforms.uI.value = li;
@@ -716,7 +834,9 @@ function frame(st) {
     const b = bloom[i];
     const breath = REDUCED ? 1 : 1 + Math.sin(tSec * 6.283 / (motion.breath.period / 1000) + i) * motion.breath.depth * 0.5;
     const isF = focusKey === o.w.key || st.focusKey === o.w.key;
-    o.planet.material.opacity = b * dimU;
+    o.planet.material.uniforms.uOpacity.value = b * dimU;
+    o.planet.material.uniforms.uQuality.value = quality.tier === "low" ? 0 : 1;
+    o.planet.quaternion.copy(camera.quaternion); // a billboard, like the sprite it replaces
     o.planet.scale.setScalar(o.w.size * mix(motion.emergence.scaleFrom, 1, b) * (hoverKey === o.w.key ? 1.03 : 1));
     o.atmo.material.opacity = b * dimU * (o.w.key === "future" ? 0.14 : 0.28) * breath * (isF ? 1.25 : 1);
     o.atmo.scale.setScalar(o.w.size * 1.9 * breath);
@@ -848,7 +968,10 @@ async function boot() {
       focusAmt += ((focusKey ? 1 : 0) - focusAmt) * (1 - Math.pow(0.5, dt / motion.gravity.focusHalfLife));
     } else { pointerS.set(0, 0); focusAmt = focusKey ? 1 : 0; } // reduced motion: s moves only by cross-fade steps
     const bl = bloomFor(s);
-    frame({ s, t: now - t0, focusAmt, bloom: bl, focusKey: null });
+    if (travel) { travel.k += REDUCED ? 1 : dt / (motion.tokens.duration.travel / 1000); if (travel.k >= 1) travel = null; }
+    yaw += (yawTarget - yaw) * (REDUCED ? 1 : 1 - Math.pow(0.5, dt / 0.18));
+    sampleQuality(dt * 1000);
+    frame({ s, t: now - t0, focusAmt, bloom: bl, focusKey: null, travel, yaw });
     sideCaption = camera.aspect > 1.1 && ((s > 0.85 && s < 1.95) || (s > 3.45 && s < 4.62));
     topCaption = camera.aspect > 1.1 && s > 2.6 && s < 3.45;
     const cap = interactiveCaptions.find(([a, b]) => s >= a && s < b);
@@ -858,6 +981,8 @@ async function boot() {
     const hintOn = s < 0.12 && now - t0 > 1600;
     hint.classList.toggle("on", hintOn); hint.inert = !hintOn;
     hubHint.classList.toggle("on", s > 2.93 && s < 3.4 && !focusKey);
+    const mOn = s > 2.93 && s < 3.4 && !focusKey;
+    momentsBtn.classList.toggle("on", mOn); momentsBtn.inert = !mOn;
     endEl.classList.toggle("on", s > 4.7);
     endEl.style.opacity = smooth(4.55, 4.95, s);
     chrome(s > 4.7, (s > 0.95 && s < 1.95) || (s > 3.6 && s < 4.85));

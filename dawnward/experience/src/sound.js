@@ -8,7 +8,10 @@ const smooth = (a, b, v) => { const t = clamp((v - a) / (b - a)); return t * t *
 
 export function createSound({ asset, film }) {
   let ctx = null, gain, filter, src = null, on = false, buffer = null, loading = null;
-  const notes = { mind: 659.25, body: 440, soul: 880, future: 587.33, back: 329.63 };
+  // Each world has its own restrained voice (tokens.js worlds[].sound): Mind a
+  // clear bell, Body a low warm tone, Soul a soft open fifth, Future a distant chord.
+  const voices = Object.fromEntries(worlds.map((w) => [w.key, w.sound]));
+  const BACK = { note: 329.63, partials: [[1, 1], [2.01, 0.32]], decay: 2.0 };
 
   function ensure() {
     if (ctx) return;
@@ -23,15 +26,15 @@ export function createSound({ asset, film }) {
     if (!buffer || src) return;
     src = ctx.createBufferSource(); src.buffer = buffer; src.loop = true; src.connect(filter); src.start();
   }
-  function bell(freq, level = 0.12) {
-    if (!on || !ctx) return;
-    const t = ctx.currentTime, out = ctx.createGain();
-    out.gain.setValueAtTime(0, t); out.gain.linearRampToValueAtTime(level, t + 0.012); out.gain.exponentialRampToValueAtTime(0.0001, t + 2.6);
+  function bell(v, level = 0.12) {
+    if (!on || !ctx || !v) return;
+    const t = ctx.currentTime, out = ctx.createGain(), d = v.decay || 2.6;
+    out.gain.setValueAtTime(0, t); out.gain.linearRampToValueAtTime(level, t + 0.012); out.gain.exponentialRampToValueAtTime(0.0001, t + d);
     out.connect(ctx.destination);
-    [[1, 1], [2.01, 0.32], [3.02, 0.12]].forEach(([m, a]) => {
+    v.partials.forEach(([m, a]) => {
       const o = ctx.createOscillator(), g = ctx.createGain();
-      o.type = "sine"; o.frequency.value = freq * m; g.gain.value = a;
-      o.connect(g).connect(out); o.start(t); o.stop(t + 2.7);
+      o.type = "sine"; o.frequency.value = v.note * m; g.gain.value = a;
+      o.connect(g).connect(out); o.start(t); o.stop(t + d + 0.1);
     });
   }
   return {
@@ -44,7 +47,7 @@ export function createSound({ asset, film }) {
         await resumed; await loading; startBed();
         gain.gain.cancelScheduledValues(ctx.currentTime);
         gain.gain.setTargetAtTime(0.55, ctx.currentTime, 0.6);
-        bell(notes.back, 0.08);
+        bell(BACK, 0.08);
       } else {
         gain.gain.setTargetAtTime(0, ctx.currentTime, 0.15);
       }
@@ -56,9 +59,9 @@ export function createSound({ asset, film }) {
       const f = 380 * Math.pow(16000 / 380, scale) * (1 - focus * 0.35) * (1 - smooth(4.4, 5, s) * 0.6);
       filter.frequency.setTargetAtTime(f, ctx.currentTime, 0.25);
     },
-    world(key) { bell(notes[key] || 523.25, 0.1); },
+    world(key) { bell(voices[key], key === "body" ? 0.16 : 0.1); },
     pause(hidden) { if (ctx && on) (hidden ? ctx.suspend() : ctx.resume()); },
-    back() { bell(notes.back, 0.06); },
+    back() { bell(BACK, 0.06); },
     get on() { return on; },
   };
 }
