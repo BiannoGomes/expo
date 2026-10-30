@@ -43,8 +43,10 @@ const pmrem = new THREE.PMREMGenerator(renderer);
 phoneScene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
 const loader = new THREE.TextureLoader();
+const texLoads = [];
 const tex = (p) => {
   const t = loader.load(ASSET(p));
+  texLoads.push(new Promise((res) => { const chk = () => (t.image && t.image.complete ? res() : setTimeout(chk, 30)); chk(); }));
   t.colorSpace = THREE.SRGBColorSpace;
   t.anisotropy = 4;
   return t;
@@ -152,26 +154,33 @@ const sctx = screenCanvas.getContext("2d");
 const screenTex = new THREE.CanvasTexture(screenCanvas);
 screenTex.colorSpace = THREE.SRGBColorSpace;
 screenTex.anisotropy = 8;
-const portalRT = new THREE.WebGLRenderTarget(16, 16, { colorSpace: THREE.SRGBColorSpace });
+const portalRT = new THREE.WebGLRenderTarget(16, 16, { type: THREE.HalfFloatType }); // linear, so the portal matches the sky it opens onto
+const rtSize = { w: 16, h: 16 };
 const screenMat = new THREE.ShaderMaterial({
-  transparent: true,
+  transparent: true, toneMapped: false, // the interface shows exactly as shipped
   uniforms: {
     uUI: { value: screenTex }, uPortal: { value: portalRT.texture }, uMix: { value: 0 }, uRes: { value: new THREE.Vector2(1, 1) },
     uGlare: { value: 0 }, uBright: { value: 1 }, uOpacity: { value: 1 },
   },
   vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
   fragmentShader: `varying vec2 vUv; uniform sampler2D uUI; uniform sampler2D uPortal; uniform float uMix; uniform vec2 uRes; uniform float uGlare; uniform float uBright; uniform float uOpacity;
+    vec3 RRTAndODTFit(vec3 v){ vec3 a = v*(v+0.0245786)-0.000090537; vec3 b = v*(0.983729*v+0.4329510)+0.238081; return a/b; }
+    vec3 dwACES(vec3 c){ // the renderer's ACES, applied to the portal so it matches the sky after the crossing
+      const mat3 I = mat3(vec3(0.59719,0.07600,0.02840), vec3(0.35458,0.90834,0.13383), vec3(0.04823,0.01566,0.83777));
+      const mat3 O = mat3(vec3(1.60475,-0.10208,-0.00327), vec3(-0.53108,1.10813,-0.07276), vec3(-0.07367,-0.00605,1.07602));
+      c *= 1.05 / 0.6; c = O * RRTAndODTFit(I * c); return clamp(c, 0.0, 1.0); }
     float rr(vec2 p, vec2 b, float r){ vec2 q = abs(p) - b + r; return length(max(q,0.0)) + min(max(q.x,q.y),0.0) - r; }
     void main(){
       vec2 p = (vUv - 0.5) * vec2(0.892, 1.93);
       float d = rr(p, vec2(0.446, 0.965), 0.11);
       float mask = 1.0 - smoothstep(-0.002, 0.002, d);
       vec4 ui = texture2D(uUI, vUv);
-      vec4 portal = texture2D(uPortal, gl_FragCoord.xy / uRes);
-      vec3 col = mix(ui.rgb * uBright, portal.rgb, uMix);
+      vec3 portal = uMix > 0.0 ? dwACES(texture2D(uPortal, gl_FragCoord.xy / uRes).rgb) : vec3(0.0);
+      vec3 col = mix(ui.rgb * uBright, portal, uMix);
       float g = smoothstep(0.0, 0.7, 1.0 - abs((vUv.x + vUv.y * 0.6) - uGlare)) * 0.05 * (1.0 - uMix);
-      col += vec3(g);
       gl_FragColor = vec4(col, mask * uOpacity);
+      #include <colorspace_fragment>
+      gl_FragColor.rgb += vec3(g); // glare is added in display space, as the eye sees it
     }`,
 });
 const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.892, 1.93), screenMat);
@@ -180,13 +189,13 @@ phone.add(screen);
 // Floating layer: the kept card lifts 6 mm off the glass and catches the
 // light, so the interface has depth when the phone turns.
 const cardCanvas = document.createElement("canvas");
-cardCanvas.width = 688; cardCanvas.height = 240;
+cardCanvas.width = 688; cardCanvas.height = 286;
 const cardTex = new THREE.CanvasTexture(cardCanvas);
 cardTex.colorSpace = THREE.SRGBColorSpace;
 const cardMat = new THREE.MeshBasicMaterial({ map: cardTex, transparent: true, opacity: 0, depthWrite: false });
 const PX = 1.93 / 1688;
-const card = new THREE.Mesh(new THREE.PlaneGeometry(688 * PX, 240 * PX), cardMat);
-card.position.set((390 - 390) * PX, (844 - 414) * PX, PD / 2 + 0.008);
+const card = new THREE.Mesh(new THREE.PlaneGeometry(688 * PX, 286 * PX), cardMat);
+card.position.set(0, (844 - (832 + 143)) * PX, PD / 2 + 0.008);
 phone.add(card);
 const shadow = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 0.7), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, opacity: 0, depthWrite: false }));
 shadow.rotation.x = -Math.PI / 2;
@@ -197,18 +206,66 @@ const key = new THREE.DirectionalLight(0xfff1dc, 2.2); key.position.set(-2, 3, 4
 const rim = new THREE.DirectionalLight(0xc7d5ee, 1.4); rim.position.set(3, 1, -2); phoneScene.add(rim);
 phoneScene.add(new THREE.AmbientLight(0x404858, 0.4));
 
-// Screen content: the shipped screens, plus live overlays drawn on top.
+// Screen content: the shipped screens, corrected for truth, plus live overlays.
+// Truth: the tab bar reads Today / Debrief / Universe (the Personal Model is
+// reached from the universe), and the greeting carries no name. Story: one
+// thread runs through every screen. The confession becomes a morning step,
+// and the step becomes something the app understands, with its reason.
 const shots = {};
 const imgLoad = (name) => new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = ASSET(`img/${name}.webp`); });
 const confession = "Snapped at my sister again. Don't know why.";
+const CARD = { x: 46, y: 832, w: 688, h: 286 }; // the sister step on Today
+const INSIGHT = { x: 49, y: 1135, w: 682, h: 373 }; // the Personal Model card
+const SPOTS = { debrief: [40, 100, 700, 470], today: [40, 815, 700, 320], you: [40, 1118, 700, 405] };
+const base = {};
+function baseCanvas(img, fn) {
+  const c = document.createElement("canvas"); c.width = SW; c.height = SH;
+  const g = c.getContext("2d"); g.drawImage(img, 0, 0, SW, SH); fn(g, img); return c;
+}
+function fixTabs(g, img, active) {
+  // erase YOU (and its dot), then set the shipped third tab
+  g.drawImage(img, 650, 1568, 70, 58, 580, 1568, 70, 58);
+  g.font = '400 20.5px "IBM Plex Mono"'; g.letterSpacing = "4.2px"; g.textBaseline = "alphabetic";
+  const w = g.measureText("UNIVERSE").width - 4.2;
+  g.fillStyle = active ? color.gold : "#CCB28B"; g.globalAlpha = active ? 1 : 0.62;
+  g.fillText("UNIVERSE", 617 - w / 2, 1598); g.globalAlpha = 1; g.letterSpacing = "0px";
+  if (active) { g.fillStyle = color.gold; g.beginPath(); g.arc(619, 1614, 3, 0, 6.283); g.fill(); }
+}
+function buildScreens() {
+  base.debrief = baseCanvas(shots.debrief, (g, img) => fixTabs(g, img, false));
+  base.today = baseCanvas(shots.today, (g, img) => {
+    fixTabs(g, img, false);
+    g.drawImage(img, 410, 124, 146, 40, 264, 124, 146, 40); // "GOOD MORNING", no name
+    g.fillStyle = "#13161E"; g.fillRect(60, 915, 660, 172);
+    g.font = '400 31px "Albert Sans"'; g.fillStyle = color.ink;
+    g.fillText("Call your sister.", 91, 953); g.fillText("Just to talk.", 91, 1003);
+    g.font = '400 26px "Albert Sans"'; g.fillStyle = "#AAADAD";
+    g.fillText("the people closest get your tired self", 91, 1064);
+  });
+  base.you = baseCanvas(shots.you, (g, img) => {
+    fixTabs(g, img, true);
+    const { x, y, w, h } = INSIGHT;
+    g.fillStyle = color.ground; g.fillRect(x - 6, y - 6, w + 12, 1530 - y);
+    g.fillStyle = "#13161E"; g.strokeStyle = "#252B33"; g.lineWidth = 2;
+    g.beginPath(); g.roundRect(x, y, w, h, 26); g.fill(); g.stroke();
+    g.drawImage(img, 85, 1172, 300, 32, 85, 1172, 300, 32); // PROBABLY TRUE
+    g.font = 'italic 400 41px "Cormorant Garamond"'; g.fillStyle = color.ink;
+    g.fillText("You get sharp with the people closest", 91, 1260);
+    g.fillText("when you’re running on empty.", 91, 1305);
+    g.font = '400 25px "Albert Sans"'; g.fillStyle = color.dim;
+    g.fillText("Why I think this: I have seen this in your", 91, 1347);
+    g.fillText("evenings 3 times this month.", 91, 1385);
+    g.drawImage(img, 66, 1350, 250, 86, 66, 1404, 250, 86); // the real "That's not right" control
+    g.drawImage(img, 662, 1294, 28, 34, 662, 1318, 28, 34); // chevron
+  });
+}
 let lastScreenKey = "";
-function drawScreen(mode, typed, seed, lift = 0) {
-  const k = `${mode}|${typed}|${Math.round(seed * 20)}|${Math.round(lift * 10)}`;
-  if (k === lastScreenKey || !shots.debrief) return;
+function drawScreen(mode, typed, seed, lift = 0, spot = 0, ping = 0) {
+  const k = `${mode}|${typed}|${Math.round(seed * 20)}|${Math.round(lift * 10)}|${Math.round(spot * 40)}|${Math.round(ping * 30)}`;
+  if (k === lastScreenKey || !base.debrief) return;
   lastScreenKey = k;
-  sctx.fillStyle = color.ground; sctx.fillRect(0, 0, SW, SH);
+  sctx.drawImage(base[mode], 0, 0);
   if (mode === "debrief") {
-    sctx.drawImage(shots.debrief, 0, 0, SW, SH);
     sctx.fillStyle = "#11151C"; sctx.fillRect(66, 452, 640, 80);
     const txt = confession.slice(0, typed);
     sctx.font = '400 31px "Albert Sans"'; sctx.fillStyle = color.ink; sctx.textBaseline = "alphabetic";
@@ -222,27 +279,43 @@ function drawScreen(mode, typed, seed, lift = 0) {
       const w = sctx.measureText(line).width;
       sctx.fillStyle = color.gold; sctx.fillRect(83 + (txt.length ? w + 4 : 0), y - 28, 2.5, 34);
     }
-  } else if (mode === "today") {
-    sctx.drawImage(shots.today, 0, 0, SW, SH);
-    if (lift > 0) {
-      sctx.globalAlpha = lift; sctx.fillStyle = "#0A0D12";
-      sctx.beginPath(); sctx.roundRect(49, 297, 682, 233, 26); sctx.fill();
-      sctx.strokeStyle = "rgba(35,42,52,.9)"; sctx.lineWidth = 2; sctx.stroke(); sctx.globalAlpha = 1;
-    }
-    if (seed > 0) {
-      const g = sctx.createRadialGradient(680, 348, 0, 680, 348, 70 * seed);
-      g.addColorStop(0, `rgba(255,236,196,${0.95 * seed})`); g.addColorStop(0.25, `rgba(201,169,106,${0.6 * seed})`); g.addColorStop(1, "rgba(201,169,106,0)");
-      sctx.fillStyle = g; sctx.beginPath(); sctx.arc(680, 348, 70 * seed, 0, 6.283); sctx.fill();
-    }
-  } else if (mode === "you") {
-    sctx.drawImage(shots.you, 0, 0, SW, SH);
+  } else if (mode === "today" && lift > 0) {
+    // the slot the lifted step leaves behind
+    sctx.globalAlpha = lift; sctx.fillStyle = "#0A0D12";
+    sctx.beginPath(); sctx.roundRect(CARD.x + 3, CARD.y + 6, CARD.w - 6, CARD.h - 12, 26); sctx.fill();
+    sctx.strokeStyle = "rgba(35,42,52,.9)"; sctx.lineWidth = 2; sctx.stroke(); sctx.globalAlpha = 1;
+  } else if (mode === "you" && ping > 0) {
+    // the dispute control answers: one soft ring
+    const r = 40 + ping * 90;
+    sctx.strokeStyle = `rgba(180,101,95,${0.55 * (1 - ping)})`; sctx.lineWidth = 3;
+    sctx.beginPath(); sctx.roundRect(91 - r * 0.3, 1440 - r * 0.42, 195 + r * 0.6, r * 0.84, 18 + r * 0.2); sctx.stroke();
+  }
+  if (spot > 0) {
+    // film: the frame isolates what matters so it reads at phone size
+    const [x, y, w, h] = SPOTS[mode];
+    sctx.save(); sctx.fillStyle = `rgba(6,8,12,${0.86 * spot})`;
+    sctx.beginPath(); sctx.rect(0, 0, SW, SH); sctx.roundRect(x, y, w, h, 30); sctx.fill("evenodd"); sctx.restore();
   }
   screenTex.needsUpdate = true;
 }
-function drawCard() {
+let lastCardKey = -1;
+function drawCard(seed) {
+  const k = Math.round(seed * 20);
+  if (k === lastCardKey || !base.today) return;
+  lastCardKey = k;
   const g = cardCanvas.getContext("2d");
-  g.clearRect(0, 0, 688, 240);
-  g.drawImage(shots.today, 46 * (shots.today.naturalWidth / 780), 294 * (shots.today.naturalHeight / 1688), 688 * (shots.today.naturalWidth / 780), 240 * (shots.today.naturalHeight / 1688), 0, 0, 688, 240);
+  g.clearRect(0, 0, CARD.w, CARD.h);
+  g.save(); g.beginPath(); g.roundRect(2, 6, CARD.w - 4, CARD.h - 12, 26); g.clip();
+  g.drawImage(base.today, CARD.x, CARD.y, CARD.w, CARD.h, 0, 0, CARD.w, CARD.h); g.restore();
+  g.strokeStyle = `rgba(201,169,106,${0.25 + 0.55 * seed})`; g.lineWidth = 2.5;
+  g.beginPath(); g.roundRect(3, 7, CARD.w - 6, CARD.h - 14, 25); g.stroke();
+  if (seed > 0) {
+    // kept: a small seed of light, the same light the story began with
+    const cx = 634, cy = 56, r = 46 * seed;
+    const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
+    gr.addColorStop(0, `rgba(255,236,196,${0.95 * seed})`); gr.addColorStop(0.25, `rgba(201,169,106,${0.6 * seed})`); gr.addColorStop(1, "rgba(201,169,106,0)");
+    g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, r, 0, 6.283); g.fill();
+  }
   cardTex.needsUpdate = true;
 }
 
@@ -275,8 +348,10 @@ const worldObjs = worlds.map((w) => {
 function placeWorlds(tSec) {
   // Orbit: worlds drift slowly. Placed before the camera solve, which aims at them.
   // Portrait screens draw the worlds in and stack them taller.
-  const kx = camera.aspect < 0.75 ? 0.45 : 1, ky = camera.aspect < 0.75 ? 1.35 : 1;
+  const portrait = camera.aspect < 0.75, ky = portrait ? 1.35 : 1;
+  if (REDUCED) tSec = 0;
   worldObjs.forEach((o, i) => {
+    const kx = portrait ? (o.w.key === "soul" ? 0.3 : 0.45) : 1;
     const ang = tSec * 6.283 / 90 + i * 1.7;
     o.g.position.set(o.base.x * kx + Math.cos(ang) * 0.5, o.base.y * ky + Math.sin(ang * 0.8) * 0.35, o.base.z);
   });
@@ -298,25 +373,36 @@ function cameraFor(s, t) {
     const k = clamp((s - 1.8) / 0.5);
     const kk = k * k * (3 - 2 * k);
     pos.set(mix(0.12, 0, kk), mix(0.02, 0, kk), mix(3.5, -1.2, Math.pow(k, 1.6)));
-    look.set(0, 0, -20);
+    look.set(0, 0, mix(0, -20, kk)); // the gaze leaves the glass smoothly
   } else if (s < 3) {
-    const k = easeOutQuart(clamp((s - 2.3) / 0.7));
-    pos.set(0, 0, mix(-1.2, HUB.pos.z, k));
+    const k = 1 - Math.pow(1 - clamp((s - 2.3) / 0.7), 2.2); // enters at the speed of the push
     look.copy(HUB.look);
+    pos.set(0, 0, mix(-1.2, HUB.pos.z, k));
   } else {
     pos.copy(HUB.pos); look.copy(HUB.look);
     const back = easeInOutCubic(clamp((s - 3) / 1));
     pos.z += back * 4;
   }
   // portrait: the web lifts the phone above bottom captions; the film lowers it under top captions
-  if (s < 2.3 && camera.aspect < 0.75) { const dy = FILM ? 0.34 : -0.28; pos.y += dy; look.y += dy; }
-  if (s >= 2.3) {
+  if (s < 2.3 && camera.aspect < 0.75) { const dy = (FILM ? 0.34 : 0.1) * (1 - smooth(1.9, 2.3, s)); pos.y += dy; look.y += dy; }
+  if (s >= 2.3 && !REDUCED) {
     // Orbit: the camera at rest is never quite still.
     const o = (t / motion.orbit.period) * 6.283;
     pos.x += Math.sin(o) * motion.orbit.radius * smooth(2.6, 3, s);
     pos.y += Math.cos(o * 0.7) * motion.orbit.radius * 0.6 * smooth(2.6, 3, s);
   }
   return { pos, look };
+}
+// Reading push: the camera comes close enough that the interface reads at
+// phone size. y is the region of interest in phone units.
+const PUSH_Y = { debrief: (844 - 335) * PX, today: (844 - 975) * PX, you: (844 - 1320) * PX };
+// distance at which the screen fills about 90% of the frame width (portrait),
+// or sits comfortably beside the words (landscape)
+const pushDist = () => (camera.aspect < 0.75 ? PD / 2 + 0.99 / (2 * Math.tan((camera.fov * Math.PI) / 360) * camera.aspect) : 2.9);
+const bump = (a, b, c, d, v) => smooth(a, b, v) * (1 - smooth(c, d, v));
+function pushFor(s) {
+  if (s < 1.8) return Math.max(bump(1.02, 1.14, 1.3, 1.37, s), bump(1.45, 1.56, 1.7, 1.79, s));
+  return bump(3.95, 4.2, 4.42, 4.62, s);
 }
 function focusPose(wo) {
   const p = wo.g.position.clone();
@@ -339,23 +425,31 @@ const labelEls = Object.fromEntries(worlds.map((w) => {
   labelsEl.appendChild(b);
   return [w.key, b];
 }));
-$("ctaLink").href = cta.href; $("ctaLink").textContent = cta.label; $("ctaNote").textContent = cta.note;
+$("ctaLink").href = cta.href; $("ctaLink").textContent = cta.label; $("ctaNote").textContent = cta.note; $("ctaHandle").textContent = cta.handle;
+$("ctaLink").setAttribute("aria-label", `${cta.label} (opens in a new tab)`);
 
 const interactiveCaptions = [
   [0.22, 0.86, "It begins with one honest moment."],
-  [0.98, 1.36, "Each evening, Dawnward asks one real question. You talk. It listens."],
-  [1.42, 1.82, "Each morning, three small steps, drawn from your own words."],
-  [1.95, 2.55, "Nothing you live honestly is lost."],
-  [2.62, 2.93, "It becomes your universe. Four worlds that change as you do."],
-  [3.55, 4.45, "And slowly, it understands you. And shows you why."],
+  [0.98, 1.4, "Each evening, Dawnward asks one real question. You talk. It listens."],
+  [1.42, 1.85, "Each morning, three small steps, drawn from your own words."],
+  [1.95, 2.6, "Nothing you live honestly is lost."],
+  [2.62, 2.93, "Your days become four worlds. Mind, body, soul and future."],
+  [3.55, 4.12, "And slowly, it understands you. And shows you why."],
+  [4.12, 4.55, "When it\u2019s wrong, you tell it. Private. Never sold."],
 ];
-let capText = "";
+// Captions change as the visitor scrubs; screen readers hear one only once it
+// has stayed for 600 ms, so scrolling never floods them.
+const live = $("live");
+let capText = "", liveT = 0;
 function setCaption(text) {
   if (text === capText) return;
   capText = text;
   capEl.classList.remove("on");
   if (text) { capEl.textContent = text; void capEl.offsetWidth; capEl.classList.add("on"); }
+  capEl.classList.toggle("side", sideCaption);
+  if (!FILM) { clearTimeout(liveT); if (text) liveT = setTimeout(() => { live.textContent = text; }, 600); }
 }
+let sideCaption = false;
 
 /* ------------------------------------------------------------- world focus */
 let focusKey = null, focusAmt = 0, hoverKey = null;
@@ -370,49 +464,84 @@ function selectWorld(key) {
   const mv = panel.querySelector(".pm");
   mv.textContent = w.move ? `One quiet move today: ${w.move}.` : w.aspiration;
   mv.className = w.move ? "pm" : "pm asp";
-  panel.querySelector(".pf").textContent = w.move ? "" : "An aspiration you chose. Never a prediction.";
+  mv.textContent = w.move ? `One quiet move today: ${w.move.replace(/\.$/, "")}.` : w.aspiration;
+  const bel = panel.querySelector(".pbel");
+  bel.hidden = !w.belief;
+  if (w.belief) { bel.querySelector("q").textContent = w.belief.text; bel.querySelector("span").textContent = `Why I think this: ${w.belief.why}`; }
   panel.classList.add("open");
-  panel.setAttribute("aria-hidden", "false");
+  panel.inert = false;
   sound.world(key);
-  if (!FILM) setTimeout(() => panel.querySelector(".close").focus({ preventScroll: true }), 500);
+  if (!FILM) setTimeout(() => panel.querySelector(".pt").focus({ preventScroll: true }), 450);
 }
 function closeWorld() {
+  const key = focusKey;
   focusKey = null;
   panel.classList.remove("open");
-  panel.setAttribute("aria-hidden", "true");
+  panel.inert = true;
   sound.back();
+  // focus returns to where the visitor was
+  if (!FILM && key && panel.contains(document.activeElement)) {
+    const el = labelEls[key];
+    if (el && s > 2.85 && s < 3.4) { el.inert = false; el.tabIndex = 0; el.focus({ preventScroll: true }); } // its label returns this frame
+    else (nav.querySelector(".cur") || nav.firstChild).focus({ preventScroll: true });
+  }
 }
 panel.querySelector(".close").addEventListener("click", closeWorld);
 
 /* --------------------------------------------------------------- story time */
 let s = 0, target = 0, lastInput = 0; // lastInput 0 = the visitor has not moved yet
-const goTo = (v) => { target = clamp(v, 0, 5); lastInput = performance.now(); };
+const story = $("story");
+const storyOpen = () => story.classList.contains("show");
+let swapT = 0;
+const goTo = (v) => {
+  target = clamp(v, 0, 5); lastInput = performance.now();
+  if (REDUCED && !FILM) {
+    // reduced motion: no travel. A short cross-fade, then the new chapter.
+    stageEl.classList.add("swap"); clearTimeout(swapT);
+    swapT = setTimeout(() => { s = target; focusAmt = focusKey ? 1 : 0; stageEl.classList.remove("swap"); }, 200);
+  }
+};
+const step = (dir) => {
+  const next = chapters.find((c) => c.rest > target + 0.05), prev = [...chapters].reverse().find((c) => c.rest < target - 0.05);
+  const c = dir > 0 ? next : prev; if (c) goTo(c.rest);
+};
 const nav = $("nav");
 chapters.forEach((c, i) => {
   const b = document.createElement("button");
   b.type = "button"; b.className = "dot";
   b.innerHTML = `<i></i><span>${c.label}</span>`;
-  b.setAttribute("aria-label", `Chapter ${i + 1}: ${c.label}`);
+  b.setAttribute("aria-label", `Chapter ${i + 1} of ${chapters.length}: ${c.label}`);
   b.addEventListener("click", () => { if (focusKey) closeWorld(); goTo(c.rest); });
   nav.appendChild(b);
 });
 const dots = [...nav.children];
 
 if (!FILM) {
-  addEventListener("wheel", (e) => { if (focusKey) return; goTo(target + e.deltaY * 0.0011); }, { passive: true });
-  let ty = null;
-  addEventListener("touchstart", (e) => { ty = e.touches[0].clientY; }, { passive: true });
+  let wheelLock = 0;
+  addEventListener("wheel", (e) => {
+    if (focusKey || storyOpen()) return;
+    if (!REDUCED) { goTo(target + e.deltaY * 0.0011); return; }
+    const now = performance.now(); // reduced motion: one wheel gesture, one chapter
+    if (Math.abs(e.deltaY) > 8 && now > wheelLock) { wheelLock = now + 700; step(Math.sign(e.deltaY)); }
+  }, { passive: true });
+  let ty = null, ty0 = null;
+  addEventListener("touchstart", (e) => { ty = ty0 = e.touches[0].clientY; }, { passive: true });
   addEventListener("touchmove", (e) => {
-    if (ty == null || focusKey) return;
+    if (ty == null || focusKey || storyOpen() || e.touches.length > 1 || REDUCED) return;
     const y = e.touches[0].clientY; goTo(target + (ty - y) * 0.0042); ty = y;
   }, { passive: true });
-  addEventListener("touchend", () => { ty = null; }, { passive: true });
+  addEventListener("touchend", (e) => {
+    if (REDUCED && ty0 != null && !focusKey && !storyOpen()) { const d = ty0 - e.changedTouches[0].clientY; if (Math.abs(d) > 40) step(Math.sign(d)); }
+    ty = ty0 = null;
+  }, { passive: true });
   addEventListener("keydown", (e) => {
+    if (storyOpen()) return;
     if (e.key === "Escape" && focusKey) { closeWorld(); return; }
     if (focusKey) return;
-    const next = chapters.find((c) => c.rest > s + 0.05), prev = [...chapters].reverse().find((c) => c.rest < s - 0.05);
-    if (["ArrowDown", "PageDown", " "].includes(e.key) && next) { e.preventDefault(); goTo(next.rest); }
-    if (["ArrowUp", "PageUp"].includes(e.key) && prev) { e.preventDefault(); goTo(prev.rest); }
+    const t = e.target; // Space and Enter on a control belong to that control
+    if (e.key === " " && t && t.closest && t.closest("button, a, input")) return;
+    if (["ArrowDown", "PageDown", " "].includes(e.key)) { e.preventDefault(); step(1); }
+    if (["ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); step(-1); }
   });
   $("replay").addEventListener("click", () => { if (focusKey) closeWorld(); goTo(0); });
   $("begin").addEventListener("click", () => goTo(chapters[1].rest));
@@ -431,10 +560,12 @@ renderer.domElement.addEventListener("click", (e) => {
     ray.setFromCamera(pt, camera);
     const hit = ray.intersectObjects(worldObjs.map((o) => o.planet))[0];
     if (hit) selectWorld(hit.object.userData.key); else if (focusKey) closeWorld();
-  } else if (s > 1.2 && s < 1.9) {
-    goTo(2.3); // the kept card: tapping it sends you through
+  } else if (s > 1.45 && s < 1.9) {
+    goTo(chapters.find((c) => c.id === "portal").rest); // the kept step: tapping it sends you through
   } else if (s < 0.9) {
     goTo(chapters[1].rest);
+  } else if (s >= 0.9 && s <= 1.45) {
+    step(1);
   }
 });
 
@@ -457,7 +588,8 @@ function resize() {
   camera.fov = w / h < 0.75 ? 46 : 34;
   camera.updateProjectionMatrix();
   const dpr = renderer.getPixelRatio();
-  portalRT.setSize(Math.round(w * dpr * 0.75), Math.round(h * dpr * 0.75));
+  rtSize.w = Math.round(w * dpr * 0.75); rtSize.h = Math.round(h * dpr * 0.75);
+  if (portalRT.width !== 16) portalRT.setSize(rtSize.w, rtSize.h);
   screenMat.uniforms.uRes.value.set(w * dpr, h * dpr);
   for (const p of [dust, starsFar, starsMid, starsNear]) p.material.uniforms.uPx.value = dpr * (h / 900);
 }
@@ -465,15 +597,22 @@ addEventListener("resize", resize);
 resize();
 
 /* ------------------------------------------------------------- the frame */
-const tmpPos = v3(0, 0, 0), tmpLook = v3(0, 0, 0);
+const tmpPos = v3(0, 0, 0), tmpLook = v3(0, 0, 0), tmpV = v3(0, 0, 0), lv0 = v3(0, 0, 0), lv1 = v3(0, 0, 0);
 function frame(st) {
   const { s, t, focusAmt: fa, bloom } = st;
-  const tSec = t / 1000;
+  const tSec = REDUCED ? 0 : t / 1000;
+  const push = st.push ?? pushFor(s), pushE = easeInOutCubic(push);
+  const spot = st.spot ?? push;
   placeWorlds(tSec);
   // camera first: everything placed relative to it reads this frame's pose.
   // camera: the story path, mixed toward the focused world by gravity
   const c = cameraFor(s, t);
   tmpPos.copy(c.pos); tmpLook.copy(c.look);
+  if (s < 1.8 && pushE > 0) {
+    // the reading push: straight on to the part of the screen that matters
+    const py = mix(PUSH_Y.debrief, PUSH_Y.today, smooth(1.33, 1.45, s)), pz = pushDist();
+    tmpPos.lerp(v3(0, py, pz), pushE); tmpLook.lerp(v3(0, py, 0), pushE);
+  }
   const fk = st.focusKey || focusKey;
   if (fk && fa > 0) {
     const f = focusPose(worldObjs.find((o) => o.w.key === fk));
@@ -487,7 +626,7 @@ function frame(st) {
   lightShader.uniforms.uTime.value = tSec;
   lightShader.uniforms.uHalo.value = 1 + (FILM ? 0 : clamp(1 - pointerS.length()) * 0.6) * (1 - smooth(0.8, 1, s));
   dust.material.uniforms.uAlpha.value = smooth(0.1, 0.7, s) * (1 - smooth(1.9, 2.25, s)) * 0.9;
-  dust.material.uniforms.uTime.value = t;
+  dust.material.uniforms.uTime.value = REDUCED ? 0 : t;
   dust.rotation.y = pointerS.x * 0.08 + tSec * 0.004;
   dust.rotation.x = -pointerS.y * 0.05;
 
@@ -498,35 +637,41 @@ function frame(st) {
   let mode = "debrief", typed = 0, seed = 0;
   if (s < 2.3) {
     phone.position.set(0, mix(-0.35, 0, pe), 0);
-    phone.rotation.set(mix(0.2, 0.06, pe) - pointerS.y * 0.06, mix(-0.62, -0.2, pe) + smooth(1.75, 2.15, s) * 0.2 + pointerS.x * 0.09, 0);
+    phone.rotation.set((mix(0.2, 0.06, pe) - pointerS.y * 0.06) * (1 - pushE), (mix(-0.62, -0.2, pe) + pointerS.x * 0.09) * (1 - pushE * 0.85) + smooth(1.75, 2.15, s) * 0.2, 0);
     phone.visible = pe > 0.002; // an invisible phone must not write depth over the light
-    frameMat.opacity = pe; bezel.material.opacity = pe; screenMat.uniforms.uOpacity.value = pe;
+    // the frame thins away as the glass becomes a window, so it never slabs across the view
+    const fr = pe * (1 - smooth(1.95, 2.08, s));
+    frameMat.opacity = fr; bezel.material.opacity = fr; screenMat.uniforms.uOpacity.value = pe;
     screenMat.uniforms.uBright.value = smooth(0.85, 1.1, s);
-    typed = Math.round(confession.length * smooth(1.0, 1.32, s));
-    if (s >= 1.38) { mode = "today"; seed = smooth(1.55, 1.78, s); }
+    typed = Math.round(confession.length * smooth(1.0, 1.18, s));
+    if (s >= 1.38) { mode = "today"; seed = smooth(1.5, 1.62, s); }
     screenMat.uniforms.uMix.value = smooth(1.86, 2.08, s);
     cardMat.opacity = smooth(1.42, 1.55, s) * (1 - smooth(1.86, 2.0, s));
     card.position.z = PD / 2 + 0.004 + smooth(1.45, 1.6, s) * 0.012;
     shadow.material.opacity = pe * 0.55 * (1 - smooth(1.8, 2.1, s));
   } else {
     // Moment 5: the phone returns inside the universe, at human scale.
-    const r = easeOutQuart(smooth(3.35, 3.9, s)) * (1 - smooth(4.35, 4.75, s));
+    const r = easeOutQuart(smooth(3.35, 3.9, s)) * (1 - smooth(4.5, 4.85, s));
     mode = "you";
     phone.visible = r > 0.002;
-    phone.position.copy(camera.position).add(v3(0, (camera.aspect < 0.75 ? (FILM ? -0.2 : 0.42) : 0.16) + (1 - r) * -0.4, -4.7));
-    phone.rotation.set(0.04 - pointerS.y * 0.05, -0.12 + pointerS.x * 0.08 + Math.sin(tSec * 0.25) * 0.02, 0);
+    const yRest = camera.aspect < 0.75 ? (FILM ? -0.2 : 0.1) : 0.16;
+    tmpV.set(0, mix(yRest, -PUSH_Y.you, pushE) + (1 - r) * -0.4, -mix(4.7, pushDist(), pushE));
+    phone.position.copy(camera.position).add(tmpV.applyQuaternion(camera.quaternion));
+    phone.quaternion.copy(camera.quaternion);
+    phone.rotateX((0.04 - pointerS.y * 0.05) * (1 - pushE)); phone.rotateY((-0.12 + pointerS.x * 0.08 + Math.sin(tSec * 0.25) * 0.02) * (1 - pushE * 0.85));
     frameMat.opacity = r; bezel.material.opacity = r; screenMat.uniforms.uOpacity.value = r;
     screenMat.uniforms.uMix.value = 0; screenMat.uniforms.uBright.value = 1;
     cardMat.opacity = 0;
     shadow.visible = false;
   }
-  drawScreen(mode, typed, seed, mode === "today" ? cardMat.opacity : 0);
+  drawScreen(mode, typed, seed, mode === "today" ? cardMat.opacity : 0, spot, st.ping || 0);
+  if (mode === "today") drawCard(seed);
   screenMat.uniforms.uGlare.value = 0.6 + phone.rotation.y * 1.6;
 
   // universe
   const uniOn = s > 1.8;
   const dimU = 1 - smooth(3.3, 3.9, s) * 0.45 - smooth(4.4, 4.95, s) * 0.5;
-  for (const p of [starsFar, starsMid, starsNear]) { p.material.uniforms.uTime.value = t; p.material.uniforms.uAlpha.value = dimU; }
+  for (const p of [starsFar, starsMid, starsNear]) { p.material.uniforms.uTime.value = REDUCED ? 0 : t; p.material.uniforms.uAlpha.value = dimU; }
   // the passage: near stars brighten while we travel, so depth reads
   starsNear.material.uniforms.uAlpha.value = dimU * (1 + 1.2 * smooth(2.0, 2.3, s) * (1 - smooth(2.7, 3.0, s)));
   starsMid.material.uniforms.uAlpha.value = dimU * (1 + 0.6 * smooth(2.0, 2.3, s) * (1 - smooth(2.7, 3.0, s)));
@@ -534,7 +679,7 @@ function frame(st) {
   keptStar.material.opacity = smooth(2.15, 2.45, s) * dimU * (0.85 + 0.15 * Math.sin(tSec * 0.98));
   worldObjs.forEach((o, i) => {
     const b = bloom[i];
-    const breath = 1 + Math.sin(tSec * 6.283 / (motion.breath.period / 1000) + i) * motion.breath.depth * 0.5;
+    const breath = REDUCED ? 1 : 1 + Math.sin(tSec * 6.283 / (motion.breath.period / 1000) + i) * motion.breath.depth * 0.5;
     const isF = focusKey === o.w.key || st.focusKey === o.w.key;
     o.planet.material.opacity = b * dimU;
     o.planet.scale.setScalar(o.w.size * mix(motion.emergence.scaleFrom, 1, b) * (hoverKey === o.w.key ? 1.03 : 1));
@@ -546,10 +691,14 @@ function frame(st) {
   // render: the universe directly once we are through the glass; before
   // that, only as the portal inside the screen.
   renderer.clear();
+  // the portal target exists at full size only around the crossing
+  const needRT = s > 1.7 && s < 2.3, rw = needRT ? rtSize.w : 16, rh = needRT ? rtSize.h : 16;
+  if ((needRT || s < 1.5 || s > 2.6) && (portalRT.width !== rw || portalRT.height !== rh)) portalRT.setSize(rw, rh);
   if (uniOn && s < 2.3) {
     renderer.setRenderTarget(portalRT); renderer.clear(); renderer.render(uniScene, camera); renderer.setRenderTarget(null);
   }
-  if (s >= 2.24) renderer.render(uniScene, camera);
+  // once the camera is past the glass the sky is drawn directly, never a frame of nothing
+  if (s >= 2.24 || (s > 2.0 && camera.position.z < PD / 2 + 0.06)) renderer.render(uniScene, camera);
   if (phoneOn) { renderer.clearDepth(); renderer.render(phoneScene, camera); }
 
   // overlay
@@ -557,8 +706,8 @@ function frame(st) {
   worldObjs.forEach((o, i) => {
     const el = labelEls[o.w.key];
     const W = innerWidthF(), H = innerHeightF();
-    const c0 = o.g.position.clone().project(camera);
-    const c1 = o.g.position.clone().add(camera.up.clone().multiplyScalar(o.w.size * 0.5)).project(camera);
+    const c0 = lv0.copy(o.g.position).project(camera);
+    const c1 = lv1.copy(camera.up).multiplyScalar(o.w.size * 0.5).add(o.g.position).project(camera);
     const rPx = Math.abs(c1.y - c0.y) * 0.5 * H;
     const x = clamp((c0.x * 0.5 + 0.5) * W, 70, W - 150);
     const y = clamp((-c0.y * 0.5 + 0.5) * H + rPx * 0.78, 80, H - 210);
@@ -566,6 +715,7 @@ function frame(st) {
     el.style.transform = `translate(${x}px, ${y}px) translate(-50%, 0)`;
     el.classList.toggle("on", vis);
     el.tabIndex = vis ? 0 : -1;
+    el.inert = !vis;
   });
   return { li };
 }
@@ -577,10 +727,18 @@ const bloomFor = (s) => worlds.map((_, i) => Math.max(0.26 * smooth(1.95, 2.35, 
 async function boot() {
   const [debrief, today, you] = await Promise.all(["debrief", "today", "you"].map(imgLoad));
   Object.assign(shots, { debrief, today, you });
+  // canvas text needs its faces loaded explicitly; document.fonts.ready only covers the DOM
+  await Promise.all(['400 31px "Albert Sans"', '400 20px "IBM Plex Mono"', 'italic 400 41px "Cormorant Garamond"']
+    .map((f) => document.fonts.load(f, "Aa").catch(() => {})));
   await document.fonts.ready;
-  if (shots.today) drawCard();
+  if (debrief && today && you) buildScreens();
   document.documentElement.classList.add("ready");
+  const nearest = (v) => chapters.reduce((a, c) => (Math.abs(c.rest - v) < Math.abs(a.rest - v) ? c : a), chapters[0]);
+  const chrome = (end, demo) => {
+    endEl.inert = !end; demoTag.classList.toggle("on", demo);
+  };
   if (FILM) {
+    await Promise.all(texLoads);
     window.FILM_MS = FILM_MS;
     window.SEEK = (ms) => {
       const st = filmState(ms);
@@ -588,51 +746,64 @@ async function boot() {
       focusKey = null;
       pointerS.set(0, 0);
       frame({ ...st, t: ms });
-      const cap = filmCaptions(ms);
-      setCaption(cap);
+      setCaption(filmCaptions(ms));
       panel.classList.toggle("open", st.panelOpen);
       if (st.panelOpen && st.focusKey && panel.dataset.k !== st.focusKey) { selectWorld(st.focusKey); focusKey = null; panel.dataset.k = st.focusKey; }
       endEl.classList.toggle("on", st.end);
       endEl.style.opacity = st.endAmt;
-      demoTag.classList.toggle("on", s > 3.6 && s < 4.6);
+      chrome(st.end, (s > 0.95 && s < 1.95) || (s > 3.6 && s < 4.55));
       document.documentElement.style.setProperty("--fade", st.fade);
     };
     window.SEEK(0);
     window.FILM_READY = true;
     return;
   }
+  hubHint.textContent = matchMedia("(hover: hover) and (pointer: fine)").matches ? "Click a world to visit it" : "Tap a world to visit it";
   window.DW = { goTo, select: selectWorld, close: closeWorld, jump: (v) => { s = target = v; lastInput = performance.now(); focusAmt = focusKey ? 1 : 0; }, get s() { return s; } };
-  let prev = performance.now(), t0 = prev, raf = 0, paused = false;
-  document.addEventListener("visibilitychange", () => {
-    paused = document.hidden;
+  let prev = performance.now(), t0 = prev, raf = 0, paused = false, hiddenTab = false, storyShown = false;
+  const run = () => {
+    const stop = hiddenTab || storyShown;
+    if (stop === paused) return;
+    paused = stop;
     sound.pause(paused);
     if (!paused) { prev = performance.now(); raf = requestAnimationFrame(loop); } else cancelAnimationFrame(raf);
-  });
+  };
+  document.addEventListener("visibilitychange", () => { hiddenTab = document.hidden; run(); });
+  document.addEventListener("dwstory", (e) => { storyShown = e.detail; run(); }); // nothing renders behind the text version
   renderer.domElement.addEventListener("webglcontextlost", (e) => { e.preventDefault(); paused = true; cancelAnimationFrame(raf); document.getElementById("textv").click(); });
   renderer.domElement.addEventListener("webglcontextrestored", () => location.reload());
+  let curId = "";
   const loop = (now) => {
     if (paused) return;
     const dt = Math.min(0.05, (now - prev) / 1000); prev = now;
-    const hl = REDUCED ? 0.0001 : motion.gravity.halfLife;
-    // Gravity: settle toward the nearest rest point once input stops.
-    if (lastInput && now - lastInput > 900 && !focusKey) {
-      const rest = chapters.reduce((a, c) => (Math.abs(c.rest - target) < Math.abs(a - target) ? c.rest : a), chapters[0].rest);
-      target += (rest - target) * (1 - Math.pow(0.5, dt / 0.4));
-    }
-    s += (target - s) * (1 - Math.pow(0.5, dt / hl));
-    if (Math.abs(target - s) < 0.0005) s = target;
-    pointerS.lerp(pointer, 1 - Math.pow(0.5, dt / 0.25));
-    focusAmt += ((focusKey ? 1 : 0) - focusAmt) * (1 - Math.pow(0.5, dt / (REDUCED ? 0.0001 : motion.gravity.focusHalfLife)));
+    if (!REDUCED) {
+      // Gravity: settle toward the nearest rest point once input stops.
+      if (lastInput && now - lastInput > 900 && !focusKey) {
+        const rest = nearest(target).rest;
+        target += (rest - target) * (1 - Math.pow(0.5, dt / 0.4));
+        if (Math.abs(rest - target) < 0.001) target = rest;
+      }
+      s += (target - s) * (1 - Math.pow(0.5, dt / motion.gravity.halfLife));
+      if (Math.abs(target - s) < 0.0005) s = target;
+      pointerS.lerp(pointer, 1 - Math.pow(0.5, dt / 0.25));
+      focusAmt += ((focusKey ? 1 : 0) - focusAmt) * (1 - Math.pow(0.5, dt / motion.gravity.focusHalfLife));
+    } else { pointerS.set(0, 0); focusAmt = focusKey ? 1 : 0; } // reduced motion: s moves only by cross-fade steps
     const bl = bloomFor(s);
     frame({ s, t: now - t0, focusAmt, bloom: bl, focusKey: null });
+    sideCaption = camera.aspect > 1.1 && ((s > 0.85 && s < 1.95) || (s > 3.45 && s < 4.62));
     const cap = interactiveCaptions.find(([a, b]) => s >= a && s < b);
     setCaption(focusKey ? "" : cap ? cap[2] : "");
-    hint.classList.toggle("on", s < 0.12 && now - t0 > 1600);
+    const hintOn = s < 0.12 && now - t0 > 1600;
+    hint.classList.toggle("on", hintOn); hint.inert = !hintOn;
     hubHint.classList.toggle("on", s > 2.93 && s < 3.4 && !focusKey);
     endEl.classList.toggle("on", s > 4.7);
     endEl.style.opacity = smooth(4.55, 4.95, s);
-    demoTag.classList.toggle("on", s > 3.6 && s < 4.6);
-    dots.forEach((d, i) => d.classList.toggle("cur", Math.abs(chapters[i].rest - s) < 0.35));
+    chrome(s > 4.7, (s > 0.95 && s < 1.95) || (s > 3.6 && s < 4.55));
+    const cur = nearest(s).id;
+    if (cur !== curId) {
+      curId = cur;
+      dots.forEach((d, i) => { const on = chapters[i].id === cur; d.classList.toggle("cur", on); on ? d.setAttribute("aria-current", "step") : d.removeAttribute("aria-current"); });
+    }
     sound.update(s, focusAmt);
     // hover cursor on worlds
     if (s > 2.75 && s < 3.6 && !focusKey) {

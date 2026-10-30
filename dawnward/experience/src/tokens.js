@@ -46,28 +46,33 @@ export const motion = {
 // visitor stops scrolling.
 export const chapters = [
   { id: "light", label: "First light", rest: 0.55 },
-  { id: "phone", label: "The honest minute", rest: 1.6 },
-  { id: "portal", label: "Through the glass", rest: 2.3 },
+  { id: "debrief", label: "Evening debrief", rest: 1.2 },
+  { id: "morning", label: "Morning plan", rest: 1.62 },
+  { id: "portal", label: "Through the glass", rest: 2.4 },
   { id: "worlds", label: "Your worlds", rest: 3.0 },
-  { id: "you", label: "What it understands", rest: 4.0 },
-  { id: "end", label: "Become", rest: 5.0 },
+  { id: "you", label: "What it understands", rest: 4.3 },
+  { id: "end", label: "Follow the build", rest: 5.0 },
 ];
 
 // The four worlds. Copy is verbatim from apps/mobile/app/world/[world].tsx
-// and lib/universe.tsx. "move" values are the canon demonstration plan.
+// and lib/universe.tsx. "move" and "belief" values are demonstration content,
+// shaped like the app's real assertions (a claim plus "Why I think this").
 export const worlds = [
   { key: "mind", name: "Mind", meta: "The current exploration", tint: "#9DB4E0",
     title: "The world of clarity.",
     text: "Connections appear here between what you read, what you write and what you believe. The rings are the thoughts that keep returning, settling into orbit.",
-    move: "Ship the first chapter to your editor", pos: [2.0, -3.2, -34], size: 13 },
+    move: "Ship the first chapter to your editor",
+    belief: { text: "You think most clearly once it is written down.", why: "I have seen this in your evenings 5 times now." }, pos: [2.0, -3.2, -34], size: 13 },
   { key: "body", name: "Body", meta: "A world you know", tint: "#D9A46A",
     title: "The world where promises become physical.",
     text: "Training, rest, the water you're preparing for. This world holds only what your days have shown it. Its weather is simply how things have been lately.",
-    move: "40 minutes of open-water prep", pos: [-6.4, 3.4, -44], size: 9.5 },
+    move: "40 minutes of open-water prep",
+    belief: { text: "Training is how you settle a loud week.", why: "I have seen this in your days 4 times now." }, pos: [-6.4, 3.4, -44], size: 9.5 },
   { key: "soul", name: "Soul", meta: "Quiet, luminous", tint: "#D6D2E6",
     title: "The quiet, luminous world.",
     text: "Meaning, feeling and the people who matter live here. It grows in light when your evenings say something true.",
-    move: "Watch the light change, phone elsewhere", pos: [-7.2, -4.4, -28], size: 5.2 },
+    move: "Call your sister. Just to talk.",
+    belief: { text: "The people closest get your tired self.", why: "I have seen this in your evenings 3 times this month." }, pos: [-7.2, -4.4, -28], size: 5.2 },
   { key: "future", name: "Future", meta: "The direction", tint: "#E3B877",
     title: "The direction you chose.",
     text: "An aspiration you wrote, never a prediction. It gains definition as your days agree with it.",
@@ -79,7 +84,8 @@ export const worlds = [
 export const cta = {
   label: "Follow the build on Instagram",
   href: "https://www.instagram.com/bianno.becoming/",
-  note: "Dawnward is in private testing. Nothing to download yet.",
+  handle: "@bianno.becoming",
+  note: "Coming soon. In private testing, nothing to download yet.",
 };
 
 // The beat grid of the owner's score "Emotional build" (measured).

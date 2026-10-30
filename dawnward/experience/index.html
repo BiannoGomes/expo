@@ -12,13 +12,14 @@
   :root { --ground:#0B0E12; --void:#04060A; --surface:#12161D; --line:#232A34; --ink:#ECE9E2; --dim:#9AA0A9; --faint:#79818F; --gold:#C9A96A; --fade:0;
     --display:"Cormorant Garamond", Georgia, serif; --body:"Albert Sans", system-ui, sans-serif; --label:"IBM Plex Mono", ui-monospace, monospace; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; background: var(--void); color: var(--ink); font-family: var(--body); overflow: hidden; overscroll-behavior: none; touch-action: none; -webkit-font-smoothing: antialiased; }
+  html, body { height: 100%; background: var(--void); color: var(--ink); font-family: var(--body); overflow: hidden; overscroll-behavior: none; touch-action: pinch-zoom; -webkit-font-smoothing: antialiased; }
   ::selection { background: rgba(201,169,106,.35); color: var(--ink); }
   :focus-visible { outline: 1.5px solid var(--gold); outline-offset: 4px; border-radius: 6px; }
   button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
   #stage { position: fixed; inset: 0; }
   #stage canvas { display: block; opacity: 0; transition: opacity 1.2s ease; }
   .ready #stage canvas { opacity: 1; }
+  #stage.swap canvas { opacity: 0; transition: opacity .2s ease; } /* reduced motion: chapters cross-fade */
   .ui { position: fixed; z-index: 10; }
 
   /* top bar */
@@ -36,7 +37,7 @@
 
   /* chapters */
   #nav { right: 26px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; }
-  .dot { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 6px 0; color: var(--faint); }
+  .dot { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 6px 0; min-height: 24px; color: var(--faint); }
   .dot span { font-family: var(--label); font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; opacity: 0; transform: translateX(6px); transition: opacity .3s, transform .3s; }
   .dot i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; transition: background .3s, transform .3s; }
   .dot:hover span, .dot:focus-visible span, .dot.cur span { opacity: 1; transform: none; }
@@ -46,14 +47,17 @@
   #caption { left: 50%; bottom: 13vh; width: min(760px, 86vw); transform: translate(-50%, 10px); text-align: center;
     font-family: var(--display); font-weight: 400; font-size: clamp(26px, 3.1vw, 40px); line-height: 1.18; text-wrap: balance;
     opacity: 0; transition: opacity .7s ease, transform .9s cubic-bezier(.16,1,.3,1); pointer-events: none;
-    text-shadow: 0 2px 30px rgba(4,6,10,.95); }
+    text-shadow: 0 0 18px rgba(4,6,10,1), 0 0 44px rgba(4,6,10,.95), 0 1px 3px rgba(4,6,10,.9); }
   #caption.on { opacity: 1; transform: translate(-50%, 0); }
+  /* desktop: while the phone is on screen the words sit beside it, never on it */
+  #caption.side { left: 6vw; bottom: auto; top: 50%; width: min(400px, 30vw); text-align: left; transform: translate(0, calc(-50% + 10px)); font-size: clamp(26px, 2.4vw, 36px); }
+  #caption.side.on { transform: translate(0, -50%); }
   #hint { left: 50%; bottom: 6vh; transform: translateX(-50%); font-family: var(--label); font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--faint);
     opacity: 0; transition: opacity 1s; display: flex; flex-direction: column; align-items: center; gap: 14px; }
   #hint.on { opacity: 1; }
   #hint i { width: 1px; height: 34px; background: linear-gradient(var(--gold), transparent); animation: drip 2.4s ease-in-out infinite; }
   @keyframes drip { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
-  #begin { pointer-events: auto; color: var(--dim); font: inherit; letter-spacing: inherit; text-transform: inherit; }
+  #begin { pointer-events: auto; color: var(--dim); font: inherit; letter-spacing: inherit; text-transform: inherit; padding: 12px 16px; }
 
   /* world labels */
   #labels { inset: 0; pointer-events: none; }
@@ -61,7 +65,7 @@
     opacity: 0; transition: opacity .6s; pointer-events: none; }
   .wlabel.on { opacity: 1; pointer-events: auto; }
   .wlabel .n { font-family: var(--display); font-size: 26px; color: var(--ink); text-shadow: 0 2px 18px rgba(2,3,8,.95); }
-  .wlabel .m { font-family: var(--label); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--dim); }
+  .wlabel .m { font-family: var(--label); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--dim); text-shadow: 0 1px 10px rgba(2,3,8,1), 0 0 3px rgba(2,3,8,.9); }
   .wlabel:hover .n, .wlabel:focus-visible .n { color: var(--gold); }
 
   /* world panel: the real world screen's copy */
@@ -70,13 +74,15 @@
     transition: opacity .5s ease .08s, transform .42s cubic-bezier(.25,1,.5,1) .08s; }
   #panel.open { opacity: 1; transform: translate(0, -50%); pointer-events: auto; }
   #panel .plbl { font-family: var(--label); font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); }
-  #panel .pt { font-family: var(--display); font-size: 34px; line-height: 1.12; margin-top: 14px; }
+  #panel .pt { font-family: var(--display); font-weight: 400; font-size: 34px; line-height: 1.12; margin-top: 14px; }
   #panel .pb { font-size: 15.5px; line-height: 1.6; color: var(--dim); margin-top: 14px; }
   #panel .pm { font-family: var(--display); font-style: italic; font-size: 21px; line-height: 1.35; color: var(--gold); margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
-  #panel .pf { font-size: 13px; color: var(--faint); margin-top: 8px; }
-  #panel .pf:empty { display: none; }
+  #panel .pt:focus { outline: none; }
+  #panel .pbel { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+  #panel .pbel q { display: block; font-family: var(--display); font-style: italic; font-size: 20px; line-height: 1.3; quotes: none; }
+  #panel .pbel span { display: block; font-size: 13.5px; line-height: 1.5; color: var(--dim); margin-top: 6px; }
   #panel .demo { font-family: var(--label); font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--faint); margin-top: 18px; }
-  #panel .close { margin-top: 20px; font-family: var(--label); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--dim); }
+  #panel .close { margin-top: 12px; padding: 10px 0; font-family: var(--label); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--dim); }
   #panel .close:hover { color: var(--ink); }
 
   #demo { left: 50%; top: 13vh; transform: translateX(-50%); font-family: var(--label); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--faint); opacity: 0; transition: opacity .6s; }
@@ -94,8 +100,9 @@
   #end a.cta { margin-top: 42px; display: inline-block; font-family: var(--label); font-size: 12px; letter-spacing: .26em; text-transform: uppercase; color: var(--void);
     background: var(--gold); padding: 16px 26px; border-radius: 999px; text-decoration: none; transition: transform .25s, box-shadow .25s; }
   #end a.cta:hover { transform: translateY(-1px); box-shadow: 0 10px 30px -8px rgba(201,169,106,.55); }
-  #end .note { margin-top: 16px; font-size: 13.5px; color: var(--faint); }
-  #end .replay { margin-top: 28px; font-family: var(--label); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--dim); }
+  #end .handle { margin-top: 18px; font-family: var(--label); font-size: 13px; letter-spacing: .14em; color: var(--ink); }
+  #end .note { margin-top: 10px; font-size: 13.5px; color: var(--faint); text-wrap: balance; max-width: 34ch; }
+  #end .replay { margin-top: 20px; padding: 12px 16px; font-family: var(--label); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--dim); }
 
   #fadeBlack { position: fixed; inset: 0; background: #000; opacity: var(--fade); pointer-events: none; z-index: 30; }
 
@@ -109,11 +116,17 @@
   #story .close-story { position: fixed; top: 22px; right: 28px; }
   .no-webgl #story { display: block; } .no-webgl #story .close-story { display: none; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  #skip:focus { position: fixed; z-index: 50; left: 16px; top: 16px; width: auto; height: auto; clip: auto; padding: 12px 18px; background: var(--ground); color: var(--ink); border: 1px solid var(--gold); border-radius: 999px; font-size: 14px; }
 
   @media (max-width: 760px) {
-    #nav { right: 50%; top: auto; bottom: 22px; transform: translateX(50%); flex-direction: row; gap: 14px; }
+    #nav { right: 50%; top: auto; bottom: 10px; transform: translateX(50%); flex-direction: row; gap: 0; }
+    .dot { width: 30px; height: 30px; justify-content: center; padding: 0; }
     .dot span { display: none; }
-    #caption { bottom: 17vh; }
+    /* phones: words at the top, the phone below them */
+    #caption { top: 76px; bottom: auto; font-size: clamp(23px, 6.4vw, 30px); transform: translate(-50%, -10px); }
+    #caption.on { transform: translate(-50%, 0); }
+    #demo { top: auto; bottom: 52px; }
+    #end a.cta { letter-spacing: .14em; padding: 16px 20px; white-space: nowrap; font-size: 11px; }
     #panel { left: 12px; right: 12px; top: auto; bottom: 12px; width: auto; transform: translateY(30px); padding: 26px 24px 22px; }
     #panel.open { transform: none; }
     #panel .pt { font-size: 28px; }
@@ -124,18 +137,19 @@
     #hubhint { bottom: 64px; }
     .wlabel .m { display: none; } .wlabel .n { font-size: 22px; }
   }
-  @media (prefers-reduced-motion: reduce) { #hint i { animation: none; } #caption { transition: opacity .3s; } }
+  @media (prefers-reduced-motion: reduce) { #hint i { animation: none; } #caption { transition: opacity .3s; } #panel { transition: opacity .2s; } .wlabel { transition: opacity .2s; } }
 
   /* the film: 1080x1920, captions in the top safe band, no interface chrome */
   .film #top, .film #nav, .film #hint, .film #hubhint, .film .close, .film #panel .demo { display: none !important; }
   .film #stage canvas, .film #caption { transition: none !important; }
-  .film #caption { top: 210px; bottom: auto; width: 880px; font-size: 64px; transform: translate(-50%, 0); }
+  .film #caption { top: 300px; bottom: auto; width: 900px; font-size: 64px; transform: translate(-50%, 0); text-shadow: 0 0 24px rgba(4,6,10,1), 0 0 60px rgba(4,6,10,.95), 0 2px 4px rgba(4,6,10,.9); }
   .film #panel { left: 70px; right: 70px; top: auto; bottom: 330px; width: auto; transform: none; transition: none; padding: 48px; border-radius: 30px; }
   .film #panel .plbl { font-size: 22px; } .film #panel .pt { font-size: 60px; } .film #panel .pb { font-size: 28px; } .film #panel .pm { font-size: 36px; } .film #panel .pf { font-size: 22px; }
-  .film .wlabel .n { font-size: 46px; } .film .wlabel .m { font-size: 17px; } .film .wlabel { transition: opacity .5s; }
+  .film .wlabel .n { font-size: 46px; } .film .wlabel .m { font-size: 17px; } .film .wlabel, .film #panel, .film #demo, .film #caption { transition: none !important; }
+  .film #panel .pbel { display: none; }
   .film #demo { top: auto; bottom: 330px; font-size: 18px; transition: none; }
   .film #end { transition: none; } .film #end h1 { font-size: 150px; } .film #end p.line { font-size: 54px; }
-  .film #end a.cta { font-size: 24px; padding: 26px 40px; } .film #end .note { font-size: 24px; } .film #end .replay { display: none; }
+  .film #end a.cta { font-size: 24px; padding: 26px 40px; } .film #end .handle { font-size: 34px; margin-top: 30px; } .film #end .note { font-size: 26px; } .film #end .replay { display: none; }
 </style>
 <script>
   if (new URLSearchParams(location.search).has("film")) document.documentElement.classList.add("film");
@@ -157,26 +171,28 @@
 <nav id="nav" class="ui" aria-label="Chapters"></nav>
 <main id="experience" aria-label="Dawnward, the Living Universe">
 <div id="labels" class="ui" aria-label="Worlds"></div>
-<p id="caption" class="ui" aria-live="polite"></p>
-<div id="hint" class="ui"><button id="begin" type="button">Scroll, swipe or tap to begin</button><i></i></div>
-<div id="demo" class="ui">Demonstration content</div>
+<p id="caption" class="ui" aria-hidden="true"></p>
+<p id="live" class="sr" aria-live="polite"></p>
+<div id="hint" class="ui" inert><button id="begin" type="button">Scroll, swipe or tap to begin</button><i></i></div>
+<div id="demo" class="ui" aria-hidden="true">Demonstration content</div>
 <p id="hubhint" class="ui">Tap a world to visit it</p>
 
-<aside id="panel" class="ui" aria-hidden="true" aria-label="World">
+<aside id="panel" class="ui" role="dialog" aria-labelledby="pt" inert>
   <div class="plbl"></div>
-  <div class="pt"></div>
-  <div class="pb"></div>
-  <div class="pm"></div>
-  <div class="pf"></div>
-  <div class="demo">Demonstration content</div>
+  <h2 class="pt" id="pt" tabindex="-1"></h2>
+  <p class="pb"></p>
+  <p class="pm"></p>
+  <div class="pbel"><q></q><span></span></div>
+  <p class="demo">Demonstration content</p>
   <button class="close" type="button">← Back to your sky</button>
 </aside>
 
-<section id="end" class="ui" aria-label="Dawnward">
+<section id="end" class="ui" aria-label="Dawnward" inert>
   <div class="star"></div>
   <h1>Dawnward</h1>
   <p class="line">Become who you are becoming.</p>
   <a class="cta" id="ctaLink" target="_blank" rel="noopener">Follow the build</a>
+  <p class="handle" id="ctaHandle"></p>
   <p class="note" id="ctaNote"></p>
   <button class="replay" id="replay" type="button">Begin again</button>
 </section>
@@ -197,20 +213,28 @@
     <p><b>Mind</b>, the world of clarity. <b>Body</b>, the world where promises become physical. <b>Soul</b>, the quiet, luminous world. <b>Future</b>, the direction you chose: an aspiration you wrote, never a prediction. Each world changes as you do.</p>
     <img data-src="img/universe-app.webp" alt="The Universe screen: four planets named Mind, Body, Soul and Future.">
     <h2>And slowly, it understands you. And shows you why.</h2>
-    <p>Every insight shows its evidence, like "I have seen this in your days 4 times now", and one tap says "That's not right". Your reflections are never sold and never train anyone else's AI.</p>
+    <p>Every insight shows its evidence, like "I have seen this in your evenings 3 times this month", and one tap says "That's not right". Your reflections are private and never sold.</p>
     <img data-src="img/you.webp" alt="What I understand about you: insights with their reasons, demonstration content.">
     <h2>Become who you are becoming.</h2>
-    <p>Dawnward is in private testing. Nothing to download yet. <a href="https://www.instagram.com/bianno.becoming/" style="color:var(--gold)" target="_blank" rel="noopener">Follow the build on Instagram</a>.</p>
+    <p>Coming soon. Dawnward is in private testing, nothing to download yet. <a href="https://www.instagram.com/bianno.becoming/" style="color:var(--gold)" target="_blank" rel="noopener">Follow the build on Instagram, @bianno.becoming<span class="sr"> (opens in a new tab)</span></a>.</p>
   </article>
 </section>
 <script>
   (function () {
     const story = document.getElementById("story"), asset = window.DW_ASSETS || ((p) => "assets/" + p);
     const fill = () => story.querySelectorAll("img[data-src]").forEach((i) => { i.src = asset(i.dataset.src); i.removeAttribute("data-src"); });
-    const open = () => { fill(); story.classList.add("show"); story.focus && story.setAttribute("tabindex", "-1"); story.focus(); };
+    const behind = ["top", "nav", "experience"].map((id) => document.getElementById(id));
+    const set = (on) => {
+      story.classList.toggle("show", on);
+      behind.forEach((el) => { el.inert = on; });
+      document.dispatchEvent(new CustomEvent("dwstory", { detail: on }));
+    };
+    const open = () => { fill(); set(true); story.setAttribute("tabindex", "-1"); story.focus(); };
+    const close = () => { set(false); document.getElementById("textv").focus(); };
     document.getElementById("textv").onclick = open;
     document.getElementById("skip").onclick = (e) => { e.preventDefault(); open(); };
-    document.getElementById("closeStory").onclick = () => story.classList.remove("show");
+    document.getElementById("closeStory").onclick = close;
+    addEventListener("keydown", (e) => { if (e.key === "Escape" && story.classList.contains("show") && !document.documentElement.classList.contains("no-webgl")) close(); });
     if (document.documentElement.classList.contains("no-webgl")) fill();
   })();
 </script>

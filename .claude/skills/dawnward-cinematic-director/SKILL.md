@@ -11,5 +11,6 @@ The idea: a point of light becomes a phone, the phone becomes a window, the wind
 - Product first, metaphor second. A stranger must be able to say: "Talk to it at night, wake up to three small steps from your own words."
 - Cut on the score (beat 0.9387 s, swell 15.12 s, climax 33.89 s, accent 54.54 s). Speak only in the quiet sections.
 - Captions carry the story for muted viewers; never repeat a line twice on screen.
-- The biggest moment is understanding, not spectacle. If a scene only looks expensive, cut it.
+- The biggest moment is understanding, not spectacle. If a scene only looks expensive, cut it. The climax (33.89 s) is the phone returning with an insight, pushed in until the card fills about 80% of the frame width.
+- Product moments must be readable at phone size: push in, veil the rest, caption above it (film captions start at y 300 for the Instagram safe area).
 - Human Law: no em-dashes, no AI-sounding words, no guilt, no streaks or scores.

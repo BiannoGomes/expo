@@ -9,6 +9,7 @@ const p = await b.newPage({ viewport: vw, deviceScaleFactor: 1 });
 const errs = []; p.on("pageerror", (e) => errs.push(String(e))); p.on("console", (m) => m.type() === "error" && errs.push(m.text()));
 await p.goto(`http://127.0.0.1:8770/index.html${mode === "film" ? "?film=1" : ""}`);
 await p.waitForFunction(() => document.documentElement.classList.contains("ready"), null, { timeout: 30000 });
+if (mode === "film") await p.waitForFunction(() => window.FILM_READY, null, { timeout: 60000 });
 await p.waitForTimeout(800);
 for (const x of pts) {
   if (mode === "film") await p.evaluate((ms) => window.SEEK(ms), Number(x) * 1000);

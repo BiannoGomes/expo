@@ -1,5 +1,5 @@
 #!/bin/sh
-# Master, 30 s cut, three 15 s hooks and posters from the rendered frames.
+# Master, 30 s cut, three hooks (15 to 16.4 s) and posters from the rendered frames.
 set -e
 cd "$(dirname "$0")"
 FR=/tmp/claude-0/film-v6-frames
@@ -21,12 +21,14 @@ cut () {
   /usr/bin/ffmpeg -nostdin -loglevel error -y -i out/dawnward-living-universe-60s.mp4 -filter_complex "${F}${L}concat=n=$n:v=1:a=1[v][a]" \
     -map "[v]" -map "[a]" -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p -c:a aac -b:a 256k -movflags +faststart "out/$OUT"
 }
-cut dawnward-living-universe-30s.mp4 0 15.2 33.2 42.2 54.3 60
-cut dawnward-hook-honest-minute-15s.mp4 0 9.5 54.54 60
-cut dawnward-hook-through-the-glass-15s.mp4 11.0 20.5 54.54 60
-cut dawnward-hook-four-worlds-15s.mp4 32.4 41.9 54.54 60
+rm -f out/dawnward-hook-*.mp4
+cut dawnward-living-universe-30s.mp4 0 14.6 33.6 43.4 54.3 60
+cut dawnward-hook-honest-minute.mp4 0 9.4 54.54 60
+cut dawnward-hook-through-the-glass.mp4 14.6 25.5 54.54 60
+cut dawnward-hook-understood.mp4 33.6 43.2 54.54 60
 
-for t in 3.2 11.5 25.5 35.5 48.5 56; do
+rm -f posters/*.jpg
+for t in 3.2 11.5 16.6 27.5 38.5 56; do
   /usr/bin/ffmpeg -nostdin -loglevel error -y -ss $t -i out/dawnward-living-universe-60s.mp4 -frames:v 1 -q:v 2 posters/poster-$t.jpg
 done
 for f in out/*.mp4; do printf "%s " "$f"; /usr/bin/ffprobe -v error -show_entries format=duration -of csv=p=0 "$f"; done

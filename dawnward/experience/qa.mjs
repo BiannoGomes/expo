@@ -13,13 +13,39 @@ const out = {};
   const run = async (label) => { await p.addScriptTag({ content: axe }); const r = await p.evaluate(async () => (await window.axe.run(document, { resultTypes: ["violations"] })).violations.map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.length }))); out[`axe_${label}`] = r; };
   await run("start");
   await p.evaluate(() => { window.DW.jump(3); window.DW.select("mind"); }); await p.waitForTimeout(2500); await run("world_open");
+  // focus moves into the world dialog, and Escape brings it back to the world's label
+  out.world_dialog_focus = await p.evaluate(() => document.activeElement && document.activeElement.id);
+  await p.keyboard.press("Escape"); await p.waitForTimeout(400);
+  out.focus_after_escape = await p.evaluate(() => document.activeElement && (document.activeElement.dataset.key || document.activeElement.id || document.activeElement.className));
+  out.panel_inert_when_closed = await p.evaluate(() => document.getElementById("panel").inert);
+  await p.evaluate(() => window.DW.jump(4.3)); await p.waitForTimeout(1500); await run("understands");
   await p.evaluate(() => { window.DW.close(); window.DW.jump(5); }); await p.waitForTimeout(1500); await run("end");
   await p.click("#textv"); await p.waitForTimeout(500); await run("text_version");
+  // the story behind the text version is frozen and unreachable; Escape returns
+  const s0 = await p.evaluate(() => window.DW.s);
+  await p.keyboard.press("ArrowDown"); await p.mouse.wheel(0, 600); await p.waitForTimeout(600);
+  out.story_open_blocks_navigation = (await p.evaluate(() => window.DW.s)) === s0;
+  out.story_open_behind_inert = await p.evaluate(() => ["top", "nav", "experience"].every((id) => document.getElementById(id).inert));
+  await p.keyboard.press("Escape"); await p.waitForTimeout(300);
+  out.story_escape_focus = await p.evaluate(() => document.activeElement.id);
+  await p.click("#textv"); await p.waitForTimeout(300);
   // keyboard: can we reach the world buttons with Tab at the hub?
   await p.click("#closeStory"); await p.evaluate(() => window.DW.jump(3)); await p.waitForTimeout(1200);
   const tabbable = await p.evaluate(() => [...document.querySelectorAll(".wlabel")].filter((e) => e.tabIndex === 0).map((e) => e.dataset.key));
   out.keyboard_world_buttons = tabbable;
   await p.close();
+}
+// 1b. reduced motion: one gesture moves exactly one chapter, with no travel
+{
+  const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
+  const p = await ctx.newPage();
+  await p.goto(URL); await p.waitForFunction(() => document.documentElement.classList.contains("ready")); await p.waitForTimeout(600);
+  await p.mouse.move(700, 450); await p.mouse.wheel(0, 300); await p.waitForTimeout(450);
+  const a = await p.evaluate(() => window.DW.s);
+  await p.keyboard.press("ArrowDown"); await p.waitForTimeout(450);
+  const c = await p.evaluate(() => window.DW.s);
+  out.reduced_motion_steps = { afterWheel: a, afterArrow: c };
+  await ctx.close();
 }
 // 2. transfer weight on first load (sound off)
 {
@@ -39,7 +65,7 @@ const out = {};
   await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
   await p.goto(URL); await p.waitForFunction(() => document.documentElement.classList.contains("ready"));
   out.frames = {};
-  for (const sv of [0.55, 1.6, 3.0]) {
+  for (const sv of [0.55, 1.62, 3.0, 4.3]) {
     await p.evaluate((v) => window.DW.jump(v), sv); await p.waitForTimeout(800);
     out.frames[sv] = await p.evaluate(() => new Promise((res) => { const ts = []; let n = 0; const f = (t) => { ts.push(t); if (++n < 40) requestAnimationFrame(f); else { const d = ts.slice(1).map((x, i) => x - ts[i]).sort((a, b) => a - b); res({ medianMs: Math.round(d[d.length >> 1]), p90Ms: Math.round(d[Math.floor(d.length * 0.9)]) }); } }; requestAnimationFrame(f); }));
   }
@@ -51,7 +77,7 @@ const out = {};
   await p.goto(URL + "?film=1"); await p.waitForFunction(() => window.FILM_READY === true); await p.waitForTimeout(1200);
   const shot = async () => (await p.screenshot({ type: "png" }));
   const res = {};
-  for (const ms of [8000, 25500, 48500]) {
+  for (const ms of [3000, 11500, 25500, 38500, 42000]) {
     await p.evaluate(() => window.SEEK(0)); await p.evaluate((m) => window.SEEK(m), ms); const a = await shot();
     await p.evaluate(() => window.SEEK(59000)); await p.evaluate((m) => window.SEEK(m), ms); const c = await shot();
     res[ms] = a.equals(c) ? "identical" : "DIFFERENT";
