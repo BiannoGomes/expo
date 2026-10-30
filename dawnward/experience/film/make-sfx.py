@@ -30,7 +30,7 @@ for f in range(int(1.4 * 30), int(4.5 * 30) + 1):
 put(breath, 6.9, 0.4)            # the sister step lifts off the glass
 put(chime, 9.3, 0.45)            # kept: its seed of light
 put(shimmer, 14.0, 0.45)         # through the glass, into the swell
-for t, f in [(20.75, 1.0), (21.6, 0.89), (22.7, 1.19), (23.65, 0.84)]:
+for t, f in [(21.65, 1.0), (22.77, 0.89), (23.68, 1.19), (24.75, 0.84)]:
     put(pitch(chime, f), t, 0.25)  # each world on its spoken name
 put(pitch(tick, 0.8), 40.1, 1.0)   # "you can tell it"
 peak = np.abs(out).max(); print("sfx peak", round(float(peak), 3))

@@ -466,6 +466,7 @@ function setCaption(text) {
   if (!FILM) { clearTimeout(liveT); if (text) liveT = setTimeout(() => { live.textContent = text; }, 600); }
 }
 let sideCaption = false, topCaption = false;
+const END_LINE = `Dawnward. Become who you are becoming. ${cta.note} ${cta.label}, ${cta.handle}.`;
 
 /* ------------------------------------------------------------- world focus */
 let focusKey = null, focusAmt = 0, hoverKey = null;
@@ -628,6 +629,7 @@ addEventListener("resize", resize);
 resize();
 
 /* ------------------------------------------------------------- the frame */
+const lp = [];
 const tmpPos = v3(0, 0, 0), tmpLook = v3(0, 0, 0), tmpV = v3(0, 0, 0), lv0 = v3(0, 0, 0), lv1 = v3(0, 0, 0);
 function frame(st) {
   const { s, t, focusAmt: fa, bloom } = st;
@@ -745,11 +747,25 @@ function frame(st) {
     const x = clamp((c0.x * 0.5 + 0.5) * W, 70, W - 150);
     const y = clamp((-c0.y * 0.5 + 0.5) * H + rPx * 1.05, 80, H - 210); // below the disk, never on it
     const vis = showLabels && bloom[i] > 0.6 && c0.z < 1;
+    lp[i] = { el, x, y, vis };
+  });
+  // labels never sit on each other: push the lower of any overlapping pair down
+  const on = lp.filter((l) => l.vis).sort((a, b) => a.y - b.y);
+  for (const l of on) { l.w = l.el.offsetWidth; l.h = l.el.offsetHeight; }
+  const Hmax = innerHeightF() - 90;
+  for (let i = 0; i < on.length; i++) for (let j = 0; j < i; j++) {
+    const a = on[j], b = on[i];
+    if (Math.abs(a.x - b.x) < (a.w + b.w) / 2 + 8 && b.y - a.y < a.h + 6) {
+      b.y = a.y + a.h + 6;
+      if (b.y > Hmax) { a.y -= b.y - Hmax; b.y = Hmax; } // no room below: lift the upper one
+    }
+  }
+  for (const { el, x, y, vis } of lp) {
     el.style.transform = `translate(${x}px, ${y}px) translate(-50%, 0)`;
     el.classList.toggle("on", vis);
     el.tabIndex = vis ? 0 : -1;
     el.inert = !vis;
-  });
+  }
   return { li };
 }
 const innerWidthF = () => (FILM ? 1080 : innerWidth);
@@ -837,6 +853,8 @@ async function boot() {
     topCaption = camera.aspect > 1.1 && s > 2.6 && s < 3.45;
     const cap = interactiveCaptions.find(([a, b]) => s >= a && s < b);
     setCaption(focusKey ? "" : cap ? cap[2] : "");
+    // the end card is announced too, once the visitor has stayed on it
+    if (s > 4.7 && !capText && live.textContent !== END_LINE) { clearTimeout(liveT); liveT = setTimeout(() => { if (s > 4.7) live.textContent = END_LINE; }, 600); }
     const hintOn = s < 0.12 && now - t0 > 1600;
     hint.classList.toggle("on", hintOn); hint.inert = !hintOn;
     hubHint.classList.toggle("on", s > 2.93 && s < 3.4 && !focusKey);

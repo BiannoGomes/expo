@@ -134,7 +134,9 @@
     .dot { width: 30px; height: 30px; justify-content: center; padding: 0; }
     .dot span { display: none; }
     /* phones: words at the top, the phone below them */
-    #caption { top: 76px; bottom: auto; font-size: clamp(23px, 6.4vw, 30px); transform: translate(-50%, -10px); }
+    #caption { top: 76px; bottom: auto; font-size: clamp(23px, 6.4vw, 30px); transform: translate(-50%, -10px);
+      width: max-content; max-width: 92vw; background: rgba(6,8,12,.78); padding: 10px 18px 12px; border-radius: 16px; }
+    #caption:empty { display: none; }
     #caption.on { transform: translate(-50%, 0); }
     #demo { left: 50%; bottom: 52px; transform: translateX(-50%); }
     #end a.cta { letter-spacing: .14em; padding: 16px 20px; white-space: nowrap; font-size: 11px; }
@@ -155,14 +157,14 @@
   .film #panel .demo { font-size: 17px; margin-top: 22px; }
   .film #stage canvas, .film #caption { transition: none !important; }
   /* film captions: on a quiet plate, below the platform's top interface */
-  .film #caption { top: 270px; bottom: auto; width: max-content; max-width: 920px; font-size: 62px; transform: translate(-50%, 0);
+  .film #caption { top: 270px; bottom: auto; width: max-content; max-width: 920px; text-wrap: balance; font-size: 62px; transform: translate(-50%, 0);
     background: rgba(6,8,12,.8); padding: 20px 36px 24px; border-radius: 26px; text-shadow: none; }
   .film #end a.cta, .film #end .handle, .film #end .note { opacity: var(--cta, 1); }
   .film #panel { left: 70px; right: 70px; top: auto; bottom: 330px; width: auto; transform: none; transition: none; padding: 48px; border-radius: 30px; }
   .film #panel .plbl { font-size: 22px; } .film #panel .pt { font-size: 60px; } .film #panel .pb { font-size: 28px; } .film #panel .pm { font-size: 36px; } .film #panel .pf { font-size: 22px; }
   .film .wlabel .n { font-size: 46px; } .film .wlabel .m { font-size: 17px; } .film .wlabel, .film #panel, .film #demo, .film #caption { transition: none !important; }
   .film #panel .pbel { display: none; } .film #panel .pbc { font-size: 26px; }
-  .film #demo { left: 50%; transform: translateX(-50%); top: auto; bottom: 330px; font-size: 18px; transition: none; }
+  .film #demo { left: 50%; transform: translateX(-50%); top: auto; bottom: 110px; font-size: 18px; transition: none; }
   .film #end { transition: none; } .film #end h2 { font-size: 150px; } .film #end p.line { font-size: 54px; }
   .film #end a.cta { font-size: 24px; padding: 26px 40px; } .film #end .handle { font-size: 34px; margin-top: 30px; } .film #end .note { font-size: 26px; } .film #end .replay { display: none; }
 </style>

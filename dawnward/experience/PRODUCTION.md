@@ -100,16 +100,16 @@ Camera continuity: the gaze leaves the glass smoothly (look target eased from th
 | 7.8 to 14.0 | to 1.78 | The step keeps a seed of light | "No streaks. No scores. No guilt." (11.25) |
 | 14.0 to 15.12 | to 2.25 | Through the glass, landing on the swell | |
 | 15.4 to 18.1 | | The sky opens, worlds waiting dim | "Nothing you live honestly is lost." |
-| 18.4 to 25.4 | to 3.0 | Each world blooms on its spoken name (20.75, 21.6, 22.7, 23.65), a chime each | "Your days become four worlds. Mind, body, soul, and future." |
-| 24.4 to 31.8 | | Visit Soul: world above, panel below; today's move is the sister call | "The people who matter live in Soul." (26.4) |
-| 30.4 to 33.89 | to 3.9 | The phone returns, arriving on the climax | |
+| 18.4 to 25.4 | to 3.0 | Each world blooms on its spoken name (21.65, 22.77, 23.68, 24.75, measured from the narration), a chime each; labels never overlap | "Your days become four worlds. Mind, body, soul, and future." |
+| 25.3 to 32.7 | | Visit Soul: world above, panel below; today's move is the sister call | "The people who matter live in Soul." (27.3) |
+| 31.0 to 33.89 | to 3.9 | The phone returns, arriving on the climax | |
 | 33.6 to 44 | to 4.32 | Push until the insight card fills 80% of the width; the rest veiled | "Slowly, it understands you. And shows you why." / "And when it's wrong, you can tell it." (38.6; the control answers at 40.1 and the card is set aside at your word, as in the app) / "Private. Never sold." (42.2) |
 | 44 to 51.7 | to 4.9 | Pull back; the phone leaves; the universe dims | "Just you, understood." (45.2) |
 | 51.73 | 5.0 | End card on a downbeat: wordmark and line; the handle, CTA and status arrive on the accent (54.54) | "Dawnward. Coming soon." (52.3) |
 
-Cuts (`film/encode.sh`): 30 s (0.4 to 11, 18.3 to 25.5, 33.5 to 41.4, 51.6 to 56); 15 s hooks: honest minute (0.4 to 11 + end), four worlds (18.3 to 29.4 + end), understood (33.5 to 44.6 + end; opens on "Slowly, it understands you"). Posters at 3, 8.5, 16.6, 27.5, 37.5, 41.6, 55.5 s.
+Cuts (`film/encode.sh`, 120 ms audio fades at each joint; every cut holds the CTA for at least 2 s): 30 s (0.4 to 15.35, 33.5 to 41.4, 51.6 to 57.6); hooks: honest minute (0.4 to 3.95, 6.65 to 15.35, 53.9 to 57.5; 15.8 s), four worlds (18.3 to 30.4, 54 to 57.5; 15.6 s), understood (33.5 to 44.6, 53.9 to 57.5; 14.7 s). Posters at 3, 8.5, 16.6, 27.5, 37.5, 41.6, 55.5 s.
 
-Mix: score bed lifted 4 dB under the opening and through the quiet before the end card; sidechain ratio 6 under the voice; every line 6 to 19 dB over the music (measured per line, the lowest on the climax); dialogue limited to -1.5 dBFS; effects stem audible but under the music (world chimes about level with it); master -14 LUFS, -1.2 dBTP. Stems: dialogue, music, effects.
+Mix: score bed lifted 8 dB under the opening and 4 dB to 29 s (eased under the longest lines), and through the quiet before the end card; sidechain ratio 6 under the voice; every line 6 to 16 dB over the music (measured per line, the lowest on the climax); dialogue limited to -1.5 dBFS; effects stem audible but under the music (world chimes about level with it); master -14 LUFS, -1.2 dBTP. Stems: dialogue, music, effects.
 
 ## 8. Performance budget
 

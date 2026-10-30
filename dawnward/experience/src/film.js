@@ -24,7 +24,7 @@ const S_KEYS = [
   [17.6, 2.62, easeOutQuart],
   [20.4, 2.95, easeInOutSine],
   [22.0, 3.0, easeOutQuart],         // the worlds, named as they bloom
-  [30.4, 3.0, null],                 // Soul is visited
+  [31.0, 3.0, null],                 // Soul is visited
   [beat.climax, 3.9, easeInOutCubic], // the phone returns on the climax
   [36.0, 4.25, easeInOutSine],
   [44.0, 4.32, null],                // the insight, held long enough to read
@@ -54,9 +54,10 @@ function pushAt(t) {
 }
 
 // Visit: the camera goes to Soul, its panel opens, then it returns.
-const VISIT = { key: "soul", from: 24.4, to: 29.6, approach: 2.4, back: 2.2 };
-// Each world blooms on its spoken name ("Mind, body, soul, and future").
-const BLOOM_AT = { mind: 20.75, body: 21.6, soul: 22.7, future: 23.65 };
+const VISIT = { key: "soul", from: 25.3, to: 30.5, approach: 2.4, back: 2.2 };
+// Each world blooms on its spoken name ("Mind, body, soul, and future"),
+// measured from the narration: nB starts at 18.4 s.
+const BLOOM_AT = { mind: 21.65, body: 22.77, soul: 23.68, future: 24.75 };
 const END = 51.73, CTA = beat.accent;
 
 export function filmState(ms) {
@@ -92,7 +93,7 @@ const CAPS = [
   [11.25, 15.3, "No streaks. No scores. No guilt."],
   [15.4, 18.1, "Nothing you live honestly is lost."],
   [18.4, 25.6, "Your days become four worlds. Mind, body, soul and future."],
-  [26.4, 29.4, "The people who matter live in Soul."],
+  [27.3, 30.3, "The people who matter live in Soul."],
   [33.6, 38.3, "Slowly, it understands you. And shows you why."],
   [38.6, 41.2, "And when it’s wrong, you can tell it."],
   [42.2, 44.6, "Private. Never sold."],
