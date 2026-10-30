@@ -22,26 +22,26 @@
   },
   "transfer": {
     "requests": 17,
-    "totalKB": 1408,
+    "totalKB": 1409,
     "audioLoaded": false,
-    "domContentLoadedMs": 1621
+    "domContentLoadedMs": 1656
   },
   "frames": {
     "3": {
       "medianMs": 67,
-      "p90Ms": 83
+      "p90Ms": 117
     },
     "0.55": {
       "medianMs": 17,
       "p90Ms": 17
     },
     "1.62": {
-      "medianMs": 117,
+      "medianMs": 133,
       "p90Ms": 217
     },
     "4.3": {
       "medianMs": 150,
-      "p90Ms": 167
+      "p90Ms": 217
     }
   },
   "determinism": {
