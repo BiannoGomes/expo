@@ -348,7 +348,7 @@ uniScene.add(keptStar);
 
 // A world: the app's own planet art, given an atmosphere that hugs its real
 // silhouette (sampled from the art's alpha, brighter toward its light) and a
-// faint limb glow inside the edge. Bounded: 12 taps per pixel, no post pass.
+// faint limb glow inside the edge. Bounded: 16 taps per pixel, no post pass.
 const planetShader = (w) => new THREE.ShaderMaterial({
   transparent: true, depthWrite: false,
   uniforms: {
@@ -363,13 +363,13 @@ const planetShader = (w) => new THREE.ShaderMaterial({
       float halo = 0.0, inner = 1.0; // low quality: the art alone, no glow
       if (uQuality > 0.5) {
         inner = 0.0;
-        for (int i = 0; i < 12; i++) {
-          float an = float(i) * 0.5236; vec2 d = vec2(cos(an), sin(an));
+        for (int i = 0; i < 8; i++) {
+          float an = float(i) * 0.7854; vec2 d = vec2(cos(an), sin(an));
           float lit = 0.35 + 0.65 * max(dot(-d, uLight), 0.0); // the side facing the light scatters more
           halo += texture2D(uMap, vUv + d * uR).a * lit;
           inner += texture2D(uMap, vUv + d * uR * 0.35).a;
         }
-        halo /= 12.0; inner /= 12.0;
+        halo /= 8.0; inner /= 8.0;
       }
       float outside = halo * (1.0 - c.a);
       float limb = c.a * (1.0 - inner) * uLimb;
@@ -686,7 +686,7 @@ soundBtn.addEventListener("click", async () => {
 // Chosen once from this device's first frames (median frame time), or forced
 // with ?quality=low|medium|high. Low: pixel ratio 1, far stars off, no
 // atmosphere taps, solid glass. The film always renders at high.
-const quality = { tier: FILM ? "high" : params.get("quality") || "auto", dts: [] };
+const quality = { tier: FILM ? "high" : params.get("quality") || "high", forced: FILM || params.has("quality"), dts: [] };
 function applyTier(t) {
   quality.tier = t;
   document.documentElement.dataset.quality = t;
@@ -696,12 +696,15 @@ function applyTier(t) {
   starsFar.visible = t !== "low";
   resize();
 }
+// Starts at high, then steps down (never up) whenever the last 60 frames run
+// slow, so a cheap opening scene cannot lock in a tier the hub cannot hold.
 function sampleQuality(dtMs) {
-  if (quality.tier !== "auto") return;
+  if (quality.forced || quality.tier === "low") return;
   quality.dts.push(dtMs);
-  if (quality.dts.length < 90) return;
-  const m = quality.dts.slice(20).sort((a, b) => a - b)[35]; // median, skipping the warm-up
-  applyTier(m > 34 ? "low" : m > 22 ? "medium" : "high");
+  if (quality.dts.length < 60) return;
+  const m = quality.dts.slice().sort((a, b) => a - b)[30];
+  quality.dts.length = 0;
+  if (m > 50) applyTier("low"); else if (m > 24) applyTier(quality.tier === "high" ? "medium" : "low");
 }
 
 /* -------------------------------------------------------------- resize */
@@ -721,7 +724,7 @@ function resize() {
 }
 addEventListener("resize", resize);
 resize();
-if (quality.tier !== "auto") applyTier(quality.tier); else document.documentElement.dataset.quality = "auto";
+applyTier(quality.tier);
 
 /* ------------------------------------------------------------- the frame */
 const lp = [];

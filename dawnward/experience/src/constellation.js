@@ -115,6 +115,9 @@ export function createConstellation({ onOpen, onClose } = {}) {
     undo = undoFn || null;
     toast.innerHTML = `${msg}${undoFn ? ' <button type="button" class="mo-undo">Undo</button>' : ""}`;
     toast.classList.add("on");
+    // the control that was pressed is gone; keep keyboard users in place
+    const u = toast.querySelector(".mo-undo");
+    if (u) u.focus({ preventScroll: true }); else $("#moments-title").focus({ preventScroll: true });
   }
 
   root.addEventListener("click", (e) => {
@@ -126,7 +129,7 @@ export function createConstellation({ onOpen, onClose } = {}) {
       t.setAttribute("aria-pressed", String(on)); t.textContent = on ? "View as a sky" : "View as a list";
       return;
     }
-    if (t.classList.contains("mo-undo")) { if (undo) undo(); toast.classList.remove("on"); return; }
+    if (t.classList.contains("mo-undo")) { if (undo) undo(); toast.classList.remove("on"); $("#moments-title").focus({ preventScroll: true }); return; }
     if (t.classList.contains("mo-reject")) {
       const l = links.find((x) => x.a === t.dataset.a && x.b === t.dataset.b);
       l.rejected = true; show(selected);
@@ -149,7 +152,10 @@ export function createConstellation({ onOpen, onClose } = {}) {
     show(selected);
     say(showLinks ? "Connections are on." : "Connections are off. Your moments are still here, in order.");
   });
-  root.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); close(); } });
+  // Escape closes from anywhere while open (capture: before the story's own keys)
+  addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && root.classList.contains("open")) { e.stopPropagation(); e.preventDefault(); close(); }
+  }, true);
 
   function open(from) {
     opener = from || document.activeElement;
