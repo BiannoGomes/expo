@@ -11,3 +11,6 @@ description: Check that every Dawnward ad, film or experience shows only real, s
 - If a screen or copy changes in the app, update `src/tokens.js` and re-render; do not edit the capture files by hand.
 - Corrections to the captures live in code (`buildScreens()` in `src/main.js`) and must mirror the shipped app: the tab bar is Today / Debrief / Universe (the Personal Model is reached from the universe, `you` has `href: null`); greetings carry no real name.
 - One thread, one person: the confession, the morning step, the Soul world's move and the Personal Model insight must agree with each other. Insights always show "Why I think this" and the real "That's not right" control.
+- Evidence lines use only the server's wording (`server/src/model/voice.ts`, e.g. "I have seen this in your days 3 times now."). Never invent time windows or evidence types.
+- "That's not right" shows only what the app does: Personal Model card at half opacity, "Set aside, at your word"; world screen reply "Thank you. I'll hold this loosely until your days say otherwise."
+- The text version uses the corrected screens (`img/*-story.webp`, exported with `DW.screens()`), never the raw captures, and labels personal content.

@@ -227,7 +227,7 @@ function fixTabs(g, img, active) {
   g.drawImage(img, 650, 1568, 70, 58, 580, 1568, 70, 58);
   g.font = '400 20.5px "IBM Plex Mono"'; g.letterSpacing = "4.2px"; g.textBaseline = "alphabetic";
   const w = g.measureText("UNIVERSE").width - 4.2;
-  g.fillStyle = active ? color.gold : "#CCB28B"; g.globalAlpha = active ? 1 : 0.62;
+  g.fillStyle = active ? color.gold : "#B0B3BB"; g.globalAlpha = 1; // matches the shipped inactive tabs
   g.fillText("UNIVERSE", 617 - w / 2, 1598); g.globalAlpha = 1; g.letterSpacing = "0px";
   if (active) { g.fillStyle = color.gold; g.beginPath(); g.arc(619, 1614, 3, 0, 6.283); g.fill(); }
 }
@@ -243,7 +243,7 @@ function buildScreens() {
     g.fillText("the people closest get your tired self", 91, 1064);
   });
   base.you = baseCanvas(shots.you, (g, img) => {
-    fixTabs(g, img, true);
+    fixTabs(g, img, false); // the Personal Model is reached from the universe; no tab is lit there
     const { x, y, w, h } = INSIGHT;
     g.fillStyle = color.ground; g.fillRect(x - 6, y - 6, w + 12, 1530 - y);
     g.fillStyle = "#13161E"; g.strokeStyle = "#252B33"; g.lineWidth = 2;
@@ -254,14 +254,14 @@ function buildScreens() {
     g.fillText("when you’re running on empty.", 91, 1305);
     g.font = '400 25px "Albert Sans"'; g.fillStyle = color.dim;
     g.fillText("Why I think this: I have seen this in your", 91, 1347);
-    g.fillText("evenings 3 times this month.", 91, 1385);
+    g.fillText("days 3 times now.", 91, 1385); // the server's own wording
     g.drawImage(img, 66, 1350, 250, 86, 66, 1404, 250, 86); // the real "That's not right" control
     g.drawImage(img, 662, 1294, 28, 34, 662, 1318, 28, 34); // chevron
   });
 }
 let lastScreenKey = "";
-function drawScreen(mode, typed, seed, lift = 0, spot = 0, ping = 0) {
-  const k = `${mode}|${typed}|${Math.round(seed * 20)}|${Math.round(lift * 10)}|${Math.round(spot * 40)}|${Math.round(ping * 30)}`;
+function drawScreen(mode, typed, seed, lift = 0, spot = 0, ping = 0, disp = 0) {
+  const k = `${mode}|${typed}|${Math.round(seed * 20)}|${Math.round(lift * 10)}|${Math.round(spot * 40)}|${Math.round(ping * 30)}|${Math.round(disp * 30)}`;
   if (k === lastScreenKey || !base.debrief) return;
   lastScreenKey = k;
   sctx.drawImage(base[mode], 0, 0);
@@ -284,11 +284,23 @@ function drawScreen(mode, typed, seed, lift = 0, spot = 0, ping = 0) {
     sctx.globalAlpha = lift; sctx.fillStyle = "#0A0D12";
     sctx.beginPath(); sctx.roundRect(CARD.x + 3, CARD.y + 6, CARD.w - 6, CARD.h - 12, 26); sctx.fill();
     sctx.strokeStyle = "rgba(35,42,52,.9)"; sctx.lineWidth = 2; sctx.stroke(); sctx.globalAlpha = 1;
-  } else if (mode === "you" && ping > 0) {
-    // the dispute control answers: one soft ring
-    const r = 40 + ping * 90;
-    sctx.strokeStyle = `rgba(180,101,95,${0.55 * (1 - ping)})`; sctx.lineWidth = 3;
-    sctx.beginPath(); sctx.roundRect(91 - r * 0.3, 1440 - r * 0.42, 195 + r * 0.6, r * 0.84, 18 + r * 0.2); sctx.stroke();
+  } else if (mode === "you") {
+    if (ping > 0) {
+      // the dispute control answers: one soft ring
+      const r = 40 + ping * 90;
+      sctx.strokeStyle = `rgba(180,101,95,${0.55 * (1 - ping)})`; sctx.lineWidth = 3;
+      sctx.beginPath(); sctx.roundRect(91 - r * 0.3, 1440 - r * 0.42, 195 + r * 0.6, r * 0.84, 18 + r * 0.2); sctx.stroke();
+    }
+    if (disp > 0) {
+      // what the app does: the card is set aside at your word (half opacity, new label, no button)
+      sctx.save(); sctx.globalAlpha = disp; sctx.fillStyle = "#13161E";
+      sctx.fillRect(85, 1170, 600, 36); sctx.fillRect(62, 1400, 270, 96);
+      sctx.font = '400 21px "IBM Plex Mono"'; sctx.letterSpacing = "4.8px"; sctx.fillStyle = color.dim;
+      sctx.fillText("SET ASIDE, AT YOUR WORD", 91, 1196); sctx.letterSpacing = "0px";
+      const { x, y, w, h } = INSIGHT;
+      sctx.globalAlpha = disp * 0.5; sctx.fillStyle = color.ground;
+      sctx.beginPath(); sctx.roundRect(x - 1, y - 1, w + 2, h + 2, 27); sctx.fill(); sctx.restore();
+    }
   }
   if (spot > 0) {
     // film: the frame isolates what matters so it reads at phone size
@@ -307,7 +319,7 @@ function drawCard(seed) {
   g.clearRect(0, 0, CARD.w, CARD.h);
   g.save(); g.beginPath(); g.roundRect(2, 6, CARD.w - 4, CARD.h - 12, 26); g.clip();
   g.drawImage(base.today, CARD.x, CARD.y, CARD.w, CARD.h, 0, 0, CARD.w, CARD.h); g.restore();
-  g.strokeStyle = `rgba(201,169,106,${0.25 + 0.55 * seed})`; g.lineWidth = 2.5;
+  g.strokeStyle = `rgba(236,233,226,${0.18 + 0.3 * seed})`; g.lineWidth = 2.5; // gold stays for the seed itself
   g.beginPath(); g.roundRect(3, 7, CARD.w - 6, CARD.h - 14, 25); g.stroke();
   if (seed > 0) {
     // kept: a small seed of light, the same light the story began with
@@ -401,7 +413,7 @@ const PUSH_Y = { debrief: (844 - 335) * PX, today: (844 - 975) * PX, you: (844 -
 const pushDist = () => (camera.aspect < 0.75 ? PD / 2 + 0.99 / (2 * Math.tan((camera.fov * Math.PI) / 360) * camera.aspect) : 2.9);
 const bump = (a, b, c, d, v) => smooth(a, b, v) * (1 - smooth(c, d, v));
 function pushFor(s) {
-  if (s < 1.8) return Math.max(bump(1.02, 1.14, 1.3, 1.37, s), bump(1.45, 1.56, 1.7, 1.79, s));
+  if (s < 1.8) return bump(1.02, 1.14, 1.7, 1.79, s); // one push across both screens; the height slide follows the screen
   return bump(3.95, 4.2, 4.42, 4.62, s);
 }
 function focusPose(wo) {
@@ -438,9 +450,8 @@ const interactiveCaptions = [
   [0.98, 1.4, "Each evening, Dawnward asks one real question. You talk. It listens."],
   [1.42, 1.85, "Each morning, three small steps, drawn from your own words."],
   [1.95, 2.6, "Nothing you live honestly is lost."],
-  [2.62, 2.93, "Your days become four worlds. Mind, body, soul and future."],
-  [3.55, 4.12, "And slowly, it understands you. And shows you why."],
-  [4.12, 4.55, "When it\u2019s wrong, you tell it. Private. Never sold."],
+  [2.62, 3.42, "Your days become four worlds. Mind, body, soul and future."],
+  [3.5, 4.62, "Slowly, it understands you, and shows you why. When it\u2019s wrong, you tell it. Private. Never sold."],
 ];
 // Captions change as the visitor scrubs; screen readers hear one only once it
 // has stayed for 600 ms, so scrolling never floods them.
@@ -451,10 +462,10 @@ function setCaption(text) {
   capText = text;
   capEl.classList.remove("on");
   if (text) { capEl.textContent = text; void capEl.offsetWidth; capEl.classList.add("on"); }
-  capEl.classList.toggle("side", sideCaption);
+  capEl.classList.toggle("side", sideCaption); capEl.classList.toggle("top", topCaption);
   if (!FILM) { clearTimeout(liveT); if (text) liveT = setTimeout(() => { live.textContent = text; }, 600); }
 }
-let sideCaption = false;
+let sideCaption = false, topCaption = false;
 
 /* ------------------------------------------------------------- world focus */
 let focusKey = null, focusAmt = 0, hoverKey = null;
@@ -466,13 +477,18 @@ function selectWorld(key) {
   panel.querySelector(".plbl").textContent = `${w.name} · ${w.meta}`;
   panel.querySelector(".pt").textContent = w.title;
   panel.querySelector(".pb").textContent = w.text;
+  // the order of the app's world screen: what it understands so far, then today's move
   const mv = panel.querySelector(".pm");
-  mv.textContent = w.move ? `One quiet move today: ${w.move}.` : w.aspiration;
   mv.className = w.move ? "pm" : "pm asp";
   mv.textContent = w.move ? `One quiet move today: ${w.move.replace(/\.$/, "")}.` : w.aspiration;
+  panel.querySelector(".pbc").textContent = w.because || "";
   const bel = panel.querySelector(".pbel");
   bel.hidden = !w.belief;
-  if (w.belief) { bel.querySelector("q").textContent = w.belief.text; bel.querySelector("span").textContent = `Why I think this: ${w.belief.why}`; }
+  if (w.belief) {
+    bel.querySelector("q").textContent = w.belief.text; bel.querySelector(".why").textContent = w.belief.why;
+    const d = disputed.has(key);
+    bel.querySelector(".disp").hidden = d; bel.querySelector(".reply").hidden = !d;
+  }
   panel.classList.add("open");
   panel.inert = false;
   sound.world(key);
@@ -492,18 +508,27 @@ function closeWorld() {
   }
 }
 panel.querySelector(".close").addEventListener("click", closeWorld);
+// "That's not right" answers exactly as the app does (app/world/[world].tsx)
+const disputed = new Set();
+panel.querySelector(".disp").addEventListener("click", () => {
+  if (!focusKey) return;
+  disputed.add(focusKey);
+  panel.querySelector(".disp").hidden = true;
+  const r = panel.querySelector(".reply"); r.hidden = false; r.focus({ preventScroll: true });
+});
 
 /* --------------------------------------------------------------- story time */
-let s = 0, target = 0, lastInput = 0; // lastInput 0 = the visitor has not moved yet
+let s = 0, target = 0, vel = 0, lastInput = 0; // lastInput 0 = the visitor has not moved yet
 const story = $("story");
 const storyOpen = () => story.classList.contains("show");
 let swapT = 0;
-const goTo = (v) => {
+const nearestIndex = (v) => chapters.reduce((a, c, i) => (Math.abs(c.rest - v) < Math.abs(chapters[a].rest - v) ? i : a), 0);
+const goTo = (v, cut = false) => {
   target = clamp(v, 0, 5); lastInput = performance.now();
-  if (REDUCED && !FILM) {
+  if ((REDUCED || cut) && !FILM) {
     // reduced motion: no travel. A short cross-fade, then the new chapter.
     stageEl.classList.add("swap"); clearTimeout(swapT);
-    swapT = setTimeout(() => { s = target; focusAmt = focusKey ? 1 : 0; stageEl.classList.remove("swap"); }, 200);
+    swapT = setTimeout(() => { s = target; vel = 0; focusAmt = focusKey ? 1 : 0; stageEl.classList.remove("swap"); }, 200);
   }
 };
 const step = (dir) => {
@@ -516,7 +541,8 @@ chapters.forEach((c, i) => {
   b.type = "button"; b.className = "dot";
   b.innerHTML = `<i></i><span>${c.label}</span>`;
   b.setAttribute("aria-label", `Chapter ${i + 1} of ${chapters.length}: ${c.label}`);
-  b.addEventListener("click", () => { if (focusKey) closeWorld(); goTo(c.rest); });
+  // more than one chapter away: cut (cross-fade) rather than fly through everything between
+  b.addEventListener("click", () => { if (focusKey) closeWorld(); goTo(c.rest, Math.abs(i - nearestIndex(s)) > 1); });
   nav.appendChild(b);
 });
 const dots = [...nav.children];
@@ -623,7 +649,7 @@ function frame(st) {
     const f = focusPose(worldObjs.find((o) => o.w.key === fk));
     tmpPos.lerp(f.pos, easeInOutCubic(fa)); tmpLook.lerp(f.look, easeInOutCubic(fa));
   }
-  if (!FILM && s >= 2.6) { tmpLook.x += pointerS.x * 1.2; tmpLook.y += pointerS.y * 0.8; }
+  if (!FILM && s >= 2.45) { const k = smooth(2.45, 2.75, s); tmpLook.x += pointerS.x * 1.2 * k; tmpLook.y += pointerS.y * 0.8 * k; }
   camera.position.copy(tmpPos); camera.lookAt(tmpLook);
   // light
   const li = smooth(0.05, 0.5, s) * (1 - smooth(0.78, 1.02, s));
@@ -671,7 +697,7 @@ function frame(st) {
     cardMat.opacity = 0;
     shadow.visible = false;
   }
-  drawScreen(mode, typed, seed, mode === "today" ? cardMat.opacity : 0, spot, st.ping || 0);
+  drawScreen(mode, typed, seed, mode === "today" ? cardMat.opacity : 0, spot, st.ping || 0, st.disp || 0);
   if (mode === "today") drawCard(seed);
   screenMat.uniforms.uGlare.value = 0.6 + phone.rotation.y * 1.6;
 
@@ -717,7 +743,7 @@ function frame(st) {
     const c1 = lv1.copy(camera.up).multiplyScalar(o.w.size * 0.5).add(o.g.position).project(camera);
     const rPx = Math.abs(c1.y - c0.y) * 0.5 * H;
     const x = clamp((c0.x * 0.5 + 0.5) * W, 70, W - 150);
-    const y = clamp((-c0.y * 0.5 + 0.5) * H + rPx * 0.78, 80, H - 210);
+    const y = clamp((-c0.y * 0.5 + 0.5) * H + rPx * 1.05, 80, H - 210); // below the disk, never on it
     const vis = showLabels && bloom[i] > 0.6 && c0.z < 1;
     el.style.transform = `translate(${x}px, ${y}px) translate(-50%, 0)`;
     el.classList.toggle("on", vis);
@@ -758,7 +784,8 @@ async function boot() {
       if (st.panelOpen && st.focusKey && panel.dataset.k !== st.focusKey) { selectWorld(st.focusKey); focusKey = null; panel.dataset.k = st.focusKey; }
       endEl.classList.toggle("on", st.end);
       endEl.style.opacity = st.endAmt;
-      chrome(st.end, (s > 0.95 && s < 1.95) || (s > 3.6 && s < 4.55));
+      document.documentElement.style.setProperty("--cta", st.ctaAmt);
+      chrome(st.end, (s > 0.95 && s < 1.95) || (s > 3.6 && s < 4.85));
       document.documentElement.style.setProperty("--fade", st.fade);
     };
     window.SEEK(0);
@@ -766,7 +793,12 @@ async function boot() {
     return;
   }
   hubHint.textContent = matchMedia("(hover: hover) and (pointer: fine)").matches ? "Click a world to visit it" : "Tap a world to visit it";
-  window.DW = { goTo, select: selectWorld, close: closeWorld, jump: (v) => { s = target = v; lastInput = performance.now(); focusAmt = focusKey ? 1 : 0; }, get s() { return s; } };
+  window.DW = {
+    goTo, select: selectWorld, close: closeWorld, get s() { return s; },
+    jump: (v) => { s = target = v; vel = 0; lastInput = performance.now(); focusAmt = focusKey ? 1 : 0; },
+    // the corrected screens, for the text version's images (see PRODUCTION.md)
+    screens: () => Object.fromEntries(Object.entries(base).map(([k, c]) => [k, c.toDataURL("image/webp", 0.86)])),
+  };
   let prev = performance.now(), t0 = prev, raf = 0, paused = false, hiddenTab = false, storyShown = false;
   const run = () => {
     const stop = hiddenTab || storyShown;
@@ -782,7 +814,7 @@ async function boot() {
   let curId = "";
   const loop = (now) => {
     if (paused) return;
-    const dt = Math.min(0.05, (now - prev) / 1000); prev = now;
+    const dt = Math.min(0.1, (now - prev) / 1000); prev = now; // slow devices keep real time
     if (!REDUCED) {
       // Gravity: settle toward the nearest rest point once input stops.
       if (lastInput && now - lastInput > 900 && !focusKey) {
@@ -790,14 +822,19 @@ async function boot() {
         target += (rest - target) * (1 - Math.pow(0.5, dt / 0.4));
         if (Math.abs(rest - target) < 0.001) target = rest;
       }
-      s += (target - s) * (1 - Math.pow(0.5, dt / motion.gravity.halfLife));
-      if (Math.abs(target - s) < 0.0005) s = target;
+      // Gravity: a critically damped spring with mass, so travel eases in as well as out
+      const w = motion.gravity.omega;
+      vel += (w * w * (target - s) - 2 * w * vel) * dt;
+      vel = clamp(vel, -motion.gravity.maxSpeed, motion.gravity.maxSpeed);
+      s += vel * dt;
+      if (Math.abs(target - s) < 0.0005 && Math.abs(vel) < 0.01) { s = target; vel = 0; }
       pointerS.lerp(pointer, 1 - Math.pow(0.5, dt / 0.25));
       focusAmt += ((focusKey ? 1 : 0) - focusAmt) * (1 - Math.pow(0.5, dt / motion.gravity.focusHalfLife));
     } else { pointerS.set(0, 0); focusAmt = focusKey ? 1 : 0; } // reduced motion: s moves only by cross-fade steps
     const bl = bloomFor(s);
     frame({ s, t: now - t0, focusAmt, bloom: bl, focusKey: null });
     sideCaption = camera.aspect > 1.1 && ((s > 0.85 && s < 1.95) || (s > 3.45 && s < 4.62));
+    topCaption = camera.aspect > 1.1 && s > 2.6 && s < 3.45;
     const cap = interactiveCaptions.find(([a, b]) => s >= a && s < b);
     setCaption(focusKey ? "" : cap ? cap[2] : "");
     const hintOn = s < 0.12 && now - t0 > 1600;
@@ -805,7 +842,8 @@ async function boot() {
     hubHint.classList.toggle("on", s > 2.93 && s < 3.4 && !focusKey);
     endEl.classList.toggle("on", s > 4.7);
     endEl.style.opacity = smooth(4.55, 4.95, s);
-    chrome(s > 4.7, (s > 0.95 && s < 1.95) || (s > 3.6 && s < 4.55));
+    chrome(s > 4.7, (s > 0.95 && s < 1.95) || (s > 3.6 && s < 4.85));
+    document.body.classList.toggle("world-open", !!focusKey); nav.inert = !!focusKey;
     const cur = nearest(s).id;
     if (cur !== curId) {
       curId = cur;

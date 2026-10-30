@@ -1,5 +1,5 @@
 #!/bin/sh
-# Master, 30 s cut, three hooks (15 to 16.4 s) and posters from the rendered frames.
+# Master, 30 s cut, three 15 s hooks and posters from the rendered frames.
 set -e
 cd "$(dirname "$0")"
 FR=/tmp/claude-0/film-v6-frames
@@ -22,13 +22,13 @@ cut () {
     -map "[v]" -map "[a]" -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p -c:a aac -b:a 256k -movflags +faststart "out/$OUT"
 }
 rm -f out/dawnward-hook-*.mp4
-cut dawnward-living-universe-30s.mp4 0 14.6 33.6 43.4 54.3 60
-cut dawnward-hook-honest-minute.mp4 0 9.4 54.54 60
-cut dawnward-hook-through-the-glass.mp4 14.6 25.5 54.54 60
-cut dawnward-hook-understood.mp4 33.6 43.2 54.54 60
+cut dawnward-living-universe-30s.mp4 0.4 11.0 18.3 25.5 33.5 41.4 51.6 56.0
+cut dawnward-hook-honest-minute.mp4 0.4 11.0 51.6 56.0
+cut dawnward-hook-four-worlds.mp4 18.3 29.4 51.6 55.6
+cut dawnward-hook-understood.mp4 33.5 44.6 51.6 55.6
 
 rm -f posters/*.jpg
-for t in 3.2 11.5 16.6 27.5 38.5 56; do
+for t in 3.0 8.5 16.6 27.5 37.5 41.6 55.5; do
   /usr/bin/ffmpeg -nostdin -loglevel error -y -ss $t -i out/dawnward-living-universe-60s.mp4 -frames:v 1 -q:v 2 posters/poster-$t.jpg
 done
 for f in out/*.mp4; do printf "%s " "$f"; /usr/bin/ffprobe -v error -show_entries format=duration -of csv=p=0 "$f"; done

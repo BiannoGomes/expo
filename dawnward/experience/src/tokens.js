@@ -36,7 +36,7 @@ export const motion = {
   // Emergence: meaningful objects appearing from darkness.
   emergence: { dur: 1400, ease: easeOutQuart, scaleFrom: 0.86, reduced: "opacity fade 300 ms" },
   // Gravity: movement with mass. Scroll response, camera follow, world focus.
-  gravity: { halfLife: 0.32, focusHalfLife: 0.55, reduced: "halfLife 0 (instant)" },
+  gravity: { halfLife: 0.32, omega: 7, maxSpeed: 1.8, focusHalfLife: 0.55, reduced: "chapter steps with a 200 ms cross-fade" },
   // Revelation: transitions that change understanding. The portal, the return.
   revelation: { dur: 2600, ease: easeInOutCubic, reduced: "cross-fade 400 ms, no camera travel" },
   ease: { easeOutQuart, easeInOutCubic, easeInOutSine, easeOutExpo },
@@ -56,23 +56,24 @@ export const chapters = [
 
 // The four worlds. Copy is verbatim from apps/mobile/app/world/[world].tsx
 // and lib/universe.tsx. "move" and "belief" values are demonstration content,
-// shaped like the app's real assertions (a claim plus "Why I think this").
+// shaped like the app's real assertions; "why" uses the server's own wording
+// (server/src/model/voice.ts humanizeBasis), "because" the Today card's reason.
 export const worlds = [
   { key: "mind", name: "Mind", meta: "The current exploration", tint: "#9DB4E0",
     title: "The world of clarity.",
     text: "Connections appear here between what you read, what you write and what you believe. The rings are the thoughts that keep returning, settling into orbit.",
-    move: "Ship the first chapter to your editor",
-    belief: { text: "You think most clearly once it is written down.", why: "I have seen this in your evenings 5 times now." }, pos: [2.0, -3.2, -34], size: 13 },
+    move: "Ship the first chapter to your editor", because: "the campaign turns on finished things",
+    belief: { text: "You think most clearly once it is written down.", why: "I have seen this in your days 5 times now." }, pos: [2.0, -3.2, -34], size: 13 },
   { key: "body", name: "Body", meta: "A world you know", tint: "#D9A46A",
     title: "The world where promises become physical.",
     text: "Training, rest, the water you're preparing for. This world holds only what your days have shown it. Its weather is simply how things have been lately.",
-    move: "40 minutes of open-water prep",
+    move: "40 minutes of open-water prep", because: "your body keeps the promises your mind makes",
     belief: { text: "Training is how you settle a loud week.", why: "I have seen this in your days 4 times now." }, pos: [-6.4, 3.4, -44], size: 9.5 },
   { key: "soul", name: "Soul", meta: "Quiet, luminous", tint: "#D6D2E6",
     title: "The quiet, luminous world.",
     text: "Meaning, feeling and the people who matter live here. It grows in light when your evenings say something true.",
-    move: "Call your sister. Just to talk.",
-    belief: { text: "The people closest get your tired self.", why: "I have seen this in your evenings 3 times this month." }, pos: [-7.2, -4.4, -28], size: 5.2 },
+    move: "Call your sister. Just to talk.", because: "the people closest get your tired self",
+    belief: { text: "You get sharp with the people closest when you\u2019re running on empty.", why: "I have seen this in your days 3 times now." }, pos: [-7.2, -4.4, -28], size: 5.2 },
   { key: "future", name: "Future", meta: "The direction", tint: "#E3B877",
     title: "The direction you chose.",
     text: "An aspiration you wrote, never a prediction. It gains definition as your days agree with it.",

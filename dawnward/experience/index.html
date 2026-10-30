@@ -25,17 +25,19 @@
   /* top bar */
   #top { top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 22px 28px; pointer-events: none; }
   #top > * { pointer-events: auto; }
+  #top::before { content: ""; position: absolute; inset: 0 0 -40px; background: linear-gradient(rgba(4,6,10,.9), rgba(4,6,10,0)); pointer-events: none; z-index: -1; }
   .mark { font-family: var(--label); font-size: 12px; letter-spacing: .42em; text-transform: uppercase; color: var(--dim); }
   .tools { display: flex; gap: 10px; }
   .chip { font-family: var(--label); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--dim);
-    padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; display: inline-flex; background: rgba(4,6,10,.72); align-items: center; gap: 8px;
     transition: color .3s, border-color .3s; }
   .chip:hover { color: var(--ink); border-color: #3a4352; }
   .chip b { font-weight: 400; } .chip .short { display: none; }
   .chip i { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); transition: background .3s, box-shadow .3s; }
   .chip[aria-pressed="true"] i { background: var(--gold); box-shadow: 0 0 10px rgba(201,169,106,.7); }
 
-  /* chapters */
+  /* chapters (hidden while a world is open; the dialog has its own way back) */
+  .world-open #nav { opacity: 0; pointer-events: none; }
   #nav { right: 26px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; }
   .dot { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 6px 0; min-height: 24px; color: var(--faint); }
   .dot span { font-family: var(--label); font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; opacity: 0; transform: translateX(6px); transition: opacity .3s, transform .3s; }
@@ -52,6 +54,8 @@
   /* desktop: while the phone is on screen the words sit beside it, never on it */
   #caption.side { left: 6vw; bottom: auto; top: 50%; width: min(400px, 30vw); text-align: left; transform: translate(0, calc(-50% + 10px)); font-size: clamp(26px, 2.4vw, 36px); }
   #caption.side.on { transform: translate(0, -50%); }
+  /* desktop, among the worlds: words above the sky, labels and the hint below */
+  #caption.top { top: 9vh; bottom: auto; }
   #hint { left: 50%; bottom: 6vh; transform: translateX(-50%); font-family: var(--label); font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--faint);
     opacity: 0; transition: opacity 1s; display: flex; flex-direction: column; align-items: center; gap: 14px; }
   #hint.on { opacity: 1; }
@@ -61,7 +65,7 @@
 
   /* world labels */
   #labels { inset: 0; pointer-events: none; }
-  .wlabel { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 12px;
+  .wlabel { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 14px; background: rgba(4,6,10,.55); border-radius: 12px;
     opacity: 0; transition: opacity .6s; pointer-events: none; }
   .wlabel.on { opacity: 1; pointer-events: auto; }
   .wlabel .n { font-family: var(--display); font-size: 26px; color: var(--ink); text-shadow: 0 2px 18px rgba(2,3,8,.95); }
@@ -73,19 +77,25 @@
     background: rgba(11,14,18,.88); border: 1px solid var(--line); border-radius: 22px; padding: 34px 34px 30px;
     transition: opacity .5s ease .08s, transform .42s cubic-bezier(.25,1,.5,1) .08s; }
   #panel.open { opacity: 1; transform: translate(0, -50%); pointer-events: auto; }
-  #panel .plbl { font-family: var(--label); font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); }
+  #panel .plbl { font-family: var(--label); font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--dim); }
   #panel .pt { font-family: var(--display); font-weight: 400; font-size: 34px; line-height: 1.12; margin-top: 14px; }
   #panel .pb { font-size: 15.5px; line-height: 1.6; color: var(--dim); margin-top: 14px; }
-  #panel .pm { font-family: var(--display); font-style: italic; font-size: 21px; line-height: 1.35; color: var(--gold); margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+  #panel .pm { font-family: var(--display); font-style: italic; font-size: 21px; line-height: 1.35; color: var(--ink); margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
   #panel .pt:focus { outline: none; }
   #panel .pbel { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
   #panel .pbel q { display: block; font-family: var(--display); font-style: italic; font-size: 20px; line-height: 1.3; quotes: none; }
-  #panel .pbel span { display: block; font-size: 13.5px; line-height: 1.5; color: var(--dim); margin-top: 6px; }
+  #panel .pbel .blbl { font-family: var(--label); font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase; color: var(--faint); margin-bottom: 8px; }
+  #panel .pbel .why, #panel .pbc { display: block; font-size: 13.5px; line-height: 1.5; color: var(--dim); margin-top: 6px; }
+  #panel .disp { margin-top: 8px; padding: 8px 0; font-size: 14px; color: #C98A84; }
+  #panel .disp:hover { color: #E0A29B; }
+  #panel .reply { margin-top: 8px; font-size: 13.5px; line-height: 1.5; color: var(--dim); }
+  #panel .reply:focus { outline: none; }
+  #panel .pbc:empty { display: none; }
   #panel .demo { font-family: var(--label); font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--faint); margin-top: 18px; }
   #panel .close { margin-top: 12px; padding: 10px 0; font-family: var(--label); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--dim); }
   #panel .close:hover { color: var(--ink); }
 
-  #demo { left: 50%; top: 13vh; transform: translateX(-50%); font-family: var(--label); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--faint); opacity: 0; transition: opacity .6s; }
+  #demo { left: 6vw; bottom: 8vh; font-family: var(--label); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--faint); opacity: 0; transition: opacity .6s; }
   #demo.on { opacity: 1; }
   #hubhint { left: 50%; bottom: 9vh; transform: translateX(-50%); font-family: var(--label); font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim); opacity: 0; transition: opacity .8s; pointer-events: none; white-space: nowrap; }
   #hubhint.on { opacity: 1; }
@@ -95,7 +105,7 @@
   #end.on a, #end.on button { pointer-events: auto; } /* the section itself never blocks the header */
   #top { z-index: 20; }
   #end .star { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 40px 12px rgba(201,169,106,.45); margin-bottom: 44px; }
-  #end h1 { font-family: var(--display); font-weight: 300; font-size: clamp(54px, 9vw, 120px); letter-spacing: .1em; text-indent: .1em; }
+  #end h2 { font-weight: 300; font-family: var(--display); font-weight: 300; font-size: clamp(54px, 9vw, 120px); letter-spacing: .1em; text-indent: .1em; }
   #end p.line { font-family: var(--display); font-size: clamp(22px, 2.6vw, 32px); color: var(--dim); margin-top: 10px; }
   #end a.cta { margin-top: 42px; display: inline-block; font-family: var(--label); font-size: 12px; letter-spacing: .26em; text-transform: uppercase; color: var(--void);
     background: var(--gold); padding: 16px 26px; border-radius: 999px; text-decoration: none; transition: transform .25s, box-shadow .25s; }
@@ -112,6 +122,7 @@
   #story article { max-width: 620px; margin: 0 auto; }
   #story h2 { font-family: var(--display); font-weight: 400; font-size: 36px; line-height: 1.15; margin: 64px 0 14px; }
   #story p { color: var(--dim); line-height: 1.7; font-size: 17px; }
+  #story .demo { text-align: center; font-family: var(--label); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--faint); margin-top: -14px; }
   #story img { width: min(320px, 70vw); display: block; margin: 26px auto; border-radius: 28px; border: 1px solid var(--line); }
   #story .close-story { position: fixed; top: 22px; right: 28px; }
   .no-webgl #story { display: block; } .no-webgl #story .close-story { display: none; }
@@ -125,7 +136,7 @@
     /* phones: words at the top, the phone below them */
     #caption { top: 76px; bottom: auto; font-size: clamp(23px, 6.4vw, 30px); transform: translate(-50%, -10px); }
     #caption.on { transform: translate(-50%, 0); }
-    #demo { top: auto; bottom: 52px; }
+    #demo { left: 50%; bottom: 52px; transform: translateX(-50%); }
     #end a.cta { letter-spacing: .14em; padding: 16px 20px; white-space: nowrap; font-size: 11px; }
     #panel { left: 12px; right: 12px; top: auto; bottom: 12px; width: auto; transform: translateY(30px); padding: 26px 24px 22px; }
     #panel.open { transform: none; }
@@ -137,18 +148,22 @@
     #hubhint { bottom: 64px; }
     .wlabel .m { display: none; } .wlabel .n { font-size: 22px; }
   }
-  @media (prefers-reduced-motion: reduce) { #hint i { animation: none; } #caption { transition: opacity .3s; } #panel { transition: opacity .2s; } .wlabel { transition: opacity .2s; } }
+  @media (prefers-reduced-motion: reduce) { #stage canvas { transition: opacity .2s; } #hint i { animation: none; } #caption { transition: opacity .3s; } #panel { transition: opacity .2s; } .wlabel { transition: opacity .2s; } }
 
   /* the film: 1080x1920, captions in the top safe band, no interface chrome */
-  .film #top, .film #nav, .film #hint, .film #hubhint, .film .close, .film #panel .demo { display: none !important; }
+  .film #top, .film #nav, .film #hint, .film #hubhint, .film .close { display: none !important; }
+  .film #panel .demo { font-size: 17px; margin-top: 22px; }
   .film #stage canvas, .film #caption { transition: none !important; }
-  .film #caption { top: 300px; bottom: auto; width: 900px; font-size: 64px; transform: translate(-50%, 0); text-shadow: 0 0 24px rgba(4,6,10,1), 0 0 60px rgba(4,6,10,.95), 0 2px 4px rgba(4,6,10,.9); }
+  /* film captions: on a quiet plate, below the platform's top interface */
+  .film #caption { top: 270px; bottom: auto; width: max-content; max-width: 920px; font-size: 62px; transform: translate(-50%, 0);
+    background: rgba(6,8,12,.8); padding: 20px 36px 24px; border-radius: 26px; text-shadow: none; }
+  .film #end a.cta, .film #end .handle, .film #end .note { opacity: var(--cta, 1); }
   .film #panel { left: 70px; right: 70px; top: auto; bottom: 330px; width: auto; transform: none; transition: none; padding: 48px; border-radius: 30px; }
   .film #panel .plbl { font-size: 22px; } .film #panel .pt { font-size: 60px; } .film #panel .pb { font-size: 28px; } .film #panel .pm { font-size: 36px; } .film #panel .pf { font-size: 22px; }
   .film .wlabel .n { font-size: 46px; } .film .wlabel .m { font-size: 17px; } .film .wlabel, .film #panel, .film #demo, .film #caption { transition: none !important; }
-  .film #panel .pbel { display: none; }
-  .film #demo { top: auto; bottom: 330px; font-size: 18px; transition: none; }
-  .film #end { transition: none; } .film #end h1 { font-size: 150px; } .film #end p.line { font-size: 54px; }
+  .film #panel .pbel { display: none; } .film #panel .pbc { font-size: 26px; }
+  .film #demo { left: 50%; transform: translateX(-50%); top: auto; bottom: 330px; font-size: 18px; transition: none; }
+  .film #end { transition: none; } .film #end h2 { font-size: 150px; } .film #end p.line { font-size: 54px; }
   .film #end a.cta { font-size: 24px; padding: 26px 40px; } .film #end .handle { font-size: 34px; margin-top: 30px; } .film #end .note { font-size: 26px; } .film #end .replay { display: none; }
 </style>
 <script>
@@ -164,12 +179,13 @@
   <span class="mark">Dawnward</span>
   <div class="tools">
     <button class="chip" id="textv" type="button" aria-controls="story"><b class="long">Text version</b><b class="short">Text</b></button>
-    <button class="chip" id="sound" type="button" aria-pressed="false" aria-label="Sound"><i></i><span>Sound off</span></button>
+    <button class="chip" id="sound" type="button" aria-pressed="false"><i></i><span>Sound off</span></button>
   </div>
 </header>
 
 <nav id="nav" class="ui" aria-label="Chapters"></nav>
 <main id="experience" aria-label="Dawnward, the Living Universe">
+<h1 class="sr">Dawnward, the Living Universe: a journal you talk to</h1>
 <div id="labels" class="ui" role="group" aria-label="Worlds"></div>
 <p id="caption" class="ui" aria-hidden="true"></p>
 <p id="live" class="sr" aria-live="polite"></p>
@@ -181,15 +197,20 @@
   <div class="plbl"></div>
   <h2 class="pt" id="pt" tabindex="-1"></h2>
   <p class="pb"></p>
-  <p class="pm"></p>
-  <div class="pbel"><q></q><span></span></div>
+  <div class="pbel">
+    <p class="blbl">What I understand so far</p>
+    <q></q><span class="why"></span>
+    <button class="disp" type="button">That's not right</button>
+    <p class="reply" tabindex="-1" role="status" hidden>Thank you. I'll hold this loosely until your days say otherwise.</p>
+  </div>
+  <div class="pmove"><p class="pm"></p><p class="pbc"></p></div>
   <p class="demo">Demonstration content</p>
   <button class="close" type="button">← Back to your sky</button>
 </div>
 
 <section id="end" class="ui" aria-label="Dawnward" inert>
   <div class="star"></div>
-  <h1>Dawnward</h1>
+  <h2>Dawnward</h2>
   <p class="line">Become who you are becoming.</p>
   <a class="cta" id="ctaLink" target="_blank" rel="noopener">Follow the build</a>
   <p class="handle" id="ctaHandle"></p>
@@ -205,16 +226,18 @@
     <p class="mark">Dawnward</p>
     <h2>It begins with one honest moment.</h2>
     <p>Dawnward is a journal you talk to. Each evening it asks one real question, "What happened?", and listens while you talk or type.</p>
-    <img data-src="img/debrief.webp" alt="The evening debrief screen: What happened? A field to talk or type, and a listening indicator.">
+    <img data-src="img/debrief-story.webp" alt="The evening debrief screen: What happened? A field to talk or type, and a listening indicator.">
     <h2>Each morning, three small steps.</h2>
     <p>One thing to train, one to build, one to experience, drawn from your own words. No streaks. No scores. No guilt.</p>
-    <img data-src="img/today.webp" alt="The Today screen with three small moves and a kept commitment.">
+    <img data-src="img/today-story.webp" alt="The Today screen with three small steps, the third: Call your sister. Just to talk. Below them, an insight it is starting to form. Demonstration content.">
+    <p class="demo">Demonstration content</p>
     <h2>Your life, as four worlds.</h2>
     <p><b>Mind</b>, the world of clarity. <b>Body</b>, the world where promises become physical. <b>Soul</b>, the quiet, luminous world. <b>Future</b>, the direction you chose: an aspiration you wrote, never a prediction. Each world changes as you do.</p>
     <img data-src="img/universe-app.webp" alt="The Universe screen: four planets named Mind, Body, Soul and Future.">
     <h2>And slowly, it understands you. And shows you why.</h2>
-    <p>Every insight shows its evidence, like "I have seen this in your evenings 3 times this month", and one tap says "That's not right". Your reflections are private and never sold.</p>
-    <img data-src="img/you.webp" alt="What I understand about you: insights with their reasons, demonstration content.">
+    <p>Every insight shows its evidence, like "I have seen this in your days 3 times now", and one tap says "That's not right". Your reflections are private and never sold.</p>
+    <img data-src="img/you-story.webp" alt="What I understand about you: You get sharp with the people closest when you're running on empty. Why I think this: I have seen this in your days 3 times now. A button: That's not right. Demonstration content.">
+    <p class="demo">Demonstration content</p>
     <h2>Become who you are becoming.</h2>
     <p>Coming soon. Dawnward is in private testing, nothing to download yet. <a href="https://www.instagram.com/bianno.becoming/" style="color:var(--gold)" target="_blank" rel="noopener">Follow the build on Instagram, @bianno.becoming<span class="sr"> (opens in a new tab)</span></a>.</p>
   </article>
