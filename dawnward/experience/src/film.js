@@ -76,8 +76,9 @@ export function filmState(ms) {
   // "you can tell it": the control answers, then the card is set aside, as in the app
   const ping = seg(t, 40.1, 41.3);
   const disp = easeInOutSine(seg(t, 40.5, 41.3));
-  const end = t >= END;
-  const endAmt = easeOutQuart(seg(t, END, END + 1.0));
+  // the wordmark begins to form just before the downbeat, so the sky never empties to black
+  const end = t >= END - 0.7;
+  const endAmt = easeOutQuart(seg(t, END - 0.7, END + 0.5));
   const ctaAmt = easeOutQuart(seg(t, CTA, CTA + 0.8));
   const fade = seg(t, 59.0, 59.85);
   return { s, focusKey, focusAmt, bloom, panelOpen, end, endAmt, ctaAmt, fade, push, spot: push, ping: ping > 0 && ping < 1 ? ping : 0, disp };

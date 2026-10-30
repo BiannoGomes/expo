@@ -21,15 +21,15 @@
     "afterArrow": 1.2
   },
   "transfer": {
-    "requests": 16,
-    "totalKB": 1395,
+    "requests": 17,
+    "totalKB": 1408,
     "audioLoaded": false,
-    "domContentLoadedMs": 1628
+    "domContentLoadedMs": 1621
   },
   "frames": {
     "3": {
       "medianMs": 67,
-      "p90Ms": 117
+      "p90Ms": 83
     },
     "0.55": {
       "medianMs": 17,
@@ -37,11 +37,11 @@
     },
     "1.62": {
       "medianMs": 117,
-      "p90Ms": 250
+      "p90Ms": 217
     },
     "4.3": {
       "medianMs": 150,
-      "p90Ms": 183
+      "p90Ms": 167
     }
   },
   "determinism": {
