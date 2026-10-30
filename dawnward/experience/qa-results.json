@@ -1,37 +1,54 @@
 {
   "axe_start": [],
   "axe_world_open": [],
+  "world_dialog_focus": "pt",
+  "focus_after_escape": "mind",
+  "panel_inert_when_closed": true,
+  "axe_understands": [],
   "axe_end": [],
   "axe_text_version": [],
+  "story_open_blocks_navigation": true,
+  "story_open_behind_inert": true,
+  "story_escape_focus": "textv",
   "keyboard_world_buttons": [
     "mind",
     "body",
     "soul",
     "future"
   ],
+  "reduced_motion_steps": {
+    "afterWheel": 0.55,
+    "afterArrow": 1.2
+  },
   "transfer": {
-    "requests": 15,
-    "totalKB": 1560,
+    "requests": 16,
+    "totalKB": 1395,
     "audioLoaded": false,
-    "domContentLoadedMs": 1716
+    "domContentLoadedMs": 1628
   },
   "frames": {
     "3": {
       "medianMs": 67,
-      "p90Ms": 133
+      "p90Ms": 117
     },
     "0.55": {
       "medianMs": 17,
       "p90Ms": 17
     },
-    "1.6": {
-      "medianMs": 83,
-      "p90Ms": 167
+    "1.62": {
+      "medianMs": 117,
+      "p90Ms": 250
+    },
+    "4.3": {
+      "medianMs": 150,
+      "p90Ms": 183
     }
   },
   "determinism": {
-    "8000": "identical",
+    "3000": "identical",
+    "11500": "identical",
     "25500": "identical",
-    "48500": "identical"
+    "38500": "identical",
+    "42000": "identical"
   }
 }

@@ -408,6 +408,11 @@ function focusPose(wo) {
   const p = wo.g.position.clone();
   const dir = p.clone().sub(HUB.pos).normalize();
   const pos = p.clone().sub(dir.multiplyScalar(wo.w.size * (wo.w.key === "future" ? 1.05 : 1.55)));
+  if (camera.aspect < 0.75) {
+    // portrait: the world centred in the upper half, its panel below
+    pos.y -= wo.w.size * 0.1;
+    return { pos, look: p.clone().add(v3(0, -wo.w.size * 0.34, 0)) };
+  }
   pos.x += wo.w.size * 0.28;
   pos.y -= wo.w.size * 0.12;
   return { pos, look: p.clone().add(v3(wo.w.size * 0.22, -wo.w.size * 0.1, 0)) };
@@ -623,9 +628,11 @@ function frame(st) {
   // light
   const li = smooth(0.05, 0.5, s) * (1 - smooth(0.78, 1.02, s));
   lightShader.uniforms.uI.value = li;
+  lightMesh.visible = li > 0.001; // an unlit glow still costs a full-frame pass when the camera is close
   lightShader.uniforms.uTime.value = tSec;
   lightShader.uniforms.uHalo.value = 1 + (FILM ? 0 : clamp(1 - pointerS.length()) * 0.6) * (1 - smooth(0.8, 1, s));
   dust.material.uniforms.uAlpha.value = smooth(0.1, 0.7, s) * (1 - smooth(1.9, 2.25, s)) * 0.9;
+  dust.visible = dust.material.uniforms.uAlpha.value > 0.001;
   dust.material.uniforms.uTime.value = REDUCED ? 0 : t;
   dust.rotation.y = pointerS.x * 0.08 + tSec * 0.004;
   dust.rotation.x = -pointerS.y * 0.05;
