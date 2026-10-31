@@ -1,41 +1,41 @@
 feature,area,priority,original,clone,notes,who
 Evening reflection by voice or by typing,capture,must,yes,yes,debrief tab,Rosebud; Mindsera; Reflection; Stoic
-Words are never lost when transcription or the network fails,capture,must,yes,partial,"Typed draft is saved locally; a failed transcription still drops the audio (backlog P0 #2). Reflection ships voice backup and recovery (changelog 6.24)",Reflection
+Words are never lost when transcription or the network fails,capture,must,yes,partial,"Round 2: a failed send keeps the words and says tonight isn't saved; a failed transcription keeps the recording with a retry; leaving the tab stops the mic and keeps the words; onboarding puts failed words back; requests time out instead of hanging. Still partial: a kept recording does not survive the app being closed, and recording stops if the phone sleeps",Reflection
 Follow-up question drawn from the person's own words,reflection,must,yes,partial,"Tonight's question now cites a past evening, verified verbatim; no follow-up inside the debrief yet",Rosebud; Mindsera; Reflection
-Remembers past entries and builds on them,memory,must,yes,partial,"Morning steps and the question now quote recent evenings; the debrief reply still speaks about today only (deliberate rule against claiming multi-day patterns)",Rosebud; Mindsera; Reflection
+Remembers past entries and builds on them,memory,must,yes,partial,Morning steps and the question now quote recent evenings; the debrief reply still speaks about today only (deliberate rule against claiming multi-day patterns),Rosebud; Mindsera; Reflection
 See what it remembers and correct it,memory,must,yes,yes,"Personal Model with That's not right and corrections; Mindsera and Reflection let you edit memory, Rosebud documents no per-memory edit",Mindsera; Reflection
-Read and search every past entry,history,must,yes,yes,"New: Your evenings screen with literal search",Rosebud; Mindsera; Reflection; Stoic
+Read and search every past entry,history,must,yes,yes,New: Your evenings screen with literal search,Rosebud; Mindsera; Reflection; Stoic
 Keep an entry out of the AI,privacy,must,yes,yes,"New: Leave this out, reversible, with undo",Reflection
 A simple morning and evening ritual,ritual,must,yes,yes,"Three morning steps, evening debrief",Stoic; Rosebud
 Export everything,data rights,must,yes,yes,"/export, now including left-out evenings",Rosebud; Mindsera; Reflection; Stoic; Exist
 Delete the account and all data,data rights,must,yes,yes,,Rosebud; Mindsera; Reflection; Stoic; Exist
 Weekly review of the week,insight,should,yes,yes,weekly deep review reveal,Rosebud; Mindsera; Reflection; Exist
-Ask a question across your whole journal,insight,should,yes,no,"Rosebud Ask Rosebud links entries; Mindsera Ask Your Journal; next slice must cite every answer",Rosebud; Mindsera; Reflection
-Recurring patterns and themes over time,insight,should,yes,partial,"Pattern beliefs with evidence; no theme-over-time view",Mindsera; Rosebud
+Ask a question across your whole journal,insight,should,yes,no,Rosebud Ask Rosebud links entries; Mindsera Ask Your Journal; next slice must cite every answer,Rosebud; Mindsera; Reflection
+Recurring patterns and themes over time,insight,should,yes,partial,Pattern beliefs with evidence; no theme-over-time view,Mindsera; Rosebud
 Mood or feeling check-in,tracking,should,yes,partial,"Energy is extracted from the debrief; no check-in of the person's own. Keep it in words, never averaged",Stoic; Exist; Mindsera
-Goals with progress,goals,should,yes,yes,"Future Self and 90-day campaign",Rosebud; Stoic
+Goals with progress,goals,should,yes,yes,Future Self and 90-day campaign,Rosebud; Stoic
 Gentle reminders at chosen times,ritual,should,yes,yes,presence touchpoints,Rosebud; Stoic; Reflection
-Coming back after missed days without penalty,ritual,should,yes,yes,"Re-entry gives a lighter plan and never lists missed days",Stoic; Reflection
-App lock with Face ID or passcode,privacy,should,yes,no,"Reflection gates this behind Premium and got a complaint; keep it free",Reflection; Stoic; Mindsera
+Coming back after missed days without penalty,ritual,should,yes,yes,Re-entry gives a lighter plan and never lists missed days,Stoic; Reflection
+App lock with Face ID or passcode,privacy,should,yes,no,Reflection gates this behind Premium and got a complaint; keep it free,Reflection; Stoic; Mindsera
 Switch the AI off entirely,privacy,should,yes,no,,Reflection; Mindsera
-Report a bad AI response,trust,should,yes,partial,"That's not right covers beliefs; not replies or steps yet",Reflection
+Report a bad AI response,trust,should,yes,partial,That's not right covers beliefs; not replies or steps yet,Reflection
 Health and activity data alongside reflections,body,should,yes,no,"Body world. Exist: Apple Health, Fitbit, Oura and more; needs consent design",Exist
 Links between two things worded as X when Y with a confidence,body,should,yes,no,"Exist waits about three weeks of data and says correlation is not causation; Dawnward version uses words, not numbers",Exist
-"Quick capture from widget, shortcut or share sheet",capture,should,yes,no,"No competitor has a home-screen widget (asked for in a Reflection review); open gap",Reflection
-Works on the web and on a computer,platforms,could,yes,partial,"Expo web build runs; not a supported product",Reflection; Mindsera; Exist
-iPad layout,platforms,could,yes,no,"supportsTablet is false",Mindsera; Reflection
-Several check-ins a day,tracking,could,yes,no,"Exist's most-voted roadmap request (557 votes)",Exist; Stoic
+"Quick capture from widget, shortcut or share sheet",capture,should,yes,no,No competitor has a home-screen widget (asked for in a Reflection review); open gap,Reflection
+Works on the web and on a computer,platforms,could,yes,partial,Expo web build runs; not a supported product,Reflection; Mindsera; Exist
+iPad layout,platforms,could,yes,no,supportsTablet is false,Mindsera; Reflection
+Several check-ins a day,tracking,could,yes,no,Exist's most-voted roadmap request (557 votes),Exist; Stoic
 Read replies aloud,capture,could,yes,no,,Mindsera
-Guided journal library,reflection,could,yes,no,"Write our own; never copy theirs",Reflection; Stoic
+Guided journal library,reflection,could,yes,no,Write our own; never copy theirs,Reflection; Stoic
 Breathing and meditation,ritual,could,yes,no,,Stoic
-Monthly and yearly review,insight,could,yes,no,"A Reflection user left 1 star when these were removed: version the format",Reflection
+Monthly and yearly review,insight,could,yes,no,A Reflection user left 1 star when these were removed: version the format,Reflection
 Photo or handwriting capture,capture,could,yes,no,,Mindsera; Reflection
-Writing streaks,engagement,could,yes,skip,"Forbidden by Dawnward's rules. Note: all 6 reviews mentioning streaks were 4 or 5 stars",Rosebud; Mindsera; Reflection; Stoic
-Back-dating entries to keep a streak,engagement,could,yes,skip,"Forbidden: fabricated record by design (Rosebud help centre)",Rosebud
-Word counts and writing stats,engagement,could,yes,skip,"Forbidden: scores",Rosebud; Reflection
-Numeric mood or body scores and personality types,insight,could,yes,skip,"Forbidden: numeric scores about a person",Mindsera; Exist
-Social proof numbers on the website,marketing,could,yes,skip,"Forbidden unless linked and verifiable",Rosebud; Mindsera; Reflection
-Every step and question quotes the evening it came from (checked verbatim),trust,must,no,yes,"New in this build. Competitors cite entries only in Ask features",
+Writing streaks,engagement,could,yes,skip,Forbidden by Dawnward's rules. Note: all 6 reviews mentioning streaks were 4 or 5 stars,Rosebud; Mindsera; Reflection; Stoic
+Back-dating entries to keep a streak,engagement,could,yes,skip,Forbidden: fabricated record by design (Rosebud help centre),Rosebud
+Word counts and writing stats,engagement,could,yes,skip,Forbidden: scores,Rosebud; Reflection
+Numeric mood or body scores and personality types,insight,could,yes,skip,Forbidden: numeric scores about a person,Mindsera; Exist
+Social proof numbers on the website,marketing,could,yes,skip,Forbidden unless linked and verifiable,Rosebud; Mindsera; Reflection
+Every step and question quotes the evening it came from (checked verbatim),trust,must,no,yes,New in this build. Competitors cite entries only in Ask features,
 Beliefs hidden when their only evidence is left out (restored on return),trust,must,no,yes,New in this build,
-Safety triage before any processing,safety,must,no,yes,"Existing; competitors' equivalents not verified",
-"A universe of four worlds: Mind, Body, Soul, Future",identity,must,no,yes,"Existing concept; kept as the base of the app",
+Safety triage before any processing,safety,must,no,yes,Existing; competitors' equivalents not verified,
+"A universe of four worlds: Mind, Body, Soul, Future",identity,must,no,yes,Existing concept; kept as the base of the app,

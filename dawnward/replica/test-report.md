@@ -66,3 +66,42 @@ No S1 bugs are open.
 - Screen reader order on the evening card: the date, then the text, then the status, then the action. Needs VoiceOver.
 - Long evenings with "Read all": the numberOfLines behaviour on Android.
 - Search speed with more than 1,000 evenings (see the pg_trgm note in `architecture.md`).
+
+## Round 2 (same day): no lost words, honest failures
+
+**What changed:**
+1. **Request timeouts.** Calls fail visibly instead of spinning forever: 20 s by default, 90 s for the model, 120 s for voice (`lib/api.ts`).
+2. **Debrief send.** A failed send no longer shows "That's the day, witnessed. Sleep well". It says tonight isn't saved yet and keeps the words in the box.
+3. **Voice.** The recording is kept until it's transcribed. If transcription fails, "Write my recording down" retries it, and "Speak it instead" is hidden so a new recording can't overwrite the kept one.
+4. **Leaving the Debrief tab while recording** stops the microphone and writes down what was said, with a note.
+5. **The listening dot** stays still when Reduce Motion is on.
+6. **Onboarding.** A message that fails to send goes back into the box, and the bubble that looked sent is removed.
+7. **Ticking a step.** A tick that fails to save is put back, with "That didn't save. Tap it again when you're connected." Before, it pretended to save and was silently lost.
+8. **Accessibility:**
+   - Step cards are checkboxes, with `aria-checked` so the done state reaches iOS, Android and the web. The web build exposed nothing before.
+   - The debrief box, onboarding answer box, Send button, name field and Begin button now have labels or roles.
+9. **The Debrief tab** shows the evening tonight's question came from, like Today does.
+10. **Onboarding questions:** five long dashes removed (`packages/core/src/onboarding/chapters.ts`).
+
+**Results:**
+- Server unit 23 and integration 33 pass. Server and app type-check clean.
+- Browser (`test/e2e-reliability.cjs` and `test/e2e-evenings.cjs`, Chromium with a simulated microphone): every check passes.
+
+| Check | Result |
+|---|---|
+| Send fails | Error shown, no goodnight, words kept |
+| Send retried | Goodnight shown, error gone |
+| Transcription fails | Recording kept, retry offered, words arrive on retry |
+| Leave the tab while recording | Mic stopped, words kept, note shown |
+| Tick fails | Reverted, note shown; saves and reads as checked once online |
+| Onboarding send fails | Words back in the box, fake bubble gone; sent on retry |
+| Onboarding text | No long dash |
+
+- React #419 still appears on first load. It's B4, already there before this work.
+
+**Screenshots:** `test/shots/10` to `13`, using labelled demo data from the test AI.
+
+**Still not covered:**
+- A kept recording doesn't survive the app being closed.
+- Recording stops if the phone sleeps (asked for in a Reflection review).
+- Real-device and screen-reader passes.

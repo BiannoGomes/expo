@@ -73,6 +73,7 @@ function ConsentStep({ onDone }: { onDone: (challenge: boolean) => void }) {
           value={name}
           onChangeText={setName}
           placeholder="Your name, or skip this"
+          accessibilityLabel="What should I call you"
           placeholderTextColor={theme.colors.faint}
           autoCapitalize="words"
           autoComplete="name"
@@ -97,6 +98,8 @@ function ConsentStep({ onDone }: { onDone: (challenge: boolean) => void }) {
         style={[consentStyles.begin, saving && { opacity: 0.5 }]}
         onPress={begin}
         disabled={saving}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: saving }}
       >
         <Text style={consentStyles.beginText}>I understand. Begin</Text>
       </Pressable>
@@ -173,13 +176,20 @@ export default function OnboardingScreen() {
       }
       setBubbles((b) => [...b, ...additions]);
     } catch {
-      setBubbles((b) => [
-        ...b,
-        {
-          role: "assistant",
-          text: "That didn't reach me, but nothing you wrote is lost. Try once more.",
-        },
-      ]);
+      // Keep the promise literally: the words go back in the box, and the
+      // bubble that pretended they were sent comes out.
+      setInput((current) => (current.trim() ? current : text));
+      setBubbles((b) => {
+        const i = b.map((x) => x.role === "user" && x.text === text).lastIndexOf(true);
+        const kept = i === -1 ? b : [...b.slice(0, i), ...b.slice(i + 1)];
+        return [
+          ...kept,
+          {
+            role: "assistant",
+            text: "That didn't reach me. Your words are back in the box. Try once more.",
+          },
+        ];
+      });
     } finally {
       setSending(false);
     }
@@ -266,6 +276,7 @@ export default function OnboardingScreen() {
               multiline
               placeholder="Say it how it is…"
               placeholderTextColor={theme.colors.textDim}
+              accessibilityLabel="Your answer"
               value={input}
               onChangeText={setInput}
             />
@@ -273,6 +284,9 @@ export default function OnboardingScreen() {
               style={[styles.send, !input.trim() && { opacity: 0.35 }]}
               onPress={send}
               disabled={!input.trim() || sending}
+              accessibilityRole="button"
+              accessibilityLabel="Send"
+              accessibilityState={{ disabled: !input.trim() || sending }}
             >
               <Text style={styles.sendText}>→</Text>
             </Pressable>

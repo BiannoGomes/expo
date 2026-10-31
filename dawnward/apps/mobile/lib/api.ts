@@ -58,16 +58,32 @@ export async function clearSession(): Promise<void> {
   await writeToken(null);
 }
 
-async function api(path: string, init?: RequestInit): Promise<Response> {
+/** How long a call may hang before it fails visibly instead of spinning
+ * forever. Calls that wait on transcription or the model get longer. */
+const TIMEOUT_MS = { default: 20_000, model: 90_000, voice: 120_000 } as const;
+
+async function api(
+  path: string,
+  init?: RequestInit,
+  timeoutMs: number = TIMEOUT_MS.default,
+): Promise<Response> {
   const token = await ensureSession();
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      ...(init?.headers ?? {}),
-      authorization: `Bearer ${token}`,
-      ...(init?.body ? { "content-type": "application/json" } : {}),
-    },
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  let res: Response;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      ...init,
+      signal: controller.signal,
+      headers: {
+        ...(init?.headers ?? {}),
+        authorization: `Bearer ${token}`,
+        ...(init?.body ? { "content-type": "application/json" } : {}),
+      },
+    });
+  } finally {
+    clearTimeout(timer);
+  }
   if (res.status === 401) {
     // Token revoked (e.g. account deleted elsewhere): start clean.
     await clearSession();
@@ -137,7 +153,7 @@ export async function deleteAccount(): Promise<void> {
 // ---------- Daily loop ----------
 
 export async function fetchPlan(date: string): Promise<DailyPlan> {
-  const res = await api(`/plan/${date}`);
+  const res = await api(`/plan/${date}`, undefined, TIMEOUT_MS.model);
   if (!res.ok) throw new Error(`plan fetch failed: ${res.status}`);
   return res.json();
 }
@@ -159,10 +175,11 @@ export async function transcribe(
   audioBase64: string,
   mimeType: string,
 ): Promise<string> {
-  const res = await api("/transcribe", {
-    method: "POST",
-    body: JSON.stringify({ audio: audioBase64, mimeType }),
-  });
+  const res = await api(
+    "/transcribe",
+    { method: "POST", body: JSON.stringify({ audio: audioBase64, mimeType }) },
+    TIMEOUT_MS.voice,
+  );
   if (!res.ok) throw new Error(`transcription failed: ${res.status}`);
   const { text } = (await res.json()) as { text: string };
   return text;
@@ -172,10 +189,11 @@ export async function submitDebrief(
   date: string,
   transcript: string,
 ): Promise<{ crisis: boolean; reply: string }> {
-  const res = await api("/debrief", {
-    method: "POST",
-    body: JSON.stringify({ date, transcript }),
-  });
+  const res = await api(
+    "/debrief",
+    { method: "POST", body: JSON.stringify({ date, transcript }) },
+    TIMEOUT_MS.model,
+  );
   if (!res.ok) throw new Error(`debrief failed: ${res.status}`);
   return res.json();
 }
@@ -208,10 +226,11 @@ export interface OnboardingReply {
 }
 
 export async function sendOnboardingMessage(text: string): Promise<OnboardingReply> {
-  const res = await api("/onboarding/message", {
-    method: "POST",
-    body: JSON.stringify({ text }),
-  });
+  const res = await api(
+    "/onboarding/message",
+    { method: "POST", body: JSON.stringify({ text }) },
+    TIMEOUT_MS.model,
+  );
   if (!res.ok) throw new Error(`onboarding message failed: ${res.status}`);
   return res.json();
 }

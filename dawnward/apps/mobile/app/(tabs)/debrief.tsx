@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -20,11 +20,14 @@ import {
   useAudioRecorder,
 } from "expo-audio";
 import { File } from "expo-file-system";
+import { useFocusEffect } from "expo-router";
 import { fetchMe, fetchPlan, submitDebrief, today, transcribe } from "@/lib/api";
 import { clearDraft, loadDraft, saveDraft } from "@/lib/draft";
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky } from "@/lib/sky";
-import { Press } from "@/lib/motion";
+import { Press, useReducedMotion } from "@/lib/motion";
+import { EveningQuote } from "@/lib/quote";
+import type { PlanSource } from "@dawnward/core";
 
 /** Read the finished recording back as base64, wherever it landed. */
 async function recordingToBase64(uri: string): Promise<string> {
@@ -46,7 +49,13 @@ async function recordingToBase64(uri: string): Promise<string> {
 /** A quiet gold pulse that only exists while Dawnward is listening. */
 function ListeningDot() {
   const pulse = useRef(new Animated.Value(0)).current;
+  const reduced = useReducedMotion();
   useEffect(() => {
+    // Reduced motion: a steady dot still says "listening", without the pulse.
+    if (reduced) {
+      pulse.setValue(1);
+      return;
+    }
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulse, {
@@ -65,7 +74,7 @@ function ListeningDot() {
     );
     loop.start();
     return () => loop.stop();
-  }, [pulse]);
+  }, [pulse, reduced]);
   return (
     <Animated.View
       style={[
@@ -79,8 +88,12 @@ function ListeningDot() {
 export default function DebriefScreen() {
   const [text, setText] = useState("");
   const [question, setQuestion] = useState<string | null>(null);
+  const [questionSource, setQuestionSource] = useState<PlanSource | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [reply, setReply] = useState<string | null>(null);
+  // A failed send is not a witnessed day: it gets its own honest line, and
+  // the words stay in the box.
+  const [sendError, setSendError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [focused, setFocused] = useState(false);
 
@@ -94,9 +107,11 @@ export default function DebriefScreen() {
         setName(me.preferredName);
         // Never generate a plan for someone whose story hasn't begun.
         if (!me.onboardingComplete) return;
-        return fetchPlan(today()).then(
-          (plan) => plan.question && setQuestion(plan.question),
-        );
+        return fetchPlan(today()).then((plan) => {
+          if (!plan.question) return;
+          setQuestion(plan.question);
+          setQuestionSource(plan.questionSource ?? null);
+        });
       })
       .catch(() => {});
   }, []);
@@ -109,18 +124,27 @@ export default function DebriefScreen() {
   >("idle");
   const [voiceNote, setVoiceNote] = useState<string | null>(null);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  // A recording is kept until its words are safely in the box. If writing
+  // it down fails, it waits here for another try instead of vanishing.
+  const pendingAudio = useRef<{ base64: string; mimeType: string } | null>(null);
+  const [hasPendingAudio, setHasPendingAudio] = useState(false);
+  const voiceStateRef = useRef<"idle" | "recording" | "transcribing">("idle");
+  useEffect(() => {
+    voiceStateRef.current = voiceState;
+  }, [voiceState]);
 
   async function send() {
     if (!text.trim() || sending) return;
     setSending(true);
+    setSendError(null);
     try {
       const result = await submitDebrief(today(), text.trim());
       setReply(result.reply);
       setText("");
       clearDraft();
     } catch {
-      setReply(
-        "I couldn't reach the server just now. Nothing was lost. Try again in a moment.",
+      setSendError(
+        "That didn't reach me, so tonight isn't saved yet. Your words are still here. Tap Reflect to try again.",
       );
     } finally {
       setSending(false);
@@ -145,27 +169,64 @@ export default function DebriefScreen() {
     }
   }
 
-  async function finishListening() {
+  /** Turn the kept recording into words. On failure it stays kept. */
+  async function writeDownPending(): Promise<void> {
+    const audio = pendingAudio.current;
+    if (!audio) return;
     setVoiceState("transcribing");
+    setVoiceNote(null);
     try {
-      await recorder.stop();
-      await setAudioModeAsync({ allowsRecording: false });
-      const uri = recorder.uri;
-      if (!uri) throw new Error("no recording");
-      const base64 = await recordingToBase64(uri);
-      const mimeType = Platform.OS === "web" ? "audio/webm" : "audio/m4a";
-      const words = await transcribe(base64, mimeType);
+      const words = await transcribe(audio.base64, audio.mimeType);
+      pendingAudio.current = null;
+      setHasPendingAudio(false);
       if (words.trim()) {
         setText((t) => (t.trim() ? `${t.trim()} ${words.trim()}` : words.trim()));
       } else {
         setVoiceNote("I didn't catch any words in that. Try again, or type it.");
       }
     } catch {
-      setVoiceNote("I couldn't hear that just now. Typing still works.");
+      setVoiceNote(
+        "I couldn't write that down just now. Your recording is kept on this screen. Try again when you're ready.",
+      );
     } finally {
       setVoiceState("idle");
     }
   }
+
+  async function finishListening(note?: string) {
+    setVoiceState("transcribing");
+    try {
+      await recorder.stop();
+      await setAudioModeAsync({ allowsRecording: false });
+      const uri = recorder.uri;
+      if (!uri) throw new Error("no recording");
+      pendingAudio.current = {
+        base64: await recordingToBase64(uri),
+        mimeType: Platform.OS === "web" ? "audio/webm" : "audio/m4a",
+      };
+      setHasPendingAudio(true);
+    } catch {
+      setVoiceNote("I couldn't keep that recording. Typing still works.");
+      setVoiceState("idle");
+      return;
+    }
+    await writeDownPending();
+    if (note) setVoiceNote((current) => current ?? note);
+  }
+
+  // Leaving the screen stops the microphone. What was said so far is kept
+  // and written down, never thrown away and never left recording.
+  useFocusEffect(
+    useCallback(
+      () => () => {
+        if (voiceStateRef.current === "recording") {
+          void finishListening("I stopped listening when you left. Here's what you said.");
+        }
+      },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [],
+    ),
+  );
 
   return (
     <View style={styles.root}>
@@ -181,11 +242,13 @@ export default function DebriefScreen() {
           <Text style={theme.type.dim}>
             {question ?? "Say it how it was. Skipping tonight is fine too."}
           </Text>
+          {question && questionSource && <EveningQuote source={questionSource} />}
 
           <TextInput
             style={[styles.input, focused && styles.inputFocused]}
             multiline
             placeholder="Today I…"
+            accessibilityLabel="Tonight's reflection"
             placeholderTextColor={theme.colors.textDim}
             value={text}
             onChangeText={setText}
@@ -194,7 +257,7 @@ export default function DebriefScreen() {
           />
 
           <View style={styles.voiceRow}>
-            {voiceState === "idle" && (
+            {voiceState === "idle" && !hasPendingAudio && (
               <Pressable
                 onPress={startListening}
                 hitSlop={8}
@@ -204,9 +267,19 @@ export default function DebriefScreen() {
                 <Text style={styles.voiceAction}>Speak it instead</Text>
               </Pressable>
             )}
+            {voiceState === "idle" && hasPendingAudio && (
+              <Pressable
+                onPress={writeDownPending}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Try writing your recording down again"
+              >
+                <Text style={styles.voiceAction}>Write my recording down</Text>
+              </Pressable>
+            )}
             {voiceState === "recording" && (
               <Pressable
-                onPress={finishListening}
+                onPress={() => finishListening()}
                 hitSlop={8}
                 style={styles.listeningRow}
                 accessibilityRole="button"
@@ -241,6 +314,15 @@ export default function DebriefScreen() {
               <Text style={styles.buttonText}>Reflect</Text>
             )}
           </Press>
+
+          {sendError && (
+            <Text
+              style={[theme.type.body, styles.sendError]}
+              accessibilityLiveRegion="polite"
+            >
+              {sendError}
+            </Text>
+          )}
 
           {reply && (
             <View style={styles.reply}>
@@ -303,6 +385,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
   },
   voiceNote: { marginTop: theme.spacing(1) },
+  sendError: { marginTop: theme.spacing(2), color: theme.colors.ink },
   button: {
     marginTop: theme.spacing(2),
     backgroundColor: theme.colors.accent,

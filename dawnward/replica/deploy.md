@@ -21,7 +21,7 @@
 
 **Not ready to ship.** The next steps, all needing the owner:
 
-1. Approve D5 (test tools), then build F4, so words are never lost.
+1. Approve D5 (test tools) so the app's failure paths get unit tests too. Today they're covered by browser tests only. Then finish F4: keep a recording if the app is closed.
 2. Set up device testing (D6), entering Expo and Apple access yourself, never by pasting it in chat.
 3. Decide pricing (`launch/pricing.md`).
 4. Check `site/privacy.html` against the processors actually used.

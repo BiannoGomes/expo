@@ -131,12 +131,16 @@ function SlotCard({
     <Pressable
       style={[styles.card, done && styles.cardDone]}
       onPress={press}
-      accessibilityRole="button"
+      // A step you can mark done is a checkbox to assistive tech: "checked"
+      // is announced on iOS, Android and the web alike.
+      accessibilityRole="checkbox"
       accessibilityLabel={
         `${SLOT_LABELS[slot.slot]}: ${slot.text}. ${slot.because}` +
         (slot.source ? `. From your evening, ${eveningDate(slot.source.date)}: ${slot.source.quote}` : "")
       }
-      accessibilityState={{ selected: done }}
+      // aria-checked, not accessibilityState: react-native-web ignores the
+      // latter, so the web build never exposed the state at all.
+      aria-checked={done}
       accessibilityHint={done ? "Tap to mark not done" : "Tap to mark done"}
     >
       <View>
@@ -233,6 +237,7 @@ export default function TodayScreen() {
   const [me, setMe] = useState<Me | "loading" | "unreachable">("loading");
   const [plan, setPlan] = useState<DailyPlan | null>(null);
   const [planFailed, setPlanFailed] = useState(false);
+  const [tickNote, setTickNote] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [events, setEvents] = useState<ModelEvent[]>([]);
   const reduced = useReducedMotion();
@@ -293,11 +298,14 @@ export default function TodayScreen() {
     if (!plan) return;
     const next = !plan.done?.[slot];
     setPlan({ ...plan, done: { ...plan.done, [slot]: next } });
+    setTickNote(null);
     if (!planFailed) {
       try {
         await markSlot(plan.date, slot, next);
       } catch {
-        // The optimistic mark stands; the server catches up next sync.
+        // Nothing replays a lost tick later, so don't pretend it saved.
+        setPlan((p) => (p ? { ...p, done: { ...p.done, [slot]: !next } } : p));
+        setTickNote("That didn't save. Tap it again when you're connected.");
       }
     }
   }
@@ -406,6 +414,12 @@ export default function TodayScreen() {
                 ))
               )}
 
+              {tickNote && (
+                <Text style={[theme.type.dim, styles.tickNote]} accessibilityLiveRegion="polite">
+                  {tickNote}
+                </Text>
+              )}
+
               {plan && !plan.restDay && (
                 <DealtCard index={plan.slots.length + 1} reduced={reduced}>
                   <View style={styles.question}>
@@ -471,6 +485,7 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   questionText: { marginTop: theme.spacing(1.5) },
+  tickNote: { marginTop: theme.spacing(2), color: theme.colors.ink },
   offlineNote: { marginBottom: theme.spacing(2) },
   promotion: {
     backgroundColor: theme.colors.surface,

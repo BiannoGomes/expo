@@ -63,7 +63,7 @@ Sample: 388 public reviews from five apps, read 2026-10-31.
 | F1 | Every morning step and the evening question quotes the evening it came from, verified word for word by the server. Invented or paraphrased quotes are dropped. | M | build, backend | Hate 3; unsolved trust | **Built in this branch** |
 | F2 | Your evenings: read and search every evening, word for word | S | build, backend | Missing: history is basic in every competitor and Dawnward had none | **Built** |
 | F3 | Leave any evening out of what Dawnward uses, and bring it back. Beliefs that rest only on it are hidden, never deleted. | M | backend | Reflection's Private entries; privacy unease | **Built** |
-| F4 | Words are never lost: keep the recording until it is transcribed, and save before any AI call | M | build | Hate 2 (lowest-rated theme) | Not built: Phase 1 of the roadmap. It needs test tools (D5). |
+| F4 | Words are never lost: keep the recording until it is transcribed, and save before any AI call | M | build | Hate 2 (lowest-rated theme) | **Mostly built (round 2)**: the send, voice, tab-leave, onboarding and tick paths are covered, with timeouts. Still open: keeping a recording if the app is closed, and recording through phone sleep. |
 | F5 | One plain price with no usage caps, no surprise renewals, cancel in one tap, and privacy features free | S | launch | Hate 1 | Owner decision (see `launch/pricing.md`) |
 | F6 | App lock, free | S | build | Reflection gates it behind Premium and drew a complaint | Not built: needs a package install (expo-local-authentication) |
 | F7 | Ask your evenings: a question answered only from quoted, dated evenings | M | backend | Rosebud and Mindsera have it; neither cites reliably | Next slice |

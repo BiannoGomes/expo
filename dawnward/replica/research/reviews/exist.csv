@@ -1,0 +1,165 @@
+source,url,date,rating,text
+App Store DE (apps.apple.com see-all reviews page),https://apps.apple.com/de/app/id986201088?see-all=reviews#14052895978,2026-05-11,5,"Nice app
+This app is lowkey underrated only found it through cahtgpt"
+App Store DE (apps.apple.com see-all reviews page),https://apps.apple.com/de/app/id986201088?see-all=reviews#13650476076,2026-01-19,1,"Warning
+Stay away from this app! 
+
+I subscribed to this app for three months and entered my credit card details on their website. Shortly after I canceled my subscription, I noticed three unauthorized, unknown charges on my account totaling €150. I had never used this card for online payments before. I spent a long time researching and considering whether these payments could have been caused by me.
+
+If you want to use the app, which otherwise works well, it's better to use Apple's in-app purchase option.
+
+To the developers: Please check the security of your payment service providers.  
+
+Translated with DeepL.com (free version)"
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#13570280881,2025-12-29,1,"Good idea but bad execution
+The idea behind this is brilliant but it’s not all the way there. The inferences are accurate sometimes but many times says things that are just blatantly not true."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=42110108,2024-11-11,,"As someone who has been on and off the Degoogle train (I ran full LineageOS without Google Play at one point) and is now pretty deep in iOS territory, I'd say the main thing for me has been email.
+I've used https://www.fastmail.com for a great deal of years now, which is also home to my calendar as well so there's nothing much of value tied to my Google account.
+YouTube subscriptions would be annoying to lose but I subscribe to channels via RSS. At the moment, I'm using http://newsblur.com for that but sometimes I jump around RSS clients. Newsblur recently added backfilling of channel content from YouTube's API beyond what RSS feeds normally surface though which is great.
+For plain text notes, everything is in https://obsidian.md compared to say; Apple Notes
+One thing I would miss is photos which I currently have in Apple Photos stored in the cloud so I recently set up https://github.com/icloud-photos-downloader/icloud_photos_do... which runs nightly on a mac mini at my house and archives everything in a Backblaze B2 bucket. https://ente.io/ seems like a promising alternative in this space.
+I don't actually have a good alternative to Apple Health now that I think of it. You can export backups but not automatically. I'm not entirely sure what format a lot of that data is even in.
+Realistically, I don't look at it a lot, I just use some of the correlations when they rarely pop up. Something like https://exist.io/ is probably the closest that I actually used to (aspire to) get value out of but don't currently use.
+The reality is that convenience is king and it's hard work staying independent from any centralised service, not to mention social pressures.
+The middle ground I've accepted is still using it all but making sure you have a good escape hatch you periodically test + backups where you're solely reliant on large businesses who heavily lean on automated account banning."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=41082637,2024-07-26,,"This reminds me of Exist[1], although their inputs are mostly automatic and so the data quickly becomes overwhelming and tautological (""you spend more time active when you work out for a longer distance""). Glad to see another entry into this space.
+[1]: https://exist.io"
+App Store CA (apps.apple.com see-all reviews page),https://apps.apple.com/ca/app/id986201088?see-all=reviews#11345858605,2024-06-05,5,"This is the one
+I tried them all before I learned about Exist. This app has been incredibly useful, serving me up some very interesting correlations within the first 30 days. Everything is on a day-level granularity, which prevents me from the trap of capturing too much information, and the use of customizable tags and attributes make it very powerful. There’s not a whole lot you can’t do here, you can have it track whatever’s important to you. Do read the set up instructions and FAQ, and the ethos of this company to never share any data ever with third parties. 30 day trial means there’s no downside. I’m a huge fan."
+"Google Play (listing page, visible reviews)",https://play.google.com/store/apps/details?id=co.hellocode.exist&hl=en_US&gl=US,2024-02-11,5,"I am totally nerding out here! For months I've been thinking I wanted an app to track everything, and I finally found it!! You can add custom tags that are just ""this happened today,"" and then you can add other things to track and select the type of value for it!! This is EXACTLY what I wanted - even better than I imagined!! 🤩🤩🤩🤩🤩"
+App Store GB (apps.apple.com see-all reviews page),https://apps.apple.com/gb/app/id986201088?see-all=reviews#10878595672,2024-01-29,5,"Great
+Having used exist since 2017, I can 100% say I wouldn’t be without it! 
+
+Great app, great insights that get better as you gather more data."
+App Store SE (apps.apple.com see-all reviews page),https://apps.apple.com/se/app/id986201088?see-all=reviews#10805305208,2024-01-10,5,"Very useful app
+The app is very well made and provides useful information"
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#10270991701,2023-08-17,5,"Best app for tracking health improvement.
+I just want to say thank you to the developers, this app has been so good to me. My apple watch will automatically sync a lot of my activities and right before bed time I will input my manual tracked attributes and its great! It has helped me realize that I am improving in my mental  and physical health. It allows you to look back and see where you may need to focus in order to achieve your goals. Its great to have these insights. Recommend for anyone working on mental and physical well being and/or trying to kick a habit."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=37163152,2023-08-17,,You may want to look into https://exist.io/. It's a very indie developer duo out of Australia (IIRC). And also IIRC they were looking for a buyer on Twitter some time ago.
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=36826318,2023-07-22,,I have used this previously when tracking health metrics and I couldn't much else that had integrations. https://exist.io/
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#10090509634,2023-06-30,3,"Lacking features
+It functions fine and is lightweight. You are unable to track custom text entries and it lacks proper tagging."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=36259786,2023-06-09,,"I've been using https://exist.io/ for years. It can automatically sync a bunch of info from Apple Health and other providers, but also allows you to create custom data fields and manually enter data. It generates graphs and helps to find trends and correlations."
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#9036507968,2022-08-30,5,"Amazing, Life Changing App. Newest Updates Are Great
+This app can change your life. Don’t wait."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=32561257,2022-08-23,,this looks really interesting: https://exist.io
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#8649851698,2022-05-08,5,"I like the new custom attributes update
+Please keep working on features, well get multiple moods someday!"
+"Google Play (listing page, visible reviews)",https://play.google.com/store/apps/details?id=co.hellocode.exist&hl=en_US&gl=US,2022-02-13,5,"Saying it's the best service I've ever used may seem extreme, but it really isn't. Been using this for a couple years now, and acting on the info I get from it has led to positive changes in my life. It's pretty simple to set up and not time consuming to log anything. Easy for those less technically-inclined, powerful for those more so. Also, if you can code, it's easy to use their API. The devs are very transparent about their plans and their support is really good - which is impressive, they're the same 2 people that develop it!"
+App Store GB (apps.apple.com see-all reviews page),https://apps.apple.com/gb/app/id986201088?see-all=reviews#8278838272,2022-01-24,5,"Brilliant app
+I have been using the app & service for years. It’s the best tracking app I have found and I’ve tried loads. The range and depth of data that is collected together is fantastic. The insights and trend information is the best part - being able to view different insight comments each day gives you a great quick overview of how you’re doing. Then if you have more time you can dive into details about trends and correlations. Please keep developing it’s such a great app/service. It’s obviously a labour of love. Would be lovely to have an Apple Watch app too."
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#8209280147,2022-01-05,5,"Great for data nerds
+If u love to track everything and use integrations this app is awesome."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=29700446,2021-12-27,,"I've recently began to take life tracking semi-seriously and mostly use ""off the shelf"" tools. A good all-around dashboard is https://exist.io/, capable of pulling data from multiple sources like RescueTime and various health-monitoring applications that come with smart watches."
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#7777992522,2021-09-06,1,"Couldn’t even create a password
+Tried to sign up, but each password I used was too weak according to their standards - standards which they DON’T state or list. Just a vague “too weak”. Security is great, don’t get me wrong - just list the rules and don’t waste my time."
+App Store AU (apps.apple.com see-all reviews page),https://apps.apple.com/au/app/id986201088?see-all=reviews#7598352221,2021-07-20,5,"Best Gyroscope Alternative
+It’s sad to see HelloCode selling Exist.io to me it’s better than gyroscope and a better and cheaper alternative. Brilliant work guys 5 stars ⭐️⭐️⭐️⭐️⭐️"
+App Store AU (apps.apple.com see-all reviews page),https://apps.apple.com/au/app/id986201088?see-all=reviews#7074544034,2021-03-07,1,"Ridiculous password requirements
+I couldn’t get passed the ridiculous password requirements on sign up. Apparently a 17 character password including letters, numbers, and special characters is “too weak”."
+App Store NL (apps.apple.com see-all reviews page),https://apps.apple.com/nl/app/id986201088?see-all=reviews#6751328434,2020-12-14,3,"Doesn't save preferences
+I have to enable reminders and which calendars to sync every morning."
+App Store DE (apps.apple.com see-all reviews page),https://apps.apple.com/de/app/id986201088?see-all=reviews#6536943271,2020-10-15,1,"Mood rating broken
+The dialog for mood rating is broken since the latest release."
+App Store GB (apps.apple.com see-all reviews page),https://apps.apple.com/gb/app/id986201088?see-all=reviews#6197732691,2020-07-14,1,"Usability lacking
+I think there’s a tonne of improvement needed for the UX and the app generally feels a bit dated. 
+
+Some integrations aren’t working.
+
+I have some concerns as to the predatory trial/sub approach even though you state it in a few places I still find it sneaky and easy to miss. It’s rare to find  mobile app that charges this way, maybe the remnants of your Web app approach that needs adaptation to the mobile market. As a company that claims to pride themselves on openness, I find this approach somewhat hypocritical."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=23720252,2020-07-03,,"As a user, it's been great to see Exist/Hello Code/Belle&Josh continue their growth over the years.  I'd love to use more services like this, rather than the faceless FAANGs."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=22345699,2020-02-17,,"Exist[0] is as close as I can think for this type of thing.
+[0]https://exist.io"
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=21910356,2019-12-30,,"For Automation maybe you could try IFTTT to pull data from one service to a google spreadsheet. Since it has dates associated with the data, you can later match them with your current dataset.
+I know a service called exist.io that does a quite similar thing based on API. You can check that out if a central hub for all personal information is what you're after!
+Cheers!"
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=21907181,2019-12-29,,what I use to keep tract of a lot of my data point is exist.io it has a lot of automated import from various sources to collect everything in there and see patterns
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=21838496,2019-12-19,,"I've been using Exist [0] to collect and analyse my fitness data for a number of years. Their API [1] is pretty good, I use it to generate my own daily stats page [2]
+[0] https://exist.io/
+[1] http://developer.exist.io/
+[2] http://peterwallhead.com/stats/"
+"Google Play (listing page, visible reviews)",https://play.google.com/store/apps/details?id=co.hellocode.exist&hl=en_US&gl=US,2019-11-28,5,"Before downloading this app, I had a hard time keeping a journal or daily mood rating because I knew I'd never reference it. Exist isn't perfect, but it's the most useful system I've found. The Fitbit integration, mood rating, and a few custom tags are enough to find useful correlations. For example, my mood is better on days after I sleep less, which was completely unexpected. The reason was subtle and took some reflection to find. I've since avoided sleeping in, and putting extra effort into self-care when I need to, resulting in a small but noticeable benefit. Adjustments like this would be impossible to make if they weren't properly informed, and there's no better way than to track metrics quantitatively. A few caveats: If you're a statistics fanatic, this app doesn't give you r^2 values or allow you to control for certain variables (yet). On the flip side, since correlation doesn't imply causation, the app doesn't give you insight for free either. I couldn't just limit myself to 5 hours of sleep every night and expect my mood to improve. The interface is solid, especially considering the challenge of presenting so much data without becoming cluttered; and the developers are committed. Overall, Exist has been well worth it, and would only be displaced if another service matches it and adds powerful features like IFTTT support and causal discovery algorithms that it is unlikely to have."
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#4420828432,2019-07-06,3,"Clean design, but a little buggy
+Using the app is pleasant and intuitive, but when I click the 'Review' tab, it crashes."
+App Store GB (apps.apple.com see-all reviews page),https://apps.apple.com/gb/app/id986201088?see-all=reviews#4304546250,2019-06-12,5,"Great
+Great app and service.
+
+I mainly use the web version on computer but I use the app for tagging and mood.
+
+Trends are a bit basic which is why I use web version."
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#4260423031,2019-06-03,4,"One mood per day? Goals we don’t set?
+Love the app. 
+
+Wish i could record more than one mood per day. Like most people, I have more than one mood per day. Averages don’t work for me. (If I’m 1 in the morning and 5 in the afternoon, a 3 misrepresents my day. I was never a 3 that day.)
+
+Also, the app has an algorithm that sets your “goals” for you. Neither you nor any other human being sets your “goals.” The app’s “goals” for you might be interesting and helpful, but they simply aren’t real “goals” under any reasonable definition of that concept. If you’d like to set a goal for yourself, this app won’t let you keep track of it. 
+
+But great app. Really!"
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#3508702447,2018-12-08,5,"Good so far...
+This has a lot of potential to be my favorite app. The interface is great, far more pleasant that cobbling together my own tool out of a spreadsheet"
+App Store CA (apps.apple.com see-all reviews page),https://apps.apple.com/ca/app/id986201088?see-all=reviews#3014366976,2018-08-04,5,"Makes sense of all my data
+Really handy app to find correlations with health and activities. I’m using it mostly to find out what things in my life actually help me lose weight (activity, food nutrients, productivity, mood, etc)."
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#3013850659,2018-08-03,5,"Great
+Collects data across a bunch of sources, presents it nicely, and makes me feel fully in control the whole time"
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#3013644379,2018-08-03,5,"💯
+Great app that pulls in all your intro from the various services you use, correlates it, and finds trends in your life. I love it and use it daily!"
+App Store CA (apps.apple.com see-all reviews page),https://apps.apple.com/ca/app/id986201088?see-all=reviews#2988080717,2018-07-29,5,"Good work
+New update is great"
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#2962364881,2018-07-24,5,"Latest update nails it!
+I love the new summary screen. It makes the app much more useful."
+App Store DE (apps.apple.com see-all reviews page),https://apps.apple.com/de/app/id986201088?see-all=reviews#2606820648,2018-05-28,5,"100% recommended
+I can recommend this app to the fullest to everybody who wants to bring together all the collected data and make use of it"
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#2575347248,2018-05-20,5,"The app I use daily
+I use this app daily. I love that I can see everything in one place and I like the insights that it gives me."
+App Store AU (apps.apple.com see-all reviews page),https://apps.apple.com/au/app/id986201088?see-all=reviews#2423160932,2018-04-14,5,"A safe place to quantify yourself
+Take the data you passively generate and let Exist expose it to you. Really appreciate the iOS app."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=16662142,2018-03-23,,Moves is so clean and simple. Gyroscope is too much glorification. There is much cleaner https://exist.io
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#2122337879,2018-01-24,5,"Amazing app
+Great app and great team. I use it daily and would highly recommend to anyone interested in learning more about their own life"
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#1926575421,2017-11-16,5,"Must-Have App
+Cannot recommend this app enough. It has become part of my daily routine. The insights and analysis you get when you really stick with it are priceless."
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#1712601329,2017-08-04,4,"Doesn't even open
+This app crashes every single time I've tried to use it. Rebooted and tried on my iPad too... Still crashes.
+
+Update-8/4/17 there have definitely been improvements and the app is now a functioning part of my app collection. Exist.io is awesome and I hope they continue to integrate with more sources."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=14698505,2017-07-04,,"https://exist.io is making a good start (not affiliated, just a happy user)."
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#1356204947,2016-03-30,5,"slick, works great
+pretty slick companion to the web app! Perfect for mood tracking."
+App Store CA (apps.apple.com see-all reviews page),https://apps.apple.com/ca/app/id986201088?see-all=reviews#1335615693,2016-02-20,2,"Very slow, doesn't seem to update.
+While I like exist, it seems like my info takes forever to load. It is fixed, momentarily, if the app is redownloaded. 
+
+This is a real pain for doing the daily updates from the phone. Hope this is fixed shortly. 
+
+Other than that, this is an interesting service. I'll stick around for a bit to see what else is coming based on new app connections."
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#1333655781,2016-02-15,5,"Fantastic Data Analysis
+I really enjoy using Exist. It's successfully given me deep insight into data that's already being collected about my day to day activities. I've been waiting for a service like this for a long while."
+App Store US (Apple customer reviews RSS),https://apps.apple.com/us/app/id986201088?see-all=reviews#1320636064,2016-01-22,1,"no
+no"
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=10935218,2016-01-20,,"https://exist.io is attempting to solve this problem (no interests, just a happy user)."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=10717627,2015-12-11,,"DISCLAIMER: I don't mean to promote an application
+This application reminds me about a mobile application that is similar with this.
+An application that called ""Exist"" [1]. Exist tracks everything in one place. It tracks your fitness data and other services connected with yours.
+[1]: https://exist.io/"
+App Store GB (apps.apple.com see-all reviews page),https://apps.apple.com/gb/app/id986201088?see-all=reviews#1223182955,2015-07-06,5,"Mood tracking at my fingertips
+I have been waiting for this. 
+
+Tracking my mood in exist via email is ok but having a quick notification that I can quickly update from my phone is huge. 
+
+Seeing my mood throughout a time period is lovely as well for quickly seeing trends. 
+
+If you are an exist user I would highly recommend."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=8524851,2014-10-29,,"Can't measure up to Exist [1]!
+[1] https://exist.io/"
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=7361274,2014-03-07,,"> In short, knowing all of this info about yourself is not helpful. When it lacks greater context and, unless you know how to interpret it, is just a source of confusion and anxiety. At best, it's novel trivia.
+Isn't that the service that exist.io is hoping to provide? It seems to me like their mission is providing people with greater context than just a bunch of data points. They provide the expertise in interpreting this kind of data so that people don't need to analyze it themselves.
+Now, I'm not convinced that they'll be able to provide actionable ways for people to improve their lives, but I certainly hope they can! We generate a lot of data w/out much effort; if we can also use it to improve our lives w/out much effort that's a big win from my perspective.
+Isn't that part of the entrepreneurial spirit: having the courage to build something even though you don't yet have all the answers?"
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=7352958,2014-03-06,,"Micro-analysing ones life in this manner is wrong and counter productive on so many levels.
+Knowing how many tracks you listen to a day is interesting trivia only.
+Knowing how long you sleep for each night could be useful, but only if you have a problem with sleep and know, scientifically, what you're looking for. If you're consistently missing out on sleep and feeling ill as a result, you shouldn't need exist.io to tell you this. And if you're not feeling unwell or having sleep problems, then you shouldn't need exist.io to tell you this either.
+Knowing the number of steps you take is also irrelevant unless it's part of some very slow burn exercise regime you're on, in which case you'd presumably count them anyway. If you're doing normal exercise, steps and heart-rate may be of interest, but only during the exercise period.
+In short, knowing all of this info about yourself is not helpful. When it lacks greater context and, unless you know how to interpret it, is just a source of confusion and anxiety. At best, it's novel trivia."
+Hacker News (Algolia API),https://news.ycombinator.com/item?id=7352065,2014-03-06,,"Big data for your personal life.
+Only one problem: Big data is amazingly hard to get valuable insight out of. Correlation is relatively easy, but causation? Not so much.
+Actually, even if the data isn't big, it's still _really_ hard to figure out causation. If exist.io does make it, It'll be because they figure out just ONE kind of reliable causative relationship they pull out of their data, and they figure out how too monetize that....
+This is actually a pretty clever way to crowdsource THAT process though..."

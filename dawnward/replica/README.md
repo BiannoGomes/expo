@@ -19,11 +19,14 @@ All eleven Replica skills were used on Rosebud, Mindsera, Reflection, Stoic and 
 | F2 | **Your evenings**: every evening word for word, with search. Reached from You via "Your evenings, in your own words". | `server/src/routes/evenings.ts`, `apps/mobile/app/evenings.tsx` |
 | F3 | **Leave this out / Bring it back**, with undo. Beliefs that rest only on that evening are hidden from you and from the plan, never deleted. | `migrations/0006_evenings.sql`, `server/src/model/exclusions.ts` |
 | B1 | Fixed: the web build could not send PATCH or DELETE requests. That covered account deletion, settings and ticking steps. | `server/src/index.ts` |
+| F4 | **Round 2, no lost words:** a failed send keeps your words and doesn't say goodnight; a failed transcription keeps the recording with a retry; leaving the tab stops the mic and keeps what you said; onboarding puts failed words back; a tick that didn't save says so; requests time out instead of hanging. | `app/(tabs)/debrief.tsx`, `app/onboarding.tsx`, `app/(tabs)/index.tsx`, `lib/api.ts` |
+| A11y | Step cards are checkboxes whose done state now reaches screen readers on every platform. Unlabelled inputs and buttons are labelled. Long dashes are removed from the onboarding questions. | same |
 
 ## Results
 
 - **Tests:**
   - Server unit tests went from 15 to 23 and integration tests from 25 to 33. All pass.
+  - Two browser suites cover the new screens and every failure path in round 2; all checks pass.
   - Server and app type-check cleanly.
   - A Chromium click-through at phone width passes (`test-report.md`).
 - **Parity** against everything the five apps offer together went from **43.8** to **57.8**, with must-haves from 5 to 7 of 10 (`parity.md`).
@@ -49,13 +52,14 @@ All eleven Replica skills were used on Rosebud, Mindsera, Reflection, Stoic and 
 | launch | `launch/listing.json` (lints clean), `launch/pricing.md`, `launch/landing.md` (drafts only) |
 | deploy | `deploy.md`: preflight, stopped at the gate |
 
-## Kept out of the repo on purpose
+## Research and test files (saved at the owner's request)
 
-The raw review corpus (388 rows of verbatim review text) and the browser screenshots stay in the session scratchpad. Only short, linked quotes appear in these documents.
+- `research/reviews/`: all 388 reviews, verbatim and linked, as one file per app plus `all.csv`. This is research only, never for marketing or testimonials.
+- `test/`: the two browser test scripts and their screenshots, which use labelled demo data.
 
 ## Needs your decision
 
-1. **D5 test tools**, so Phase 1 can make words impossible to lose (F4). Lost recordings are the lowest-rated complaint across all five apps.
+1. **D5 test tools**, so the app's failure paths get unit tests as well as browser tests, and so F4 can be finished: a recording kept even if the app is closed. Lost recordings are the lowest-rated complaint across all five apps.
 2. **D6 device testing**, set up by you.
 3. **Pricing** (`launch/pricing.md`): one plan, no caps, privacy always free.
 4. **App lock** (F6) needs one package, `expo-local-authentication`, MIT.

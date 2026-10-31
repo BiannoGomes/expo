@@ -21,7 +21,7 @@ export const ONBOARDING_CHAPTERS: OnboardingChapter[] = [
     index: 0,
     title: "Who are you?",
     opening:
-      "Not your job title. Not your CV. If someone who loved you described who you really are — what would they say?",
+      "Not your job title. Not your CV. If someone who loved you described who you really are, what would they say?",
     aims: [
       "core identity and self-description",
       "values in the person's own words",
@@ -34,7 +34,7 @@ export const ONBOARDING_CHAPTERS: OnboardingChapter[] = [
     index: 1,
     title: "What shaped you?",
     opening:
-      "Everyone is built from a handful of moments. Which experiences made you who you are — the good ones and the hard ones?",
+      "Everyone is built from a handful of moments. Which experiences made you who you are, the good ones and the hard ones?",
     aims: [
       "formative experiences with rough timeline",
       "lessons the person took from them",
@@ -47,7 +47,7 @@ export const ONBOARDING_CHAPTERS: OnboardingChapter[] = [
     index: 2,
     title: "What do you want?",
     opening:
-      "Forget what's realistic for a moment. What do you actually want — in your work, your body, your relationships, your life?",
+      "Forget what's realistic for a moment. What do you actually want in your work, your body, your relationships, your life?",
     aims: [
       "ambitions across domains, not just career",
       "which wants are the person's own vs inherited",
@@ -86,7 +86,7 @@ export const ONBOARDING_CHAPTERS: OnboardingChapter[] = [
     index: 5,
     title: "What must change?",
     opening:
-      "You already know some things can't stay as they are. Name them — habits, environments, relationships, stories you tell yourself.",
+      "You already know some things can't stay as they are. Name them: habits, environments, relationships, stories you tell yourself.",
     aims: [
       "what the person already knows must change",
       "environment and routine friction",
@@ -99,7 +99,7 @@ export const ONBOARDING_CHAPTERS: OnboardingChapter[] = [
     index: 6,
     title: "Meet your Future Self",
     opening:
-      "Now we put it together. A few final questions, and then I'll show you the person we're building — and the first 90 days toward them.",
+      "Now we put it together. A few final questions, and then I'll show you the person we're building, and the first 90 days toward them.",
     aims: [
       "confirm the emerging picture with the user",
       "resolve the biggest open contradiction",
