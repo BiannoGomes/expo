@@ -108,9 +108,9 @@ Each layer works without the one above it: the text view works with no 3D, and e
 | `#/learn` | Learn: expeditions, the quest player | the previous place |
 | `#/journey`, `#/journey/milestones` | Journey: memories, or milestones and evolution | the previous place |
 | `#/you` | You: data, privacy, display | the previous place |
-| `#/universe/creative` | Creative Worlds: its planets | the previous place |
+| `#/universe/<creative\|spiritual\|knowledge\|ai>` | A galaxy's page: its planets | the previous place |
 | `#/creative/door` | The Infinite Door | the previous place |
-| `#/creative/<kingdom\|forest>` | A real-time world (`docs/universe/creative-worlds.md`) | the previous place; Escape and Leave go to the galaxy page |
+| `#/<galaxy>/<planet>` | A real-time world, or the Creation Gallery at `#/ai/gallery` (`docs/universe/creative-worlds.md`) | the previous place; Escape and Leave go to the galaxy page |
 
 - **Unknown addresses** open Home.
 - **A link with an address** skips the arrival film.

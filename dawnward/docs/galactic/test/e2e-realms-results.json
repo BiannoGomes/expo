@@ -1,0 +1,372 @@
+{
+  "when": "2026-10-31T23:13:11.318Z",
+  "checks": [
+    {
+      "name": "Spiritual Exploration: 4 open, 1 planned",
+      "ok": true,
+      "detail": "The Temple of Stillness | The Dream Realm | The Sound Sanctuary | The Inner Cosmos | Sacred Traditions"
+    },
+    {
+      "name": "axe: Spiritual Exploration page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Knowledge: 2 open, 3 planned",
+      "ok": true,
+      "detail": "The Cosmic Observatory | The Discovery Lab | The Human Mind | Civilizations | The Philosophy Temple"
+    },
+    {
+      "name": "axe: Knowledge page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "AI Creation: 1 open, 4 planned",
+      "ok": true,
+      "detail": "The Creation Gallery | The Dream Forge | The Architect | Future Self | The Companion Nexus"
+    },
+    {
+      "name": "axe: AI Creation page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "AI planets say plainly they need an AI service",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "members' worlds are marked",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the Universe map opens Knowledge",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the garden opens free",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a moment is kept on this device",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the count says so",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the writing folds away so the flower shows",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "its flower is in the 3D garden",
+      "ok": true,
+      "detail": "{\"x\":299.80295058352146,\"y\":453.80702236815284,\"front\":true}"
+    },
+    {
+      "name": "reading a moment opens it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "letting it go deletes it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "words that sound like crisis bring support first",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "and the words are still kept, privately",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Time Garden",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "garden draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":240,\"median\":22}"
+    },
+    {
+      "name": "a dream is kept with its title",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the realm says it doesn't interpret dreams",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Dream Realm",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "dreams draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":127,\"median\":40}"
+    },
+    {
+      "name": "the practice begins with breathing in",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the choices fold away while you breathe",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "then out",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it pauses",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Temple of Stillness",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "stillness draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":136,\"median\":64}"
+    },
+    {
+      "name": "tapping the Sun in 3D opens its facts",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "facts are marked as a draft awaiting review",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Earth's year is 365.25 days",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "orbits can be paused",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Cosmic Observatory",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "observatory draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":92,\"median\":64}"
+    },
+    {
+      "name": "The Sound Sanctuary by link shows the members' gate",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "The Discovery Lab by link shows the members' gate",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "The Dream Architect by link shows the members' gate",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the gallery shows the garden and the dream",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Creation Gallery",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Save a copy gives a file with everything",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Delete all of it empties this device",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "without WebGL the garden still keeps moments",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "four choices describe the place",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the place is kept with its name",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "tapping the building in 3D lights it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Dream Architect",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "architect draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":240,\"median\":19}"
+    },
+    {
+      "name": "a kept place opens again from the gallery",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the hum switches on",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Sound Sanctuary",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "sanctuary draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":100,\"median\":43}"
+    },
+    {
+      "name": "a star offers an invitation",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Inner Cosmos",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "cosmos draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":71,\"median\":66}"
+    },
+    {
+      "name": "a moon goes into orbit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "too fast, and it escapes",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "dragging on the sky throws a moon",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Discovery Lab",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "lab draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":240,\"median\":62}"
+    },
+    {
+      "name": "no page or shader errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: the planets wait to be played",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "Spiritual Exploration page": [],
+    "Knowledge page": [],
+    "AI Creation page": [],
+    "the Time Garden": [],
+    "the Dream Realm": [],
+    "the Temple of Stillness": [],
+    "the Cosmic Observatory": [],
+    "the Creation Gallery": [],
+    "the Dream Architect": [],
+    "the Sound Sanctuary": [],
+    "the Inner Cosmos": [],
+    "the Discovery Lab": []
+  },
+  "frames": {
+    "garden": {
+      "n": 240,
+      "median": 22
+    },
+    "dreams": {
+      "n": 127,
+      "median": 40
+    },
+    "stillness": {
+      "n": 136,
+      "median": 64
+    },
+    "observatory": {
+      "n": 92,
+      "median": 64
+    },
+    "architect": {
+      "n": 240,
+      "median": 19
+    },
+    "sanctuary": {
+      "n": 100,
+      "median": 43
+    },
+    "cosmos": {
+      "n": 71,
+      "median": 66
+    },
+    "lab": {
+      "n": 240,
+      "median": 62
+    }
+  },
+  "summary": {
+    "total": 63,
+    "failed": 0
+  }
+}

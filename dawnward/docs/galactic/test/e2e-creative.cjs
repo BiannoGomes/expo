@@ -33,7 +33,7 @@ const MOBILE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch
   check("#/universe/creative opens Creative Worlds", JSON.stringify(await where(page)) === JSON.stringify(["creative", "#/universe/creative"]));
   check("the Universe tab is current", (await page.getAttribute('#tabs [data-tab="universe"]', "aria-current")) === "page");
   const planets = await page.locator(".cw-planets li").allInnerTexts();
-  check("five planets, two of them planned", planets.length === 5 && planets.filter((t) => /Planned/.test(t)).length === 2, planets.map((t) => t.split("\n")[0]).join(" | "));
+  check("five planets, all open now", planets.length === 5 && planets.filter((t) => /Planned/.test(t)).length === 0, planets.map((t) => t.split("\n")[0]).join(" | "));
   check("the Living Forest is marked for members", /Members/.test(planets[2]));
   await shot(page, "galaxy-390");
   await axe(page, "galaxy page");
@@ -41,7 +41,7 @@ const MOBILE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch
   // ---- reached from the Universe map too ----
   await page.locator('#tabs [data-tab="universe"]').click();
   await page.locator('#a-inner [data-id="creative"]').click();
-  check("the map says it's open and the first world is free", /Open · the first world is free/i.test(await page.locator("#a-panel").innerText()));
+  check("the map says it's open and some worlds are free", /Open · some worlds are free/i.test(await page.locator("#a-panel").innerText()));
   await page.getByRole("button", { name: "Enter Creative Worlds" }).click();
   check("Enter Creative Worlds opens the page", (await where(page))[0] === "creative");
 
@@ -57,7 +57,7 @@ const MOBILE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch
   check("Skip finishes the sequence and focuses the first door", await page.evaluate(() => document.activeElement?.classList.contains("cw-choice") && getComputedStyle(document.querySelector(".cw-dfoot")).opacity === "1"));
   await shot(page, "door-390");
   await axe(page, "the door");
-  check("two destinations, the forest marked for members", (await page.locator(".cw-choice").count()) === 2 && /Members/.test(await page.locator(".cw-choice.cw-forest").innerText()));
+  check("four destinations, the forest marked for members", (await page.locator(".cw-choice").count()) === 4 && /Members/.test(await page.locator(".cw-choice.cw-forest").innerText()));
 
   // ---- through the door: the Floating Kingdom ----
   await page.locator(".cw-choice.cw-kingdom").click();

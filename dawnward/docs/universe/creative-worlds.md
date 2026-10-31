@@ -1,16 +1,46 @@
-# Creative Worlds: The Infinite Door (first slice)
+# The galaxies you can walk into
 
-**Status:** built 2026-10-31 as the first slice of the "four universes" brief. Shown only in the private preview. Not deployed.
+**Status:** updated 2026-10-31. Everything here runs on the device: no AI service, no paid API, no new hosting, no generated art. Shown only in the private preview; not deployed.
 
-## What you can do
-1. **Universe → Creative Worlds** (or `#/universe/creative`). The galaxy page shows its five planets: the Infinite Door, the Floating Kingdom, the Living Forest, and two planned ones (the Dream Architect, the Time Garden).
-2. **Open the Infinite Door** (`#/creative/door`).
-   - The camera dives toward the planet, the clouds part, and a floating temple appears with a glowing doorway.
-   - **Skip** finishes the sequence at once.
-   - Choose where the door opens. The door's light takes the colour of the world you're looking at, and opens in light.
-3. **The Floating Kingdom** (`#/creative/kingdom`, free): islands drifting above a moving sea of clouds, a castle with golden roofs, and falling light. Light the five lanterns.
-4. **The Living Forest** (`#/creative/forest`, members): a bioluminescent night forest. Fireflies gather where you point or touch. Wake the seven glowing plants.
-5. **When everything is lit:** a quiet "Discovered" card with an optional question to carry. No points, no streaks, no score.
+## What's open, galaxy by galaxy
+| Galaxy | Planet | Access | What you do |
+|---|---|---|---|
+| Creative Worlds | The Infinite Door | free | The way in: choose where it opens (four destinations) |
+| | The Floating Kingdom | free | Light five lanterns over a sea of clouds |
+| | The Living Forest | members | Wake seven glowing plants; fireflies follow your touch |
+| | The Dream Architect | members | Make a small place from four choices (ground, sky, something built, something alive), name it, keep up to twelve, tap the building to light it |
+| | The Time Garden | free | Write a moment; it becomes a flower that grows over a week of real time. Read it again or let it go |
+| Spiritual Exploration | The Temple of Stillness | free | Paced breathing (1, 3 or 5 minutes; in 4 out 6, or in 4 out 4) with a light that grows and fades. Nothing recorded |
+| | The Dream Realm | free | Keep dreams as bubbles above a pastel sea. No interpretation |
+| | The Sound Sanctuary | members | Strike seven tuned singing bowls (synthesised live), with an optional low hum |
+| | The Inner Cosmos | members | Inside a nebula; six bright stars, each with a short invitation to notice |
+| | Sacred Traditions | planned | Waits for writers and reviewers from each tradition |
+| Knowledge | The Cosmic Observatory | free | The Sun and eight planets with true year ratios (Earth = 24 s). Tap for facts, marked **draft, awaiting a reviewer** |
+| | The Discovery Lab | members | Real Newtonian gravity: drag to throw moons, tap for a circular orbit, or try circle, oval, too slow, too fast |
+| | The Human Mind, Civilizations, The Philosophy Temple | planned | Lessons need writing and checking by a qualified reviewer |
+| AI Creation | The Creation Gallery | free | Everything you've made: places, moments, dreams, lit worlds. Save a copy as a file, or delete all of it |
+| | The Dream Forge, The Architect, Future Self, The Companion Nexus | planned | Each needs an AI service, which costs money per use, so they wait for your approval |
+
+## Why some things are free
+- **Writing is never behind membership.** The Time Garden and the Dream Realm are free, and anything you've made stays readable, saveable and deletable whatever your plan. This follows the monetisation plan's principle 2.
+- **One free world per galaxy at least**, and the members' worlds use the same honest gate as Learn.
+
+## Privacy and safety
+- **Where things are kept.** Everything is in `localStorage` key `dw-creative-v1` on this device: places, moments, dreams, lanterns.
+- **Saving and deleting.**
+  - The Creation Gallery saves a copy as a file, and deletes everything with a confirmation.
+  - You › Export now includes it under `worlds`.
+  - You › Delete removes it too.
+- **Crisis check.** Anything written, in the garden, the dream realm or a place's name, goes through the same crisis check as Reflect. If it matches, support comes first. The words are still kept privately: they're the person's own.
+- **Breathing.** The practice says plainly: "If you feel light-headed, stop and breathe normally."
+- **Unchecked facts.** The Observatory's facts are well established, but they're marked as a draft until a reviewer checks them. Dreams are never interpreted.
+
+## Not built, and why
+| Planet | Why it waits |
+|---|---|
+| The Dream Forge, The Architect (AI), Future Self, The Companion Nexus | They need a paid AI service; approval required. The Quantum Gateway already offers a non-AI future-self practice |
+| The Human Mind, Civilizations, The Philosophy Temple, Sacred Traditions | Educational and spiritual content needs qualified writers and reviewers. I won't invent it |
+| Account sync for what you make | Needs a small server route and table; no extra cost, but a privacy decision (sending personal writing to the server). Next if you want it |
 
 ## Controls
 | Input | Does |
@@ -32,51 +62,45 @@
 - **axe:** no violations on the galaxy page, the door, the members' gate, the kingdom with its list, or the forest in words.
 
 ## Sound
-The worlds use the app's existing sound, which stays off until you turn it on in You or in the world's **Sound** button.
-- **Lanterns:** each plays its own note of a pentatonic scale, so lighting them makes a small melody.
-- **Plants:** lower notes.
-- **Opening the door:** a rising sweep.
-- **Completion:** a three-note chord.
+- **The app's sound** stays off until you turn it on in You, or with a world's **Sound** button. With it on:
+  - each lantern, plant, star and planted moment plays its own note;
+  - the door plays a rising sweep, and a completed world a three-note chord;
+  - the breathing practice plays a low tone as each breath turns.
+- **The Sound Sanctuary is the exception.** Tapping a bowl is asking for sound, so each strike plays even when the app's sound is off. The page says so. Its audio closes when you leave.
 
 ## Membership
-- The Floating Kingdom is free. The Living Forest is for members (`access` in `CW` in `src/creative.js`).
-- A free visitor who chooses the forest sees the honest gate: what it is, that membership isn't open yet, and "Free now: The Floating Kingdom".
-- "Preview as a member" works on this device only, as in Learn.
-
-## Progress
-- What you've lit is kept on this device (`localStorage` key `dw-creative-v1`), and survives a reload.
-- **Not yet synced to a Dawnward account.** That needs a small server route plus a column or table; it's the next step if the slice is kept.
+- `access` on each planet in `REALMS` (`src/creative.js`) decides it. The gate offers "Free now" with the galaxy's free world, and "Preview as a member" on this device only.
+- **A direct link** to a members' world waits for the membership to load before deciding, so a member's link never flashes the gate.
 
 ## Architecture
 | File | Role |
 |---|---|
-| `experience/src/creative.js` | Pages: galaxy, door, gate, world HUD, list, progress, routes, Escape. World content (`CW`, `PLANETS`) is data |
-| `experience/src/creative-scene.js` | Real-time three.js. One small engine (look-around camera, tap picking, render loop, dispose) and two world builders, `kingdom()` and `forest()`. Loaded only when a world opens |
-| `experience/src/home.js` | Routes (`#/universe/creative`, `#/creative/<door|kingdom|forest>`), the Universe map's "Enter Creative Worlds", the Universe tab, Escape |
-| `experience/src/registry.js` | The galaxy is now `open: true`, still `access: "plus"` for what's beyond the first world |
+| `experience/src/creative.js` | All four galaxies (`REALMS`), the galaxy pages, the gate, the door, the world HUD, the Creation Gallery, and one small experience per planet (`EXP`). Writing worlds share `journal()` |
+| `experience/src/creative-scene.js` | One engine (look-around camera, tap picking, a fixed top-down view for the lab, dispose) and ten world builders (`BUILDERS`), each exposing an `api` the page drives |
+| `experience/src/home.js` | Routes `#/universe/<creative\|spiritual\|knowledge\|ai>` and `#/<galaxy>/<planet>`, "Enter …" on the Universe map, Escape, and export and delete in You |
+| `experience/src/registry.js` | All four galaxies are `open: true`, with honest "Open now / Planned" lines |
 | `experience/home.html` | `#creative` with `#cw-page`, `#cw-door`, `#cw-stage`, and their styles |
 
-**Only one WebGL loop runs at a time.** The galaxy's loop already pauses whenever a page covers it, and a world's renderer is disposed when you leave it. Each world is made from code, with no textures to download (shaders for the sky, clouds and falling light; instanced trees; point sprites).
+**Only one WebGL loop runs at a time.** The galaxy's loop pauses whenever a page covers it, and a world's renderer is disposed when you leave. Every world is made from code, with no textures to download.
 
 **Adding a world:**
-1. Add an entry to `CW` (name, access, lines, things, notes).
-2. Add a builder in `creative-scene.js` that registers pickables with `userData.id` and returns `{ view, light(id, on) }`.
-3. Add a door choice.
+1. Add a planet to `REALMS`.
+2. Add an experience to `EXP`: a function returning `{ opts, pick, ready, words, stop }`.
+3. Add a builder to `BUILDERS` that registers pickables with `userData.id` and returns `{ view, api }`.
 
 ## Measurements (honest)
-- **SwiftShader** (software rendering in the test browser, not a phone): median frame **22 ms** in the kingdom and **32 ms** in the forest at 390×844.
-- **Not measured on a real phone yet.** As the brief says, validate on an actual phone before adding more worlds.
-  - Open the preview on an iPhone and on a mid-range Android.
-  - Measure with the browser's performance tools, or watch `window.__dwCreative.frames()` in a remote console.
-  - If the forest is slow, reduce the trees (70) and fireflies (260) first.
-- **Bundle:** the experience grew by about 30 KB of code; no new assets.
+- **SwiftShader** (software rendering in the test browser, not a phone): median frame times at 390×844 range from about 20 ms (the Dream Architect, the garden) to about 65 ms (the Inner Cosmos, the Observatory, the lab, the temple). They vary run to run; see `e2e-realms-results.json` and `e2e-creative-results.json`.
+- **Not measured on a real phone.** Try each on an iPhone and a mid-range Android before launch.
+  - The Inner Cosmos is the most expensive: a full-screen nebula shader. If it stutters, lower its pixel ratio or the noise detail first.
+  - Watch `window.__dwCreative.frames()` in a remote console.
+- **Bundle:** the experience grew by about 85 KB of code in all; no new assets.
 
 ## Not built, on purpose
-- The other three universes and the other planets. The brief: "Don't build all 20 planetary experiences simultaneously."
 - WebXR or headset mode.
 - Prerendered film: these worlds are real-time, so they respond to you. Fable isn't available in this environment anyway.
 
 ## Tests
+- `docs/galactic/test/e2e-realms.cjs` has 63 checks: the three new galaxy pages, writing, reading and letting go in the garden, the crisis check, dreams, breathing, a real tap on the Sun, facts, members' gates by link, the gallery's save and delete, the garden without WebGL, the Dream Architect (choices, keeping, a real tap on its building, reopening from the gallery), bowls and hum, stars, the gravity lab (circle, escape, a drag on the sky), reduced motion, axe on twelve screens, frame times, and no errors.
 - `docs/galactic/test/e2e-creative.cjs` has 40 checks:
   - addresses, Back, Escape;
   - a real tap on a lantern found where it's drawn, and that a drag lights nothing;

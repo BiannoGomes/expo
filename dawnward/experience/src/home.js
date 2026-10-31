@@ -11,7 +11,7 @@
 // and never the source of truth: state lives here.
 import { buildHome } from "./home-scene.js";
 import { createExplore, localStore, remoteStore } from "./explore.js";
-import { createCreative } from "./creative.js";
+import { createCreative, REALMS } from "./creative.js";
 import { MISSIONS, SYSTEMS, WORLD_PLAY, missionById } from "../../packages/core/src/expeditions/index.ts";
 
 const $ = (id) => document.getElementById(id);
@@ -814,7 +814,8 @@ function main(data, failed) {
     $("y-data-line").textContent = data.local
       ? `${plural(data.stars.length, "memory", "memories")} kept on this device, and nowhere else.`
       : `${plural(data.stars.length, "memory", "memories")} in your Dawnward.`;
-    $("y-export").hidden = !data.local || !data.stars.length; $("y-delete").hidden = !data.local || !data.stars.length;
+    const anything = data.stars.length || creative?.hasData();
+    $("y-export").hidden = !data.local || !anything; $("y-delete").hidden = !data.local || !anything;
     const found = explore?.data.discoveries ?? [];
     $("y-journey").replaceChildren(found.length
       ? el("ol", { class: "journey" }, [...found].reverse().map((d) => el("li", {}, el("span", { class: "when" }, d.discoveredAt ? longDate(d.discoveredAt.slice(0, 10)) : ""), el("span", { class: "mt" }, d.title), el("span", { class: "quiet" }, `Why this appeared: ${d.why}`))))
@@ -832,7 +833,7 @@ function main(data, failed) {
   let downloads = null;
   window.claude?.use?.("downloads").then((d) => (downloads = d), () => {});
   $("y-export").addEventListener("click", async () => {
-    const json = JSON.stringify({ exported: new Date().toISOString(), memories: data.stars.map(({ id, world, date, excerpt }) => ({ id, world, date, words: excerpt })), patterns: data.themes.map(({ id, world, statement, starIds, corrected, rejected }) => ({ id, world, statement, memories: starIds, corrected, rejected })), expeditions: explore?.store.snapshot?.() ?? null }, null, 2);
+    const json = JSON.stringify({ exported: new Date().toISOString(), memories: data.stars.map(({ id, world, date, excerpt }) => ({ id, world, date, words: excerpt })), patterns: data.themes.map(({ id, world, statement, starIds, corrected, rejected }) => ({ id, world, statement, memories: starIds, corrected, rejected })), expeditions: explore?.store.snapshot?.() ?? null, worlds: creative?.snapshot() ?? null }, null, 2);
     const filename = `dawnward-${today()}.json`;
     if (downloads) {
       try { await downloads.save({ filename, data: json }); announce("Saved."); }
@@ -846,11 +847,11 @@ function main(data, failed) {
   $("y-delete").addEventListener("click", () => {
     const box = $("y-delete-confirm");
     box.hidden = false;
-    box.replaceChildren(el("p", { tabindex: "-1", id: "y-del-ask" }, `Delete all ${plural(data.stars.length, "memory", "memories")} from this device? This can't be undone.`),
+    box.replaceChildren(el("p", { tabindex: "-1", id: "y-del-ask" }, data.stars.length ? `Delete all ${plural(data.stars.length, "memory", "memories")}${creative?.hasData() ? ", and everything you made in the worlds," : ""} from this device? This can't be undone.` : "Delete everything you made in the worlds from this device? This can't be undone."),
       el("div", { class: "actions" },
         el("button", { class: "danger", onclick: () => {
-          const okA = device.remove(STORE), okB = device.remove(DRAFT), okC = explore ? explore.store.wipe() : true;
-          if (!okA || !okB || !okC) { box.append(el("p", { class: "error", role: "alert" }, "I couldn't delete everything. Try again.")); return; }
+          const okA = device.remove(STORE), okB = device.remove(DRAFT), okC = explore ? explore.store.wipe() : true, okD = creative ? creative.wipe() : true;
+          if (!okA || !okB || !okC || !okD) { box.append(el("p", { class: "error", role: "alert" }, "I couldn't delete everything. Try again.")); return; }
           data.stars = []; data.themes = []; finish(data); explore?.refresh().then(() => { sync(); drawYou(); }); sync(); renderHome(); drawYou(); box.hidden = true; announce("Everything on this device was deleted."); $("y-title").focus();
         } }, "Delete everything"),
         el("button", { class: "ghost", onclick: () => { box.hidden = true; $("y-delete").focus(); } }, "Cancel")));
@@ -878,8 +879,8 @@ function main(data, failed) {
     routing = true;
     try {
       if (a === "universe" && b === "growth") goHome();
-      else if (a === "universe" && b === "creative") creative.open();
-      else if (a === "creative") creative.follow(b);
+      else if (a === "universe" && REALMS[b]) creative.open(b);
+      else if (REALMS[a]) creative.follow(a, b);
       else if (a === "universe") openAtlas();
       else if (a === "world" && ORDER.includes(b)) { if (WTABS.includes(c)) state.wtab = { ...(state.wtab ?? {}), [b]: c }; goWorld(b); }
       else if (a === "learn") explore.open();
@@ -980,7 +981,7 @@ function main(data, failed) {
     if (!field.hidden && b) inner.style.transform = `translate(${Math.round(inner.clientWidth / 2 - b.offsetLeft)}px, ${Math.round(inner.clientHeight * 0.42 - b.offsetTop)}px) scale(1.3)`;
     const panel = $("a-panel");
     panel.replaceChildren(
-      el("p", { class: "kicker" }, g.open ? (g.id === "gateway" ? "Open · free once, then for members" : g.id === "creative" ? "Open · the first world is free" : "Open") : g.access === "plus" ? "Preview · not open yet · for members" : "Preview · not open yet"),
+      el("p", { class: "kicker" }, g.open ? (g.id === "gateway" ? "Open · free once, then for members" : REALMS[g.id] ? "Open · some worlds are free" : "Open") : g.access === "plus" ? "Preview · not open yet · for members" : "Preview · not open yet"),
       el("h2", { class: "s-title", id: "a-name", tabindex: "-1" }, g.name),
       el("p", { class: "lead" }, g.tag),
       g.planned ? el("p", { class: "quiet" }, g.open ? g.planned : `Planned: ${g.planned}`) : null,
@@ -988,7 +989,7 @@ function main(data, failed) {
         g.id === "growth" ? el("button", { class: "primary", onclick: () => goHome() }, "Enter Personal Growth") : null,
         g.id === "earth" ? el("button", { class: "primary", onclick: () => openEarth() }, "Return to Earth") : null,
         g.id === "gateway" ? el("button", { class: "primary", onclick: () => explore.play("gateway-1", { from: { label: "Universe", go: () => openAtlas(), trail: [] } }) }, "Enter the Gateway") : null,
-        g.id === "creative" ? el("button", { class: "primary", onclick: () => creative.open() }, "Enter Creative Worlds") : null,
+        REALMS[g.id] ? el("button", { class: "primary", onclick: () => creative.open(g.id) }, `Enter ${g.name}`) : null,
         el("button", { class: "ghost", onclick: () => { resetAtlas(); inner.querySelector(`[data-id="${g.id}"]`)?.focus(); } }, "Back to the Universe")));
     panel.hidden = false;
     $("a-name").focus({ preventScroll: true });
@@ -1277,9 +1278,10 @@ function main(data, failed) {
     goEarth: (found) => { if (found) state.selStar = `d:${found.key}`; openEarth(found); },
     crumbs,
   });
-  explore.refresh().then(() => { sync(); renderHome(); });
+  const exploreReady = explore.refresh().then(() => { sync(); renderHome(); });
   creative = createCreative({ $, el, svg, ICON, asset, sound, announce, showPlace, crumbs, explore,
-    toUniverse: () => openAtlas(), textMode: () => state.mode === "text" });
+    toUniverse: () => openAtlas(), textMode: () => state.mode === "text",
+    distress: (t) => DISTRESS.test(t), crisisText: CRISIS_TEXT.join("\n"), ready: () => exploreReady });
   let firstVisit = false;
   try { firstVisit = localStorage.getItem("dw-home-seen") !== "1"; } catch {}
   showPlace("home");

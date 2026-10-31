@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T21:20:33.162Z",
+  "when": "2026-10-31T23:14:34.509Z",
   "checks": [
     {
       "name": "#/universe/creative opens Creative Worlds",
@@ -12,7 +12,7 @@
       "detail": ""
     },
     {
-      "name": "five planets, two of them planned",
+      "name": "five planets, all open now",
       "ok": true,
       "detail": "The Infinite Door | The Floating Kingdom | The Living Forest | The Dream Architect | The Time Garden"
     },
@@ -27,7 +27,7 @@
       "detail": ""
     },
     {
-      "name": "the map says it's open and the first world is free",
+      "name": "the map says it's open and some worlds are free",
       "ok": true,
       "detail": ""
     },
@@ -62,7 +62,7 @@
       "detail": ""
     },
     {
-      "name": "two destinations, the forest marked for members",
+      "name": "four destinations, the forest marked for members",
       "ok": true,
       "detail": ""
     },
@@ -99,7 +99,7 @@
     {
       "name": "the kingdom draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":240,\"median\":24}"
+      "detail": "{\"n\":227,\"median\":26}"
     },
     {
       "name": "Things here lists all five lanterns",
@@ -149,7 +149,7 @@
     {
       "name": "the forest draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":99,\"median\":29}"
+      "detail": "{\"n\":91,\"median\":31}"
     },
     {
       "name": "waking a plant is kept",
@@ -211,12 +211,12 @@
   },
   "frames": {
     "kingdom": {
-      "n": 240,
-      "median": 24
+      "n": 227,
+      "median": 26
     },
     "forest": {
-      "n": 99,
-      "median": 29
+      "n": 91,
+      "median": 31
     }
   },
   "summary": {
