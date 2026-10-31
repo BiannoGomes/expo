@@ -151,6 +151,8 @@ These are targets to test, not industry facts.
 - **You › Plan** explains the plans. On this device, "Preview as a member" shows members' content without payment, so Bianno can see everything. It's off by default.
 - **Never gated:** writing, memories, Journey, export, delete, the crisis screen.
 
+- **Creative Worlds** is open: the Floating Kingdom is free, and the Living Forest is for members, behind the same honest gate (`docs/universe/creative-worlds.md`).
+
 **Adding something members-only later:** give it `access: "plus"` in the catalog (or the registry for a galaxy). Nothing else is needed.
 
 ## 10. Decisions for Bianno

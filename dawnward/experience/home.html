@@ -509,6 +509,69 @@
     .mfoot { height:var(--s6); }
     .ycol { padding-left:var(--s16); padding-right:136px; max-width:880px; }
   }
+  /* ============ Creative Worlds: the galaxy page, the Infinite Door, the worlds ============ */
+  #creative { position:fixed; inset:0; z-index:4; overflow-y:auto; overscroll-behavior:contain; background:radial-gradient(ellipse at 75% 0%, rgba(197,91,255,.2), transparent 55%), linear-gradient(180deg, #0c0820, #05070D 65%); }
+  #creative.immersive { z-index:40; overflow:hidden; }
+  #creative .ycol { gap:var(--s5); }
+  .cw-hero { align-self:center; width:min(56vw, 260px); aspect-ratio:1; margin:var(--s2) 0 calc(-1 * var(--s2)); }
+  .cw-hero img { width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 40px rgba(197,91,255,.35)); animation:cw-breathe 9s ease-in-out infinite; }
+  @keyframes cw-breathe { 50% { transform:scale(1.035) rotate(1.5deg); } }
+  .cw-h { font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--faint); font-weight:500; margin-top:var(--s3); }
+  .cw-planets { list-style:none; display:flex; flex-direction:column; gap:var(--s2); }
+  .cw-planets .row.planned { opacity:.62; }
+  .cw-planets .mmeta, .cw-choice .mmeta, .cw-list .mmeta { font-family:var(--mono); font-size:12px; color:var(--faint); white-space:nowrap; }
+  .plus-tag { color:var(--gold-ink) !important; }
+  .cw-dot { width:28px; height:28px; flex:none; border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff8, transparent 45%), var(--c, #888); box-shadow:0 0 14px var(--c, #888); }
+  .cw-door { --c:#F0D6A2; } .cw-kingdom { --c:#E89A7A; } .cw-forest { --c:#3FC2A0; } .cw-architect { --c:#7F8BFF; } .cw-garden { --c:#B58AD8; }
+  .cw-found { font-size:13px; color:var(--gold-ink); }
+
+  #cw-door { position:absolute; inset:0; overflow:hidden; --door:#F0D6A2; }
+  .cw-sky { position:absolute; inset:0; background:radial-gradient(1px 1px at 12% 18%, #fff, transparent), radial-gradient(1px 1px at 68% 12%, #fff, transparent), radial-gradient(1.5px 1.5px at 84% 36%, #fff, transparent), radial-gradient(1px 1px at 30% 62%, #fffc, transparent), radial-gradient(1px 1px at 52% 28%, #fffa, transparent), radial-gradient(ellipse at 50% 42%, color-mix(in srgb, var(--door) 26%, transparent), transparent 60%), linear-gradient(180deg, #120a2c, #3a1f52 60%, #6a3a6a); transition:background 600ms var(--ease); }
+  .cw-dive { position:absolute; left:50%; top:42%; width:min(80vw, 520px); transform:translate(-50%,-50%) scale(.42); opacity:0; pointer-events:none; }
+  .cw-temple { position:absolute; left:50%; top:40%; width:min(86vw, 440px); transform:translate(-50%,-50%); }
+  .cw-temple svg { width:100%; height:auto; display:block; overflow:visible; animation:cw-float 7s ease-in-out infinite; }
+  .cw-glowdoor { animation:cw-pulse 3.6s ease-in-out infinite; transform-origin:160px 160px; }
+  @keyframes cw-float { 50% { transform:translateY(-8px); } }
+  @keyframes cw-pulse { 50% { opacity:.55; } }
+  .cw-cloud { position:absolute; top:0; bottom:0; width:75%; opacity:0; pointer-events:none; background:radial-gradient(ellipse 60% 30% at 50% 30%, #f6e1ec 0, rgba(246,225,236,.0) 70%), radial-gradient(ellipse 70% 34% at 40% 62%, #e9c7dc 0, rgba(233,199,220,0) 70%), radial-gradient(ellipse 60% 26% at 60% 86%, #d9b3cf 0, rgba(217,179,207,0) 70%); filter:blur(6px); }
+  .cw-cloud.l { left:0; } .cw-cloud.r { right:0; transform:scaleX(-1); }
+  #cw-door.still .cw-cloud, #cw-door.still .cw-dive { display:none; }
+  .cw-light { position:absolute; left:50%; top:46%; width:160vmax; height:160vmax; border-radius:50%; transform:translate(-50%,-50%) scale(.05); opacity:0; pointer-events:none; z-index:3; background:radial-gradient(circle, #fff 0, var(--door) 18%, color-mix(in srgb, var(--door) 60%, #000) 45%, var(--door) 70%); }
+  .cw-dtop { position:absolute; top:0; left:0; right:0; z-index:2; display:flex; justify-content:space-between; align-items:center; padding:calc(var(--safe-t) + var(--s3)) var(--gutter); }
+  .cw-dfoot { position:absolute; left:0; right:0; bottom:0; z-index:2; padding:var(--s10) var(--gutter) calc(var(--safe-b) + var(--s5)); display:flex; flex-direction:column; gap:var(--s2); align-items:center; text-align:center; background:linear-gradient(rgba(5,7,13,0), rgba(5,7,13,.85) 35%); }
+  .cw-choices { width:100%; max-width:520px; display:flex; flex-direction:column; gap:var(--s2); margin-top:var(--s2); }
+  .cw-choice { width:100%; display:flex; align-items:center; gap:var(--s3); text-align:left; min-height:64px; padding:var(--s3) var(--s4); border-radius:var(--r-card); background:var(--glass-strong); border:1px solid var(--edge); transition:border-color var(--t-ui) var(--ease), transform var(--t-ui) var(--ease); }
+  .cw-choice:hover, .cw-choice:focus-visible { border-color:var(--edge-strong); transform:translateY(-2px); }
+  .cw-swatch { width:40px; height:40px; flex:none; border-radius:50% 50% 8px 8px; border:1px solid rgba(255,255,255,.3); }
+  @media (min-width: 700px) { .cw-choices { flex-direction:row; } .cw-choice { flex:1; } }
+  @media (max-height: 700px) { .cw-temple { top:33%; width:min(70vw, 340px); } }
+
+  #cw-stage { position:absolute; inset:0; background:var(--sky, #05070D); }
+  .cw-host, .cw-canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
+  .cw-canvas { touch-action:none; cursor:grab; }
+  .cw-canvas:active { cursor:grabbing; }
+  .cw-hud { position:absolute; inset:0; pointer-events:none; display:flex; flex-direction:column; padding:calc(var(--safe-t) + var(--s3)) var(--gutter) calc(var(--safe-b) + var(--s4)); gap:var(--s2); }
+  .cw-hud > * { pointer-events:auto; }
+  .cw-top { display:flex; justify-content:space-between; align-items:center; gap:var(--s2); }
+  .cw-top .text-btn.back { color:var(--ink); text-shadow:0 1px 6px #000; }
+  .cw-tools { display:flex; gap:var(--s2); }
+  .cw-tool { padding:0 var(--s4); font-size:14px; }
+  .cw-head { pointer-events:none; text-shadow:0 1px 4px #000, 0 2px 18px rgba(0,0,0,.7); }
+  .cw-task { font-size:var(--t-second); color:var(--ink); }
+  .cw-head .kicker { color:var(--mark); }
+  .cw-list { list-style:none; display:flex; flex-direction:column; gap:var(--s2); max-width:440px; max-height:46vh; overflow:auto; padding:var(--s1); }
+  .cw-list .row { background:var(--glass-strong); }
+  .cw-bulb { width:14px; height:14px; flex:none; border-radius:50%; border:1px solid var(--faint); }
+  .cw-list .row.lit .cw-bulb { background:var(--gold); border-color:var(--gold); box-shadow:0 0 12px var(--gold); }
+  #cw-stage[data-k="forest"] .cw-list .row.lit .cw-bulb { background:var(--body); border-color:var(--body); box-shadow:0 0 12px var(--body); }
+  .cw-hint { margin-top:auto; align-self:center; text-align:center; max-width:360px; padding:var(--s2) var(--s4); border-radius:var(--r-pill); background:rgba(5,7,13,.6); font-size:14px; color:var(--dim); transition:opacity 800ms var(--ease); pointer-events:none; }
+  .cw-hint.gone { opacity:0; }
+  #cw-stage.words .cw-hint { opacity:1; margin-top:0; align-self:flex-start; }
+  #cw-stage.words .cw-list { max-height:none; }
+  .cw-card { position:absolute; left:var(--gutter); right:var(--gutter); bottom:calc(var(--safe-b) + var(--s5)); max-width:460px; margin:0 auto; padding:var(--s5); display:flex; flex-direction:column; gap:var(--s2); z-index:3; }
+  .cw-card h3 { font-family:var(--display); font-weight:500; font-size:var(--t-section); text-transform:none; letter-spacing:0; color:var(--ink); }
+  .cw-card .kicker { color:var(--gold-ink); }
+  @media (prefers-reduced-motion: reduce) { .cw-hero img, .cw-temple svg, .cw-glowdoor { animation:none; } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
 </style>
 </head>
@@ -610,6 +673,12 @@
   <section id="explore" hidden aria-labelledby="x-title">
     <div id="x-art" hidden aria-hidden="true"><img alt=""></div>
     <div class="ycol"><div id="x-body"></div></div>
+  </section>
+
+  <section id="creative" hidden aria-label="Creative Worlds">
+    <div id="cw-page"></div>
+    <div id="cw-door" hidden></div>
+    <div id="cw-stage" hidden></div>
   </section>
 
   <section id="you" hidden aria-labelledby="y-title">

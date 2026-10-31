@@ -1,0 +1,226 @@
+{
+  "when": "2026-10-31T21:20:33.162Z",
+  "checks": [
+    {
+      "name": "#/universe/creative opens Creative Worlds",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the Universe tab is current",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "five planets, two of them planned",
+      "ok": true,
+      "detail": "The Infinite Door | The Floating Kingdom | The Living Forest | The Dream Architect | The Time Garden"
+    },
+    {
+      "name": "the Living Forest is marked for members",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: galaxy page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the map says it's open and the first world is free",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Enter Creative Worlds opens the page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the door has its own address",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the door covers the tabs",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the door's heading takes focus",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Skip finishes the sequence and focuses the first door",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the door",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "two destinations, the forest marked for members",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the kingdom has its own address",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the world's name takes focus",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "tapping a lantern in the 3D world lights it",
+      "ok": true,
+      "detail": "lantern 3"
+    },
+    {
+      "name": "the count says so",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the hint fades after the first touch",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a drag turns the view and lights nothing",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the kingdom draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":240,\"median\":24}"
+    },
+    {
+      "name": "Things here lists all five lanterns",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the kingdom with its list",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "lighting every lantern opens the discovery",
+      "ok": true,
+      "detail": "DISCOVERED\n\nEvery lantern is lit\n\nA ques · focus cw-done-h"
+    },
+    {
+      "name": "the discovery offers a question, not a score",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all five are kept",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Back from the world returns to the door",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the forest shows an honest members' gate",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the members' gate",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "member preview opens the Living Forest",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the forest draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":99,\"median\":29}"
+    },
+    {
+      "name": "waking a plant is kept",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Escape leaves the world for the galaxy page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "after a reload the kingdom is still lit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the galaxy page shows the discovery",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "without WebGL the world opens in words",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the forest in words",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page or shader errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: the door appears still",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: the door opens without a flight",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: keyboard turns the view without errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "galaxy page": [],
+    "the door": [],
+    "the kingdom with its list": [],
+    "the members' gate": [],
+    "the forest in words": []
+  },
+  "frames": {
+    "kingdom": {
+      "n": 240,
+      "median": 24
+    },
+    "forest": {
+      "n": 99,
+      "median": 29
+    }
+  },
+  "summary": {
+    "total": 40,
+    "failed": 0
+  }
+}

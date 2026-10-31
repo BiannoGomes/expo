@@ -11,6 +11,7 @@
 // and never the source of truth: state lives here.
 import { buildHome } from "./home-scene.js";
 import { createExplore, localStore, remoteStore } from "./explore.js";
+import { createCreative } from "./creative.js";
 import { MISSIONS, SYSTEMS, WORLD_PLAY, missionById } from "../../packages/core/src/expeditions/index.ts";
 
 const $ = (id) => document.getElementById(id);
@@ -219,7 +220,7 @@ function main(data, failed) {
   let ctx = null;
   try { ctx = buildHome({ stage: $("stage"), reduced, hash }); } catch { ctx = null; }
   if (!ctx) document.body.classList.add("no-webgl");
-  let explore = null;
+  let explore = null, creative = null;
   const discoveryStars = () => (explore && explore.data.gameLayer ? explore.data.discoveries.map((d) => ({ id: `d:${d.key}`, world: d.world ?? "spirit", date: (d.discoveredAt ?? "").slice(0, 10), excerpt: "", themeIds: [], discovery: true })) : []);
   const sync = (bornId) => { if (ctx) { ctx.setMemories({ stars: [...data.stars, ...discoveryStars()], links: data.links }, bornId); highlight(); } };
   function highlight() {
@@ -859,7 +860,7 @@ function main(data, failed) {
   // ----- places and navigation -----
   function markTabs() {
     const p = state.place, inQuiet = document.body.classList.contains("quiet");
-    const cur = { earth: "home", atlas: "universe", home: "universe", world: inQuiet ? "reflect" : "universe", explore: "learn", memories: "journey" }[p] ?? p;
+    const cur = { earth: "home", atlas: "universe", home: "universe", creative: "universe", world: inQuiet ? "reflect" : "universe", explore: "learn", memories: "journey" }[p] ?? p;
     document.querySelectorAll("#tabs [data-tab]").forEach((b) => { if (b.dataset.tab === cur) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   }
   // ----- routes: every place has an address, so Back works and a link lands where it says -----
@@ -870,13 +871,15 @@ function main(data, failed) {
     if (!booted || routing || state.mode === "text" || location.hash === r) return;
     try { if (replace) history.replaceState(null, "", r); else history.pushState(null, "", r); } catch { /* a frame that forbids history: places still work */ }
   }
-  const routeOf = (p) => ({ earth: "#/home", atlas: "#/universe", home: "#/universe/growth", explore: "#/learn", memories: state.view === "miles" ? "#/journey/milestones" : "#/journey", you: "#/you",
+  const routeOf = (p) => ({ earth: "#/home", atlas: "#/universe", creative: creative?.route() ?? "#/universe/creative", home: "#/universe/growth", explore: "#/learn", memories: state.view === "miles" ? "#/journey/milestones" : "#/journey", you: "#/you",
     world: `${worldRoute(state.world)}/${state.wtab?.[state.world] ?? "overview"}` })[p] ?? "#/home";
   function followRoute(hash) {
     const [a, b, c] = hash.replace(/^#\/?/, "").split("/");
     routing = true;
     try {
       if (a === "universe" && b === "growth") goHome();
+      else if (a === "universe" && b === "creative") creative.open();
+      else if (a === "creative") creative.follow(b);
       else if (a === "universe") openAtlas();
       else if (a === "world" && ORDER.includes(b)) { if (WTABS.includes(c)) state.wtab = { ...(state.wtab ?? {}), [b]: c }; goWorld(b); }
       else if (a === "learn") explore.open();
@@ -888,7 +891,8 @@ function main(data, failed) {
   function showPlace(p) {
     state.place = p;
     document.body.dataset.place = p;
-    for (const id of ["memories", "you", "explore", "atlas", "earth"]) $(id).hidden = p !== id;
+    for (const id of ["memories", "you", "explore", "atlas", "earth", "creative"]) $(id).hidden = p !== id;
+    if (p !== "creative") creative?.close();
     if (p !== "atlas") resetAtlas();
     if (p !== "memories") $("m-detail").hidden = true;
     world.hidden = p !== "world";
@@ -976,7 +980,7 @@ function main(data, failed) {
     if (!field.hidden && b) inner.style.transform = `translate(${Math.round(inner.clientWidth / 2 - b.offsetLeft)}px, ${Math.round(inner.clientHeight * 0.42 - b.offsetTop)}px) scale(1.3)`;
     const panel = $("a-panel");
     panel.replaceChildren(
-      el("p", { class: "kicker" }, g.open ? (g.id === "gateway" ? "Open · free once, then for members" : "Open") : g.access === "plus" ? "Preview · not open yet · for members" : "Preview · not open yet"),
+      el("p", { class: "kicker" }, g.open ? (g.id === "gateway" ? "Open · free once, then for members" : g.id === "creative" ? "Open · the first world is free" : "Open") : g.access === "plus" ? "Preview · not open yet · for members" : "Preview · not open yet"),
       el("h2", { class: "s-title", id: "a-name", tabindex: "-1" }, g.name),
       el("p", { class: "lead" }, g.tag),
       g.planned ? el("p", { class: "quiet" }, g.open ? g.planned : `Planned: ${g.planned}`) : null,
@@ -984,6 +988,7 @@ function main(data, failed) {
         g.id === "growth" ? el("button", { class: "primary", onclick: () => goHome() }, "Enter Personal Growth") : null,
         g.id === "earth" ? el("button", { class: "primary", onclick: () => openEarth() }, "Return to Earth") : null,
         g.id === "gateway" ? el("button", { class: "primary", onclick: () => explore.play("gateway-1", { from: { label: "Universe", go: () => openAtlas(), trail: [] } }) }, "Enter the Gateway") : null,
+        g.id === "creative" ? el("button", { class: "primary", onclick: () => creative.open() }, "Enter Creative Worlds") : null,
         el("button", { class: "ghost", onclick: () => { resetAtlas(); inner.querySelector(`[data-id="${g.id}"]`)?.focus(); } }, "Back to the Universe")));
     panel.hidden = false;
     $("a-name").focus({ preventScroll: true });
@@ -1125,6 +1130,7 @@ function main(data, failed) {
     if (e.key !== "Escape" || state.mode === "text") return;
     if (!$("m-detail").hidden) return closeMemory();
     if (state.place === "world") goHome();
+    else if (state.place === "creative") creative.escape();
     else if (state.place !== "earth") openEarth();
   });
   if (ctx) {
@@ -1272,6 +1278,8 @@ function main(data, failed) {
     crumbs,
   });
   explore.refresh().then(() => { sync(); renderHome(); });
+  creative = createCreative({ $, el, svg, ICON, asset, sound, announce, showPlace, crumbs, explore,
+    toUniverse: () => openAtlas(), textMode: () => state.mode === "text" });
   let firstVisit = false;
   try { firstVisit = localStorage.getItem("dw-home-seen") !== "1"; } catch {}
   showPlace("home");
