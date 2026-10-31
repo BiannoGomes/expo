@@ -1183,7 +1183,7 @@ function main(data, failed) {
     const W = innerWidth, H = innerHeight, wide = W >= 1000;
     // Too little room for four labelled planets: show four world buttons instead.
     document.body.classList.toggle("compact", !wide && (H < 700 || W < 340));
-    ctx.setStretch(W / H < 0.8 ? 1.32 : 1);
+    // the ring makes itself round from the camera it gets (see roundRing in the scene)
     // The free space is measured around the galaxy card, so only while it shows.
     if ($("home-ui").hidden) { fit.frame = null; return; }
     const r = (id) => $(id).getBoundingClientRect();
@@ -1192,10 +1192,10 @@ function main(data, failed) {
       : { left: 0, right: W, top: Math.max(r("brand").bottom, $("notice").hidden ? 0 : r("notice").bottom) + 8, bottom: r("home-ui").top - 8 };
     // compact screens show no names around the planets (the world buttons replace them), so the worlds can come closer still
     fit.scale = wide ? 0.62 : document.body.classList.contains("compact") ? 0.36 : 0.56;
-    fit.tries = 0;
+    fit.tries = 0; fit.dy = 0;
     ctx.setFrame(fit.frame, fit.scale);
   }
-  const fit = { frame: null, scale: 0.8, tries: 0 };
+  const fit = { frame: null, scale: 0.8, tries: 0, dy: 0 };
   addEventListener("resize", layout);
   window.visualViewport?.addEventListener("resize", () => {
     const a = document.activeElement;
@@ -1204,7 +1204,8 @@ function main(data, failed) {
 
   function place() {
     const W = innerWidth, H = innerHeight;
-    let top = Infinity, bottom = -Infinity;
+    let top = Infinity, bottom = -Infinity, left = Infinity, right = -Infinity;
+    const compact = document.body.classList.contains("compact");
     for (const w of ORDER) {
       const p = ctx.project(w, W, H), a = arcs.get(w), b = labels.get(w);
       const r = Math.max(18, p.r), ra = r + 7, rb = r + 15;
@@ -1225,17 +1226,27 @@ function main(data, failed) {
       b.style.transform = `translate(${Math.round(x)}px, ${by}px) translateX(-50%)`;
       b.classList.toggle("off", !p.visible);
       a.svg.classList.toggle("off", !p.visible);
-      top = Math.min(top, p.y - ra - 18);
-      bottom = Math.max(bottom, by + 44);
+      top = Math.min(top, p.y - ra - (compact ? 6 : 18));
+      bottom = Math.max(bottom, compact ? p.y + r + 6 : by + 44);   // compact: no names, the planets themselves
+      left = Math.min(left, p.x - r - 6); right = Math.max(right, p.x + r + 6);
     }
     // Labels have a fixed size while the worlds scale: if any label leaves the
     // free space, step the worlds back a little until everything fits.
-    if (fit.frame && ctx.settled && fit.tries < 30 && (top < fit.frame.top || bottom > fit.frame.bottom)) {
-      // step back by as much as the overflow needs, not 4% a frame, so it settles at once instead of creeping
-      const need = (bottom - top) / Math.max(80, fit.frame.bottom - fit.frame.top);
-      fit.tries++; fit.scale *= Math.max(1.04, Math.min(1.6, need * 1.03));
-      ctx.setFrame(fit.frame, fit.scale);
+    // Fit: centre the worlds and their names (not the core) in the free space, then size them to fill
+    // about 92% of it, stepping back if they'd overflow and in if there's room. A few steps at most.
+    if (fit.frame && ctx.settled && fit.tries < 12) {
+      const F = fit.frame;
+      const need = Math.max((bottom - top) / Math.max(80, F.bottom - F.top), (right - left) / Math.max(80, F.right - F.left));
+      const cy = (top + bottom) / 2 - (F.top + F.bottom) / 2;
+      if (need > 0.98 || need < 0.86 || Math.abs(cy) > 3) {
+        fit.tries++;
+        fit.dy -= cy;
+        if (need > 0.98 || need < 0.86) fit.scale *= Math.min(1.6, Math.max(0.75, need / 0.92));
+        ctx.setFrame({ ...F, top: F.top + fit.dy, bottom: F.bottom + fit.dy }, fit.scale);
+      }
     }
+
+
   }
 
   let mode = "galaxy";
@@ -1289,7 +1300,7 @@ function main(data, failed) {
       if (state.place === "world") document.body.classList.add("closeup-on");
     });
   }
-  window.__dwHome = { state, data, get scene() { return ctx ? { moving: ctx.moving, focus: ctx.focus, settled: ctx.settled } : null; } };
+  window.__dwHome = { state, data, get scene() { return ctx ? { moving: ctx.moving, focus: ctx.focus, settled: ctx.settled, fit: { ...fit } } : null; } };
   window.__dwHomeReady = true;
 }
 

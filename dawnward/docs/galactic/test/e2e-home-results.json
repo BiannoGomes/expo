@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T19:53:13.454Z",
+  "when": "2026-10-31T20:06:08.454Z",
   "url": "http://localhost:8771/home.html",
   "checks": [
     {
@@ -515,20 +515,20 @@
     "desktop text": []
   },
   "timings": {
-    "phone.ready_ms": 297,
-    "phone.mind_arrival_ms": 726,
+    "phone.ready_ms": 307,
+    "phone.mind_arrival_ms": 754,
     "phone.frames_swiftshader": {
       "n": 45,
-      "median": 66.69999999999891,
+      "median": 66.60000000000036,
       "p95": 116.70000000000073,
       "degraded": false
     },
-    "desktop.ready_ms": 303,
-    "desktop.mind_arrival_ms": 1073,
+    "desktop.ready_ms": 282,
+    "desktop.mind_arrival_ms": 880,
     "desktop.frames_swiftshader": {
-      "n": 16,
-      "median": 200,
-      "p95": 349.8999999999978,
+      "n": 13,
+      "median": 216.70000000000073,
+      "p95": 416.6000000000022,
       "degraded": false
     },
     "reduced.soul_arrival_ms": 10

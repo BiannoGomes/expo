@@ -12,7 +12,7 @@ import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js"
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { STAR_VERT, STAR_FRAG, DUST_VERT, DUST_FRAG, LINK_VERT, LINK_FRAG, rand } from "./galaxy-scene.js";
 
-const R = 2.6; // distance of each world from the core
+const R = 3.4; // distance of each world from the core (wide enough that bigger worlds stay well apart)
 // x, z in the disc. Each painting is lit from its upper left; worlds left of
 // the core are mirrored so their gold edge always faces the light.
 // Five worlds on a ring: Spirit above, "beyond"; Mind and Soul either side;
@@ -20,11 +20,11 @@ const R = 2.6; // distance of each world from the core
 // gold edge always faces the light at the centre.
 const P = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
 export const WORLDS = [
-  { key: "spirit", at: P(-90), size: 2.07, flip: false, disk: [0.491, 0.49, 0.423], rim: "#B9A6FF" },
-  { key: "soul", at: P(-18), size: 2.01, flip: false, disk: [0.497, 0.49, 0.43], rim: "#9B5BFF" },
-  { key: "future", at: P(54), size: 2.93, flip: false, disk: [0.515, 0.473, 0.28], rim: "#E6C07B" },
-  { key: "body", at: P(126), size: 2.01, flip: true, disk: [0.498, 0.49, 0.43], rim: "#37D5E8" },
-  { key: "mind", at: P(198), size: 2.13, flip: true, disk: [0.499, 0.493, 0.41], rim: "#5B8CFF" },
+  { key: "spirit", at: P(-90), size: 2.59, flip: false, disk: [0.491, 0.49, 0.423], rim: "#B9A6FF" },
+  { key: "soul", at: P(-18), size: 2.51, flip: false, disk: [0.497, 0.49, 0.43], rim: "#9B5BFF" },
+  { key: "future", at: P(54), size: 3.66, flip: false, disk: [0.515, 0.473, 0.28], rim: "#E6C07B" },
+  { key: "body", at: P(126), size: 2.51, flip: true, disk: [0.498, 0.49, 0.43], rim: "#37D5E8" },
+  { key: "mind", at: P(198), size: 2.66, flip: true, disk: [0.499, 0.493, 0.41], rim: "#5B8CFF" },
 ].map((w) => ({ ...w, x: w.at[0] * R, z: w.at[1] * R }));
 const TILT = 0.55;
 
@@ -98,7 +98,7 @@ export function buildHome({ stage, reduced, hash }) {
     uniforms: { uMap: { value: tex("img/worlds/galaxy-core-1024.webp") }, uAlpha: { value: 1 } },
     vertexShader: SPRITE_VERT, fragmentShader: GLOW_FRAG, ...addLight,
   });
-  const core = new THREE.Mesh(new THREE.PlaneGeometry(5.3, 5.3), coreMat);
+  const core = new THREE.Mesh(new THREE.PlaneGeometry(6.6, 6.6), coreMat);
   core.rotation.x = -Math.PI / 2;
   spin.add(core);
 
@@ -279,6 +279,22 @@ export function buildHome({ stage, reduced, hash }) {
     if (off.x || off.y) camera.setViewOffset(size.w, size.h, off.x, off.y, size.w, size.h); else camera.clearViewOffset();
     camera.updateProjectionMatrix();
     go(focusKey ? worldPose(focusKey) : homePose(), 0);
+    if (!focusKey) roundRing();
+  }
+  // The ring lies in a tilted disc, so it would read as an oval. Measure it on screen from where the
+  // camera now is and stretch it front to back until it's a true circle (Bianno, 2026-10-31).
+  // The orbit and the core share the stretch (sys.scale.z), so all three stay one shape.
+  const ringPts = [[R, 0], [-R, 0], [0, R], [0, -R]];
+  const pv = new THREE.Vector3();
+  function roundRing() {
+    camera.updateMatrixWorld(true);
+    for (let i = 0; i < 4; i++) {
+      const s = ringPts.map(([x, z]) => pv.set(x, 0.05, z * stretch).applyMatrix4(tiltOnly).project(camera).clone());
+      const w = Math.abs(s[0].x - s[1].x) * size.w, h = Math.abs(s[2].y - s[3].y) * size.h;
+      if (!(w > 0 && h > 0)) return;
+      stretch = Math.min(3, Math.max(0.5, stretch * (w / h)));
+    }
+    placeWorlds();
   }
   const ray = new THREE.Raycaster();
   ray.params.Points.threshold = 0.12;
