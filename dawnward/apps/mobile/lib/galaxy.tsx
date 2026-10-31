@@ -43,6 +43,12 @@ function hash(id: string): number {
     h ^= id.charCodeAt(i);
     h = Math.imul(h, 16777619);
   }
+  // Final mix, so ids that differ only at the end still spread out.
+  h ^= h >>> 15;
+  h = Math.imul(h, 0x2c1b3c6d);
+  h ^= h >>> 12;
+  h = Math.imul(h, 0x297a2d39);
+  h ^= h >>> 15;
   return (h >>> 0) / 4294967295;
 }
 

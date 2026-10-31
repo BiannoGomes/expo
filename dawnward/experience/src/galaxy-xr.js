@@ -16,6 +16,9 @@ const DIM = new THREE.Color("#5E6570");
 function hash(id, salt = 0) {
   let h = 2166136261 ^ salt;
   for (let i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = Math.imul(h, 16777619); }
+  // Final mix: without it, ids that differ only in their last character
+  // (sample-0, sample-1) land at almost the same height.
+  h ^= h >>> 15; h = Math.imul(h, 0x2c1b3c6d); h ^= h >>> 12; h = Math.imul(h, 0x297a2d39); h ^= h >>> 15;
   return (h >>> 0) / 4294967295;
 }
 const date = (d) => new Date(`${d}T12:00:00`).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
