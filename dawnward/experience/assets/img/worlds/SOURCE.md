@@ -26,3 +26,11 @@ Supplied in the Claude Code session as PNG; converted to WebP here (ImageMagick,
 `*-640.webp` and `galaxy-core-1024.webp` are smaller copies for the home view (ImageMagick resize), so the first load stays light.
 Not used: a second Future planet with stars and nebula painted into its background (it can't blend into the galaxy).
 Still to come: the entrance scene (prompt 8).
+
+## Spirit placeholders (2026-10-31)
+
+Spirit became a fifth world (owner decision) before its art existed. Until ChatGPT art arrives:
+- `planet-spirit-640.webp`: a circular crop of Bianno's `crystal.webp` on black, with a soft lilac rim (ImageMagick).
+- `closeup-spirit.webp`: `crystal.webp` at the top of a phone-shaped frame, fading to near-black at the bottom.
+
+**Replace both when the Spirit prompts in `docs/hybrid/infinite-self-addendum.md` are generated.**

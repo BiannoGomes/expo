@@ -86,7 +86,8 @@
   .planet-mind { color:var(--mind); } .planet-body { color:var(--body); } .planet-soul { color:var(--soul); } .planet-future { color:var(--future); }
   .planet:hover, .planet:focus-visible { background:rgba(230,192,123,.14); }
   .planet.off, .arc.off { visibility:hidden; }
-  @media (max-width: 380px) { .planet .picon, .planet span:last-child { display:none; } .planet { padding:0 var(--s4); } .aname { font-size:13px; } }
+  @media (max-width: 440px) { .planet .picon, .planet span:last-child { display:none; } .planet { padding:0 var(--s4); } }
+  @media (max-width: 380px) { .aname { font-size:13px; } }
   @media (min-width: 1000px) { .aname { font-size:18px; } }
 
   /* ============ Home: one question, one action ============ */
@@ -103,13 +104,13 @@
   }
 
   /* Small screens: four clear world buttons; the planets stay as the backdrop */
-  #worldbar { display:none; grid-template-columns:repeat(4, 1fr); gap:var(--s2); margin-bottom:var(--s2); }
+  #worldbar { display:none; grid-template-columns:repeat(5, 1fr); gap:var(--s2); margin-bottom:var(--s2); }
   #worldbar button { min-height:var(--tap); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border-radius:var(--s3); border:1px solid currentColor; background:rgba(6,10,20,.6); font-size:12px; letter-spacing:.04em; padding:var(--s1) 0; }
   body.compact #worldbar { display:grid; }
   body.compact .planet, body.compact .arc { display:none; }
 
   /* ============ Tabs: the same four everywhere ============ */
-  #tabs { position:fixed; left:0; right:0; bottom:0; z-index:7; display:grid; grid-template-columns:repeat(4, 1fr); height:calc(var(--tabs-h) + var(--safe-b)); padding-bottom:var(--safe-b); background:var(--glass-strong); border-top:1px solid var(--edge); backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur)); }
+  #tabs { position:fixed; left:0; right:0; bottom:0; z-index:7; display:grid; grid-template-columns:repeat(5, 1fr); height:calc(var(--tabs-h) + var(--safe-b)); padding-bottom:var(--safe-b); background:var(--glass-strong); border-top:1px solid var(--edge); backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur)); }
   #tabs button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--s1); min-height:var(--tap); color:var(--faint); font-size:12px; letter-spacing:.06em; }
   #tabs button[aria-current] { color:var(--ink); }
   #tabs button[aria-current] svg { color:var(--gold); filter:drop-shadow(0 0 6px rgba(230,192,123,.6)); }
@@ -205,6 +206,46 @@
   .mfoot { height:calc(var(--tabs-h) + var(--safe-b) + var(--s3)); flex:none; }
   #m-detail { position:fixed; left:0; right:0; bottom:calc(var(--tabs-h) + var(--safe-b)); z-index:6; max-height:70vh; overflow:auto; padding:var(--s4) var(--gutter) var(--s5); background:var(--glass-strong); border-top:1px solid var(--edge-strong); border-radius:var(--r-card) var(--r-card) 0 0; display:flex; flex-direction:column; gap:var(--s3); backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur)); }
   .m-detail-head { display:flex; justify-content:space-between; align-items:center; gap:var(--s3); }
+
+  /* ============ Explore and the quest player ============ */
+  #explore { position:fixed; inset:0; z-index:4; overflow-y:auto; background:linear-gradient(180deg, rgba(5,7,13,.8), rgba(5,7,13,.95)); }
+  #x-body { display:flex; flex-direction:column; gap:var(--s4); }
+  .lead { font-size:17px; line-height:1.6; }
+  .row { width:100%; display:flex; align-items:center; gap:var(--s3); text-align:left; min-height:var(--tap); padding:var(--s3) var(--s4); border-radius:var(--r-card); background:var(--glass); border:1px solid var(--edge); }
+  .row:hover { border-color:var(--edge-strong); }
+  .ricon { width:40px; height:40px; border-radius:50%; display:grid; place-items:center; color:var(--gold); border:1px solid var(--edge); flex:none; }
+  .rtext { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .rtitle { font-weight:500; }
+  .rsub { font-size:14px; color:var(--dim); }
+  .rgo { color:var(--faint); }
+  .system { padding:var(--s5); border-radius:var(--r-card); background:var(--glass); border:1px solid var(--edge); }
+  .sys-title { font-family:var(--display); font-size:var(--t-section); font-weight:500; letter-spacing:0; text-transform:none; color:var(--ink); }
+  .missions { list-style:none; display:flex; flex-direction:column; gap:var(--s2); }
+  .mission { width:100%; display:flex; align-items:center; gap:var(--s3); text-align:left; min-height:56px; padding:var(--s3) var(--s4); border-radius:var(--s3); border:1px solid var(--edge); background:rgba(6,10,20,.5); }
+  .mission:hover { border-color:var(--edge-strong); }
+  .mission .mstate { width:var(--s5); color:var(--gold); text-align:center; }
+  .mission .mmeta { font-family:var(--mono); font-size:12px; color:var(--faint); white-space:nowrap; }
+  .mission.done { border-color:rgba(230,192,123,.35); }
+  .qhead { display:flex; flex-direction:column; gap:var(--s2); }
+  .qpos { display:flex; gap:var(--s1); }
+  .qpos span { width:var(--s6); height:3px; border-radius:2px; background:rgba(255,255,255,.18); }
+  .qpos span.on { background:rgba(230,192,123,.6); }
+  .qpos span.here { background:var(--gold); }
+  .choices { display:flex; flex-direction:column; gap:var(--s2); }
+  .choice { width:100%; text-align:left; min-height:var(--tap); padding:var(--s3) var(--s4); border-radius:var(--s3); border:1px solid var(--edge); background:var(--glass); font-size:16px; line-height:1.45; }
+  .choice[aria-pressed="true"] { border-color:var(--gold); background:rgba(230,192,123,.1); }
+  .explain:empty { display:none; }
+  .explain { padding:var(--s4); border-left:2px solid var(--gold); background:rgba(230,192,123,.06); border-radius:0 var(--s3) var(--s3) 0; display:flex; flex-direction:column; gap:var(--s2); }
+  .explain .outcome { font-weight:500; }
+  .small { font-size:13px; }
+  .field { width:100%; min-height:var(--tap); padding:0 var(--s4); border-radius:var(--s3); background:rgba(8,14,28,.88); border:1px solid rgba(214,228,255,.32); font-size:16px; }
+  .field:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+  .card.found { border-color:var(--edge-strong); box-shadow:0 0 30px rgba(230,192,123,.15); }
+  .safety { font-size:14px; }
+  .journey { list-style:none; display:flex; flex-direction:column; gap:var(--s2); }
+  .journey li { display:flex; flex-direction:column; gap:2px; padding:var(--s3) 0; border-bottom:1px solid var(--edge); }
+  .journey .when { font-family:var(--mono); font-size:12px; color:var(--faint); }
+  body[data-place="explore"] #stage { opacity:.35; }
 
   /* ============ You ============ */
   #you { overflow-y:auto; background:linear-gradient(180deg, rgba(5,7,13,.86), rgba(5,7,13,.96)); }
@@ -315,10 +356,18 @@
   </section>
   <section id="m-detail" hidden aria-label="Memory"></section>
 
+  <section id="explore" hidden aria-labelledby="x-title">
+    <div class="ycol"><div id="x-body"></div></div>
+  </section>
+
   <section id="you" hidden aria-labelledby="y-title">
     <div class="ycol">
       <h2 id="y-title" tabindex="-1">You</h2>
       <section aria-labelledby="y-u-h"><h3 id="y-u-h">What I understand</h3><div id="y-understand"></div></section>
+      <section aria-labelledby="y-j-h"><h3 id="y-j-h">Your journey</h3><div id="y-journey"></div>
+        <div class="actions"><button id="y-game" class="ghost" aria-pressed="true">Discoveries shown</button></div>
+        <p class="quiet">Discoveries are places that appear in your galaxy when you practise or come back to say how something went. Hiding them deletes nothing.</p>
+      </section>
       <section aria-labelledby="y-c-h"><h3 id="y-c-h">Possible connections</h3><div id="y-connections" class="cards"></div></section>
       <section aria-labelledby="y-d-h"><h3 id="y-d-h">Your memories</h3>
         <p id="y-data-line" class="quiet"></p>
@@ -352,6 +401,7 @@
 <nav id="tabs" aria-label="Main">
   <button data-tab="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-20 12 12)"/><circle cx="12" cy="12" r="2.2"/></svg>Home</button>
   <button data-tab="reflect"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.6 4.8 2.2 7.4 10 10-7.8 2.6-9.4 5.2-10 10-.6-4.8-2.2-7.4-10-10 7.8-2.6 9.4-5.2 10-10Z"/></svg>Reflect</button>
+  <button data-tab="explore"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></svg>Explore</button>
   <button data-tab="memories"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="5" cy="7" r="1.4"/><circle cx="12" cy="4" r="1.4"/><circle cx="18" cy="9" r="1.4"/><circle cx="9" cy="14" r="1.4"/><circle cx="16" cy="18" r="1.4"/><path d="M6.2 6.4 10.8 4.6M13.2 4.8l3.6 3.4M17.3 10.2 16.3 16.7M14.8 17.4 10 14.8"/></svg>Memories</button>
   <button data-tab="you"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>You</button>
 </nav>

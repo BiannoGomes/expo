@@ -21,6 +21,9 @@ export const WORLD_DOMAINS: Record<string, string[]> = {
   body: ["physical", "adventure"],
   soul: ["meaning", "emotional", "character", "relationships"],
   future: ["legacy", "environment"],
+  // Spirit (added 2026-10-31) has no taxonomy domain yet: it holds the evenings
+  // a person places there themselves, and nothing is sorted into it for them.
+  spirit: [],
 };
 
 const EXCERPT = 160;
@@ -43,7 +46,7 @@ export function seenIn(evenings: number, days: number): string {
 export function registerGalaxyRoutes(app: FastifyInstance) {
   app.get("/galaxy", { onRequest: requireAuth }, async (request) => {
     const { world } = z
-      .object({ world: z.enum(["all", "mind", "body", "soul", "future"]).default("all") })
+      .object({ world: z.enum(["all", "mind", "body", "soul", "spirit", "future"]).default("all") })
       .parse(request.query);
     const userId = request.userId;
     const domains = world === "all" ? null : WORLD_DOMAINS[world]!;

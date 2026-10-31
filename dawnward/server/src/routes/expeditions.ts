@@ -101,6 +101,7 @@ const textsOf = (a: Answer) => ("text" in a ? [a.text] : "action" in a ? [a.acti
 
 const answerSchema = z.union([
   z.object({ ack: z.literal(true) }),
+  z.object({ skip: z.literal(true) }),
   z.object({ choice: z.string().min(1).max(40) }),
   z.object({ text: z.string().max(4000) }),
   z.object({ action: z.string().max(400), when: z.string().max(200) }),

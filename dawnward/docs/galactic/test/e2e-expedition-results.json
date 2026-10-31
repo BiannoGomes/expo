@@ -1,0 +1,257 @@
+{
+  "when": "2026-10-31T13:32:15.781Z",
+  "checks": [
+    {
+      "name": "phone: Explore lists the Communication system",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: no XP, levels or scores anywhere",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone explore",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: intro shows the objective, time and the safety note",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: choosing shows what tends to happen and why",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: another choice can be read too",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone choice",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: empty words refused",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: unsafe action refused gently",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: close shows what was practised, the action and the discovery",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone return to earth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: kept on this device: completed, one experiment, one star",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: home, with the new discovery selected",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: after reload, Part 1 is done and the action waits for a check-in",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: \"I didn't\" still counts: a landmark appears",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: journey log explains each discovery",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: hiding discoveries deletes nothing",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Continue offers the open mission at step 3",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the unsaved draft comes back",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: crisis words show support and pause the mission",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: text view lists the practices",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: first light appears with the first reflection",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: delete everything removes the expeditions",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: no page errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Explore lists the Communication system",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: no XP, levels or scores anywhere",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop explore",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: intro shows the objective, time and the safety note",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: choosing shows what tends to happen and why",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: another choice can be read too",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop choice",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: empty words refused",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: unsafe action refused gently",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: close shows what was practised, the action and the discovery",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop return to earth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: kept on this device: completed, one experiment, one star",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: home, with the new discovery selected",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: after reload, Part 1 is done and the action waits for a check-in",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: \"I didn't\" still counts: a landmark appears",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: journey log explains each discovery",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: hiding discoveries deletes nothing",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Continue offers the open mission at step 3",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the unsaved draft comes back",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: crisis words show support and pause the mission",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: text view lists the practices",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: first light appears with the first reflection",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: delete everything removes the expeditions",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "phone explore": [],
+    "phone choice": [],
+    "phone return to earth": [],
+    "desktop explore": [],
+    "desktop choice": [],
+    "desktop return to earth": []
+  },
+  "summary": {
+    "total": 48,
+    "failed": 0
+  }
+}

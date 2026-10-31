@@ -176,7 +176,7 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     await page.locator('#tabs [data-tab="you"]').click();
     await page.click("#y-text");
     const txt = await page.textContent("#text");
-    check(`${name}: text view has every world and both evenings`, ["Mind", "Body", "Soul", "Future"].every((w) => txt.includes(w)) && txt.includes("Took the walk at lunch"));
+    check(`${name}: text view has every world and both evenings`, ["Mind", "Body", "Soul", "Spirit", "Future"].every((w) => txt.includes(w)) && txt.includes("Took the walk at lunch"));
     await axe(page, `${name} text`);
     await page.click("#text-close");
 
@@ -201,7 +201,7 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     const p = await browser.newPage({ viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true });
     await p.addInitScript(() => localStorage.setItem("dw-home-seen", "1"));
     await p.goto(PAGE); await ready(p); await p.waitForTimeout(800);
-    check("320x568: four world buttons shown", (await p.locator("#worldbar button").count()) === 4 && (await p.locator("#worldbar").isVisible()));
+    check("320x568: five world buttons shown", (await p.locator("#worldbar button").count()) === 5 && (await p.locator("#worldbar").isVisible()));
     await p.locator('#worldbar [data-world="soul"]').click();
     await arrive(p);
     check("320x568: a world opens from them", (await p.textContent("#w-name")) === "Soul");

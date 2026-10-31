@@ -15,12 +15,17 @@ import { STAR_VERT, STAR_FRAG, DUST_VERT, DUST_FRAG, LINK_VERT, LINK_FRAG, rand 
 const R = 2.6; // distance of each world from the core
 // x, z in the disc. Each painting is lit from its upper left; worlds left of
 // the core are mirrored so their gold edge always faces the light.
+// Five worlds on a ring: Spirit above, "beyond"; Mind and Soul either side;
+// Body and Future below. Paintings left of the core are mirrored so their
+// gold edge always faces the light at the centre.
+const P = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
 export const WORLDS = [
-  { key: "mind", x: 0, z: -R, size: 2.05, flip: false, disk: [0.499, 0.493, 0.41], rim: "#5B8CFF" },
-  { key: "body", x: -R * 0.98, z: -0.3 * R, size: 1.85, flip: true, disk: [0.498, 0.49, 0.43], rim: "#37D5E8" },
-  { key: "soul", x: R * 0.98, z: -0.3 * R, size: 1.85, flip: false, disk: [0.497, 0.49, 0.43], rim: "#9B5BFF" },
-  { key: "future", x: 0, z: R * 0.98, size: 2.75, flip: false, disk: [0.515, 0.473, 0.28], rim: "#E6C07B" },
-];
+  { key: "spirit", at: P(-90), size: 1.8, flip: false, disk: [0.5, 0.5, 0.43], rim: "#B9A6FF" },
+  { key: "soul", at: P(-18), size: 1.75, flip: false, disk: [0.497, 0.49, 0.43], rim: "#9B5BFF" },
+  { key: "future", at: P(54), size: 2.55, flip: false, disk: [0.515, 0.473, 0.28], rim: "#E6C07B" },
+  { key: "body", at: P(126), size: 1.75, flip: true, disk: [0.498, 0.49, 0.43], rim: "#37D5E8" },
+  { key: "mind", at: P(198), size: 1.85, flip: true, disk: [0.499, 0.493, 0.41], rim: "#5B8CFF" },
+].map((w) => ({ ...w, x: w.at[0] * R, z: w.at[1] * R }));
 const TILT = 0.55;
 
 const asset = (p) => (window.DW_ASSETS ? window.DW_ASSETS(p) : `assets/${p}`);
@@ -151,6 +156,10 @@ export function buildHome({ stage, reduced, hash }) {
 
   // ---- the worlds and their moons ----
   sys.updateMatrixWorld(true);
+  // Tall screens stretch the ring top to bottom a little, so labels on the same side never meet.
+  const tiltOnly = new THREE.Matrix4().makeRotationX(TILT);
+  let stretch = 1;
+  const placeWorlds = () => { for (const p of planets.values()) p.home.set(p.w.x, 0.05, p.w.z * stretch).applyMatrix4(tiltOnly); };
   const planets = new Map();
   const moons = [];
   const worldMat = (map, disk, flip) => new THREE.ShaderMaterial({
@@ -160,13 +169,13 @@ export function buildHome({ stage, reduced, hash }) {
   });
   WORLDS.forEach((w, i) => {
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w.size, w.size), worldMat(tex(`img/worlds/planet-${w.key}-640.webp`), w.disk, w.flip));
-    const home = sys.localToWorld(new THREE.Vector3(w.x, 0.05, w.z));
+    const home = new THREE.Vector3(w.x, 0.05, w.z).applyMatrix4(tiltOnly);
     mesh.position.copy(home);
     mesh.renderOrder = 10;
     scene.add(mesh);
     planets.set(w.key, { w, mesh, home, phase: i * 1.7 });
     const moonSize = 0.22 + 0.06 * (i % 3);
-    const moon = new THREE.Mesh(new THREE.PlaneGeometry(moonSize, moonSize), worldMat(tex(`img/worlds/moon-${i + 1}.webp`), [0.5, 0.5, 0.44], w.flip));
+    const moon = new THREE.Mesh(new THREE.PlaneGeometry(moonSize, moonSize), worldMat(tex(`img/worlds/moon-${(i % 4) + 1}.webp`), [0.5, 0.5, 0.44], w.flip));
     moon.renderOrder = 11;
     scene.add(moon);
     moons.push({ moon, of: w.key, r: w.size * w.disk[2] * 1.35, speed: 0.12 + 0.05 * i, phase: i * 2.1 });
@@ -178,7 +187,7 @@ export function buildHome({ stage, reduced, hash }) {
   sys.add(starGroup);
   function placeMemory(s) {
     const w = WORLDS.find((x) => x.key === s.world) ?? WORLDS[0];
-    const ang = Math.atan2(w.z, w.x) + (hash(s.id, 5) - 0.5) * 1.1;
+    const ang = Math.atan2(w.z, w.x) + (hash(s.id, 5) - 0.5) * (s.discovery ? 0.5 : 0.9);
     const rr = 1.05 + 1.15 * hash(s.id, 4);
     return new THREE.Vector3(rr * Math.cos(ang), 0.06 + (hash(s.id, 9) - 0.5) * 0.18, rr * Math.sin(ang));
   }
@@ -189,13 +198,14 @@ export function buildHome({ stage, reduced, hash }) {
     const n = starData.length;
     const pos = new Map(starData.map((s) => [s.id, placeMemory(s)]));
     const sp = new Float32Array(n * 3), sc = new Float32Array(n * 3), ss = new Float32Array(n), sph = new Float32Array(n), sb = new Float32Array(n);
-    const ink = new THREE.Color("#F6F1E4"), cyan = new THREE.Color("#9BE8F2");
+    const ink = new THREE.Color("#F6F1E4"), cyan = new THREE.Color("#9BE8F2"), gold = new THREE.Color("#FFD98A");
     starData.forEach((s, i) => {
       const p = pos.get(s.id);
       sp.set([p.x, p.y, p.z], i * 3);
-      const c = s.themeIds.length ? ink : cyan;
+      // discoveries glow gold and a little larger; memories are white or cyan
+      const c = s.discovery ? gold : s.themeIds.length ? ink : cyan;
       sc.set([c.r, c.g, c.b], i * 3);
-      ss[i] = s.themeIds.length ? 0.85 : 0.65;
+      ss[i] = s.discovery ? 1.15 : s.themeIds.length ? 0.85 : 0.65;
       sph[i] = hash(s.id, 13);
       sb[i] = s.id === bornId ? uniforms.uIntro.value + 0.2 : 0.9 + (2.2 * i) / Math.max(n, 1);
     });
@@ -332,6 +342,7 @@ export function buildHome({ stage, reduced, hash }) {
     skipIntro() { uniforms.uIntro.value = Math.max(uniforms.uIntro.value, 6); },
     /** Fit the four worlds into the free part of the screen (CSS px), so no panel covers one.
      *  Moves only the camera: no buffers are rebuilt. */
+    setStretch(k) { if (k !== stretch) { stretch = k; placeWorlds(); applyCamera(); } },
     setFrame({ left, right, top, bottom }, scale = 1) {
       const W = size.w, H = size.h;
       off = { x: Math.round(W / 2 - (left + right) / 2), y: Math.round(H / 2 - (top + bottom) / 2) };
@@ -357,7 +368,7 @@ export function buildHome({ stage, reduced, hash }) {
       const t = uniforms.uTime.value;
       // the entrance: a point of light opens into the galaxy
       const s = reduced ? 1 : Math.max(0.001, ease(Math.min(1, uniforms.uIntro.value / 2.4)));
-      sys.scale.setScalar(s);
+      sys.scale.set(s, s, s * stretch);
       if (!reduced && !renderer.xr.isPresenting) spin.rotation.y += dt * 0.025;
       for (const p of planets.values()) {
         const bob = reduced ? 0 : Math.sin(t * 0.5 + p.phase) * 0.04;

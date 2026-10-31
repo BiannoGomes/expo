@@ -1,5 +1,17 @@
 # Implementation roadmap
 
+## Owner's build order (2026-10-31), which this roadmap now follows
+
+1. Universe Atlas: clickable galaxies, routes, responsive navigation, camera.
+2. Personal Growth (Inner) Galaxy: five worlds with real content and entry and exit. **Done:** five worlds, Spirit with placeholder art.
+3. One playable activity: mission state, choices, feedback, reflection, saving and progress. **Done:** Soul · Communication, three missions. Progress shows as discoveries (owner decision), not XP.
+4. Quantum Gateway into a working Future Self Observatory.
+5. Earth Realm: daily actions, progress, reflections, completed journeys.
+6. Other galaxies (AI, Knowledge, Spiritual Exploration, Creative). The scope notes in `infinite-self-addendum.md` still apply.
+7. Polish and validate: mobile, sound, accessibility, consistency, real devices.
+
+**Next:** step 1, the Universe Atlas.
+
 Effort is given in focused build sessions, not weeks. Every phase ends at a gate: tests pass and Bianno approves. Nothing is deployed without approval.
 
 | Phase | What | Exit gate | Needs from Bianno |

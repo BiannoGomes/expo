@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T13:00:22.173Z",
+  "when": "2026-10-31T13:27:16.830Z",
   "url": "http://localhost:8771/home.html",
   "checks": [
     {
@@ -453,7 +453,7 @@
       "detail": ""
     },
     {
-      "name": "320x568: four world buttons shown",
+      "name": "320x568: five world buttons shown",
       "ok": true,
       "detail": ""
     },
@@ -485,7 +485,7 @@
     {
       "name": "reduced motion: arrival is immediate",
       "ok": true,
-      "detail": "37 ms"
+      "detail": "47 ms"
     }
   ],
   "axe": {
@@ -503,23 +503,23 @@
     "desktop text": []
   },
   "timings": {
-    "phone.ready_ms": 372,
-    "phone.mind_arrival_ms": 752,
+    "phone.ready_ms": 441,
+    "phone.mind_arrival_ms": 760,
     "phone.frames_swiftshader": {
-      "n": 39,
-      "median": 66.70000000000073,
-      "p95": 183.29999999999927,
+      "n": 31,
+      "median": 66.60000000000036,
+      "p95": 233.39999999999964,
       "degraded": false
     },
-    "desktop.ready_ms": 403,
-    "desktop.mind_arrival_ms": 927,
+    "desktop.ready_ms": 366,
+    "desktop.mind_arrival_ms": 834,
     "desktop.frames_swiftshader": {
       "n": 15,
-      "median": 150,
-      "p95": 483.3000000000029,
+      "median": 166.79999999999563,
+      "p95": 583.2000000000044,
       "degraded": false
     },
-    "reduced.soul_arrival_ms": 37
+    "reduced.soul_arrival_ms": 47
   },
   "summary": {
     "total": 97,

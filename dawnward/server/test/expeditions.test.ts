@@ -58,6 +58,10 @@ describe("expedition engine", () => {
     assert.equal(r.attempt.step, a.step);
     assert.deepEqual(r.attempt.answers.opening, { choice: "invite" });
   });
+  it("only optional steps can be skipped", () => {
+    assert.match(validateAnswer(bridge1.steps[3]!, { skip: true })!, /needs an answer/);
+    assert.equal(validateAnswer(missionById("bridge-3")!.steps[3]!, { skip: true }), null);
+  });
   it("validates every answer type", () => {
     const choice = bridge1.steps[1]!, plan = bridge1.steps[3]!, text = bridge1.steps[2]!;
     assert.match(validateAnswer(choice, { choice: "nope" })!, /Choose one/);
@@ -88,7 +92,7 @@ describe("expedition engine", () => {
     const m = missionById("bridge-3")!;
     let a = beginAttempt(m, "b3");
     for (const [i, s] of m.steps.entries()) {
-      if (s.type === "plan") { a = { ...a, step: i + 1 }; continue; }
+      if (s.type === "plan") { const sk = answerStep(m, a, i, { skip: true }); assert.ok("attempt" in sk); a = sk.attempt; continue; }
       const ans = s.type === "choice" ? { choice: s.options![2]!.id } : s.type === "rehearse" || s.type === "reflect" ? { text: "Words." } : { ack: true as const };
       const r = answerStep(m, a, i, ans); assert.ok("attempt" in r); a = r.attempt;
     }

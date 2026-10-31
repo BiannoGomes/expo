@@ -10,15 +10,17 @@
 // Rendering. Every word is HTML. The 3D scene (home-scene.js) is the setting
 // and never the source of truth: state lives here.
 import { buildHome } from "./home-scene.js";
+import { createExplore, localStore, remoteStore } from "./explore.js";
 
 const $ = (id) => document.getElementById(id);
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const asset = (p) => (window.DW_ASSETS ? window.DW_ASSETS(p) : `assets/${p}`);
-const ORDER = ["mind", "body", "soul", "future"];
+const ORDER = ["mind", "body", "soul", "spirit", "future"];
 const META = {
   mind: { name: "Mind", kicker: "Your inner world", q: "What is on your mind tonight?", line: "A quiet space to understand what you are carrying.", start: "Begin with a thought, a feeling, or a moment from today.", words: "Reflect · Understand · Clarity" },
   body: { name: "Body", kicker: "Your energy and habits", q: "How did your body carry you today?", line: "A quiet space to notice energy, rest and movement.", start: "Begin with how you slept, moved or felt.", words: "Energy · Habits · Wellbeing" },
   soul: { name: "Soul", kicker: "Your values and connections", q: "Who or what mattered today?", line: "A quiet space for people, meaning and feeling.", start: "Begin with a person, a moment or a feeling that stayed with you.", words: "Values · Connection · Meaning" },
+  spirit: { name: "Spirit", kicker: "Your sense of wonder", q: "What gave you a sense of awe or stillness today?", line: "A quiet space for wonder, stillness and the big questions.", start: "Begin with a moment that felt bigger than you, or a question you keep coming back to.", words: "Awe · Stillness · Wonder" },
   future: { name: "Future", kicker: "Your goals and pathways", q: "What moved you closer today?", line: "A quiet space for where you're heading.", start: "Begin with a step you took, or one you're ready to take.", words: "Goals · Pathways · Possibilities" },
 };
 const CONFIDENCE = { hypothesis: "Still forming", probable: "Probably true", established: "Well established" };
@@ -31,6 +33,7 @@ const ICON = {
   arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
   back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
   mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  spirit: '<circle cx="12" cy="12" r="2.2"/><circle cx="12" cy="12" r="5.5"/><path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21"/>',
   link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
 };
 
@@ -206,7 +209,9 @@ function main(data, failed) {
   let ctx = null;
   try { ctx = buildHome({ stage: $("stage"), reduced, hash }); } catch { ctx = null; }
   if (!ctx) document.body.classList.add("no-webgl");
-  const sync = (bornId) => { if (ctx) { ctx.setMemories({ stars: data.stars, links: data.links }, bornId); highlight(); } };
+  let explore = null;
+  const discoveryStars = () => (explore && explore.data.gameLayer ? explore.data.discoveries.map((d) => ({ id: `d:${d.key}`, world: d.world ?? "spirit", date: (d.discoveredAt ?? "").slice(0, 10), excerpt: "", themeIds: [], discovery: true })) : []);
+  const sync = (bornId) => { if (ctx) { ctx.setMemories({ stars: [...data.stars, ...discoveryStars()], links: data.links }, bornId); highlight(); } };
   function highlight() {
     if (!ctx) return;
     const w = state.place === "world" ? state.world : null;
@@ -419,6 +424,7 @@ function main(data, failed) {
         id = data.stars.find((s) => !before.has(s.id))?.id ?? null;
       }
       device.remove(DRAFT);
+      if (data.local && explore) { const r = explore.store.noteReflection(id); if (r?.discoveries?.length) await explore.refresh(); }
       sound.chime(988);
       sync(id);
       renderHome();
@@ -681,11 +687,24 @@ function main(data, failed) {
       ? `${plural(data.stars.length, "memory", "memories")} kept on this device, and nowhere else.`
       : `${plural(data.stars.length, "memory", "memories")} in your Dawnward.`;
     $("y-export").hidden = !data.local || !data.stars.length; $("y-delete").hidden = !data.local || !data.stars.length;
+    const found = explore?.data.discoveries ?? [];
+    $("y-journey").replaceChildren(found.length
+      ? el("ol", { class: "journey" }, [...found].reverse().map((d) => el("li", {}, el("span", { class: "when" }, d.discoveredAt ? longDate(d.discoveredAt.slice(0, 10)) : ""), el("span", { class: "mt" }, d.title), el("span", { class: "quiet" }, `Why this appeared: ${d.why}`))))
+      : el("p", { class: "quiet" }, "Nothing yet. Your first reflection brings first light; finishing a practice in Explore adds a star."));
+    $("y-game").setAttribute("aria-pressed", String(explore?.data.gameLayer !== false));
+    $("y-game").textContent = explore?.data.gameLayer !== false ? "Discoveries shown" : "Discoveries hidden";
   }
+  $("y-game").addEventListener("click", async () => {
+    const on = explore.data.gameLayer === false;
+    const r = await explore.store.setGameLayer(on);
+    if (r?.error) { announce(r.error); return; }
+    await explore.refresh(); sync(); drawYou();
+    announce(on ? "Discoveries are shown in your galaxy." : "Discoveries are hidden. Nothing was deleted.");
+  });
   let downloads = null;
   window.claude?.use?.("downloads").then((d) => (downloads = d), () => {});
   $("y-export").addEventListener("click", async () => {
-    const json = JSON.stringify({ exported: new Date().toISOString(), memories: data.stars.map(({ id, world, date, excerpt }) => ({ id, world, date, words: excerpt })), patterns: data.themes.map(({ id, world, statement, starIds, corrected, rejected }) => ({ id, world, statement, memories: starIds, corrected, rejected })) }, null, 2);
+    const json = JSON.stringify({ exported: new Date().toISOString(), memories: data.stars.map(({ id, world, date, excerpt }) => ({ id, world, date, words: excerpt })), patterns: data.themes.map(({ id, world, statement, starIds, corrected, rejected }) => ({ id, world, statement, memories: starIds, corrected, rejected })), expeditions: explore?.store.snapshot?.() ?? null }, null, 2);
     const filename = `dawnward-${today()}.json`;
     if (downloads) {
       try { await downloads.save({ filename, data: json }); announce("Saved."); }
@@ -702,9 +721,9 @@ function main(data, failed) {
     box.replaceChildren(el("p", { tabindex: "-1", id: "y-del-ask" }, `Delete all ${plural(data.stars.length, "memory", "memories")} from this device? This can't be undone.`),
       el("div", { class: "actions" },
         el("button", { class: "danger", onclick: () => {
-          const okA = device.remove(STORE), okB = device.remove(DRAFT);
-          if (!okA || !okB) { box.append(el("p", { class: "error", role: "alert" }, "I couldn't delete everything. Try again.")); return; }
-          data.stars = []; data.themes = []; finish(data); sync(); renderHome(); drawYou(); box.hidden = true; announce("Everything on this device was deleted."); $("y-title").focus();
+          const okA = device.remove(STORE), okB = device.remove(DRAFT), okC = explore ? explore.store.wipe() : true;
+          if (!okA || !okB || !okC) { box.append(el("p", { class: "error", role: "alert" }, "I couldn't delete everything. Try again.")); return; }
+          data.stars = []; data.themes = []; finish(data); explore?.refresh().then(() => { sync(); drawYou(); }); sync(); renderHome(); drawYou(); box.hidden = true; announce("Everything on this device was deleted."); $("y-title").focus();
         } }, "Delete everything"),
         el("button", { class: "ghost", onclick: () => { box.hidden = true; $("y-delete").focus(); } }, "Cancel")));
     $("y-del-ask").focus();
@@ -718,7 +737,7 @@ function main(data, failed) {
   function showPlace(p) {
     state.place = p;
     document.body.dataset.place = p;
-    for (const id of ["memories", "you"]) $(id).hidden = p !== id;
+    for (const id of ["memories", "you", "explore"]) $(id).hidden = p !== id;
     if (p !== "memories") $("m-detail").hidden = true;
     world.hidden = p !== "world";
     $("home-ui").hidden = p !== "home";
@@ -744,13 +763,13 @@ function main(data, failed) {
       announce(`${META[w].name}. ${plural(worldStars(w).length, "memory", "memories")}.`);
     }
   }
-  function goHome() {
+  function goHome({ show = null } = {}) {
     stopSpeech(); quiet(false);
     const from = state.place === "world" ? state.world : null;
-    state.selStar = null;
+    state.selStar = show;
     showPlace("home");
     renderHome(); highlight();
-    announce("Your galaxy.");
+    announce(show ? "Back on Earth. Your new discovery is the brightest gold star." : "Your galaxy.");
     (from ? labels.get(from) : $("begin"))?.focus({ preventScroll: true });
   }
   $("w-back").addEventListener("click", () => goHome());
@@ -763,6 +782,7 @@ function main(data, failed) {
     if (t === "home") goHome();
     else if (t === "reflect") openEditor(state.place === "world" ? state.world : state.lastWorld);
     else if (t === "memories") openMemories();
+    else if (t === "explore") explore.open();
     else if (t === "you") openYou();
   }));
   addEventListener("keydown", (e) => {
@@ -800,6 +820,11 @@ function main(data, failed) {
   function renderText() {
     $("text-body").replaceChildren(
       el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => { setMode("galaxy"); openEditor(state.lastWorld); } }, "Begin reflection")),
+      el("section", { "aria-labelledby": "tx-practise" }, el("h3", { id: "tx-practise" }, "Practise"),
+        ...(explore ? explore.textSummary() : []).map(({ sys, missions }) => el("div", { class: "card" },
+          el("p", { class: "kicker" }, `${META[sys.world].name} · ${sys.title}`), el("p", {}, sys.objective),
+          el("ul", { class: "memories" }, missions.map(({ m, done }) => el("li", {}, el("button", { class: "memory", onclick: () => { setMode("galaxy"); explore.play(m.id); } },
+            el("span", { class: "when" }, done ? "Done" : `${m.minutes} min`), el("span", { class: "text" }, `${m.part}: ${m.objective}`)))))))),
       ...ORDER.map((w) => el("section", { "aria-labelledby": `tx-${w}` },
         el("h3", { id: `tx-${w}` }, META[w].name),
         el("p", { class: "quiet" }, META[w].kicker),
@@ -829,6 +854,7 @@ function main(data, failed) {
     const W = innerWidth, H = innerHeight, wide = W >= 1000;
     // Too little room for four labelled planets: show four world buttons instead.
     document.body.classList.toggle("compact", !wide && (H < 700 || W < 340));
+    ctx.setStretch(W / H < 0.8 ? 1.32 : 1);
     const r = (id) => $(id).getBoundingClientRect();
     fit.frame = wide
       ? { left: r("home-ui").right + 16, right: r("tabs").left - 16, top: r("brand").bottom + 8, bottom: H - 24 }
@@ -881,6 +907,15 @@ function main(data, failed) {
   let mode = "galaxy";
   try { mode = localStorage.getItem("dw-home-mode") === "text" ? "text" : "galaxy"; } catch {}
   if (!ctx) mode = "text";
+  // Explore shares the engine with the server: on this device without an
+  // account, through the API with one.
+  explore = createExplore(data.local ? localStore(device) : remoteStore(call), {
+    $, el, svg, ICON, META, announce, quiet, longDate, sound, showPlace,
+    distress: (t) => DISTRESS.test(t), crisisText: CRISIS_TEXT.join("\n"),
+    onDiscoveries: (_d, fresh) => { sync(); if (fresh.length && explore.data.gameLayer) sound.chime(1175); },
+    goHomeWith: (key) => goHome({ show: key ? `d:${key}` : null }),
+  });
+  explore.refresh().then(() => { sync(); renderHome(); });
   showPlace("home");
   renderHome();
   setMode(mode);

@@ -288,7 +288,7 @@ app.post("/debrief", { onRequest: requireAuth, preHandler: [requireConsent, mode
       date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
       transcript: z.string().min(1).max(20000),
       // Said from inside a world: the star is born there, by the person's choice.
-      world: z.enum(["mind", "body", "soul", "future"]).optional(),
+      world: z.enum(["mind", "body", "soul", "spirit", "future"]).optional(),
       // One per composed reflection, so a retry never makes a second evening.
       clientKey: z.string().min(8).max(64).optional(),
     })

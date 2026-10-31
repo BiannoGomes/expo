@@ -9,6 +9,7 @@ import { MISSIONS, SYSTEMS, missionById, type Mission, type Step, type WorldId }
 export type AttemptStatus = "in_progress" | "paused" | "completed" | "abandoned";
 export type Answer =
   | { ack: true }
+  | { skip: true }
   | { choice: string }
   | { text: string }
   | { action: string; when: string };
@@ -48,6 +49,7 @@ export function beginAttempt(mission: Mission, id: string): Attempt {
 export function validateAnswer(step: Step, answer: unknown): string | null {
   const a = answer as Record<string, unknown> | null;
   if (!a || typeof a !== "object") return "Nothing was given for this step.";
+  if (a.skip === true) return step.required ? "This step needs an answer." : null;
   switch (step.type) {
     case "intro":
     case "close":
@@ -94,6 +96,7 @@ export function answerStep(mission: Mission, attempt: Attempt, stepIndex: number
 }
 
 function normalise(step: Step, answer: Answer): Answer {
+  if ("skip" in answer) return { skip: true };
   if ("text" in answer) return { text: answer.text.trim() };
   if ("action" in answer) return { action: answer.action.trim(), when: answer.when.trim() };
   if ("choice" in answer) return { choice: answer.choice };
