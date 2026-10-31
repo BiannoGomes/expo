@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -15,15 +16,19 @@ import {
   disputeAssertion,
   fetchAssertions,
   fetchFutureSelf,
+  fetchGalaxy,
   fetchPlan,
+  submitDebrief,
   today,
   type AssertionView,
+  type Galaxy,
   type FutureSelfView,
 } from "@/lib/api";
 import type { DailyPlan } from "@dawnward/core";
 import { fonts, theme } from "@/lib/theme";
 import { Press, useReducedMotion } from "@/lib/motion";
 import { NEBULA_SKY, worldFor } from "@/lib/universe";
+import { MemoryGalaxy } from "@/lib/galaxy";
 
 /**
  * A world, scale 2: one domain of life, readable. What matters, what has
@@ -62,6 +67,49 @@ export default function WorldScreen() {
   const [futureSelf, setFutureSelf] = useState<FutureSelfView | null>(null);
   const [plan, setPlan] = useState<DailyPlan | null>(null);
   const [disputed, setDisputed] = useState(false);
+  const [galaxy, setGalaxy] = useState<Galaxy | null>(null);
+  const [newStarId, setNewStarId] = useState<string | null>(null);
+  const [thought, setThought] = useState("");
+  const [keeping, setKeeping] = useState(false);
+  const [captureNote, setCaptureNote] = useState<string | null>(null);
+  const worldKey = (["mind", "body", "soul", "future"] as const).find((k) => k === key);
+
+  const loadGalaxy = useCallback(async (): Promise<Galaxy | null> => {
+    if (!worldKey) return null;
+    try {
+      const g = await fetchGalaxy(worldKey);
+      setGalaxy(g);
+      return g;
+    } catch {
+      return null;
+    }
+  }, [worldKey]);
+
+  /** Prototype A: one thought, kept inside this world, born as a star. */
+  async function keepThought() {
+    const text = thought.trim();
+    if (!text || keeping || !worldKey) return;
+    setKeeping(true);
+    setCaptureNote(null);
+    const before = new Set(galaxy?.stars.map((s) => s.id) ?? []);
+    try {
+      const result = await submitDebrief(today(), text, worldKey);
+      if (result.crisis) {
+        // Nothing is stored in a crisis; the words stay and the reply leads.
+        setCaptureNote(result.reply);
+        return;
+      }
+      setThought("");
+      const g = await loadGalaxy();
+      const born = g?.stars.find((s) => !before.has(s.id));
+      setNewStarId(born?.id ?? null);
+      setCaptureNote(born ? "Kept. It's a star now." : "Kept. It's in Your evenings.");
+    } catch {
+      setCaptureNote("That didn't reach me. Your thought is still here. Try again in a moment.");
+    } finally {
+      setKeeping(false);
+    }
+  }
   const rise = useRef(new Animated.Value(reduced ? 1 : 0)).current;
 
   useFocusEffect(
@@ -79,7 +127,8 @@ export default function WorldScreen() {
       fetchAssertions().then(setAssertions).catch(() => {});
       fetchPlan(today()).then(setPlan).catch(() => {});
       if (key === "future") fetchFutureSelf().then(setFutureSelf).catch(() => {});
-    }, [key, reduced, rise]),
+      loadGalaxy();
+    }, [key, reduced, rise, loadGalaxy]),
   );
 
   if (!world) return null;
@@ -139,6 +188,43 @@ export default function WorldScreen() {
             </Text>
             <Text style={styles.title}>{copy.title}</Text>
             <Text style={styles.body}>{copy.text}</Text>
+
+            <View style={styles.capture}>
+              <TextInput
+                style={styles.captureInput}
+                value={thought}
+                onChangeText={setThought}
+                placeholder={`One thought for ${world.name}`}
+                placeholderTextColor={theme.colors.faint}
+                accessibilityLabel={`One thought for ${world.name}`}
+                multiline
+              />
+              <Press
+                style={[styles.keep, (!thought.trim() || keeping) && { opacity: 0.45 }]}
+                onPress={keepThought}
+                disabled={!thought.trim() || keeping}
+                accessibilityLabel={`Keep this thought in ${world.name}`}
+              >
+                <Text style={styles.keepText}>{keeping ? "Keeping…" : "Keep it"}</Text>
+              </Press>
+            </View>
+            {captureNote && (
+              <Text style={styles.captureNote} accessibilityLiveRegion="polite">
+                {captureNote}
+              </Text>
+            )}
+
+            {galaxy && (
+              <MemoryGalaxy
+                galaxy={galaxy}
+                worldName={world.name}
+                newStarId={newStarId}
+                onChanged={() => {
+                  loadGalaxy();
+                  fetchAssertions().then(setAssertions).catch(() => {});
+                }}
+              />
+            )}
 
             {world.key === "future" && futureSelf && (
               <View style={styles.beliefCard}>
@@ -245,6 +331,30 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: theme.colors.dim,
   },
+  capture: { flexDirection: "row", alignItems: "flex-end", gap: theme.spacing(1) },
+  captureInput: {
+    flex: 1,
+    minHeight: 48,
+    maxHeight: 120,
+    paddingHorizontal: theme.spacing(1.5),
+    paddingVertical: theme.spacing(1.25),
+    borderWidth: 1,
+    borderColor: theme.colors.faint,
+    borderRadius: theme.radius.card,
+    backgroundColor: theme.colors.surface,
+    color: theme.colors.ink,
+    fontFamily: fonts.body,
+    fontSize: 16,
+  },
+  keep: {
+    minHeight: 48,
+    paddingHorizontal: theme.spacing(2),
+    borderRadius: theme.radius.card,
+    backgroundColor: theme.colors.gold,
+    justifyContent: "center",
+  },
+  keepText: { fontFamily: fonts.body, fontSize: 15, color: theme.colors.ground },
+  captureNote: { fontFamily: fonts.body, fontSize: 14, lineHeight: 21, color: theme.colors.ink },
   beliefCard: {
     borderWidth: 1,
     borderColor: theme.colors.line,

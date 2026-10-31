@@ -660,3 +660,102 @@ describe("web clients", () => {
     }
   });
 });
+
+describe("memory galaxy: real evenings, explained links, shared by every view", () => {
+  let g: Session;
+  before(async () => {
+    g = await createSession();
+    for (const [date, transcript] of [
+      ["2026-09-20", "I wrote the list on paper and did every item before lunch."],
+      ["2026-09-21", "Wrote tomorrow down again and kept to it, even the hard call."],
+    ] as const) {
+      await inject(g, { method: "POST", url: "/debrief", payload: { date, transcript } });
+      await runNightly(); // first evening creates the belief, the second confirms it
+    }
+  });
+
+  it("stars are the person's own evenings, oldest first, as whole-word excerpts", async () => {
+    const res = await inject(g, { method: "GET", url: "/galaxy" });
+    assert.equal(res.statusCode, 200);
+    const { stars } = res.json();
+    assert.equal(stars.length, 2);
+    assert.equal(stars[0].date, "2026-09-20");
+    assert.equal(stars[0].excerpt, "I wrote the list on paper and did every item before lunch.");
+  });
+
+  it("every link carries the theme that explains it, with its why", async () => {
+    const { stars, themes, links } = (await inject(g, { method: "GET", url: "/galaxy" })).json();
+    assert.equal(themes.length, 1);
+    assert.equal(themes[0].statement, "You keep commitments you write down.");
+    assert.deepEqual(themes[0].starIds, stars.map((s: { id: string }) => s.id));
+    assert.equal(themes[0].why, "Seen in 2 of your evenings, across 2 days.");
+    assert.equal(links.length, 1);
+    assert.deepEqual(links[0], { from: stars[0].id, to: stars[1].id, themeId: themes[0].id });
+  });
+
+  it("filters by world: the character belief lives in Soul, not Mind", async () => {
+    const soul = (await inject(g, { method: "GET", url: "/galaxy?world=soul" })).json();
+    assert.equal(soul.stars.length, 2);
+    const mind = (await inject(g, { method: "GET", url: "/galaxy?world=mind" })).json();
+    assert.equal(mind.stars.length, 0);
+    assert.equal(mind.themes.length, 0);
+  });
+
+  it("a left-out evening leaves the galaxy, and its links go with it", async () => {
+    const { stars } = (await inject(g, { method: "GET", url: "/galaxy" })).json();
+    await inject(g, { method: "POST", url: `/evenings/${stars[1].id}/exclude` });
+    const after = (await inject(g, { method: "GET", url: "/galaxy" })).json();
+    assert.equal(after.stars.length, 1);
+    assert.equal(after.links.length, 0);
+    assert.equal(after.themes[0].forming, true, "one evening is still forming, not a pattern");
+    await inject(g, { method: "DELETE", url: `/evenings/${stars[1].id}/exclude` });
+    assert.equal((await inject(g, { method: "GET", url: "/galaxy" })).json().links.length, 1);
+  });
+
+  it("another person sees an empty galaxy", async () => {
+    const other = await createSession();
+    const res = (await inject(other, { method: "GET", url: "/galaxy" })).json();
+    assert.deepEqual(res, { world: "all", stars: [], themes: [], links: [] });
+  });
+});
+
+describe("learn from my evenings: pausing personalization", () => {
+  it("keeps new evenings but leaves them out, and plans stop quoting them", async () => {
+    const p = await createSession();
+    await inject(p, { method: "POST", url: "/debrief", payload: { date: "2026-09-25", transcript: "Before the pause I ran by the canal at dawn." } });
+    const off = await inject(p, { method: "PATCH", url: "/me", payload: { personalization: false } });
+    assert.equal(off.statusCode, 200);
+    assert.equal((await inject(p, { method: "GET", url: "/me" })).json().personalization, false);
+
+    await inject(p, { method: "POST", url: "/debrief", payload: { date: "2026-09-26", transcript: "During the pause I sat with the hard letter." } });
+    const evenings = (await inject(p, { method: "GET", url: "/evenings" })).json();
+    assert.equal(evenings[0].excluded, true, "the paused evening is kept but left out");
+    assert.equal(evenings[1].excluded, false, "earlier evenings are untouched");
+
+    const plan = (await inject(p, { method: "GET", url: "/plan/2026-09-27" })).json();
+    assert.ok(plan.slots.every((s: { source?: unknown }) => !s.source));
+    assert.equal(plan.questionSource, undefined);
+
+    await inject(p, { method: "PATCH", url: "/me", payload: { personalization: true } });
+    const plan2 = (await inject(p, { method: "GET", url: "/plan/2026-09-28" })).json();
+    assert.ok(plan2.questionSource, "back on: quotes return, from evenings not left out");
+    assert.notEqual(plan2.questionSource.recordId, evenings[0].id);
+  });
+});
+
+describe("one thought, said inside a world", () => {
+  it("is born as a star in that world straight away", async () => {
+    const w = await createSession();
+    const res = await inject(w, {
+      method: "POST",
+      url: "/debrief",
+      payload: { date: "2026-09-30", transcript: "An idea for the studio: smaller batches.", world: "mind" },
+    });
+    assert.equal(res.statusCode, 200);
+    const mind = (await inject(w, { method: "GET", url: "/galaxy?world=mind" })).json();
+    assert.equal(mind.stars.length, 1);
+    assert.equal(mind.stars[0].excerpt, "An idea for the studio: smaller batches.");
+    const body = (await inject(w, { method: "GET", url: "/galaxy?world=body" })).json();
+    assert.equal(body.stars.length, 0);
+  });
+});

@@ -85,3 +85,24 @@ describe("attachSources", () => {
     assert.ok(!("questionQuote" in plan));
   });
 });
+
+import { excerpt, seenIn } from "../src/routes/galaxy.js";
+
+describe("galaxy excerpt", () => {
+  it("keeps short evenings whole and cuts long ones on a word", () => {
+    assert.equal(excerpt("  Short   and sweet. "), "Short and sweet.");
+    const long = "word ".repeat(60).trim();
+    const e = excerpt(long);
+    assert.ok(e.endsWith("…"));
+    assert.ok(e.length <= 161);
+    assert.ok(!/wor…$/.test(e) && /word…$/.test(e));
+  });
+});
+
+describe("galaxy why", () => {
+  it("counts what is shown", () => {
+    assert.equal(seenIn(1, 1), "Seen in one of your evenings so far.");
+    assert.equal(seenIn(3, 1), "Seen in 3 of your evenings, across 1 day.");
+    assert.equal(seenIn(7, 4), "Seen in 7 of your evenings, across 4 days.");
+  });
+});

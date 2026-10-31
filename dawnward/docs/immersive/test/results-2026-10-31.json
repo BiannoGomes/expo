@@ -1,0 +1,54 @@
+{
+  "A": {
+    "enterMind_ms": 1899,
+    "keep_to_star_ms": 492,
+    "starButton": 2,
+    "inspectShowsNew": 1,
+    "boxCleared": true,
+    "routeBack": true,
+    "pageErrors": [
+      "Error: Minified React error #419; visit https://re"
+    ],
+    "reducedMotion_ok": true,
+    "reducedMotion_errors": [
+      "Error: Minified React error #419; visit https://re"
+    ]
+  },
+  "B": {
+    "svgLines": 6,
+    "starButtons": 11,
+    "starShowsTheme": true,
+    "themeShowsEvidence": 7,
+    "disputeOffered": true,
+    "formingLabel": 1,
+    "listRows": 12,
+    "leaveOut_removedOne": true,
+    "undo_restored": true,
+    "pageErrors": [
+      "Error: Minified React error #419; visit https://re"
+    ]
+  },
+  "C": {
+    "sampleLabelled": 1,
+    "sampleStars": 8,
+    "vrButton": "VR NOT SUPPORTED",
+    "sample_frame_median_ms": 16.7,
+    "sample_frame_p95_ms": 16.7,
+    "tokenClearedFromUrl": true,
+    "yourGalaxyLabel": true,
+    "parity_stars": {
+      "list": 11,
+      "api": 11
+    },
+    "parity_themes": {
+      "list": 1,
+      "api": 1
+    },
+    "panelShowsEvening": 1,
+    "panelShowsTheme": 1,
+    "real_frame_median_ms": 16.7,
+    "real_frame_p95_ms": 16.7,
+    "mobile_noHorizontalScroll": true,
+    "pageErrors": []
+  }
+}

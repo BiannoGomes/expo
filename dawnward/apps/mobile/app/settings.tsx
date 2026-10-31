@@ -243,6 +243,27 @@ export default function SettingsScreen() {
           </View>
 
           <View style={styles.card}>
+            <Text style={theme.type.label}>Personalization</Text>
+            <View style={styles.row}>
+              <View style={{ flex: 1, paddingRight: 16 }}>
+                <Text style={theme.type.body}>Learn from my evenings</Text>
+                <Text style={theme.type.dim}>
+                  {me?.personalization === false
+                    ? "Paused. I keep what you share but learn nothing from it, and your mornings stop drawing on what I have learned. Evenings from the pause can be brought back one by one in Your evenings."
+                    : "On. Your evenings shape your mornings and what I understand about you. Turn this off at any time."}
+                </Text>
+              </View>
+              <Switch
+                value={me?.personalization ?? true}
+                onValueChange={(personalization) => save({ personalization }, { personalization })}
+                trackColor={{ false: theme.colors.line, true: theme.colors.gold }}
+                thumbColor={theme.colors.ink}
+                accessibilityLabel="Learn from my evenings"
+              />
+            </View>
+          </View>
+
+          <View style={styles.card}>
             <Text style={theme.type.label}>Your data</Text>
             <Text style={[theme.type.dim, styles.cardNote]}>
               Everything Dawnward knows is yours to take or to erase.

@@ -14,6 +14,7 @@ import { registerConstellationRoutes } from "./routes/constellation.js";
 import { registerAuthRoutes, requireAuth } from "./auth.js";
 import { transcription } from "./intelligence/transcription.js";
 import { registerEveningRoutes } from "./routes/evenings.js";
+import { registerGalaxyRoutes } from "./routes/galaxy.js";
 import { notExcluded } from "./model/exclusions.js";
 import { attachSources, type ClaimedPlan, type RecentWords } from "./model/provenance.js";
 
@@ -39,6 +40,7 @@ export function buildApp() {
   registerEventRoutes(app);
   registerConstellationRoutes(app);
   registerEveningRoutes(app);
+  registerGalaxyRoutes(app);
 
   app.get("/health", async () => ({ ok: true }));
 
@@ -98,8 +100,9 @@ app.get("/plan/:date", { preHandler: requireAuth }, async (request, reply) => {
   const [user] = await query<{
     available_minutes_daily: number;
     challenge_opt_in: boolean;
+    personalization: boolean;
   }>(
-    "select available_minutes_daily, challenge_opt_in from users where id = $1",
+    "select available_minutes_daily, challenge_opt_in, personalization from users where id = $1",
     [userId],
   );
   if (!user) return reply.code(404).send({ error: "unknown user" });
@@ -140,17 +143,21 @@ app.get("/plan/:date", { preHandler: requireAuth }, async (request, reply) => {
 
   // The person's own recent evenings, minus any they left out. Steps may
   // quote them; attachSources keeps a quote only if it is really theirs.
-  const words = await recentWords(userId, 5);
+  // Paused personalization: a sensible plan that draws on nothing personal.
+  const learning = user.personalization;
+  const words = learning ? await recentWords(userId, 5) : [];
 
   const plan = await intelligence.generatePlan({
     date,
     summary:
-      summary?.content ??
-      "New user; model not yet built. Keep the plan generic but sensible.",
+      (learning ? summary?.content : null) ??
+      (learning
+        ? "New user; model not yet built. Keep the plan generic but sensible."
+        : "The person has paused personalization. Use nothing personal; keep the plan generic but sensible."),
     availableMinutes: user.available_minutes_daily,
     activeCampaign: campaign ? `${campaign.title} — ${campaign.mission}` : null,
-    recentDebriefs: extractions,
-    yesterdayOutcome,
+    recentDebriefs: learning ? extractions : [],
+    yesterdayOutcome: learning ? yesterdayOutcome : null,
     reducedLoad,
     recentWords: words,
   });
@@ -227,6 +234,8 @@ app.post("/debrief", { preHandler: requireAuth }, async (request, reply) => {
     .object({
       date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
       transcript: z.string().min(1).max(20000),
+      // Said from inside a world: the star is born there, by the person's choice.
+      world: z.enum(["mind", "body", "soul", "future"]).optional(),
     })
     .parse(request.body);
 
@@ -255,9 +264,30 @@ app.post("/debrief", { preHandler: requireAuth }, async (request, reply) => {
   const [record] = await query<{ id: string }>(
     `insert into records (user_id, kind, payload, occurred_at)
      values ($1, 'reflection', $2, now()) returning id`,
-    [userId, JSON.stringify({ date: body.date, transcript: body.transcript })],
+    [
+      userId,
+      JSON.stringify({
+        date: body.date,
+        transcript: body.transcript,
+        ...(body.world ? { world: body.world } : {}),
+      }),
+    ],
   );
   if (!record) return reply.code(500).send({ error: "capture failed" });
+
+  // Paused personalization: keep the words, learn nothing from them. The
+  // evening is left out like any other and can be brought back by hand.
+  const [prefs] = await query<{ personalization: boolean }>(
+    "select personalization from users where id = $1",
+    [userId],
+  );
+  if (prefs && !prefs.personalization) {
+    await query(
+      `insert into record_exclusions (record_id, user_id) values ($1, $2)
+       on conflict (record_id) do nothing`,
+      [record.id, userId],
+    );
+  }
 
   // 3. Extraction. On failure the record parks as unprocessed — never dropped.
   const todaysPlan = await query<{ plan: DailyPlan }>(

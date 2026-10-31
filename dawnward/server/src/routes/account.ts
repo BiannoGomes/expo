@@ -20,9 +20,10 @@ export function registerAccountRoutes(app: FastifyInstance) {
       available_minutes_daily: number;
       touchpoints: Record<string, unknown>;
       preferred_name: string | null;
+      personalization: boolean;
     }>(
       `select consent, challenge_opt_in, available_minutes_daily, touchpoints,
-              preferred_name
+              preferred_name, personalization
          from users where id = $1`,
       [request.userId],
     );
@@ -36,6 +37,7 @@ export function registerAccountRoutes(app: FastifyInstance) {
       availableMinutesDaily: user?.available_minutes_daily ?? 90,
       touchpoints: user?.touchpoints ?? {},
       preferredName: user?.preferred_name ?? null,
+      personalization: user?.personalization ?? true,
       onboardingComplete: Boolean(onboarding?.completed_at),
     };
   });
@@ -46,6 +48,7 @@ export function registerAccountRoutes(app: FastifyInstance) {
         challengeOptIn: z.boolean().optional(),
         preferredName: z.string().trim().max(40).nullable().optional(),
         availableMinutesDaily: z.number().int().min(15).max(600).optional(),
+        personalization: z.boolean().optional(),
         touchpoints: z
           .object({
             morning: z.string().regex(/^\d{2}:\d{2}$/),
@@ -72,6 +75,12 @@ export function registerAccountRoutes(app: FastifyInstance) {
       await query("update users set available_minutes_daily = $2 where id = $1", [
         request.userId,
         body.availableMinutesDaily,
+      ]);
+    }
+    if (body.personalization !== undefined) {
+      await query("update users set personalization = $2 where id = $1", [
+        request.userId,
+        body.personalization,
       ]);
     }
     if (body.touchpoints) {

@@ -8,8 +8,12 @@ const watch = process.argv.includes("--watch");
 const opts = { entryPoints: ["src/main.js"], bundle: true, format: "iife", minify: !watch, sourcemap: watch, target: ["es2020"], outfile: "dist/app.js", legalComments: "none" };
 mkdirSync("dist", { recursive: true });
 
+// Prototype C: the Memory Galaxy page, a second entry sharing fonts and three.
+const galaxyOpts = { ...opts, entryPoints: ["src/galaxy-xr.js"], outfile: "dist/galaxy.js" };
+
 function copyStatic() {
   cpSync("index.html", "dist/index.html");
+  cpSync("galaxy.html", "dist/galaxy.html");
   cpSync("fonts.css", "dist/fonts.css");
   cpSync("fonts", "dist/fonts", { recursive: true });
   cpSync("assets", "dist/assets", { recursive: true });
@@ -35,7 +39,8 @@ if (watch) {
   console.log("watching src/ -> dist/");
 } else {
   const r = await build({ ...opts, metafile: true });
+  await build(galaxyOpts);
   copyStatic();
   const kb = (n) => `${(n / 1024).toFixed(0)} KB`;
-  console.log("app.js", kb(statSync("dist/app.js").size), "| single file", kb(single()));
+  console.log("app.js", kb(statSync("dist/app.js").size), "| galaxy.js", kb(statSync("dist/galaxy.js").size), "| single file", kb(single()));
 }

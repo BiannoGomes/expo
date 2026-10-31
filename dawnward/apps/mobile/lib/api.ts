@@ -108,6 +108,8 @@ export interface Me {
   availableMinutesDaily: number;
   touchpoints: { morning: string; evening: string; weeklyDigest: boolean };
   preferredName: string | null;
+  /** Learn from my evenings. Off: new evenings are kept but left out. */
+  personalization: boolean;
   onboardingComplete: boolean;
 }
 
@@ -133,6 +135,7 @@ export async function updateMe(patch: {
   preferredName?: string | null;
   availableMinutesDaily?: number;
   touchpoints?: Me["touchpoints"];
+  personalization?: boolean;
 }): Promise<void> {
   const res = await api("/me", { method: "PATCH", body: JSON.stringify(patch) });
   if (!res.ok) throw new Error(`update failed: ${res.status}`);
@@ -188,10 +191,11 @@ export async function transcribe(
 export async function submitDebrief(
   date: string,
   transcript: string,
+  world?: "mind" | "body" | "soul" | "future",
 ): Promise<{ crisis: boolean; reply: string }> {
   const res = await api(
     "/debrief",
-    { method: "POST", body: JSON.stringify({ date, transcript }) },
+    { method: "POST", body: JSON.stringify({ date, transcript, ...(world ? { world } : {}) }) },
     TIMEOUT_MS.model,
   );
   if (!res.ok) throw new Error(`debrief failed: ${res.status}`);
@@ -380,4 +384,39 @@ export async function fetchEvenings(q?: string, before?: string): Promise<Evenin
 export async function setEveningLeftOut(id: string, leftOut: boolean): Promise<void> {
   const res = await api(`/evenings/${id}/exclude`, { method: leftOut ? "POST" : "DELETE" });
   if (!res.ok) throw new Error(`evening update failed: ${res.status}`);
+}
+
+// ---------- The Memory Galaxy: one data contract for list, sky and XR ----------
+
+export interface GalaxyStar {
+  id: string;
+  date: string; // YYYY-MM-DD
+  excerpt: string;
+  themeIds: string[];
+}
+
+export interface GalaxyTheme {
+  id: string;
+  statement: string;
+  kind: string;
+  confidence: "hypothesis" | "probable" | "established";
+  why: string;
+  domainIds: string[];
+  starIds: string[];
+  /** One evening, or still a guess: shown as forming, never as a pattern. */
+  forming: boolean;
+}
+
+export interface Galaxy {
+  world: string;
+  stars: GalaxyStar[];
+  themes: GalaxyTheme[];
+  /** Every link carries the theme that explains it. */
+  links: { from: string; to: string; themeId: string }[];
+}
+
+export async function fetchGalaxy(world: "all" | "mind" | "body" | "soul" | "future"): Promise<Galaxy> {
+  const res = await api(`/galaxy?world=${world}`);
+  if (!res.ok) throw new Error(`galaxy fetch failed: ${res.status}`);
+  return res.json();
 }
