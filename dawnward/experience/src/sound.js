@@ -20,7 +20,7 @@ export function createSound({ asset, film }) {
     filter = ctx.createBiquadFilter(); filter.type = "lowpass"; filter.frequency.value = 500; filter.Q.value = 0.4;
     gain = ctx.createGain(); gain.gain.value = 0;
     filter.connect(gain).connect(ctx.destination);
-    loading = fetch(asset("audio/score.mp3")).then((r) => r.arrayBuffer()).then((b) => ctx.decodeAudioData(b)).then((b) => { buffer = b; }).catch(() => {});
+    loading = readAudio(asset("audio/score.mp3")).then((b) => ctx.decodeAudioData(b)).then((b) => { buffer = b; }).catch(() => {});
   }
   function startBed() {
     if (!buffer || src) return;
@@ -64,4 +64,16 @@ export function createSound({ asset, film }) {
     back() { bell(BACK, 0.06); },
     get on() { return on; },
   };
+}
+
+// The single-file build inlines the score as a data URL. Some hosts block
+// fetch() of data URLs, so decode those directly instead.
+function readAudio(url) {
+  if (url.startsWith("data:")) {
+    const bin = atob(url.slice(url.indexOf(",") + 1));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return Promise.resolve(bytes.buffer);
+  }
+  return fetch(url).then((r) => r.arrayBuffer());
 }

@@ -29,12 +29,12 @@
     "requests": 18,
     "totalKB": 1458,
     "audioLoaded": false,
-    "domContentLoadedMs": 1770
+    "domContentLoadedMs": 1937
   },
   "frames": {
     "3": {
       "medianMs": 67,
-      "p90Ms": 100
+      "p90Ms": 150
     },
     "0.55": {
       "medianMs": 17,
@@ -42,11 +42,11 @@
     },
     "1.62": {
       "medianMs": 117,
-      "p90Ms": 217
+      "p90Ms": 167
     },
     "4.3": {
-      "medianMs": 133,
-      "p90Ms": 167
+      "medianMs": 167,
+      "p90Ms": 217
     }
   },
   "determinism": {
