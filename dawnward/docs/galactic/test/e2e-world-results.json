@@ -1,0 +1,188 @@
+{
+  "when": "2026-10-31T16:18:33.073Z",
+  "checks": [
+    {
+      "name": "address #/home opens earth",
+      "ok": true,
+      "detail": "earth"
+    },
+    {
+      "name": "address #/universe opens atlas",
+      "ok": true,
+      "detail": "atlas"
+    },
+    {
+      "name": "address #/universe/growth opens home",
+      "ok": true,
+      "detail": "home"
+    },
+    {
+      "name": "address #/world/spirit/library opens world",
+      "ok": true,
+      "detail": "world"
+    },
+    {
+      "name": "the world address chose its tab",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "address #/learn opens explore",
+      "ok": true,
+      "detail": "explore"
+    },
+    {
+      "name": "address #/journey/milestones opens memories",
+      "ok": true,
+      "detail": "memories"
+    },
+    {
+      "name": "the journey address chose Milestones",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "address #/you opens you",
+      "ok": true,
+      "detail": "you"
+    },
+    {
+      "name": "address #/nowhere opens earth",
+      "ok": true,
+      "detail": "earth"
+    },
+    {
+      "name": "a plain visit opens Home at #/home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "each step has its own address",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Back from Mind returns to Personal Growth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Back again returns to the Universe",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "and again to Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Forward works too",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Mind has four sections: Overview, Expeditions, Library, Progress",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "arrow keys move between sections",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the section is in the address",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the solar system says where you are, in words",
+      "ok": true,
+      "detail": "Beyond Overthinking: 0 of 7 chapters done. Next: Understand the loop. 3 still being written."
+    },
+    {
+      "name": "before any chapter, no moon or orbit is lit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "planned chapters are drawn as planned, and listed as Planned",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: mind expeditions",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "after Chapter 1 is saved: 1 of 7, and the next is Chapter 2",
+      "ok": true,
+      "detail": "Beyond Overthinking: 1 of 7 chapters done. Next: Separate facts from assumptions. 3 still being written."
+    },
+    {
+      "name": "exactly one moon and its orbit are lit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the next chapter is ringed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Library lists the four real worksheets",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Library says plainly that books come later, after review",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a worksheet opens from the Library",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "its Back returns to Mind",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Progress counts only saved work: 1 of 7, one discovery",
+      "ok": true,
+      "detail": "Your progress in MindBeyond Overthinking1 of 7Thought Patterns0 of 1Memories0Discoveries1Real actions chosen0A star: Beyond Overthinking, Chapter 1: Understand the loopYou finished Beyond Overthinking"
+    },
+    {
+      "name": "axe: mind progress",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "AI Creation is labelled a preview with its planned purpose",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: the ring doesn't pulse",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "mind expeditions": [],
+    "mind progress": []
+  },
+  "summary": {
+    "total": 35,
+    "failed": 0
+  }
+}

@@ -16,24 +16,8 @@ import { MISSIONS, SYSTEMS, WORLD_PLAY, missionById } from "../../packages/core/
 const $ = (id) => document.getElementById(id);
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const asset = (p) => (window.DW_ASSETS ? window.DW_ASSETS(p) : `assets/${p}`);
-const ORDER = ["mind", "body", "soul", "spirit", "future"];
-const META = {
-  mind: { name: "Mind", kicker: "Your inner world", q: "What is on your mind?", line: "A quiet space to understand what you are carrying.", start: "Begin with a thought, a feeling, or a moment from today.", words: "Reflect · Understand · Clarity" },
-  body: { name: "Body", kicker: "Your energy and habits", q: "How did your body carry you today?", line: "A quiet space to notice energy, rest and movement.", start: "Begin with how you slept, moved or felt.", words: "Energy · Habits · Wellbeing" },
-  soul: { name: "Soul", kicker: "Your values and connections", q: "Who or what mattered today?", line: "A quiet space for people, meaning and feeling.", start: "Begin with a person, a moment or a feeling that stayed with you.", words: "Values · Connection · Meaning" },
-  spirit: { name: "Spirit", kicker: "Your sense of wonder", q: "What gave you a sense of awe or stillness today?", line: "A quiet space for wonder, stillness and the big questions.", start: "Begin with a moment that felt bigger than you, or a question you keep coming back to.", words: "Awe · Stillness · Wonder" },
-  future: { name: "Future", kicker: "Your goals and pathways", q: "What moved you closer today?", line: "A quiet space for where you're heading.", start: "Begin with a step you took, or one you're ready to take.", words: "Goals · Pathways · Possibilities" },
-};
-// The Universe Atlas. Only what is built opens; the rest says so plainly.
-const GALAXIES = [
-  { id: "growth", p: [50, 50, 38], name: "Personal Growth", tag: "Your inner universe: Mind, Body, Soul, Spirit and Future.", open: true, hue: 0, x: 50, y: 46, size: 30 },
-  { id: "ai", p: [20, 27, 26], name: "AI Discovery", tag: "Conversations, decisions and imagination, practised with AI.", planned: "A conversation simulator, a decision lab, an imagination studio, a knowledge explorer, a future-self dialogue, and values exercises.", hue: 175, x: 20, y: 20, size: 18 },
-  { id: "knowledge", p: [80, 27, 26], name: "Knowledge", tag: "Learn something new, visually.", planned: "Guided explorations of ideas, one small world at a time.", hue: 215, x: 81, y: 19, size: 17 },
-  { id: "spiritual", p: [20, 73, 26], name: "Spiritual Exploration", tag: "Awe, stillness and the big questions.", planned: "Practices of awe and attention, and questions worth sitting with. Spirit's world in Personal Growth is already open.", hue: 265, x: 17, y: 74, size: 17 },
-  { id: "creative", p: [80, 73, 26], name: "Creative", tag: "Imagination, given room.", planned: "Short creative practices: stories, images and making things.", hue: 305, x: 83, y: 73, size: 17 },
-  { id: "gateway", p: [50, 9, 19], name: "Quantum Gateway", tag: "A step toward the person you are becoming.", planned: "Opens next: the Future Self Observatory, with the Mirror, the Crossroads and the First Step. A visual metaphor for imagining possible futures, never a prediction.", kind: "gateway", x: 50, y: 12, size: 13 },
-  { id: "earth", p: [50, 90, 24], name: "Earth Realm", tag: "Your everyday life: today, your actions and your words.", open: true, kind: "earth", x: 50, y: 85, size: 13 },
-];
+// Worlds and galaxies live in one registry: new places come from data, not new screens.
+import { ORDER, META, GALAXIES, WORLDS, worldRoute } from "./registry.js";
 
 const CONFIDENCE = { hypothesis: "Still forming", probable: "Probably true", established: "Well established" };
 const svg = (paths, size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
@@ -291,15 +275,46 @@ function main(data, failed) {
     more.push(el("section", { class: "group", "aria-labelledby": "w-und-h" },
       el("h3", { id: "w-und-h" }, "What I understand here"),
       themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : el("p", { class: "quiet" }, "I don't have enough evidence to conclude anything here yet.")));
+    const tabs = [["overview", "Overview"], ["expeditions", "Expeditions"], ["library", "Library"], ["progress", "Progress"]];
+    const cur = state.wtab?.[w] ?? "overview";
+    const panels = { overview: () => [worldNext(w), ...more], expeditions: () => [worldSystems(w)], library: () => [worldLibrary(w)], progress: () => [worldProgress(w)] };
+    const panel = el("div", { class: "wpanel", role: "tabpanel", id: "w-panel", "aria-labelledby": `w-tab-${cur}`, tabindex: "0" }, ...panels[cur]());
+    const pick = (id, focus) => { state.wtab = { ...(state.wtab ?? {}), [w]: id }; worldIntro(w); routeTo(`${worldRoute(w)}/${id}`, { replace: true }); if (focus) $(`w-tab-${id}`)?.focus(); };
+    const bar = el("div", { class: "wtabs", role: "tablist", "aria-label": `${META[w].name} sections`, onkeydown: (e) => {
+      const k = tabs.findIndex(([id]) => id === cur), d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (d) { e.preventDefault(); pick(tabs[(k + d + tabs.length) % tabs.length][0], true); }
+    } }, tabs.map(([id, label]) => el("button", { role: "tab", id: `w-tab-${id}`, "aria-selected": String(id === cur), "aria-controls": "w-panel", tabindex: id === cur ? "0" : "-1", onclick: () => pick(id, true) }, label)));
     wbody.replaceChildren(
       el("p", { class: "kicker" }, META[w].kicker),
       el("h2", { class: "w-q", id: "w-q", tabindex: "-1" }, META[w].q),
       el("p", { class: "w-line" }, META[w].line),
       el("p", { class: "w-start" }, META[w].start),
       el("button", { class: "primary wide", onclick: () => openEditor(w) }, "Begin reflection"),
-      worldSystems(w),
-      ...more);
+      bar, panel);
     document.body.classList.remove("sheet-open");
+  }
+  const fromWorld = (w) => ({ from: { label: META[w].name, go: () => goWorld(w), trail: [growthCrumb, { label: META[w].name, go: () => goWorld(w) }] } });
+  const chapterDone = (id) => (explore?.data.attempts ?? []).some((a) => a.missionId === id && a.status === "completed");
+  /** Draws a skill pathway: the system is the sun, each chapter a moon on its own orbit.
+   *  Lit = completed and saved. Ringed = next. Dim and dashed = planned, not yet written. */
+  function solarSystem(sys) {
+    const NSV = "http://www.w3.org/2000/svg";
+    const mk = (tag, a) => { const n = document.createElementNS(NSV, tag); for (const [k, v] of Object.entries(a)) n.setAttribute(k, v); return n; };
+    const written = sys.missionIds.map(missionById), planned = sys.planned ?? [];
+    const all = [...written.map((m) => ({ title: m.part.replace(/^Chapter \d+: /, ""), done: chapterDone(m.id), planned: false })), ...planned.map((p) => ({ title: p.title, done: false, planned: true }))];
+    const nextIdx = all.findIndex((c) => !c.done && !c.planned);
+    const W = 300, H = 124, cx = W / 2, cy = H / 2, n = all.length;
+    const svgEl = mk("svg", { viewBox: `0 0 ${W} ${H}`, class: `solar solar-${sys.world}`, role: "img",
+      "aria-label": `${sys.title}: ${all.filter((c) => c.done).length} of ${n} ${sys.kind === "expedition" ? "chapters" : "missions"} done.${nextIdx >= 0 ? ` Next: ${all[nextIdx].title}.` : ""}${planned.length ? ` ${planned.length} still being written.` : ""}` });
+    svgEl.append(mk("circle", { cx, cy, r: 13, class: "sun" }));
+    all.forEach((c, k) => {
+      const r = n === 1 ? 62 : 24 + (k * (78 - 24)) / (n - 1), rx = r * 1.85, ry = r * 0.62;
+      svgEl.append(mk("ellipse", { cx, cy, rx, ry, class: `orbit${c.done ? " lit" : ""}${c.planned ? " planned" : ""}` }));
+      const a = -0.5 + k * 0.95, x = cx + rx * Math.cos(a), y = cy + ry * Math.sin(a);
+      if (k === nextIdx) svgEl.append(mk("circle", { cx: x, cy: y, r: 9, class: "next-ring" }));
+      svgEl.append(mk("circle", { cx: x, cy: y, r: c.planned ? 3.5 : 5, class: `moon${c.done ? " lit" : ""}${c.planned ? " planned" : ""}` }));
+    });
+    return svgEl;
   }
   // Each world plays its own way; its solar systems open missions right here.
   function worldSystems(w) {
@@ -310,14 +325,58 @@ function main(data, failed) {
       el("h3", { id: "w-sys-h" }, "Solar systems"),
       el("p", { class: "quiet" }, play.mechanic),
       ...systems.map((sys) => el("div", { class: "system" },
-        el("p", { class: "kicker" }, "Solar system"),
+        el("p", { class: "kicker" }, sys.kind === "expedition" ? `Solar system · expedition · ${sys.missionIds.length + (sys.planned?.length ?? 0)} chapters` : "Solar system"),
         el("p", { class: "sys-title" }, sys.title),
         el("p", { class: "quiet" }, sys.objective),
+        solarSystem(sys),
         el("ul", { class: "missions" }, sys.missionIds.map(missionById).map((m) => el("li", {}, el("button", {
           class: `mission${done(m.id) ? " done" : ""}`, "aria-label": `${m.title}, ${m.part}. ${m.objective} ${done(m.id) ? "Done." : `${m.minutes} minutes.`}`,
-          onclick: () => explore.play(m.id, { from: { label: META[w].name, go: () => goWorld(w), trail: [growthCrumb, { label: META[w].name, go: () => goWorld(w) }] } }),
-        }, el("span", { class: "mstate", "aria-hidden": "true" }, done(m.id) ? "✦" : ""), el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `${m.title}`), el("span", { class: "rsub" }, m.part)), el("span", { class: "mmeta" }, done(m.id) ? "Done" : `${m.minutes} min`))))))),
+          onclick: () => explore.play(m.id, fromWorld(w)),
+        }, el("span", { class: "mstate", "aria-hidden": "true" }, done(m.id) ? "✦" : ""), el("span", { class: "rtext" }, el("span", { class: "rtitle" }, sys.kind === "expedition" ? m.part : m.title), el("span", { class: "rsub" }, sys.kind === "expedition" ? m.objective : m.part)), el("span", { class: "mmeta" }, done(m.id) ? "Done" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`)))),
+          (sys.planned ?? []).map((p, k) => el("li", { class: "planned" }, el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `Chapter ${sys.missionIds.length + k + 1}: ${p.title}`), el("span", { class: "rsub" }, p.line)), el("span", { class: "mmeta" }, "Planned")))))),
       el("p", { class: "quiet small" }, systems.length ? `Planned next here: ${play.planned.join(", ")}.` : `Planned here: ${play.planned.join(", ")}. Reflection is open now.`));
+  }
+  // Overview: the one next step in this world, if there is one
+  function worldNext(w) {
+    const open = (explore?.data.attempts ?? []).find((a) => (a.status === "in_progress" || a.status === "paused") && missionById(a.missionId)?.world === w);
+    const m = open ? missionById(open.missionId) : MISSIONS.find((x) => x.world === w && !chapterDone(x.id));
+    const play = WORLD_PLAY[w];
+    return el("section", { class: "group", "aria-labelledby": "w-next-h" },
+      el("h3", { id: "w-next-h" }, `Next in ${META[w].name}`),
+      el("p", { class: "quiet" }, play.mechanic),
+      m ? el("button", { class: "row", onclick: () => explore.play(m.id, fromWorld(w)) },
+            el("span", { class: "ricon", html: svg(ICON[w], 22) }),
+            el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `${m.title}: ${m.part}`), el("span", { class: "rsub" }, open ? `You stopped at step ${open.step + 1} of ${m.steps.length}` : `${m.objective} About ${m.minutes} minutes.`)),
+            el("span", { class: "rgo", html: svg(ICON.arrow, 16) }))
+        : el("p", { class: "quiet" }, SYSTEMS.some((x) => x.world === w) ? "Everything written here is done. More is being written." : `Expeditions here are planned: ${play.planned.join(", ")}. Reflection is open now.`));
+  }
+  // Library: the resources this world's chapters really have
+  function worldLibrary(w) {
+    const withSheets = MISSIONS.filter((m) => m.world === w && m.worksheet);
+    return el("section", { class: "group", "aria-labelledby": "w-lib-h" },
+      el("h3", { id: "w-lib-h" }, "Worksheets"),
+      withSheets.length
+        ? el("ul", { class: "missions" }, withSheets.map((m) => el("li", {}, el("button", { class: "mission", onclick: () => explore.sheet(m.id, () => { goWorld(w); }) },
+            el("span", { class: "mstate", "aria-hidden": "true" }, ""), el("span", { class: "rtext" }, el("span", { class: "rtitle" }, m.worksheet.title), el("span", { class: "rsub" }, `${m.title} · ${m.part}`)), el("span", { class: "mmeta" }, "Print")))))
+        : el("p", { class: "quiet" }, "No worksheets here yet. They arrive with each written chapter."),
+      el("h3", {}, "Books and audio"),
+      el("p", { class: "quiet" }, "None yet. Books are added only from manuscripts you own, chapter by chapter, after review. Lessons can already be listened to inside each chapter."));
+  }
+  // Progress: only what was done and saved
+  function worldProgress(w) {
+    const systems = SYSTEMS.filter((x) => x.world === w);
+    const ex = explore?.data ?? { experiments: [], discoveries: [] };
+    const disc = ex.discoveries.filter((d) => d.world === w);
+    const actions = ex.experiments.filter((x) => x.world === w);
+    return el("section", { class: "group", "aria-labelledby": "w-prog-h" },
+      el("h3", { id: "w-prog-h" }, `Your progress in ${META[w].name}`),
+      el("ul", { class: "progress-list" },
+        systems.map((sys) => { const n = sys.missionIds.length + (sys.planned?.length ?? 0), d = sys.missionIds.filter(chapterDone).length;
+          return el("li", {}, el("span", { class: "pl-title" }, sys.title), el("span", { class: "pl-bar", role: "img", "aria-label": `${d} of ${n} done` }, el("span", { style: `width:${Math.round((100 * d) / n)}%` })), el("span", { class: "pl-n" }, `${d} of ${n}`)); }),
+        el("li", {}, el("span", { class: "pl-title" }, "Memories"), el("span", { class: "pl-n" }, String(worldStars(w).length))),
+        el("li", {}, el("span", { class: "pl-title" }, "Discoveries"), el("span", { class: "pl-n" }, String(disc.length))),
+        el("li", {}, el("span", { class: "pl-title" }, "Real actions chosen"), el("span", { class: "pl-n" }, String(actions.length)))),
+      disc.length ? el("ol", { class: "journey" }, [...disc].reverse().map((d) => el("li", {}, el("span", { class: "mt" }, d.title), el("span", { class: "quiet" }, d.why)))) : el("p", { class: "quiet" }, "Nothing yet. Progress here only ever shows what you've done and kept."));
   }
   function memoryButton(s, onclick) {
     return el("button", { class: "memory", onclick }, el("span", { class: "when" }, `${META[s.world].name} · ${longDate(s.date)}`), el("span", { class: "text" }, s.excerpt));
@@ -713,7 +772,7 @@ function main(data, failed) {
   }
   $("m-filters").append(...[["all", "All"], ...ORDER.map((w) => [w, META[w].name])].map(([f, label]) =>
     el("button", { role: "radio", "data-f": f, "aria-checked": "false", onclick: () => { state.filter = f; drawMemories(); } }, label)));
-  document.querySelectorAll("#m-views button").forEach((b) => b.addEventListener("click", () => { state.view = b.dataset.v; drawMemories(); }));
+  document.querySelectorAll("#m-views button").forEach((b) => b.addEventListener("click", () => { state.view = b.dataset.v; drawMemories(); routeTo(routeOf("memories"), { replace: true }); }));
   $("m-q").addEventListener("input", (e) => { state.query = e.target.value; drawMemories(); });
   $("m-zoom-in").addEventListener("click", () => { state.zoom = Math.min(2, state.zoom + 0.5); drawMemories(); });
   $("m-zoom-out").addEventListener("click", () => { state.zoom = Math.max(1, state.zoom - 0.5); drawMemories(); });
@@ -781,6 +840,29 @@ function main(data, failed) {
     const cur = { earth: "home", atlas: "universe", home: "universe", world: inQuiet ? "reflect" : "universe", explore: "learn", memories: "journey" }[p] ?? p;
     document.querySelectorAll("#tabs [data-tab]").forEach((b) => { if (b.dataset.tab === cur) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   }
+  // ----- routes: every place has an address, so Back works and a link lands where it says -----
+  const WTABS = ["overview", "expeditions", "library", "progress"];
+  let routing = false, booted = false;
+  const startHash = location.hash; // read before anything is drawn, so a link lands where it says
+  function routeTo(r, { replace = false } = {}) {
+    if (!booted || routing || state.mode === "text" || location.hash === r) return;
+    try { if (replace) history.replaceState(null, "", r); else history.pushState(null, "", r); } catch { /* a frame that forbids history: places still work */ }
+  }
+  const routeOf = (p) => ({ earth: "#/home", atlas: "#/universe", home: "#/universe/growth", explore: "#/learn", memories: state.view === "miles" ? "#/journey/milestones" : "#/journey", you: "#/you",
+    world: `${worldRoute(state.world)}/${state.wtab?.[state.world] ?? "overview"}` })[p] ?? "#/home";
+  function followRoute(hash) {
+    const [a, b, c] = hash.replace(/^#\/?/, "").split("/");
+    routing = true;
+    try {
+      if (a === "universe" && b === "growth") goHome();
+      else if (a === "universe") openAtlas();
+      else if (a === "world" && ORDER.includes(b)) { if (WTABS.includes(c)) state.wtab = { ...(state.wtab ?? {}), [b]: c }; goWorld(b); }
+      else if (a === "learn") explore.open();
+      else if (a === "journey") { if (b === "milestones") state.view = "miles"; openMemories(); }
+      else if (a === "you") openYou();
+      else openEarth();
+    } finally { routing = false; }
+  }
   function showPlace(p) {
     state.place = p;
     document.body.dataset.place = p;
@@ -792,6 +874,7 @@ function main(data, failed) {
     if (p === "home" && !fit.frame) layout();
     if (p !== "world") { document.body.classList.remove("closeup-on", "in-world", "sheet-open"); if (ctx && state.mode === "galaxy" && ctx.focus) ctx.focusWorld(null); }
     markTabs();
+    routeTo(routeOf(p));
   }
   function goWorld(w, { then } = {}) {
     stopSpeech(); quiet(false);
@@ -839,7 +922,7 @@ function main(data, failed) {
     const art = g.kind === "earth" ? el("span", { class: "gx-earth" }) : g.kind === "gateway" ? el("span", { class: "gx-gate" })
       : el("img", { class: "gx-img", alt: "", src: asset("img/worlds/galaxy-core-1024.webp"), style: g.hue ? `filter:hue-rotate(${g.hue}deg) saturate(1.15)` : "" });
     inner.append(el("button", { class: `gx g-${g.id}${g.open ? "" : " closed"}`, "data-id": g.id, style: `--lx:${g.x}%;--ly:${g.y}%;--gx:${g.size};--px:${g.p[0]}%;--py:${g.p[1]}%;--pw:${g.p[2]}`, "aria-label": `${g.name}. ${g.tag} ${g.open ? "Open." : "Not open yet."}`, "aria-pressed": "false", onclick: () => selectGalaxy(g) },
-      art, el("span", { class: "gx-name" }, g.name), g.open ? null : el("span", { class: "gx-soon" }, g.kind === "gateway" ? "Opens next" : "Not open yet")));
+      art, el("span", { class: "gx-name" }, g.name), g.open ? null : el("span", { class: "gx-soon" }, g.kind === "gateway" ? "Opens next" : "Preview")));
   }
   $("a-list").append(...GALAXIES.map((g) => el("li", {}, el("button", { class: "row", onclick: () => selectGalaxy(g) },
     el("span", { class: "rtext" }, el("span", { class: "rtitle" }, g.name), el("span", { class: "rsub" }, g.tag)),
@@ -869,7 +952,7 @@ function main(data, failed) {
     if (!field.hidden && b) inner.style.transform = `translate(${Math.round(inner.clientWidth / 2 - b.offsetLeft)}px, ${Math.round(inner.clientHeight * 0.42 - b.offsetTop)}px) scale(1.3)`;
     const panel = $("a-panel");
     panel.replaceChildren(
-      el("p", { class: "kicker" }, g.open ? "Open" : g.kind === "gateway" ? "Opens next" : "Not open yet"),
+      el("p", { class: "kicker" }, g.open ? "Open" : g.kind === "gateway" ? "Opens next · preview" : "Preview · not open yet"),
       el("h2", { class: "s-title", id: "a-name", tabindex: "-1" }, g.name),
       el("p", { class: "lead" }, g.tag),
       g.planned ? el("p", { class: "quiet" }, g.open ? g.planned : `Planned: ${g.planned}`) : null,
@@ -987,7 +1070,12 @@ function main(data, failed) {
   function drawMiles(box) {
     const ex = explore?.data ?? { experiments: [], discoveries: [] };
     const disc = [...ex.discoveries].reverse();
+    const chapters = (ex.attempts ?? []).filter((x) => x.status === "completed").length;
+    const counts = [[data.stars.length, "Reflections"], [chapters, "Chapters"], [ex.experiments.length, "Actions"], [ex.discoveries.length, "Discoveries"]];
     box.replaceChildren(
+      // Your evolution: counts of what was done and kept, nothing estimated
+      el("section", { class: "group", "aria-labelledby": "mm-evo" }, el("h3", { id: "mm-evo" }, "Your evolution"),
+        el("ul", { class: "evo" }, counts.map(([n, label]) => el("li", {}, el("span", { class: "evo-n" }, String(n)), el("span", { class: "evo-l" }, label))))),
       el("section", { class: "group", "aria-labelledby": "mm-disc" }, el("h3", { id: "mm-disc" }, "Milestones and discoveries"),
         disc.length ? el("ol", { class: "journey" }, disc.map((d) => el("li", {}, el("span", { class: "when" }, d.discoveredAt ? longDate(d.discoveredAt.slice(0, 10)) : ""), el("span", { class: "mt" }, d.title), el("span", { class: "quiet" }, d.why))))
           : el("p", { class: "quiet" }, "Nothing yet. They appear when you reflect, practise, or come back to say how something went.")),
@@ -1056,7 +1144,8 @@ function main(data, failed) {
     let seen = false;
     try { seen = localStorage.getItem("dw-home-seen") === "1"; } catch {}
     const ov = $("entrance");
-    if (reduced || seen || !ctx || state.mode === "text") { ov.hidden = true; ctx?.skipIntro(); document.body.classList.add("arrived"); return; }
+    // A link with an address goes straight to its place: no arrival film in the way.
+    if (reduced || seen || !ctx || state.mode === "text" || /^#\/[a-z]/.test(startHash)) { ov.hidden = true; ctx?.skipIntro(); document.body.classList.add("arrived"); return; }
     ov.hidden = false;
     const done = () => {
       if (ov.classList.contains("out")) return;
@@ -1148,7 +1237,11 @@ function main(data, failed) {
   setMode(mode);
   // Everyone opens on Home: the next step is visible in seconds; the Universe is one tab away.
   void firstVisit;
-  openEarth(null, { quietFocus: true });
+  // A link with an address opens that place; otherwise Home. Back and Forward follow the addresses.
+  if (/^#\/[a-z]/.test(startHash) && mode === "galaxy") followRoute(startHash); else openEarth(null, { quietFocus: true });
+  booted = true;
+  routeTo(routeOf(state.place), { replace: true });
+  addEventListener("popstate", () => { if (state.mode !== "text") followRoute(location.hash); });
   layout();
   if (ctx) {
     const frames = (window.__dwFrames = []);

@@ -100,6 +100,35 @@
   @media (prefers-reduced-motion: reduce) { .pause-ring.on { animation:none; } }
   .cue { font-family:var(--display); font-size:22px; line-height:1.35; max-width:30ch; min-height:3.4em; }
   .cue-list, .ws-items { display:flex; flex-direction:column; gap:var(--s2); padding-left:var(--s5); line-height:1.5; }
+  /* ----- a world's sections, its solar systems, its progress ----- */
+  .wtabs { display:grid; grid-template-columns:repeat(4, 1fr); gap:var(--s1); padding:var(--s1); border-radius:var(--r-pill); background:rgba(6,10,20,.6); border:1px solid var(--edge); margin-top:var(--s4); }
+  .wtabs button { min-height:var(--tap); border-radius:var(--r-pill); font-size:14px; color:var(--dim); }
+  .wtabs button[aria-selected="true"] { background:rgba(230,192,123,.16); color:var(--ink); box-shadow:inset 0 0 0 1px rgba(230,192,123,.55); }
+  @media (max-width: 359px) { .wtabs button { font-size:12.5px; } }
+  .wpanel { display:flex; flex-direction:column; gap:var(--s6); padding-top:var(--s4); }
+  .wpanel:focus-visible { outline:2px solid var(--gold); outline-offset:4px; border-radius:var(--s3); }
+  .solar { width:100%; max-width:440px; min-height:140px; height:auto; display:block; margin:var(--s2) auto; overflow:visible; }
+  .solar .sun { fill:var(--gold); filter:drop-shadow(0 0 10px rgba(230,192,123,.85)); }
+  .solar-mind .sun { fill:var(--mind); filter:drop-shadow(0 0 10px rgba(127,178,255,.8)); }
+  .solar-soul .sun { fill:var(--soul); filter:drop-shadow(0 0 10px rgba(197,155,255,.8)); }
+  .solar .orbit { fill:none; stroke:rgba(255,255,255,.16); stroke-width:1; }
+  .solar .orbit.lit { stroke:rgba(230,192,123,.75); stroke-width:1.4; }
+  .solar .orbit.planned { stroke-dasharray:3 5; stroke:rgba(255,255,255,.12); }
+  .solar .moon { fill:#2a3352; stroke:rgba(255,255,255,.5); stroke-width:1; }
+  .solar .moon.lit { fill:var(--gold); stroke:#fff3d6; filter:drop-shadow(0 0 6px rgba(230,192,123,.9)); }
+  .solar .moon.planned { fill:none; stroke:rgba(255,255,255,.28); }
+  .solar .next-ring { fill:none; stroke:var(--gold); stroke-width:1.5; animation:nextpulse 2.4s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
+  @keyframes nextpulse { 0%, 100% { opacity:.45; transform:scale(.85); } 50% { opacity:1; transform:scale(1.1); } }
+  @media (prefers-reduced-motion: reduce) { .solar .next-ring { animation:none; } }
+  .evo { list-style:none; padding:0; display:grid; grid-template-columns:repeat(4, 1fr); gap:var(--s2); }
+  .evo li { display:flex; flex-direction:column; align-items:center; gap:var(--s1); padding:var(--s3) var(--s1); border-radius:var(--s4); background:rgba(23,32,58,.6); border:1px solid var(--edge); }
+  .evo-n { font-family:var(--display); font-size:28px; font-weight:600; color:var(--gold-ink); font-variant-numeric:tabular-nums; }
+  .evo-l { font-size:12px; color:var(--dim); }
+  .progress-list { list-style:none; padding:0; display:flex; flex-direction:column; gap:var(--s3); }
+  .progress-list li { display:grid; grid-template-columns:1fr auto; align-items:center; gap:var(--s1) var(--s3); }
+  .progress-list .pl-bar { grid-column:1 / -1; grid-row:2; height:6px; border-radius:3px; background:rgba(255,255,255,.12); overflow:hidden; }
+  .progress-list .pl-bar span { display:block; height:100%; min-width:4px; background:var(--gold); border-radius:3px; }
+  .progress-list .pl-n { color:var(--dim); font-variant-numeric:tabular-nums; }
   .lab-fields { display:flex; flex-direction:column; gap:var(--s2); }
   .lab-fields .field { margin-bottom:var(--s2); }
   .lab-grid { display:flex; flex-direction:column; gap:var(--s4); }
@@ -206,7 +235,7 @@
   /* ============ A world: one template for all four ============ */
   #world { position:fixed; inset:0; z-index:4; overflow-y:auto; overscroll-behavior:contain; scroll-padding-bottom:calc(var(--tabs-h) + var(--safe-b) + var(--s6)); }
   #world::before { content:""; position:fixed; inset:0; pointer-events:none; background:linear-gradient(180deg, rgba(5,7,13,0) 18%, rgba(5,7,13,.6) 34%, rgba(5,7,13,.9) 52%, rgba(5,7,13,.96)); }
-  .wbar { position:sticky; top:0; z-index:2; display:grid; grid-template-columns:var(--tap) 1fr var(--tap); align-items:center; gap:var(--s3); padding:calc(var(--safe-t) + var(--s3)) var(--gutter) var(--s3); }
+  .wbar { position:sticky; top:0; z-index:2; display:grid; grid-template-columns:var(--tap) 1fr var(--tap); align-items:center; gap:var(--s3); padding:calc(var(--safe-t) + var(--s3)) var(--gutter) var(--s3); padding-bottom:var(--s5); background:linear-gradient(rgba(5,7,13,.95) 72%, rgba(5,7,13,0)); }
   #w-name { text-align:center; font-family:var(--display); font-weight:600; font-size:20px; letter-spacing:.32em; text-transform:uppercase; padding-left:.32em; text-shadow:0 1px 2px rgba(0,0,0,.9), 0 2px 16px rgba(0,0,0,.9); }
   .wcol { position:relative; padding:clamp(160px, 34vh, 340px) var(--gutter) calc(var(--tabs-h) + var(--safe-b) + var(--s10)); max-width:600px; display:flex; flex-direction:column; gap:var(--s4); }
   body.sheet-open .wcol { padding-top:clamp(96px, 18vh, 180px); }

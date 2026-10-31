@@ -82,7 +82,7 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     // a closed galaxy says so, and has no way in
     await page.locator('#a-inner [data-id="ai"]').click();
     const ai = await page.textContent("#a-panel");
-    check(`${name}: an unopened galaxy says so plainly`, /Not open yet/.test(ai) && /Planned/.test(ai) && !(await page.locator("#a-panel .primary").count()));
+    check(`${name}: an unopened galaxy says so plainly`, /not open yet/i.test(ai) && /Planned/.test(ai) && !(await page.locator("#a-panel .primary").count()));
     await page.getByRole("button", { name: "Back to the Universe" }).click();
 
     // keyboard: select Personal Growth with Enter, move toward it, enter
@@ -106,8 +106,10 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     results.timings[`${name}.webgl_context_lost`] = await page.evaluate(() => window.__dwContextLost ?? 0);
     const crumbText = await page.textContent("#w-crumbs");
     check(`${name}: breadcrumb reads Universe › Personal Growth › Mind`, /Universe.*Personal Growth.*Mind/.test(crumbText));
-    const world = await page.textContent("#w-body");
-    check(`${name}: Mind shows its mechanic and the Thought Patterns system`, /Lenses/.test(world) && /Thought Patterns/.test(world) && /The Thought Labyrinth/.test(world));
+    check(`${name}: Mind opens on Overview, with its mechanic and a next step`, /Lenses/.test(await page.textContent("#w-panel")) && /Next in Mind/.test(await page.textContent("#w-panel")));
+    await page.getByRole("tab", { name: "Expeditions" }).click();
+    const world = await page.textContent("#w-panel");
+    check(`${name}: Mind's Expeditions show the Thought Patterns system`, /Thought Patterns/.test(world) && /The Thought Labyrinth/.test(world));
     await page.screenshot({ path: `${OUT}/u-${name}-mind.png`, timeout: 90000 });
     await axe(page, `${name} mind world`);
 

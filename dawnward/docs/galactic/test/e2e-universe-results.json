@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T16:03:20.510Z",
+  "when": "2026-10-31T16:27:32.429Z",
   "checks": [
     {
       "name": "320x568: Atlas galaxies and names never overlap",
@@ -182,7 +182,12 @@
       "detail": ""
     },
     {
-      "name": "phone: Mind shows its mechanic and the Thought Patterns system",
+      "name": "phone: Mind opens on Overview, with its mechanic and a next step",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Mind's Expeditions show the Thought Patterns system",
       "ok": true,
       "detail": ""
     },
@@ -362,7 +367,12 @@
       "detail": ""
     },
     {
-      "name": "desktop: Mind shows its mechanic and the Thought Patterns system",
+      "name": "desktop: Mind opens on Overview, with its mechanic and a next step",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Mind's Expeditions show the Thought Patterns system",
       "ok": true,
       "detail": ""
     },
@@ -490,10 +500,10 @@
     "phone.to_first_step_ms": 138,
     "desktop.arrival_fallbacks": 1,
     "desktop.webgl_context_lost": 0,
-    "desktop.to_first_step_ms": 109
+    "desktop.to_first_step_ms": 118
   },
   "summary": {
-    "total": 94,
+    "total": 96,
     "failed": 0
   }
 }

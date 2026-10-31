@@ -860,7 +860,7 @@ export function checkCatalog(): string[] {
 
 /** Each world plays differently. What it offers now, and what is planned (shown as planned, never as available). */
 export const WORLD_PLAY: Record<WorldId, { mechanic: string; planned: string[] }> = {
-  mind: { mechanic: "Lenses: one event, seen through several readings, weighed against what you know.", planned: ["Focus", "Emotional Awareness", "Decisions"] },
+  mind: { mechanic: "Lenses: one event, seen through several readings, weighed against what you know.", planned: ["Emotional Awareness", "Focus & Flow", "Belief Transformation", "Learning & Creativity"] },
   body: { mechanic: "Experiments: a small habit tried for a week, and what you noticed.", planned: ["Energy", "Recovery", "Sleep", "Movement"] },
   soul: { mechanic: "Dialogue: conversations to practise, with what tends to happen and why.", planned: ["Values", "Gratitude", "Compassion"] },
   spirit: { mechanic: "Stillness: short practices of awe, attention and the big questions.", planned: ["Awe", "Contemplation", "Questions"] },

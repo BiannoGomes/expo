@@ -556,6 +556,8 @@ export function createExplore(store, h) {
     store, open, refresh, play, review,
     get data() { return data; },
     isFollowing, follow,
+    /** Opens a chapter's worksheet on its own, from a world's Library. */
+    sheet(missionId, back) { const m = missionById(missionId); if (!m?.worksheet) return; h.showPlace("explore"); worksheet(m, back); },
     get missions() { return MISSIONS; },
     textSummary() {
       return SYSTEMS.map((sys) => ({ sys, missions: sys.missionIds.map((id) => ({ m: missionById(id), done: data.attempts.some((a) => a.missionId === id && a.status === "completed") })) }));
