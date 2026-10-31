@@ -1,0 +1,325 @@
+DAWNWARD ART: COPY AND PASTE IN ORDER
+
+How: copy one line at a time into ChatGPT, in order, and wait for each image. Download it and name the file with the code at the start of the line (for example U1). When you see NEW CHAT, open a fresh ChatGPT chat and keep going with the next line. That's it.
+
+========== NEW CHAT: THE INTERFACE KIT ==========
+
+You are the art director for Dawnward, an app where a person's inner life is a living universe of five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons. Light: one warm golden source from the upper left, a soft rim light on far edges. People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith. Never put any text, letters, numbers, logos, UI, icons or watermarks in an image unless I ask for a blank interface element. "Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+
+U1. Make this image: A blank glass panel for text, 1200 × 800, transparent background. Dark smoked glass #0A1426 at 70% opacity, a hairline gold #E6C07B border, small ornate gold corner details, a faint inner glow at the top edge. Long edges plain and even so it can stretch. Completely empty inside.
+
+U2. Make this image: A blank primary button, 900 × 180, transparent background. A pill of warm liquid gold with soft depth, a bright highlight along the top, a faint glow beneath. Empty, no text, no arrow.
+
+U3. Make this image: A blank secondary button, 900 × 180, transparent background. A pill of dark glass with a hairline gold border and a soft inner glow. Empty.
+
+U4. Make this image: A blank choice card, 1000 × 220, transparent background. Dark glass with a thin violet-to-gold border, a small empty circle at the left for an icon. Empty.
+
+U5. Make this image: The same choice card, selected: border glowing gold, light pooling inside, a soft outer halo. Empty.
+
+U6. Make this image: A progress bar track and fill, 1200 × 60, transparent background, as two stacked bars: the top bar an empty dark-glass track, the bottom bar a glowing gold fill with tiny drifting sparks.
+
+U7. Make this image: A tab bar background, 1290 × 220, transparent background. Dark glass across the bottom of a phone, a hairline gold top edge, a soft gold glow where the middle item would be. Empty.
+
+U8. Make this image: A round icon frame, 512 × 512, transparent background. A dark glass disc with a thin gold ring and a soft glow. Empty centre.
+
+U9. Make this image: A section divider, 1600 × 60, transparent background. A hairline of gold that brightens toward the centre into a tiny four-pointed star, fading out at both ends.
+
+U10. Make this image: A text bar (a heading ribbon), 1400 × 200, transparent background. A long horizontal band of dark glass fading out at both ends, a fine gold line above and below, a faint shimmer. Empty.
+
+U11. Make this image: A Daily Compass medallion, 1024 × 1024, transparent background. A circular golden instrument: concentric rings, five small empty sockets around the rim (for the five worlds), a soft light at the centre. No letters or numbers.
+
+U12. Make this image: Twenty-four small icons in one image, a 6 × 4 grid, each in a square cell, on pure black, fine gold line art with a soft glow: mind, body, soul, spirit, future, earth, galaxy, gateway, book, worksheet, headphones, pencil, star, moon, compass, lantern, door, path splitting, scales, seedling, flame, wave, eye, hand. No letters.
+
+========== NEW CHAT: TRANSITIONS ==========
+
+You are the art director for Dawnward, an app where a person's inner life is a living universe of five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons. Light: one warm golden source from the upper left, a soft rim light on far edges. People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith. Never put any text, letters, numbers, logos, UI, icons or watermarks in an image unless I ask for a blank interface element. "Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+
+T1. Make this image: Arrival. Portrait 1080 × 1920. Darkness with the first stars appearing; far away a golden spiral galaxy is just becoming visible. A figure seen from behind stands on a dark ledge in the lower third. Vast, quiet, about to begin.
+
+T2. Make this image: Travelling between galaxies. Square 2048 × 2048. Looking straight ahead through streaks of starlight that stretch outward from one centre point, gold and blue, radially balanced so it can be rotated and zoomed as motion. Fills the frame.
+
+T3. Make this image: Approaching Personal Growth. Portrait 1080 × 1920. A golden spiral galaxy filling the upper half, five small glowing worlds in orbit around its bright core. Particles drifting toward the viewer.
+
+T4. Make this image: Entering Mind (atmosphere). Portrait 1080 × 1920. Falling through thin blue cloud toward a frozen landscape of ice spires and aurora below, light breaking through.
+
+T5. Make this image: Entering Body. Portrait 1080 × 1920. Descending through warm mist toward a green valley of forest and waterfalls at sunrise.
+
+T6. Make this image: Entering Soul. Portrait 1080 × 1920. Drifting down through violet dusk cloud toward a valley of blossoming trees and small lanterns.
+
+T7. Make this image: Entering Spirit. Portrait 1080 × 1920. Passing through a veil of lilac nebula into a silent sky of slow rings of light above a still observatory. No crystals.
+
+T8. Make this image: Entering Future. Portrait 1080 × 1920. Gliding through golden dawn haze toward the spires of a citadel on a high plateau.
+
+T9. Make this image: A chapter completed. Square 1024 × 1024, transparent. A small moon igniting gold, light racing along its orbit ring, a burst of fine sparks.
+
+T10. Make this image: A new discovery star. Square 1024 × 1024, transparent. A single star being born: a soft flash of gold light with four long thin rays and a halo of tiny particles.
+
+T11. Make this image: Return to Earth. Portrait 1080 × 1920. Descending toward Earth at dawn, the gold sunrise line on the curve of the planet, clouds lit warm, a coastline and a waking city far below.
+
+========== NEW CHAT: SPIRIT (no crystals) ==========
+
+You are the art director for Dawnward, an app where a person's inner life is a living universe of five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons. Light: one warm golden source from the upper left, a soft rim light on far edges. People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith. Never put any text, letters, numbers, logos, UI, icons or watermarks in an image unless I ask for a blank interface element. "Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+
+S1. Make this image: The Spirit planet. Square 2048 × 2048, on pure black, the globe filling 84% of the width. A serene world veiled in lilac and silver nebula: soft halos of light circling it slowly, a calm pale surface with a few small domed observatories catching gold light, a thin glowing atmosphere. No crystals, no rings of rock, no rings like Saturn's. Nothing touches the edges.
+
+S2. Make this image: Inside Spirit, the Observatory of Being. Portrait 1080 × 1920. An open observatory on a high plateau at night, its dome open to a sky of slow lilac halos and stars; a still pool on the stone floor reflects them perfectly; one small figure seen from behind. No crystals. Focus in the top 40%; the lower 55% dark water and stone.
+
+S3. Make this image: Spirit, a moon. Square 1024 × 1024, transparent. A small pale silver moon wrapped in a soft lilac halo. No crystals.
+
+========== NEW CHAT: GALAXIES, EARTH AND THE GATEWAY ==========
+
+You are the art director for Dawnward, an app where a person's inner life is a living universe of five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons. Light: one warm golden source from the upper left, a soft rim light on far edges. People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith. Never put any text, letters, numbers, logos, UI, icons or watermarks in an image unless I ask for a blank interface element. "Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+
+A3. Make this image: The AI Creation galaxy as a glowing orb seen from space. Square, 1024 × 1024, on pure black. A spiral galaxy whose core is a holographic laboratory: translucent architecture, floating panels of light, cyan #37D5E8 and blue #5B8CFF with touches of gold. Circular composition, the whole orb within the centre 88%, nothing touching the edges.
+
+A4. Make this image: The Knowledge galaxy as a glowing orb. Square, 1024 × 1024, on pure black. A spiral galaxy whose arms are endless shelves and staircases of light, an infinite library seen from far away, warm gold and orbital blue. Circular composition within the centre 88%, nothing touching the edges.
+
+A5. Make this image: The Spiritual Exploration galaxy as a glowing orb. Square, 1024 × 1024, on pure black. A soft violet and lilac spiral galaxy with a serene sanctuary at its heart: a temple of light open to the sky, calm and quiet. No religious symbols of any specific faith. Circular composition within the centre 88%, nothing touching the edges.
+
+A6. Make this image: The Creative Worlds galaxy as a glowing orb. Square, 1024 × 1024, on pure black. A playful magenta, violet and gold spiral galaxy made of floating islands: tiny waterfalls, trees and a castle drifting in space, an archipelago of imagination. Circular composition within the centre 88%, nothing touching the edges.
+
+A7. Make this image: Earth, the home planet, seen from space at sunrise. Square, 1024 × 1024, on pure black. Real Earth with oceans and clouds, a thin gold sunrise line on the rim, very faint warm city lights on the night side. It should feel like coming home. Planet within the centre 84%, nothing touching the edges.
+
+A8. Make this image: The Quantum Gateway seen from far away. Square, 1024 × 1024, on pure black. A ring-shaped portal of swirling violet, magenta and gold light with a bright golden point at its centre, like a tunnel through spacetime seen head on. Circular composition within the centre 88%, nothing touching the edges.
+
+========== NEW CHAT: THE QUANTUM GATEWAY JOURNEY ==========
+
+You are the art director for Dawnward, an app where a person's inner life is a living universe of five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons. Light: one warm golden source from the upper left, a soft rim light on far edges. People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith. Never put any text, letters, numbers, logos, UI, icons or watermarks in an image unless I ask for a blank interface element. "Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+
+B1. Make this image: Portrait, 1080 × 1920. A person seen from behind, small in the frame, standing on a dark stone platform at the edge of space. Ahead, a faint unlit ring hangs in the dark, waiting. Mood: quiet resolve. Focus in the top 45%; the bottom 50% dark so text can sit over it.
+
+B2. Make this image: Portrait, 1080 × 1920. The same platform and the same ring, now igniting: streams of violet, magenta and gold light spiralling inward to a bright golden point. The person, seen from behind, is lit by it. Focus in the top 50%; the bottom 45% darker.
+
+B3. Make this image: Square, 2048 × 2048. Looking straight down a tunnel through spacetime: concentric rings and streaks of violet, magenta, blue and gold light rushing outward from one bright golden point at the exact centre. Radially balanced all the way round, so the image can be slowly rotated and zoomed without a visible seam or a direction. Fill the whole square to the edges. No platform, no people, no horizon.
+
+B4. Make this image: Portrait, 1080 × 1920. In a calm luminous space of soft gold and lilac light, a figure made of gentle light stands at a little distance, facing us, with no facial features, only a warm glow where a face would be. It feels kind and steady, not powerful or mystical. Behind it, a faint horizon. The figure in the top 50%; the bottom 45% soft and dark for text.
+
+B5. Make this image: Portrait, 1080 × 1920. Inside a quiet circular observatory beyond time, three open archways of light: one holds a still mirror of water, one opens onto a fork in a golden path, one shows a single step of light. Warm gold and lilac. The archways in the top 50%; the lower half calm, dark floor.
+
+B6. Make this image: Portrait, 1080 × 1920. Descending gently toward Earth at dawn: the curve of the planet below, a gold sunrise line, clouds lit warm, a coastline and a waking city far below. It feels like landing back in real life. Focus in the top 45%; the bottom half soft and dark.
+
+========== NEW CHAT: THE FIVE SIGNATURE MISSIONS ==========
+
+You are the art director for Dawnward, an app where a person's inner life is a living universe of five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons. Light: one warm golden source from the upper left, a soft rim light on far edges. People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith. Never put any text, letters, numbers, logos, UI, icons or watermarks in an image unless I ask for a blank interface element. "Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+
+C1. Make this image: Portrait, 1080 × 1920. A labyrinth of tall translucent ice crystals in the Crystal Expanse, the Mind world, under a blue night sky with a faint aurora. Several glowing doorways at different paths, one lit gold. Cold blue #5B8CFF and cyan with gold in the doorway. Scene in the top 40%; the lower 55% dark ice and shadow.
+
+C2. Make this image: Portrait, 1080 × 1920. A trail into the Living Wilds, the Body world: lush green forest, mist, a waterfall, morning light breaking through in gold, the path rising gently toward a sunlit clearing. Greens with teal #5FE3C0 and gold. Scene in the top 40%; the lower 55% dark forest floor.
+
+C3. Make this image: Portrait, 1080 × 1920. A long bridge of light across the Valley of Connection, the Soul world: violet dusk, blossoming trees on both cliffs, two small lantern lights at either end of the bridge. Violet #C59BFF and rose with warm gold lanterns. Scene in the top 40%; the lower 55% dark valley.
+
+C4. Make this image: Portrait, 1080 × 1920. A round chamber of pale stone open to a starry sky, a still circular pool at its centre reflecting the stars perfectly, a single soft beam of gold light falling into the water. Lilac #C9B8FF and silver. Silent and spacious. Scene in the top 40%; the lower 55% dark water and stone.
+
+C5. Make this image: Portrait, 1080 × 1920. A golden path that splits into three at the edge of a plateau. In the distance, the spires of the Horizon Citadel catch the dawn. Warm gold #F0C987 and amber, a clear sky. Scene in the top 40%; the lower 55% dark plateau.
+
+========== NEW CHAT: SKILL PATHWAY PLANETS ==========
+
+You are the art director for Dawnward, an app where a person's inner life is a living universe of five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons. Light: one warm golden source from the upper left, a soft rim light on far edges. People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith. Never put any text, letters, numbers, logos, UI, icons or watermarks in an image unless I ask for a blank interface element. "Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+
+D1. Make this image: Thought Patterns (Mind): a pale blue planet with glassy, maze-like canyons across its surface. Square 1024 × 1024. One small planet centred, filling about 80% of the width, on pure black, nothing touching the edges, lit from the upper left.
+
+D2. Make this image: Decision Making (Mind): a blue and gold planet with a single bright path that forks into three across its face. Square 1024 × 1024. One small planet centred, filling about 80% of the width, on pure black, nothing touching the edges, lit from the upper left.
+
+D3. Make this image: Emotional Awareness (Mind): a planet of shifting colour, soft blue to warm rose, like weather moving over an ocean. Square 1024 × 1024. One small planet centred, filling about 80% of the width, on pure black, nothing touching the edges, lit from the upper left.
+
+D4. Make this image: Focus and Flow (Mind): a deep blue planet with one clean river of light circling its equator. Square 1024 × 1024. One small planet centred, filling about 80% of the width, on pure black, nothing touching the edges, lit from the upper left.
+
+D5. Make this image: Belief Transformation (Mind): a dark planet with cracks of gold light, as if a new surface is breaking through. Square 1024 × 1024. One small planet centred, filling about 80% of the width, on pure black, nothing touching the edges, lit from the upper left.
+
+D6. Make this image: Learning and Creativity (Mind): a violet and gold planet with small glowing islands and a ring of tiny bright points. Square 1024 × 1024. One small planet centred, filling about 80% of the width, on pure black, nothing touching the edges, lit from the upper left.
+
+D7. Make this image: Communication (Soul): a violet planet with two glowing lantern lights on opposite sides, joined by a thin arc of light. Square 1024 × 1024. One small planet centred, filling about 80% of the width, on pure black, nothing touching the edges, lit from the upper left.
+
+========== NEW CHAT: HOME AND EARTH ==========
+
+You are the art director for Dawnward, an app where a person's inner life is a living universe of five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons. Light: one warm golden source from the upper left, a soft rim light on far edges. People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith. Never put any text, letters, numbers, logos, UI, icons or watermarks in an image unless I ask for a blank interface element. "Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+
+E1. Make this image: Landscape, 1600 × 900. Earth's horizon from low orbit at sunrise: a thin gold line, soft clouds, the deep blue of space above. Very calm. The top 60% is mostly dark space, so a heading can sit over it. No people.
+
+E2. Make this image: Portrait, 1080 × 1920. A city at dusk by the sea, warm windows coming on, a hillside path leading down into it, the first stars above. Real and hopeful, not futuristic. Focus in the top 45%; the bottom half soft and dark.
+
+========== NEW CHAT: BEYOND OVERTHINKING ==========
+
+You are the art director for Dawnward, an app where a person's inner life is a living universe of five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons. Light: one warm golden source from the upper left, a soft rim light on far edges. People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith. Never put any text, letters, numbers, logos, UI, icons or watermarks in an image unless I ask for a blank interface element. "Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+
+BO1-H. Make this image: A figure seen from behind on a frozen ledge, watching a luminous ribbon of thought loop endlessly in the sky above an ice plain, around and around, while one thin gold thread breaks away from the loop toward the horizon. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BO1-X. Make this image: Six floating glass shards in a calm blue void, three drifting forward along a golden line, three circling slowly in a soft blue loop. Dark, softer, room for buttons. Portrait 1080 × 1920. Softer and darker than a hero image, because buttons will sit on top of it.
+
+BO1-R. Make this image: A single small gold light hovering above still black ice, the faint reflection of an aurora. Portrait 1080 × 1920. Very calm and very dark, with one small light.
+
+BO1-K. Make this image: A blue moon with a closed loop of light around it, breaking open into a forward-pointing gold arc. Square 1024 × 1024 on a transparent background.
+
+BO1-W. Make this image: A thin glowing loop on the left that unravels into a straight gold line running right, fading into darkness. Landscape 1600 × 500. Keep the right 60% dark and empty.
+
+BO2-H. Make this image: A vast ice cavern where solid, clear stones of light (the facts) form a firm path, while fog shapes drift beside it like half-formed figures (the guesses). A figure seen from behind walks the clear path. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BO2-X. Make this image: Two calm pools of light in darkness, one clear and steady blue, one softly misted violet, with small glowing pebbles drifting between them. Portrait 1080 × 1920. Softer and darker than a hero image, because buttons will sit on top of it.
+
+BO2-R. Make this image: A clear ice lens resting on dark water, one gold point of light seen sharp through it. Portrait 1080 × 1920. Very calm and very dark, with one small light.
+
+BO2-K. Make this image: A moon split cleanly into a clear half and a misty half, a gold seam between them. Square 1024 × 1024 on a transparent background.
+
+BO2-W. Make this image: Two columns of soft light on the left, one clear and one misted, fading to darkness on the right. Landscape 1600 × 500. Keep the right 60% dark and empty.
+
+BO3-H. Make this image: Everything stops: a figure seen from behind in the middle of a frozen storm, snowflakes hanging motionless in the air around them, a soft gold glow at the centre of their chest, the aurora paused mid-wave. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BO3-X. Make this image: A slow breathing ring of soft lilac and gold light in deep darkness, very calm, with suspended particles. Portrait 1080 × 1920. Softer and darker than a hero image, because buttons will sit on top of it.
+
+BO3-R. Make this image: A single snowflake of light resting on still water. Portrait 1080 × 1920. Very calm and very dark, with one small light.
+
+BO3-K. Make this image: A moon wrapped in a calm, breathing halo of soft gold. Square 1024 × 1024 on a transparent background.
+
+BO3-W. Make this image: A single slow ripple of gold light spreading across dark water on the left. Landscape 1600 × 500. Keep the right 60% dark and empty.
+
+BO4-H. Make this image: A circular observatory of ice and light where three glowing paths leave the centre in different directions, each lit differently (gold, blue, violet), a figure seen from behind standing at the centre, choosing. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BO4-X. Make this image: A dark luminous table of light seen from above, with faint glowing grid lines and three softly lit paths across it. Very dark, room for a grid of buttons. Portrait 1080 × 1920. Softer and darker than a hero image, because buttons will sit on top of it.
+
+BO4-R. Make this image: Three tiny lights over still water, one slightly brighter. Portrait 1080 × 1920. Very calm and very dark, with one small light.
+
+BO4-K. Make this image: A moon with three fine paths of light across its face meeting at one bright point. Square 1024 × 1024 on a transparent background.
+
+BO4-W. Make this image: Three fine gold lines diverging from one point on the left, fading to darkness. Landscape 1600 × 500. Keep the right 60% dark and empty.
+
+BO5-H. Make this image: A single glowing stepping stone of gold light appears on dark water in front of a figure seen from behind, with more stones faintly visible beyond, the far shore lit by dawn. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BO5-X. Make this image: One warm gold stepping stone in a dark calm space, faint ripples around it. Portrait 1080 × 1920. Softer and darker than a hero image, because buttons will sit on top of it.
+
+BO5-R. Make this image: A small gold light resting on a stone at the water's edge. Portrait 1080 × 1920. Very calm and very dark, with one small light.
+
+BO5-K. Make this image: A moon with one bright footprint of light on its surface. Square 1024 × 1024 on a transparent background.
+
+BO5-W. Make this image: A single gold stepping stone on the left with soft ripples, fading right. Landscape 1600 × 500. Keep the right 60% dark and empty.
+
+BO6-H. Make this image: A figure seen from behind sitting at the edge of a still lake at dusk, the sky mirrored perfectly, a few small lights in the reflection that aren't in the sky, as if showing what was learned. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BO6-X. Make this image: A dark mirror-like lake with three soft points of light reflected in it. Portrait 1080 × 1920. Softer and darker than a hero image, because buttons will sit on top of it.
+
+BO6-R. Make this image: A lantern's reflection on calm water. Portrait 1080 × 1920. Very calm and very dark, with one small light.
+
+BO6-K. Make this image: A moon with its own reflection beneath it, both lit softly. Square 1024 × 1024 on a transparent background.
+
+BO6-W. Make this image: A soft horizon line with its mirror reflection on the left, fading right. Landscape 1600 × 500. Keep the right 60% dark and empty.
+
+BO7-H. Make this image: A small glowing satchel or chest of gold light opened on a stone table, five luminous tools floating up from it (a lens, a lantern, a compass, a key, a small scale), a figure seen from behind reaching for one. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BO7-X. Make this image: Five small luminous tools floating in a dark calm space, each a different soft colour. Portrait 1080 × 1920. Softer and darker than a hero image, because buttons will sit on top of it.
+
+BO7-R. Make this image: A single gold key of light resting on dark stone. Portrait 1080 × 1920. Very calm and very dark, with one small light.
+
+BO7-K. Make this image: A moon with a fine ring of five small lights around it. Square 1024 × 1024 on a transparent background.
+
+BO7-W. Make this image: Five tiny glowing tools in a row on the left, fading right. Landscape 1600 × 500. Keep the right 60% dark and empty.
+
+========== NEW CHAT: THE THOUGHT LABYRINTH AND THE BRIDGE ==========
+
+You are the art director for Dawnward, an app where a person's inner life is a living universe of five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons. Light: one warm golden source from the upper left, a soft rim light on far edges. People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith. Never put any text, letters, numbers, logos, UI, icons or watermarks in an image unless I ask for a blank interface element. "Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+
+TL1-H. Make this image: A labyrinth of tall translucent ice walls under an aurora, seen from above at an angle, three glowing doorways at different turns, one lit warm gold. A figure seen from behind at the entrance. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+TL1-X. Make this image: A dark labyrinth floor seen from above with three softly glowing doorways, very dark, room for buttons. Portrait 1080 × 1920. Softer and darker than a hero image, because buttons will sit on top of it.
+
+TL1-R. Make this image: One gold doorway of light, far away, in darkness. Portrait 1080 × 1920. Very calm and very dark, with one small light.
+
+TL1-K. Make this image: A moon with a tiny labyrinth pattern of light across its surface. Square 1024 × 1024 on a transparent background.
+
+BR1-H. Make this image: Part 1, Opening. Two cliffs across a violet valley at dusk, a bridge of light just beginning to form from one side, a lantern lit at its start, a figure seen from behind holding a second lantern. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BR1-X. Make this image: A soft violet dusk with a half-formed bridge of light, dark and calm, room for choices. Portrait 1080 × 1920. Softer and darker than a hero image, because buttons will sit on top of it.
+
+BR1-K. Make this image: A violet moon with a thin arc of light reaching across it. Square 1024 × 1024 on a transparent background.
+
+BR2-H. Make this image: Part 2, Listening. The bridge half complete, light flowing from both sides toward the middle, two lanterns facing each other across the gap, blossom petals drifting. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BR2-X. Make this image: Two soft lantern lights facing each other across a calm violet gap. Portrait 1080 × 1920. Softer and darker than a hero image, because buttons will sit on top of it.
+
+BR2-K. Make this image: A moon with two small lights joined by a thin arc. Square 1024 × 1024 on a transparent background.
+
+BR3-H. Make this image: Part 3, Meeting. The bridge complete and glowing gold and violet, two small figures seen from far away meeting in the middle, the valley lit by the lanterns. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BR3-X. Make this image: A finished bridge of light across a dark violet valley, very calm. Portrait 1080 × 1920. Softer and darker than a hero image, because buttons will sit on top of it.
+
+BR3-K. Make this image: A moon with a complete glowing arc across its face. Square 1024 × 1024 on a transparent background.
+
+BR-R. Make this image: Reflection for all three parts: one lantern resting on the bridge rail, its light reflected in the valley mist. Portrait 1080 × 1920. Very calm and very dark, with one small light.
+
+========== NEW CHAT: CHAPTERS TO COME ==========
+
+You are the art director for Dawnward, an app where a person's inner life is a living universe of five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons. Light: one warm golden source from the upper left, a soft rim light on far edges. People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith. Never put any text, letters, numbers, logos, UI, icons or watermarks in an image unless I ask for a blank interface element. "Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+
+MI-EA-H. Make this image: Mind, Emotional Awareness: a sky where colours move like weather fronts over a calm sea of light, a figure seen from behind naming them. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+MI-EA-K. Make this image: a moon of shifting soft colour. Square 1024 × 1024 on a transparent background.
+
+MI-FF-H. Make this image: Mind, Focus & Flow: one clear river of light running through a dark ice canyon, everything else blurred and quiet. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+MI-FF-K. Make this image: a deep blue moon with one bright river around it. Square 1024 × 1024 on a transparent background.
+
+MI-BT-H. Make this image: Mind, Belief Transformation: a dark stone surface cracking open with gold light, a new landscape glowing underneath. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+MI-BT-K. Make this image: a dark moon with gold cracks. Square 1024 × 1024 on a transparent background.
+
+MI-LC-H. Make this image: Mind, Learning & Creativity: floating islands of light connected by fine golden threads, ideas sparking between them. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+MI-LC-K. Make this image: a violet and gold moon with tiny bright islands. Square 1024 × 1024 on a transparent background.
+
+BD-EN-H. Make this image: Body, Energy: sunrise pouring gold light into a green valley, mist lifting, everything waking. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BD-EN-K. Make this image: a green moon with a sunrise rim. Square 1024 × 1024 on a transparent background.
+
+BD-RC-H. Make this image: Body, Recovery: a warm spring in a quiet forest at dusk, steam rising, soft teal light. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BD-RC-K. Make this image: a teal moon with a soft halo. Square 1024 × 1024 on a transparent background.
+
+BD-SL-H. Make this image: Body, Sleep: a forest under a deep blue night sky, fireflies drifting, everything resting. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BD-SL-K. Make this image: a dark blue moon with tiny firefly lights. Square 1024 × 1024 on a transparent background.
+
+BD-MV-H. Make this image: Body, Movement: a trail of light winding up a green mountain, wind moving through the grass. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+BD-MV-K. Make this image: a green moon with a winding path of light. Square 1024 × 1024 on a transparent background.
+
+SO-VA-H. Make this image: Soul, Values: a valley where five lanterns burn steadily on a hillside, each a different warm colour. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+SO-VA-K. Make this image: a violet moon with five small lights. Square 1024 × 1024 on a transparent background.
+
+SO-GR-H. Make this image: Soul, Gratitude: blossom petals of light falling slowly over a quiet violet garden. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+SO-GR-K. Make this image: a rose-violet moon dusted with petals of light. Square 1024 × 1024 on a transparent background.
+
+SO-CO-H. Make this image: Soul, Compassion: two hands of light (no faces) cupping a small glow above the valley. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+SO-CO-K. Make this image: a soft violet moon holding a gentle glow. Square 1024 × 1024 on a transparent background.
+
+SP-AW-H. Make this image: Spirit, Awe: a figure seen from behind, very small beneath a vast sky of slow lilac halos and a river of stars. No crystals. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+SP-AW-K. Make this image: a silver moon under a lilac halo. Square 1024 × 1024 on a transparent background.
+
+SP-CT-H. Make this image: Spirit, Contemplation: a still pool in an open observatory reflecting a single bright star. No crystals. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+SP-CT-K. Make this image: a pale moon with one bright star in its reflection. Square 1024 × 1024 on a transparent background.
+
+SP-QU-H. Make this image: Spirit, Questions: a spiral staircase of light rising into a starry nebula, its top lost in soft light. No crystals. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+SP-QU-K. Make this image: a moon with a fine spiral of light. Square 1024 × 1024 on a transparent background.
+
+FU-DE-H. Make this image: Future, Decisions: a golden path splitting into three at the edge of a dawn plateau, the citadel spires beyond. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+FU-DE-K. Make this image: an amber moon with a three-way fork of light. Square 1024 × 1024 on a transparent background.
+
+FU-GO-H. Make this image: Future, Goals: a single tall spire of the citadel catching first light, a path leading to it. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+FU-GO-K. Make this image: an amber moon with one bright point at its peak. Square 1024 × 1024 on a transparent background.
+
+FU-SK-H. Make this image: Future, Skills: a workshop of light at the citadel's edge, glowing tools and blueprints of light floating. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+FU-SK-K. Make this image: an amber moon with fine blueprint lines. Square 1024 × 1024 on a transparent background.
+
+FU-PU-H. Make this image: Future, Purpose: the whole citadel lit gold at dawn from far away, a figure seen from behind on the path toward it. Portrait 1080 × 1920. Put the main subject in the top 40% and keep the lower 55% calm and dark, because text will sit there.
+
+FU-PU-K. Make this image: a gold moon with a soft sunrise halo. Square 1024 × 1024 on a transparent background.
+
+========== DONE ==========
+
+Send the images back to Claude in batches, named by their codes.
