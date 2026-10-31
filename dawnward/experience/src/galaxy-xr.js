@@ -5,13 +5,12 @@
 // experience. Read-only: changes happen in the app.
 import * as THREE from "three";
 import { VRButton } from "three/addons/webxr/VRButton.js";
+import { buildScene } from "./galaxy-scene.js";
 
 const $ = (id) => document.getElementById(id);
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const CONFIDENCE = { hypothesis: "A guess", probable: "Probably true", established: "Well established" };
 const GOLD = new THREE.Color("#C9A96A");
-const INK = new THREE.Color("#ECE9E2");
-const DIM = new THREE.Color("#5E6570");
 
 function hash(id, salt = 0) {
   let h = 2166136261 ^ salt;
@@ -73,91 +72,6 @@ async function loadGalaxy() {
   return { galaxy: await res.json(), sample: false };
 }
 
-// ---------- Scene ----------
-
-function buildScene(galaxy) {
-  const stage = $("stage");
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.xr.enabled = true;
-  stage.appendChild(renderer.domElement);
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#04060A");
-  const camera = new THREE.PerspectiveCamera(60, 1, 0.05, 100);
-  camera.position.set(0, 1.6, 1.8);
-  camera.lookAt(0, 1.5, -2.5);
-
-  // The galaxy sits at human scale in front of you, oldest evening on the left.
-  const world = new THREE.Group();
-  scene.add(world);
-  const n = galaxy.stars.length;
-  const pos = new Map(galaxy.stars.map((s, i) => [s.id, new THREE.Vector3(
-    n === 1 ? 0 : -2.4 + (4.8 * i) / (n - 1),
-    1.05 + 0.95 * hash(s.id),
-    -2.2 - 1.3 * hash(s.id, 7),
-  )]));
-
-  const mesh = new THREE.InstancedMesh(new THREE.SphereGeometry(0.05, 16, 12), new THREE.MeshBasicMaterial(), Math.max(n, 1));
-  const m = new THREE.Matrix4();
-  galaxy.stars.forEach((s, i) => {
-    const scale = s.themeIds.length ? 1 : 0.7;
-    m.compose(pos.get(s.id), new THREE.Quaternion(), new THREE.Vector3(scale, scale, scale));
-    mesh.setMatrixAt(i, m);
-    mesh.setColorAt(i, INK);
-  });
-  mesh.count = n;
-  world.add(mesh);
-
-  const linkGeo = new THREE.BufferGeometry();
-  const lp = [];
-  for (const l of galaxy.links) { const a = pos.get(l.from), b = pos.get(l.to); if (a && b) lp.push(a.x, a.y, a.z, b.x, b.y, b.z); }
-  linkGeo.setAttribute("position", new THREE.Float32BufferAttribute(lp, 3));
-  linkGeo.setAttribute("color", new THREE.Float32BufferAttribute(new Array(lp.length).fill(0), 3));
-  const lines = new THREE.LineSegments(linkGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.85 }));
-  world.add(lines);
-
-  // A stationary field of faint far stars: a frame of reference for comfort.
-  const far = new Float32Array(1500);
-  for (let i = 0; i < far.length; i += 3) {
-    const u = hash(`f${i}`), v = hash(`g${i}`), r = 30 + 20 * hash(`h${i}`);
-    const th = 2 * Math.PI * u, ph = Math.acos(2 * v - 1);
-    far.set([r * Math.sin(ph) * Math.cos(th), r * Math.cos(ph), r * Math.sin(ph) * Math.sin(th)], i);
-  }
-  const farGeo = new THREE.BufferGeometry();
-  farGeo.setAttribute("position", new THREE.BufferAttribute(far, 3));
-  scene.add(new THREE.Points(farGeo, new THREE.PointsMaterial({ color: "#79818F", size: 0.08 })));
-
-  // In a headset the DOM panel is out of view, so the selected evening is
-  // also written on a quiet card floating beside it.
-  const cardCanvas = document.createElement("canvas");
-  cardCanvas.width = 1024; cardCanvas.height = 512;
-  const cardTex = new THREE.CanvasTexture(cardCanvas);
-  const card = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.6), new THREE.MeshBasicMaterial({ map: cardTex, transparent: true }));
-  card.visible = false;
-  scene.add(card);
-
-  function drawCard(lines) {
-    const c = cardCanvas.getContext("2d");
-    c.clearRect(0, 0, 1024, 512);
-    c.fillStyle = "rgba(18,22,29,0.92)"; c.beginPath(); c.roundRect(0, 0, 1024, 512, 36); c.fill();
-    c.fillStyle = "#79818F"; c.font = "34px 'Source Sans 3', sans-serif"; c.fillText(lines[0], 48, 80);
-    c.fillStyle = "#ECE9E2"; c.font = "44px 'Source Serif 4', Georgia, serif";
-    let y = 150;
-    for (const para of lines.slice(1)) {
-      let line = "";
-      for (const w of para.split(" ")) {
-        if (c.measureText(`${line}${w} `).width > 920) { c.fillText(line, 48, y); y += 58; line = ""; }
-        line += `${w} `;
-      }
-      c.fillText(line, 48, y); y += 72;
-      if (y > 480) break;
-    }
-    cardTex.needsUpdate = true;
-  }
-
-  return { renderer, scene, camera, world, mesh, lines, linkGeo, pos, card, drawCard };
-}
-
 // ---------- Selection: one state for the list, the panel and the scene ----------
 
 function main({ galaxy, sample }) {
@@ -167,7 +81,7 @@ function main({ galaxy, sample }) {
   if (sample) $("source").className = "sample";
 
   const themesById = new Map(galaxy.themes.map((t) => [t.id, t]));
-  const ctx = galaxy.stars.length ? buildScene(galaxy) : null;
+  const ctx = galaxy.stars.length ? buildScene(galaxy, { hash, reduced, stage: $("stage") }) : null;
   let selected = null;
 
   function select(sel) {
@@ -207,17 +121,10 @@ function main({ galaxy, sample }) {
     document.querySelectorAll("li button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === sel?.id)));
 
     if (!ctx) return;
-    galaxy.stars.forEach((s, i) => ctx.mesh.setColorAt(i, lit.has(s.id) ? GOLD : INK));
-    ctx.mesh.instanceColor.needsUpdate = true;
-    const colors = ctx.linkGeo.getAttribute("color");
-    galaxy.links.forEach((l, i) => {
-      const c = litTheme.has(l.themeId) ? GOLD : DIM;
-      colors.setXYZ(i * 2, c.r, c.g, c.b); colors.setXYZ(i * 2 + 1, c.r, c.g, c.b);
-    });
-    colors.needsUpdate = true;
-    const anchor = sel?.kind === "star" ? ctx.pos.get(sel.id) : sel ? ctx.pos.get(themesById.get(sel.id).starIds[0]) : null;
+    ctx.setSelection({ litIds: lit, selId: sel?.kind === "star" ? sel.id : null, litThemes: litTheme });
+    const anchor = sel?.kind === "star" ? ctx.worldPositionOf(sel.id) : sel ? ctx.worldPositionOf(themesById.get(sel.id).starIds[0]) : null;
     ctx.card.visible = Boolean(anchor) && ctx.renderer.xr.isPresenting;
-    if (anchor) ctx.card.position.set(anchor.x + 0.8, anchor.y + 0.1, anchor.z + 0.4);
+    if (anchor) ctx.card.position.set(anchor.x + 0.7, anchor.y + 0.35, anchor.z + 0.3);
   }
 
   // The accessible list: the complete experience on its own.
@@ -249,19 +156,24 @@ function main({ galaxy, sample }) {
   }
 
   // ---------- Interaction: pointer, keyboard, controllers ----------
-  const { renderer, scene, camera, world, mesh } = ctx;
-  const ray = new THREE.Raycaster();
+  const { renderer, scene } = ctx;
   function pick(origin, direction) {
-    ray.set(origin, direction);
-    const hit = ray.intersectObject(mesh)[0];
-    if (hit?.instanceId !== undefined) select({ kind: "star", id: galaxy.stars[hit.instanceId].id });
+    const id = ctx.pick(origin, direction);
+    if (id) select({ kind: "star", id });
   }
-  renderer.domElement.addEventListener("click", (e) => {
+  const ndcOf = (e) => {
     const r = renderer.domElement.getBoundingClientRect();
-    const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-    ray.setFromCamera(ndc, camera);
-    const hit = ray.intersectObject(mesh)[0];
-    if (hit?.instanceId !== undefined) select({ kind: "star", id: galaxy.stars[hit.instanceId].id });
+    return new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  };
+  let downX = 0;
+  renderer.domElement.addEventListener("pointerdown", (e) => { downX = e.clientX; });
+  renderer.domElement.addEventListener("click", (e) => {
+    if (Math.abs(e.clientX - downX) > 6) return; // that was a drag, not a tap
+    const id = ctx.pickScreen(ndcOf(e));
+    if (id) select({ kind: "star", id });
+  });
+  renderer.domElement.addEventListener("pointermove", (e) => {
+    renderer.domElement.style.cursor = ctx.pickScreen(ndcOf(e)) ? "pointer" : "grab";
   });
 
   // Gentle yaw only, capped, with a stationary sky behind it (visionOS HIG:
@@ -300,22 +212,24 @@ function main({ galaxy, sample }) {
 
   function resize() {
     const r = $("stage").getBoundingClientRect();
-    renderer.setSize(r.width, r.height, false);
-    camera.aspect = r.width / Math.max(r.height, 1);
-    camera.updateProjectionMatrix();
+    ctx.resize(r.width, r.height);
   }
   addEventListener("resize", resize);
   resize();
 
   // Frame times for QA (window.__dwFrames), measured, never assumed.
+  // A governor drops bloom and pixels if frames run long (measured, not assumed).
   const frames = (window.__dwFrames = []);
-  let last = performance.now(), t = 0;
+  let last = performance.now();
   renderer.setAnimationLoop((now) => {
+    const dt = Math.min((now - last) / 1000, 0.1);
     frames.push(now - last); last = now;
     if (frames.length > 600) frames.shift();
-    t += 1 / 60;
-    world.rotation.y += ((reduced ? yaw : yaw + Math.sin(t * 0.05) * 0.03) - world.rotation.y) * 0.1;
-    renderer.render(scene, camera);
+    if (ctx.bloomOn && frames.length === 180) {
+      const sorted = frames.slice(60).sort((a, b) => a - b);
+      if (sorted[Math.floor(sorted.length / 2)] > 28) { ctx.degrade(); window.__dwDegraded = true; }
+    }
+    ctx.frame(dt, yaw);
   });
   window.__dwGalaxyReady = true;
 }
