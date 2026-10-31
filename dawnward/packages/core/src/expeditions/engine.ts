@@ -14,7 +14,11 @@ export type Answer =
   | { text: string }
   | { action: string; when: string }
   | { ratings: Record<string, number> }
-  | { sorted: Record<string, string> };
+  | { sorted: Record<string, string> }
+  | { lab: { options: string[]; values: string[]; marks: Record<string, number> } };
+
+/** The Decision Lab's limits: 2 or 3 options, 1 to 3 things that matter, every cell marked 1 (helps), 2 (mixed) or 3 (costs). Never totalled. */
+export const LAB = { minOptions: 2, maxOptions: 3, minValues: 1, maxValues: 3, optionMax: 120, valueMax: 80 };
 
 export interface Attempt {
   id: string;
@@ -65,6 +69,19 @@ export function validateAnswer(step: Step, answer: unknown): string | null {
       if (!r || typeof r !== "object") return "Rate each reading first.";
       for (const l of step.lenses ?? []) if (![1, 2, 3].includes(r[l.id] as number)) return "Rate each reading first.";
       if (Object.keys(r).some((k) => !(step.lenses ?? []).some((l) => l.id === k))) return "Rate each reading first.";
+      return null;
+    }
+    case "lab": {
+      const l = a.lab as { options?: unknown; values?: unknown; marks?: unknown } | undefined;
+      if (!l || typeof l !== "object") return "Write your options first.";
+      const opts = Array.isArray(l.options) ? l.options : [], vals = Array.isArray(l.values) ? l.values : [];
+      const clean = (xs: unknown[], max: number) => xs.every((x) => typeof x === "string" && x.trim().length > 0 && x.length <= max);
+      if (opts.length < LAB.minOptions || opts.length > LAB.maxOptions || !clean(opts, LAB.optionMax)) return "Write two or three options.";
+      if (vals.length < LAB.minValues || vals.length > LAB.maxValues || !clean(vals, LAB.valueMax)) return "Name at least one thing that matters to you.";
+      const marks = l.marks as Record<string, unknown> | undefined;
+      if (!marks || typeof marks !== "object") return "Weigh each option first.";
+      const keys = opts.flatMap((_, i) => vals.map((_, j) => `${i}-${j}`));
+      if (keys.some((k) => ![1, 2, 3].includes(marks[k] as number)) || Object.keys(marks).some((k) => !keys.includes(k))) return "Weigh each option first.";
       return null;
     }
     case "sort": {
@@ -118,6 +135,7 @@ function normalise(step: Step, answer: Answer): Answer {
   if ("skip" in answer) return { skip: true };
   if ("ratings" in answer) return { ratings: { ...answer.ratings } };
   if ("sorted" in answer) return { sorted: { ...answer.sorted } };
+  if ("lab" in answer) return { lab: { options: answer.lab.options.map((x) => x.trim()), values: answer.lab.values.map((x) => x.trim()), marks: { ...answer.lab.marks } } };
   if ("text" in answer) return { text: answer.text.trim() };
   if ("action" in answer) return { action: answer.action.trim(), when: answer.when.trim() };
   if ("choice" in answer) return { choice: answer.choice };

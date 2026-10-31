@@ -147,12 +147,41 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.waitForTimeout(300);
     const learn = await page.textContent("#x-body");
     check(`${name}: Learn lists Beyond Overthinking as 7 chapters`, /expedition · 7 chapters/.test(learn));
-    check(`${name}: chapters 4 to 7 are marked Planned and can't be opened`, (await page.locator("#x-body li.planned").count()) === 4 && (await page.locator("#x-body li.planned button").count()) === 0);
+    check(`${name}: chapters 5 to 7 are marked Planned and can't be opened`, (await page.locator("#x-body li.planned").count()) === 3 && (await page.locator("#x-body li.planned button").count()) === 0);
     const stopBtn = page.getByRole("button", { name: "Following · stop" });
     check(`${name}: Learn shows you're following, as a pressed toggle`, (await stopBtn.getAttribute("aria-pressed")) === "true");
     await stopBtn.click();
     check(`${name}: stopping is one tap`, (await page.getByRole("button", { name: "Follow this expedition" }).count()) === 1);
     check(`${name}: stopping keeps every chapter done`, (await page.locator("#x-body .mission.done").count()) >= 3);
+
+    // Chapter 4: the Decision Lab, opened from Learn
+    await page.getByRole("button", { name: /Chapter 4: Enter the Decision Lab/ }).click();
+    await page.getByRole("button", { name: "Begin" }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
+    await playChapter(page, name, 4);
+    await page.getByRole("button", { name: "Continue" }).click();
+    check(`${name} ch4: the lab waits for options and what matters`, /Write at least two options/.test(await page.textContent(".lab-grid")) && await page.getByRole("button", { name: "Continue" }).isDisabled());
+    check(`${name} ch4: examples are shown, never prefilled`, (await page.inputValue("#lab-o1")) === "" && /For example/.test(await page.getAttribute("#lab-o1", "placeholder")));
+    await page.fill("#lab-o1", "Take the team-lead role");
+    await page.fill("#lab-o2", "Ask for a three-month trial");
+    await page.fill("#lab-o3", "Not yet: decide after April");
+    await page.fill("#lab-v1", "Time with my family");
+    await page.fill("#lab-v2", "Learning something new");
+    await page.getByRole("button", { name: "Open the lab" }).click();
+    const cells = page.locator(".lab-grid .sort-scale");
+    check(`${name} ch4: three options × two things that matter`, (await cells.count()) === 6 && (await page.locator(".lab-opt legend").count()) === 3);
+    const pickN = [3, 1, 2, 1, 1, 2];
+    for (let k = 0; k < 6; k++) { await cells.nth(k).getByRole("radio").nth(pickN[k] - 1).click(); if (k === 4) check(`${name} ch4: Continue waits until every cell is weighed`, await page.getByRole("button", { name: "Continue" }).isDisabled()); }
+    const sum = await page.textContent("#x-body .explain");
+    check(`${name} ch4: the lab shows the pattern, with no total or winner`, /Your lab/.test(sum) && (await page.locator(".lab-sum tbody tr").count()) === 3 && /no total here, on purpose/.test(sum) && !/\bbest\b|winner|\d+ points|score/i.test(sum));
+    await shot(page, `${name}-lab`);
+    await axe(page, `${name} lab`);
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.fill("#q-words", "The trial helps with both. The cost is waiting a little.");
+    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Not this time" }).click();
+    await page.locator("#x-body .found").waitFor();
+    check(`${name} ch4: the worksheet is offered`, (await page.getByRole("button", { name: "Worksheet: The Decision Lab" }).count()) === 1);
     await shot(page, `${name}-learn`);
     await axe(page, `${name} learn`);
     check(`${name}: no page errors`, errors.length === 0, errors.slice(0, 2).join(" | "));

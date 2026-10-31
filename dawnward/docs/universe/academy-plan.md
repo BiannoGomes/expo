@@ -92,7 +92,7 @@ I haven't read any of these manuscripts, so nothing here describes their content
 
 1. **Done this pass:** the portrait fix, the Home and Universe split, the Daily Compass, Journey milestones.
 2. **Done:** the `lesson` and `sort` steps, chapter statuses (draft or reviewed), and "Planned" chapters in Learn. Enrollment is still to come.
-3. **Drafted:** Beyond Overthinking chapters 1 and 2, with worksheets and print layout. Review copy: [`../academy/beyond-overthinking.md`](../academy/beyond-overthinking.md). Waiting for Bianno's edit and a qualified reviewer.
+3. **Drafted:** Beyond Overthinking chapters 1 to 4 (understand the loop, facts and assumptions, a one-minute pause, the Decision Lab), each with a printable worksheet; chapters 5 to 7 planned. Following an expedition is built. Review copy: [`../academy/beyond-overthinking.md`](../academy/beyond-overthinking.md). Waiting for Bianno's edit and a qualified reviewer.
 4. The Compass uses enrollment: "Chapter 2 of 7", plus a "Why this?" that names the expedition you chose.
 5. Library: resources, bookmarks, the book-mapping workflow (A4).
 6. Bounded AI practice: scenario variations validated server-side against the reviewed chapter.

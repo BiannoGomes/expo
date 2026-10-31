@@ -2,7 +2,7 @@
 // The server validates it at startup; the web preview bundles the same file.
 
 export type WorldId = "mind" | "body" | "soul" | "spirit" | "future";
-export type StepType = "intro" | "lesson" | "pause" | "choice" | "lens" | "sort" | "rehearse" | "plan" | "reflect" | "close";
+export type StepType = "intro" | "lesson" | "pause" | "choice" | "lens" | "sort" | "lab" | "rehearse" | "plan" | "reflect" | "close";
 
 export interface ChoiceOption {
   id: string;
@@ -384,7 +384,105 @@ export const MISSIONS: Mission[] = [
         id: "close",
         type: "close",
         title: "Return to Earth",
-        body: "You've practised putting space between a thought and what you do next. Chapter 4, Enter the Decision Lab, is still being written. Your pocket card, The One-Minute Pause, stays in this chapter whenever you want it.",
+        body: "You've practised putting space between a thought and what you do next. Next: Chapter 4, Enter the Decision Lab. Your pocket card, The One-Minute Pause, stays in this chapter whenever you want it.",
+        required: false,
+      },
+    ],
+  },
+  {
+    id: "overthinking-4",
+    version: 1,
+    systemId: "mind-beyond-overthinking",
+    world: "mind",
+    title: "Beyond Overthinking",
+    part: "Chapter 4: Enter the Decision Lab",
+    chapter: 4,
+    status: "draft",
+    objective: "Widen a stuck decision into real options, and see what each one costs.",
+    minutes: 10,
+    safetyNote: MIND_SAFETY,
+    worksheet: {
+      title: "The Decision Lab",
+      intro: "For a decision that's stuck at yes or no. Widen it, then look at the trade-offs. There's no total on purpose.",
+      sections: [
+        { heading: "The decision", lines: 1 },
+        { heading: "Options: include a smaller version, and \"not yet, until…\"", lines: 3 },
+        { heading: "Weigh them: Helps, Mixed or Costs", columns: ["Option", "What matters: ……", "What matters: ……", "Easy or hard to undo?"], rows: 3 },
+        { heading: "The cost I'm willing to pay, and for what", lines: 2 },
+      ],
+    },
+    steps: [
+      {
+        id: "intro",
+        type: "intro",
+        title: "Enter the Decision Lab",
+        body: "In the Decision Lab you'll widen a stuck decision into real options, see what each one costs, and notice which choices are easy to undo. Then you'll lay out one of your own decisions, without adding anything up. Nothing here is scored.",
+        required: false,
+      },
+      {
+        id: "lesson",
+        type: "lesson",
+        title: "More than two doors",
+        paragraphs: [
+          "Overthinking often squeezes a decision down to two choices: do it, or don't. Stay or go. With only two doors, each one looks risky, and the mind swings back and forth between them.",
+          "Most decisions have more than two options. Two are often missing: a smaller version (try it for a month, ask for a trial, start part-time) and not yet (wait until a date, or a piece of information, that you name). Adding them doesn't make the decision for you. It often makes it lighter.",
+          "Every option has a cost, including doing nothing. Looking for the option with no downside is one of the ways the loop keeps going. A more useful question is: which cost am I willing to pay, for what matters most to me?",
+          "It also helps to ask how easy a choice would be to undo. Many choices can be reversed, and for those, trying teaches you more than thinking does. Save your careful weighing for the few that are hard to undo.",
+        ],
+        required: false,
+      },
+      {
+        id: "undo",
+        type: "sort",
+        title: "Easy or hard to undo?",
+        body: "Six choices people often think over for a long time.",
+        prompt: "Sort each one: easy to undo, or hard to undo?",
+        bins: [
+          { id: "easy", label: "Easy to undo" },
+          { id: "hard", label: "Hard to undo" },
+        ],
+        items: [
+          { id: "class", text: "Trying a new class at the gym for a month", bin: "easy", why: "You can stop after a month, and you'll know more than you do now." },
+          { id: "lease", text: "Signing a two-year lease", bin: "hard", why: "Leaving early usually costs money and time." },
+          { id: "trial", text: "Asking for a trial week on another team", bin: "easy", why: "If it doesn't fit, you go back. You've spent a week and learned a lot." },
+          { id: "resign", text: "Resigning before you have another job", bin: "hard", why: "It can be undone, but not easily, and not on your terms." },
+          { id: "course", text: "Taking an evening course in something you're curious about", bin: "easy", why: "If it isn't for you, you stop. The cost is a few evenings." },
+          { id: "car", text: "Selling the car you rely on for work", bin: "hard", why: "Replacing it usually costs more than you got, and you need it in the meantime." },
+        ],
+        feedback: "Easy-to-undo choices usually deserve less thinking than they get: you'll learn more by trying. Save careful thinking for the few that are hard to undo, and even then, look for a smaller version you could try first.",
+        required: true,
+      },
+      {
+        id: "lab",
+        type: "lab",
+        title: "Your Decision Lab",
+        body: "Take a decision you've been turning over. It can be the one from Chapter 2.",
+        prompt: "Write two or three options. Try to include a smaller version, or \"not yet, until…\". Then name what matters most to you in this decision.",
+        examples: ["Take the team-lead role", "Ask for a three-month trial of the role", "Not yet: decide after the April review", "Time with my family", "Learning something new"],
+        feedback: "There's no total here, on purpose. Look at the pattern instead: is there an option that helps with what matters most, at a cost you could live with? Notice whether the smaller version or \"not yet\" changes the picture.",
+        required: true,
+      },
+      {
+        id: "stands-out",
+        type: "reflect",
+        title: "What stands out",
+        prompt: "Look at your lab. What stands out? An option you hadn't really considered, or a cost you'd be willing to pay?",
+        examples: ["The trial helps with both things that matter. The cost is waiting a little longer to know."],
+        required: true,
+      },
+      {
+        id: "step",
+        type: "plan",
+        title: "One small step",
+        prompt: "If you want, choose one small step toward an option, or to find something out, and when.",
+        examples: ["Email the team lead on Monday to ask about a trial."],
+        required: false,
+      },
+      {
+        id: "close",
+        type: "close",
+        title: "Return to Earth",
+        body: "You've widened a decision into real options and looked at what each one costs. Chapter 5, Choose one small action, is still being written. Your worksheet, The Decision Lab, stays in this chapter whenever you want it.",
         required: false,
       },
     ],
@@ -690,10 +788,9 @@ export const SYSTEMS: SolarSystem[] = [
     title: "Beyond Overthinking",
     objective: "Stop going round in circles on important decisions, and find a clearer next step.",
     kind: "expedition",
-    missionIds: ["overthinking-1", "overthinking-2", "overthinking-3"],
+    missionIds: ["overthinking-1", "overthinking-2", "overthinking-3", "overthinking-4"],
     // Titles from Bianno's outline (2026-10-31). Shown as planned until written and reviewed.
     planned: [
-      { title: "Enter the Decision Lab", line: "Explore alternative choices and their trade-offs." },
       { title: "Choose one small action", line: "Test a realistic decision-making strategy." },
       { title: "Reflect on the outcome", line: "Record what happened without judging success or failure." },
       { title: "Build your personal toolkit", line: "Save a printable worksheet and a reusable decision framework." },
@@ -743,6 +840,7 @@ export function checkCatalog(): string[] {
         if (new Set(ls.map((l) => l.id)).size !== ls.length) problems.push(`${m.id}/${s.id}: duplicate lens ids`);
         if (!s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);
       }
+      if (s.type === "lab" && !s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);
       if (s.type === "pause" && !(s.cues ?? []).length) problems.push(`${m.id}/${s.id}: a pause needs cues`);
       if (s.type === "lesson" && !(s.paragraphs ?? []).length) problems.push(`${m.id}/${s.id}: a lesson needs paragraphs`);
       if (s.type === "sort") {

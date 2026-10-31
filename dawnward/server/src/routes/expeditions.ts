@@ -85,12 +85,14 @@ async function inTransaction<T>(fn: (c: { query: typeof pool.query }) => Promise
 }
 
 /** Safety triage on any free text. A crisis stops everything; only level and time are logged. */
-async function triage(userId: string, texts: string[], reply: FastifyReply): Promise<boolean> {
+async function triage(userId: string, texts: string[], reply: FastifyReply, beforeReply?: () => Promise<unknown>): Promise<boolean> {
   for (const t of texts) {
     const level = (await intelligence.triageSafety(t)).level;
     if (level === "crisis" || level === "distress") {
       await query("insert into safety_events (user_id, level) values ($1, $2)", [userId, level]);
       if (level === "crisis") {
+        // Finish every state change first (pausing the mission), so nothing can see it half-done.
+        await beforeReply?.();
         reply.code(200).send({ crisis: true, reply: crisisResponse(null) });
         return false;
       }
@@ -98,7 +100,7 @@ async function triage(userId: string, texts: string[], reply: FastifyReply): Pro
   }
   return true;
 }
-const textsOf = (a: Answer) => ("text" in a ? [a.text] : "action" in a ? [a.action, a.when] : []);
+const textsOf = (a: Answer) => ("text" in a ? [a.text] : "action" in a ? [a.action, a.when] : "lab" in a ? [...a.lab.options, ...a.lab.values] : []);
 
 const answerSchema = z.union([
   z.object({ ack: z.literal(true) }),
@@ -108,6 +110,7 @@ const answerSchema = z.union([
   z.object({ action: z.string().max(400), when: z.string().max(200) }),
   z.object({ ratings: z.record(z.string().max(40), z.number().int().min(1).max(3)) }),
   z.object({ sorted: z.record(z.string().max(40), z.string().max(40)) }),
+  z.object({ lab: z.object({ options: z.array(z.string().max(120)).min(2).max(3), values: z.array(z.string().max(80)).min(1).max(3), marks: z.record(z.string().max(5), z.number().int().min(1).max(3)) }) }),
 ]);
 
 export function registerExpeditionRoutes(app: FastifyInstance) {
@@ -193,10 +196,8 @@ export function registerExpeditionRoutes(app: FastifyInstance) {
     if (step && JSON.stringify(row.answers[step.id]) === JSON.stringify(body.answer) && body.stepIndex < row.step) return view(row);
     const result = answerStep(mission, toAttempt(row), body.stepIndex, body.answer as Answer);
     if ("error" in result) return reply.code(result.status).send({ error: result.error, attempt: view(row) });
-    if (!(await triage(userId, textsOf(body.answer as Answer), reply))) {
-      await query("update mission_attempts set status = 'paused', updated_at = now() where id = $1", [row.id]);
-      return;
-    }
+    if (!(await triage(userId, textsOf(body.answer as Answer), reply,
+      () => query("update mission_attempts set status = 'paused', updated_at = now() where id = $1", [row.id])))) return;
     const next = result.attempt;
     const saved = await inTransaction(async (c) => {
       const upd = await c.query<AttemptRow>(
@@ -205,7 +206,7 @@ export function registerExpeditionRoutes(app: FastifyInstance) {
         [JSON.stringify(next.answers), next.step, row.id, userId, row.step],
       );
       if (!upd.rows[0]) return null; // someone else moved it on: stale
-      if (step && ("text" in body.answer || "action" in body.answer)) {
+      if (step && ("text" in body.answer || "action" in body.answer || "lab" in body.answer)) {
         await c.query(
           "insert into records (user_id, kind, payload, occurred_at) values ($1, 'mission_response', $2, now())",
           [userId, JSON.stringify({ attemptId: row.id, missionId: mission.id, stepId: step.id, answer: body.answer })],

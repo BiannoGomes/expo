@@ -8,7 +8,7 @@
 1. Understand the loop (draft, written)
 2. Separate facts from assumptions (draft, written)
 3. Practise a pause (draft, written)
-4. Enter the Decision Lab: Explore alternative choices and their trade-offs. (planned)
+4. Enter the Decision Lab (draft, written)
 5. Choose one small action: Test a realistic decision-making strategy. (planned)
 6. Reflect on the outcome: Record what happened without judging success or failure. (planned)
 7. Build your personal toolkit: Save a printable worksheet and a reusable decision framework. (planned)
@@ -248,7 +248,7 @@ It's late. You're replaying a conversation from today, and it's getting louder. 
 
 ### Return to Earth (close, optional)
 
-You've practised putting space between a thought and what you do next. Chapter 4, Enter the Decision Lab, is still being written. Your pocket card, The One-Minute Pause, stays in this chapter whenever you want it.
+You've practised putting space between a thought and what you do next. Next: Chapter 4, Enter the Decision Lab. Your pocket card, The One-Minute Pause, stays in this chapter whenever you want it.
 
 ### Worksheet: The One-Minute Pause
 
@@ -264,6 +264,92 @@ A pocket card for when the loop speeds up. Keep it somewhere you'll see it.
 **When I'll use it:** 2 blank lines.
 
 **What I noticed:** a table with columns "When", "The thought", "After the pause", and 4 blank rows.
+
+
+---
+
+## Chapter 4: Enter the Decision Lab
+
+**Objective:** Widen a stuck decision into real options, and see what each one costs.
+
+**Time:** about 10 minutes
+
+**Safety note:** If overthinking comes with low mood or anxiety that's affecting your sleep, work or relationships, please talk to a doctor or a mental health professional. findahelpline.com lists free, confidential support lines for your country.
+
+### Enter the Decision Lab (intro, optional)
+
+In the Decision Lab you'll widen a stuck decision into real options, see what each one costs, and notice which choices are easy to undo. Then you'll lay out one of your own decisions, without adding anything up. Nothing here is scored.
+
+
+### More than two doors (lesson, optional)
+
+Overthinking often squeezes a decision down to two choices: do it, or don't. Stay or go. With only two doors, each one looks risky, and the mind swings back and forth between them.
+
+Most decisions have more than two options. Two are often missing: a smaller version (try it for a month, ask for a trial, start part-time) and not yet (wait until a date, or a piece of information, that you name). Adding them doesn't make the decision for you. It often makes it lighter.
+
+Every option has a cost, including doing nothing. Looking for the option with no downside is one of the ways the loop keeps going. A more useful question is: which cost am I willing to pay, for what matters most to me?
+
+It also helps to ask how easy a choice would be to undo. Many choices can be reversed, and for those, trying teaches you more than thinking does. Save your careful weighing for the few that are hard to undo.
+
+
+### Easy or hard to undo? (sort)
+
+Six choices people often think over for a long time.
+
+**Prompt:** Sort each one: easy to undo, or hard to undo?
+
+| Thought | Suggested reading | Why |
+|---|---|---|
+| Trying a new class at the gym for a month | Easy to undo | You can stop after a month, and you'll know more than you do now. |
+| Signing a two-year lease | Hard to undo | Leaving early usually costs money and time. |
+| Asking for a trial week on another team | Easy to undo | If it doesn't fit, you go back. You've spent a week and learned a lot. |
+| Resigning before you have another job | Hard to undo | It can be undone, but not easily, and not on your terms. |
+| Taking an evening course in something you're curious about | Easy to undo | If it isn't for you, you stop. The cost is a few evenings. |
+| Selling the car you rely on for work | Hard to undo | Replacing it usually costs more than you got, and you need it in the meantime. |
+
+**Afterwards:** Easy-to-undo choices usually deserve less thinking than they get: you'll learn more by trying. Save careful thinking for the few that are hard to undo, and even then, look for a smaller version you could try first.
+
+
+### Your Decision Lab (lab)
+
+Take a decision you've been turning over. It can be the one from Chapter 2.
+
+**Prompt:** Write two or three options. Try to include a smaller version, or "not yet, until…". Then name what matters most to you in this decision.
+
+**Afterwards:** There's no total here, on purpose. Look at the pattern instead: is there an option that helps with what matters most, at a cost you could live with? Notice whether the smaller version or "not yet" changes the picture.
+
+**Example offered (never prefilled):** Take the team-lead role / Ask for a three-month trial of the role / Not yet: decide after the April review / Time with my family / Learning something new
+
+
+### What stands out (reflect)
+
+**Prompt:** Look at your lab. What stands out? An option you hadn't really considered, or a cost you'd be willing to pay?
+
+**Example offered (never prefilled):** The trial helps with both things that matter. The cost is waiting a little longer to know.
+
+
+### One small step (plan, optional)
+
+**Prompt:** If you want, choose one small step toward an option, or to find something out, and when.
+
+**Example offered (never prefilled):** Email the team lead on Monday to ask about a trial.
+
+
+### Return to Earth (close, optional)
+
+You've widened a decision into real options and looked at what each one costs. Chapter 5, Choose one small action, is still being written. Your worksheet, The Decision Lab, stays in this chapter whenever you want it.
+
+### Worksheet: The Decision Lab
+
+For a decision that's stuck at yes or no. Widen it, then look at the trade-offs. There's no total on purpose.
+
+**The decision:** 1 blank line.
+
+**Options: include a smaller version, and "not yet, until…":** 3 blank lines.
+
+**Weigh them: Helps, Mixed or Costs:** a table with columns "Option", "What matters: ……", "What matters: ……", "Easy or hard to undo?", and 3 blank rows.
+
+**The cost I'm willing to pay, and for what:** 2 blank lines.
 
 ---
 

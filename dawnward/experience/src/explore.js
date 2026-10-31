@@ -5,6 +5,7 @@
 import {
   MISSIONS,
   SYSTEMS,
+  LAB,
   answerStep,
   beginAttempt,
   completeAttempt,
@@ -228,7 +229,8 @@ export function createExplore(store, h) {
     const err = el("p", { class: "error", role: "alert" });
     const next = async (answer) => {
       err.textContent = "";
-      if (answer && ("text" in answer || "action" in answer) && h.distress(Object.values(answer).join(" ")) && store.local) { crisis(h.crisisText); return; }
+      const said = !answer ? "" : "text" in answer ? answer.text : "action" in answer ? `${answer.action} ${answer.when}` : "lab" in answer ? [...answer.lab.options, ...answer.lab.values].join(" ") : "";
+      if (said && h.distress(said) && store.local) { crisis(h.crisisText); return; }
       const problem = answer ? validateAnswer(step, answer) : null;
       if (problem) { err.textContent = problem; return; }
       const r = await store.answer(a, i, answer);
@@ -287,6 +289,64 @@ export function createExplore(store, h) {
       frame(m, i, title, el("p", { class: "lead" }, step.body), el("p", { class: "quiet" }, `About ${Math.round(total / 60)} minute. You can stop at any moment.`),
         el("div", { class: "pause-box" }, ring, cue), el("div", { class: "actions" }, start, read), all,
         err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => { stop(); next({ ack: true }); } }, "Continue")));
+      return;
+    }
+    if (step.type === "lab") {
+      h.quiet(false);
+      // Fields keep their own positions (3 options, 2 things that matter); empty ones are left out when saved.
+      const blank = { options: ["", "", ""], values: ["", ""], marks: {} };
+      let st = blank;
+      if (prev && "lab" in prev) st = { options: [...prev.lab.options, "", ""].slice(0, 3), values: [...prev.lab.values, ""].slice(0, 2), marks: { ...prev.lab.marks } };
+      else { try { st = { ...blank, ...JSON.parse(localStorage.getItem(DRAFT(a, step.id)) || "null") }; } catch { st = blank; } }
+      const keepDraft = () => { try { localStorage.setItem(DRAFT(a, step.id), JSON.stringify(st)); } catch {} };
+      const ex = step.examples ?? [];
+      const MARK = [[1, "Helps"], [2, "Mixed"], [3, "Costs"]];
+      const filled = (xs) => xs.map((t, i) => [t.trim(), i]).filter(([t]) => t);
+      const gridBox = el("div", { class: "lab-grid" });
+      const summary = el("div", { class: "explain", "aria-live": "polite" });
+      const go = el("button", { class: "primary", disabled: true, onclick: () => {
+        const os = filled(st.options), vs = filled(st.values), marks = {};
+        os.forEach(([, oi], i) => vs.forEach(([, vj], j) => { marks[`${i}-${j}`] = st.marks[`${oi}-${vj}`]; }));
+        next({ lab: { options: os.map(([t]) => t), values: vs.map(([t]) => t), marks } });
+      } }, "Continue");
+      const complete = () => { const os = filled(st.options), vs = filled(st.values); return os.length >= 2 && vs.length >= 1 && os.every(([, i]) => vs.every(([, j]) => st.marks[`${i}-${j}`])); };
+      const update = () => {
+        const done = complete(); go.disabled = !done;
+        const os = filled(st.options), vs = filled(st.values), word = (v) => MARK.find(([n]) => n === v)?.[1] ?? "";
+        summary.replaceChildren(...(done ? [el("p", { class: "outcome" }, "Your lab"),
+          el("table", { class: "ws-table lab-sum" }, el("thead", {}, el("tr", {}, el("th", { scope: "col" }, "Option"), vs.map(([t]) => el("th", { scope: "col" }, t)))),
+            el("tbody", {}, os.map(([t, i]) => el("tr", {}, el("th", { scope: "row" }, t), vs.map(([, j]) => el("td", { class: `m${st.marks[`${i}-${j}`]}` }, word(st.marks[`${i}-${j}`]))))))),
+          el("p", { class: "quiet" }, step.feedback)] : []));
+      };
+      const grid = () => {
+        const os = filled(st.options), vs = filled(st.values);
+        gridBox.replaceChildren(...(os.length >= 2 && vs.length ? [el("p", { class: "lead" }, "Now weigh each option against what matters."),
+          ...os.map(([t, i]) => el("fieldset", { class: "lab-opt" }, el("legend", {}, t),
+            vs.map(([v, j]) => {
+              const key = `${i}-${j}`;
+              const group = el("div", { class: "seg sort-scale", role: "radiogroup", "aria-label": `${t}: ${v}` },
+                MARK.map(([n, label]) => el("button", { role: "radio", "aria-checked": String(st.marks[key] === n), onclick: (e) => {
+                  st.marks[key] = n; keepDraft();
+                  group.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b === e.currentTarget)));
+                  update();
+                } }, label)));
+              return el("div", { class: "lens" }, el("p", { class: "lens-text" }, v), group);
+            })))] : [el("p", { class: "quiet" }, "Write at least two options and one thing that matters, and the lab will open.")]));
+        update();
+      };
+      const field = (id, label, list, k, max, hint) => [el("label", { for: id, class: "label" }, label),
+        el("input", { id, class: "field", maxlength: String(max), autocomplete: "off", value: list[k], placeholder: hint ? `For example: ${hint}` : null,
+          oninput: (e) => { list[k] = e.target.value; keepDraft(); }, onchange: () => grid() })];
+      frame(m, i, title, el("p", { class: "lead" }, step.body), el("p", { class: "quiet" }, step.prompt),
+        el("div", { class: "lab-fields" },
+          ...field("lab-o1", "Option 1", st.options, 0, LAB.optionMax, ex[0]),
+          ...field("lab-o2", "Option 2", st.options, 1, LAB.optionMax, ex[1]),
+          ...field("lab-o3", "A third way (optional)", st.options, 2, LAB.optionMax, ex[2]),
+          ...field("lab-v1", "What matters most to you here", st.values, 0, LAB.valueMax, ex[3]),
+          ...field("lab-v2", "Something else that matters (optional)", st.values, 1, LAB.valueMax, ex[4])),
+        el("button", { class: "ghost", onclick: () => grid() }, "Open the lab"),
+        gridBox, summary, err, el("div", { class: "actions" }, go));
+      grid();
       return;
     }
     if (step.type === "sort") {

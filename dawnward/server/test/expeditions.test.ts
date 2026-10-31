@@ -34,8 +34,8 @@ function play(mission = bridge1): Attempt {
 describe("expedition catalog", () => {
   it("is sound: every mission has a completion state, valid options and a close step", () => {
     assert.deepEqual(checkCatalog(), []);
-    assert.equal(MISSIONS.length, 7);
-    assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-beyond-overthinking", 3], ["mind-thought-patterns", 1], ["soul-communication", 3]]);
+    assert.equal(MISSIONS.length, 8);
+    assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-beyond-overthinking", 4], ["mind-thought-patterns", 1], ["soul-communication", 3]]);
   });
   it("contains no scoring or forbidden words", () => {
     const text = JSON.stringify(MISSIONS).toLowerCase();
@@ -150,6 +150,24 @@ describe("Beyond Overthinking: lesson and sort steps (drafts)", () => {
   it("the expedition lists 7 chapters: 3 written, 4 planned", () => {
     const sys = SYSTEMS.find((x) => x.id === "mind-beyond-overthinking")!;
     assert.equal(sys.missionIds.length + sys.planned!.length, 7);
+  });
+  it("the Decision Lab needs 2-3 options, 1-3 things that matter, and every cell weighed; it is never totalled", () => {
+    const lab = missionById("overthinking-4")!.steps.find((x) => x.type === "lab")!;
+    const ok = { lab: { options: [" Take it ", "Trial first"], values: ["Family"], marks: { "0-0": 3, "1-0": 1 } } };
+    assert.equal(validateAnswer(lab, ok), null);
+    assert.match(validateAnswer(lab, { lab: { ...ok.lab, options: ["Only one"] , marks: { "0-0": 1 } } })!, /two or three options/);
+    assert.match(validateAnswer(lab, { lab: { ...ok.lab, options: ["A", "  "] } })!, /two or three options/);
+    assert.match(validateAnswer(lab, { lab: { ...ok.lab, values: [] } })!, /matters/);
+    assert.match(validateAnswer(lab, { lab: { ...ok.lab, marks: { "0-0": 3 } } })!, /Weigh each/);
+    assert.match(validateAnswer(lab, { lab: { ...ok.lab, marks: { "0-0": 3, "1-0": 4 } } })!, /Weigh each/);
+    assert.match(validateAnswer(lab, { lab: { ...ok.lab, marks: { "0-0": 3, "1-0": 1, "2-0": 1 } } })!, /Weigh each/);
+    const m = missionById("overthinking-4")!;
+    let a = beginAttempt(m, "lab-1");
+    for (const [i, st] of m.steps.entries()) {
+      const ans = st.type === "sort" ? { sorted: Object.fromEntries(st.items!.map((x) => [x.id, x.bin])) } : st.type === "lab" ? ok : st.type === "plan" ? { skip: true as const } : st.type === "reflect" ? { text: "Words." } : { ack: true as const };
+      const r = answerStep(m, a, i, ans); assert.ok("attempt" in r, st.id); a = r.attempt;
+    }
+    assert.deepEqual((a.answers.lab as { lab: { options: string[] } }).lab.options, ["Take it", "Trial first"], "trimmed when kept");
   });
   it("a lesson is acknowledged like an intro", () => {
     const lesson = c1.steps.find((x) => x.type === "lesson")!;

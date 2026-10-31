@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T15:55:51.724Z",
+  "when": "2026-10-31T16:02:49.725Z",
   "checks": [
     {
       "name": "phone: the Compass starts with Beyond Overthinking, Chapter 1 of 7",
@@ -197,7 +197,7 @@
       "detail": ""
     },
     {
-      "name": "phone: chapters 4 to 7 are marked Planned and can't be opened",
+      "name": "phone: chapters 5 to 7 are marked Planned and can't be opened",
       "ok": true,
       "detail": ""
     },
@@ -213,6 +213,56 @@
     },
     {
       "name": "phone: stopping keeps every chapter done",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch4: six thoughts to sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch4: Continue waits until all are sorted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch4: a reading of each, with reasons",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch4: the lab waits for options and what matters",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch4: examples are shown, never prefilled",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch4: three options × two things that matter",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch4: Continue waits until every cell is weighed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch4: the lab shows the pattern, with no total or winner",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone lab",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch4: the worksheet is offered",
       "ok": true,
       "detail": ""
     },
@@ -422,7 +472,7 @@
       "detail": ""
     },
     {
-      "name": "small: chapters 4 to 7 are marked Planned and can't be opened",
+      "name": "small: chapters 5 to 7 are marked Planned and can't be opened",
       "ok": true,
       "detail": ""
     },
@@ -442,6 +492,56 @@
       "detail": ""
     },
     {
+      "name": "small ch4: six thoughts to sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch4: Continue waits until all are sorted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch4: a reading of each, with reasons",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch4: the lab waits for options and what matters",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch4: examples are shown, never prefilled",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch4: three options × two things that matter",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch4: Continue waits until every cell is weighed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch4: the lab shows the pattern, with no total or winner",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: small lab",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch4: the worksheet is offered",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "axe: small learn",
       "ok": true,
       "detail": ""
@@ -457,15 +557,17 @@
     "phone lesson": [],
     "phone sort": [],
     "phone pause": [],
+    "phone lab": [],
     "phone learn": [],
     "small worksheet": [],
     "small lesson": [],
     "small sort": [],
     "small pause": [],
+    "small lab": [],
     "small learn": []
   },
   "summary": {
-    "total": 90,
+    "total": 110,
     "failed": 0
   }
 }

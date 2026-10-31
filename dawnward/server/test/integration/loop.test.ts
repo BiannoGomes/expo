@@ -944,6 +944,28 @@ describe("expeditions (Soul · Communication, first slice)", () => {
     assert.deepEqual((await inject(s, { method: "GET", url: "/expeditions" })).json().following, []);
   });
 
+  it("Beyond Overthinking, chapter 4: the Decision Lab is kept as the person's own words, and a crisis in it stops everything", async () => {
+    const s = await createSession();
+    const attempt = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "overthinking-4" } })).json();
+    const mission = (await inject(s, { method: "GET", url: "/expeditions/missions/overthinking-4" })).json();
+    const labIdx = mission.steps.findIndex((x: { type: string }) => x.type === "lab");
+    for (let i = 0; i < labIdx; i++) {
+      const step = mission.steps[i];
+      const answer = step.type === "sort" ? { sorted: Object.fromEntries(step.items.map((x: { id: string; bin: string }) => [x.id, x.bin])) } : { ack: true };
+      assert.equal((await inject(s, { method: "POST", url: `/attempts/${attempt.id}/answer`, payload: { stepIndex: i, answer } })).statusCode, 200);
+    }
+    const crisis = await inject(s, { method: "POST", url: `/attempts/${attempt.id}/answer`, payload: { stepIndex: labIdx, answer: { lab: { options: ["[crisis] a test phrase", "Stay"], values: ["Me"], marks: { "0-0": 3, "1-0": 3 } } } } });
+    assert.equal(crisis.statusCode, 200);
+    assert.equal(crisis.json().crisis, true, "a crisis typed into the lab is caught like anywhere else");
+    const good = { lab: { options: ["Take the role", "Ask for a trial", "Not yet: after April"], values: ["Family time", "Learning"], marks: { "0-0": 3, "0-1": 1, "1-0": 2, "1-1": 1, "2-0": 1, "2-1": 2 } } };
+    const ok = await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "overthinking-4" } });
+    const resumed = ok.json();
+    const res = await inject(s, { method: "POST", url: `/attempts/${resumed.id}/answer`, payload: { stepIndex: labIdx, answer: good } });
+    assert.equal(res.statusCode, 200, res.body);
+    const exp = (await inject(s, { method: "GET", url: "/export" })).json();
+    assert.ok(exp.records.some((r: { kind: string; payload: { stepId: string } }) => r.kind === "mission_response" && r.payload.stepId === "lab"), "kept as a record, so it exports and deletes with everything else");
+  });
+
   it("beginning twice resumes the same attempt", async () => {
     const s = await createSession();
     const a = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "bridge-1" } })).json();

@@ -100,6 +100,13 @@
   @media (prefers-reduced-motion: reduce) { .pause-ring.on { animation:none; } }
   .cue { font-family:var(--display); font-size:22px; line-height:1.35; max-width:30ch; min-height:3.4em; }
   .cue-list, .ws-items { display:flex; flex-direction:column; gap:var(--s2); padding-left:var(--s5); line-height:1.5; }
+  .lab-fields { display:flex; flex-direction:column; gap:var(--s2); }
+  .lab-fields .field { margin-bottom:var(--s2); }
+  .lab-grid { display:flex; flex-direction:column; gap:var(--s4); }
+  .lab-opt { border:1px solid var(--edge); border-radius:var(--s4); padding:var(--s3) var(--s4) var(--s4); margin:0; min-width:0; }
+  .lab-opt legend { padding:0 var(--s2); font-weight:600; overflow-wrap:anywhere; }
+  .lab-sum td.m1 { color:var(--body); } .lab-sum td.m3 { color:var(--gold-ink); }
+  .lab-sum th, .lab-sum td { padding:var(--s2); height:auto; overflow-wrap:anywhere; }
   .follow[aria-pressed="true"] { border-color:var(--gold); color:var(--gold-ink); }
   .readings { display:flex; flex-direction:column; gap:var(--s3); padding:0; list-style:none; }
   .readings li { line-height:1.45; }
