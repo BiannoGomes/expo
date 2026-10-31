@@ -536,3 +536,127 @@ describe("data rights", () => {
     assert.equal(ghost.statusCode, 401);
   });
 });
+
+describe("your evenings: own words, quoted, and any evening can be left out", () => {
+  let me: Session;
+  const older = "Walked at lunch and felt clearer. The team call went fine.";
+  const latest = "I keep avoiding the call with my sister and it sits with me.";
+  let olderId = "";
+  let latestId = "";
+
+  before(async () => {
+    me = await createSession();
+    for (const [date, transcript] of [["2026-09-01", older], ["2026-09-02", latest]] as const) {
+      const res = await inject(me, { method: "POST", url: "/debrief", payload: { date, transcript } });
+      assert.equal(res.statusCode, 200);
+    }
+    const list = (await inject(me, { method: "GET", url: "/evenings" })).json();
+    latestId = list[0].id;
+    olderId = list[1].id;
+  });
+
+  it("lists the person's evenings newest first, in their words", async () => {
+    const list = (await inject(me, { method: "GET", url: "/evenings" })).json();
+    assert.equal(list.length, 2);
+    assert.equal(list[0].text, latest);
+    assert.equal(list[0].date, "2026-09-02");
+    assert.equal(list[0].excluded, false);
+  });
+
+  it("searches literally, so % and _ are just characters", async () => {
+    const hit = (await inject(me, { method: "GET", url: "/evenings?q=SISTER" })).json();
+    assert.deepEqual(hit.map((e: { id: string }) => e.id), [latestId]);
+    const pct = (await inject(me, { method: "GET", url: "/evenings?q=%25" })).json();
+    assert.equal(pct.length, 0);
+  });
+
+  it("never shows or touches another person's evenings", async () => {
+    const other = await createSession();
+    const list = (await inject(other, { method: "GET", url: "/evenings" })).json();
+    assert.deepEqual(list, []);
+    const res = await inject(other, { method: "POST", url: `/evenings/${latestId}/exclude` });
+    assert.equal(res.statusCode, 404);
+    const undo = await inject(other, { method: "DELETE", url: `/evenings/${latestId}/exclude` });
+    assert.equal(undo.statusCode, 404);
+  });
+
+  it("morning steps quote the evening they came from, and only verified words", async () => {
+    const plan = (await inject(me, { method: "GET", url: "/plan/2026-09-03" })).json();
+    const build = plan.slots.find((s: { slot: string }) => s.slot === "build");
+    const train = plan.slots.find((s: { slot: string }) => s.slot === "train");
+    assert.deepEqual(build.source, { recordId: latestId, date: "2026-09-02", quote: "I keep avoiding the call with my sister and it sits with me" });
+    assert.equal(train.source, undefined, "invented words are dropped, the step stays");
+    assert.equal(plan.questionSource.recordId, latestId);
+    assert.ok(!("quote" in build) && !("sourceRecordId" in build));
+  });
+
+  it("a left-out evening is never quoted, and it can be brought back", async () => {
+    const out = await inject(me, { method: "POST", url: `/evenings/${latestId}/exclude` });
+    assert.equal(out.statusCode, 200);
+    const list = (await inject(me, { method: "GET", url: "/evenings" })).json();
+    assert.equal(list[0].excluded, true, "still listed, marked as left out");
+
+    const plan = (await inject(me, { method: "GET", url: "/plan/2026-09-04" })).json();
+    const build = plan.slots.find((s: { slot: string }) => s.slot === "build");
+    assert.equal(build.source.recordId, olderId);
+    assert.equal(plan.questionSource.recordId, olderId);
+
+    const back = await inject(me, { method: "DELETE", url: `/evenings/${latestId}/exclude` });
+    assert.equal(back.statusCode, 200);
+    const plan2 = (await inject(me, { method: "GET", url: "/plan/2026-09-05" })).json();
+    assert.equal(plan2.questionSource.recordId, latestId);
+  });
+
+  it("beliefs resting only on a left-out evening are hidden, not destroyed", async () => {
+    const solo = await createSession();
+    await inject(solo, {
+      method: "POST",
+      url: "/debrief",
+      payload: { date: "2026-09-10", transcript: "I wrote the plan down and kept to it all day." },
+    });
+    await runNightly();
+    const statement = "You keep commitments you write down.";
+    const before = (await inject(solo, { method: "GET", url: "/assertions" })).json();
+    assert.ok(before.some((a: { statement: string }) => a.statement === statement));
+
+    const [evening] = (await inject(solo, { method: "GET", url: "/evenings" })).json();
+    assert.equal(evening.beliefCount, 1);
+    await inject(solo, { method: "POST", url: `/evenings/${evening.id}/exclude` });
+    const hidden = (await inject(solo, { method: "GET", url: "/assertions" })).json();
+    assert.ok(!hidden.some((a: { statement: string }) => a.statement === statement));
+    const [summary] = await query<{ content: string }>(
+      "select content from model_summaries where user_id = $1",
+      [solo.userId],
+    );
+    assert.ok(!summary?.content.includes(statement));
+
+    await runNightly(); // the nightly pass must not prune it while it is left out
+    await inject(solo, { method: "DELETE", url: `/evenings/${evening.id}/exclude` });
+    const restored = (await inject(solo, { method: "GET", url: "/assertions" })).json();
+    assert.ok(restored.some((a: { statement: string }) => a.statement === statement));
+  });
+
+  it("the constellation leaves out the evening too", async () => {
+    await inject(me, { method: "POST", url: `/evenings/${olderId}/exclude` });
+    const stars = (await inject(me, { method: "GET", url: "/constellation" })).json();
+    assert.ok(!stars.some((s: { id: string }) => s.id === olderId));
+    assert.ok(stars.some((s: { id: string }) => s.id === latestId));
+  });
+});
+
+describe("web clients", () => {
+  it("CORS preflight allows the PATCH and DELETE routes the app uses", async () => {
+    for (const method of ["PATCH", "DELETE"]) {
+      const res = await app.inject({
+        method: "OPTIONS",
+        url: "/evenings/00000000-0000-0000-0000-000000000000/exclude",
+        headers: {
+          origin: "http://localhost:8081",
+          "access-control-request-method": method,
+        },
+      });
+      assert.ok(res.statusCode < 300, `${method} preflight status ${res.statusCode}`);
+      assert.match(String(res.headers["access-control-allow-methods"]), new RegExp(method));
+    }
+  });
+});

@@ -1,0 +1,29 @@
+{
+ "avoid": [
+  "Rosebud",
+  "Mindsera",
+  "Reflection.app",
+  "Journal Better Inc",
+  "Stoic app inc",
+  "getstoic",
+  "Stoic.",
+  "Exist.io",
+  "Hello Code",
+  "Calm",
+  "Headspace",
+  "Day One"
+ ],
+ "app_store": {
+  "name": "Dawnward: Evening Reflection",
+  "subtitle": "Your words, your next steps",
+  "promotional_text": "New: every morning step now shows the evening it came from, in your own words.",
+  "description": "Talk about your day for a few minutes before bed, or type it. In the morning, Dawnward gives you three small steps, each drawn from something you actually said.\n\nEvery step shows the evening it came from, in your own words. If a line didn't come from you, it doesn't appear.\n\nDawnward slowly learns what matters to you. You can see everything it believes about you, why it thinks so, and correct anything that's wrong. Your word wins.\n\nYour evenings stay yours:\n- Read and search every evening, word for word\n- Leave any evening out of what Dawnward uses, and bring it back whenever you like\n- Export everything, or delete it all, from Settings\n\nNo streaks. No scores. Miss a week and the next morning is simply lighter.\n\nFour worlds hold what you share: Mind, Body, Soul and Future.",
+  "keywords": "journal,debrief,reflect,night,voice,diary,habits,mindful,morning,growth,self",
+  "whats_new": "Your evenings: read, search, and leave any evening out. Morning steps now quote the evening they came from."
+ },
+ "google_play": {
+  "title": "Dawnward: Evening Reflection",
+  "short_description": "Talk about your day. Wake up to three steps drawn from your own words.",
+  "full_description": "Talk about your day for a few minutes before bed, or type it. In the morning, Dawnward gives you three small steps, each drawn from something you actually said.\n\nEvery step shows the evening it came from, in your own words. If a line didn't come from you, it doesn't appear.\n\nDawnward slowly learns what matters to you. You can see everything it believes about you, why it thinks so, and correct anything that's wrong. Your word wins.\n\nYour evenings stay yours:\n- Read and search every evening, word for word\n- Leave any evening out of what Dawnward uses, and bring it back whenever you like\n- Export everything, or delete it all, from Settings\n\nNo streaks. No scores. Miss a week and the next morning is simply lighter.\n\nFour worlds hold what you share: Mind, Body, Soul and Future."
+ }
+}

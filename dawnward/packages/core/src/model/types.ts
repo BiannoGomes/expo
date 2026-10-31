@@ -78,11 +78,20 @@ export interface Assertion {
 
 export type SlotName = "build" | "train" | "learn" | "confront" | "experience";
 
+/** Words from one of the person's evenings, verified verbatim by the server. */
+export interface PlanSource {
+  recordId: string;
+  date: string; // YYYY-MM-DD of the evening
+  quote: string;
+}
+
 export interface PlanSlot {
   slot: SlotName;
   text: string;
   /** Why this item today — user-visible, one clause. */
   because: string;
+  /** The evening this step came from. Present only when the quote verified. */
+  source?: PlanSource;
 }
 
 export interface DailyPlan {
@@ -90,6 +99,8 @@ export interface DailyPlan {
   /** 1–5 slots. Empty slots are omitted, never padded. */
   slots: PlanSlot[];
   question: string;
+  /** The evening tonight's question picks up from, when it verified. */
+  questionSource?: PlanSource;
   /** Rest-day mode replaces slots with a recovery instruction. */
   restDay: boolean;
   /** Set on re-entry after ≥3 silent days (spec 03 §4). Never lists missed days. */

@@ -334,3 +334,31 @@ export async function fetchConstellation(): Promise<Star[]> {
   if (!res.ok) throw new Error(`constellation fetch failed: ${res.status}`);
   return res.json();
 }
+
+// ---------- Your evenings: own words, searchable, any one can be left out ----------
+
+export interface EveningView {
+  id: string;
+  date: string; // YYYY-MM-DD
+  occurredAt: string;
+  text: string;
+  /** Left out of what Dawnward understands. Still listed, still theirs. */
+  excluded: boolean;
+  /** Active beliefs that cite this evening. */
+  beliefCount: number;
+}
+
+export async function fetchEvenings(q?: string, before?: string): Promise<EveningView[]> {
+  const params = new URLSearchParams();
+  if (q?.trim()) params.set("q", q.trim());
+  if (before) params.set("before", before);
+  const query = params.toString() ? `?${params.toString()}` : "";
+  const res = await api(`/evenings${query}`);
+  if (!res.ok) throw new Error(`evenings fetch failed: ${res.status}`);
+  return res.json();
+}
+
+export async function setEveningLeftOut(id: string, leftOut: boolean): Promise<void> {
+  const res = await api(`/evenings/${id}/exclude`, { method: leftOut ? "POST" : "DELETE" });
+  if (!res.ok) throw new Error(`evening update failed: ${res.status}`);
+}

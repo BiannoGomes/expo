@@ -6,6 +6,7 @@ import {
 } from "@dawnward/core";
 import { query } from "../db.js";
 import { decideConfidence, type EvidenceStats } from "./promotion.js";
+import { notExcluded } from "./exclusions.js";
 
 /**
  * Nightly integration (spec 02 §4 step 3): merge candidate assertions into
@@ -28,6 +29,7 @@ export async function pendingExtractions(userId: string): Promise<ExtractionRow[
       where r.user_id = $1 and r.kind = 'action_event'
         and r.payload ? 'extractionOf'
         and not exists (select 1 from record_processing p where p.record_id = r.id)
+        and ${notExcluded("(r.payload->>'extractionOf')::uuid")}
       order by r.occurred_at`,
     [userId],
   );

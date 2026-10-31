@@ -1,0 +1,60 @@
+feature,area,priority,original,clone,notes
+"Text entry editor (minimal, distraction-free)",Capture,must,yes,no,"V https://mindsera.com/help/getting-started/dashboard . Write quick action on mobile, Text Entry on web; font customization shipped Sep 2026 per https://mindsera.com/help/general/roadmap"
+Voice journaling with automatic transcription,Capture,must,yes,no,"V https://mindsera.com/help/editor/voice-journaling . Recording saved in entry metadata; listen, retranscribe, download or delete; free plan gets 1 try"
+Refine transcription with AI toggle (off keeps exact words),Capture,could,yes,no,V https://mindsera.com/help/editor/voice-journaling . Quote: 'Turn it off to keep exactly what you said.'
+Custom vocabulary and transcription language,Capture,could,yes,no,V https://mindsera.com/help/account/settings . Under Voice journaling settings
+Call Mode: spoken back-and-forth with the AI that becomes an entry,Capture,should,yes,no,V https://mindsera.com/help/editor/call-mode . Up to 75 minutes per call; voice selection; replies when you pause; privacy policy says call audio is not stored
+Scan physical (handwritten) journal to text,Capture,should,yes,no,V https://mindsera.com/help/getting-started/dashboard . Mobile only (web dashboard lists no Scan); Genius after 1 free try
+Photos in entries,Capture,could,yes,no,V https://mindsera.com/help/general/roadmap . Photos used in Go Deeper and Entry Analysis (Apr 2026); help article Add Photos listed at https://mindsera.com/help/
+Apple Watch and Wear OS voice capture,Capture,could,yes,no,V https://mindsera.com/help/editor/voice-journaling . Genius only
+Home screen widgets and Live Activities (iOS),Capture,could,yes,no,"V https://mindsera.com/help/getting-started/dashboard . One-tap new entry, voice, ritual or call"
+Go Deeper follow-up reflection prompt during writing,Companion,must,yes,no,"V https://mindsera.com/help/editor/personalized-prompts-go-deeper . Quote: 'It won't summarize, conclude, or answer for you.' Cmd/Ctrl+Enter on web; free plan 3 uses"
+New Direction (shift the entry's focus using past entries and themes),Companion,should,yes,no,V https://mindsera.com/help/editor/personalized-prompts-go-deeper . Genius
+"Customize AI: tone sliders, length, perspective (Stoic, Buddhist, Christian), custom instructions, presets",Companion,should,yes,no,"V https://mindsera.com/help/editor/personalized-prompts-go-deeper . Gentle/Direct, Optimistic/Realistic, Humorous/Serious; presets incl. Psychologist, CBT Coach, Challenger"
+"Personalized prompts based on previous entries (Prompt Me, Smart Prompts)",Companion,should,yes,no,V https://mindsera.com/help/getting-started/dashboard . Plus random prompts; homepage calls it Smart Prompts https://mindsera.com
+Minds comments: built-in AI personas comment on an entry,Companion,should,yes,no,"V https://mindsera.com/help/editor/minds-comments . Stoic Principles, Alternative Perspectives, Thinking Traps, Past Memories; up to 10 at once; reply threads"
+"Custom Minds (topic, author or expert style; private or public)",Companion,could,yes,no,V https://mindsera.com/help/editor/minds-comments . Can comment on current or past entries
+Highlight a passage and ask a Mind about it,Companion,could,yes,no,V https://mindsera.com/help/editor/minds-comments . User selects text; store listing says Minds highlight passages https://apps.apple.com/us/app/mindsera-ai-journal-diary/id6742319153
+"Entry Analysis on finish (summary, emotions, artwork, streak update)",Analysis,must,yes,no,V https://mindsera.com/help/editor/entry-analysis . Analyze button (mobile) or Finish entry (web); 15 to 30 s on web; free plan 1 try
+Bullet point summary per entry,Analysis,should,yes,no,V https://mindsera.com/help/editor/entry-analysis . Shown under Entries on web
+Emotion detection per entry using Plutchik model,Analysis,should,yes,no,V https://mindsera.com/help/editor/entry-analysis . Detects 'key feelings based on words and phrases'
+"AI artwork generated from each entry (regenerate, share, or plain gradient)",Analysis,could,yes,no,"V https://mindsera.com/help/editor/entry-analysis . Style, gender, ethnicity, age preferences in settings"
+Insights: Recurring topics over time periods,Insights,must,yes,no,V https://mindsera.com/help/insights/deep-analysis . Unlocks after 5 journaling days; Genius
+Insights: Big Five personality analysis that evolves,Insights,should,yes,no,V https://mindsera.com/help/insights/deep-analysis . 'Your personality type adapts and evolves based on your journal entries.' Display of scores not documented
+Insights: Personalized suggestions,Insights,should,yes,no,V https://mindsera.com/help/insights/deep-analysis . Goal-setting and self-improvement
+"Insights: Emotional state (Plutchik) for a chosen timeframe, tap emotion for summary",Insights,should,yes,no,V https://mindsera.com/help/insights/deep-analysis . Shows emotions and 'how often they appear'
+Insights: Emotional Waves (rise and fall over weeks and months),Insights,could,yes,no,V https://mindsera.com/help/insights/deep-analysis . Unlocks after 21 days
+Ask Your Journal: chat answered from all entries,Insights,must,yes,no,V https://mindsera.com/help/insights/ask-your-journal . Unlocks after 3 days; free plan 2 questions; Previous chats; suggested questions; source citation not documented
+Ask about a specific emotion and period from the Emotions card,Insights,should,yes,no,V https://apps.apple.com/us/app/mindsera-ai-journal-diary/id6742319153 release notes 1.59.0 and https://mindsera.com/help/insights/ask-your-journal
+Reasoning model for Ask Your Journal,Insights,could,yes,no,V https://mindsera.com/help/general/roadmap . Shipped Jan 2026; model not named
+"Memory Profile: nightly-refreshed bullets of what the AI remembers, editable and deletable, on/off toggle",Personal model,should,yes,no,"V https://mindsera.com/help/account/memory-profile . Says it 'doesn't infer or assume things'; used by Go Deeper, Minds, Ask; per-item sources not documented"
+"Four memory layers (immediate, short, medium, long term)",Personal model,could,yes,no,V https://mindsera.com/help/account/memory-profile
+"Weekly Review email (Monday; summary, recurring topics, weekly mindset, three suggestions)",Recaps,should,yes,no,"V https://mindsera.com/help/insights/weekly-review . Only after 4 journaling days that week; store listing adds entry count, streaks, writing time https://apps.apple.com/us/app/mindsera-ai-journal-diary/id6742319153"
+"Story View recaps (daily, weekly, monthly, yearly)",Recaps,should,yes,no,"V https://mindsera.com/help/getting-started/entries-and-highlights . Daily for everyone, longer periods Genius per https://mindsera.com/help/comparison/free-plan-vs-paid-plan"
+"Entries page: Story, List and Grid (Mind Gallery) views",Library,should,yes,no,V https://mindsera.com/help/getting-started/entries-and-highlights
+Natural language search over entries,Library,should,yes,no,V https://mindsera.com/help/getting-started/entries-and-highlights . Roadmap Apr 2026: recency-weighted semantic search
+"Entry filters (state, contents, tags, frameworks, emotions, date, highlights)",Library,could,yes,no,V https://mindsera.com/help/getting-started/entries-and-highlights
+Highlights (saved important ideas),Library,could,yes,no,V https://mindsera.com/help/getting-started/entries-and-highlights . Free plan table calls it Smart Highlights
+"Tags, tag suggestions and location metadata",Library,could,yes,no,"V https://mindsera.com/help/general/roadmap . Tag suggestions May 2026, location Jul 2026"
+"Frameworks library (50+ in six categories, one question at a time)",Guided,should,yes,no,"V https://mindsera.com/help/frameworks/frameworks . Journaling, Productivity, Wellness, Decision Making, Problem Solving, Business"
+"Framework recommender (Recommend me, natural language search)",Guided,could,yes,no,V https://mindsera.com/help/frameworks/frameworks
+Custom frameworks,Guided,could,yes,no,V https://mindsera.com/help/comparison/free-plan-vs-paid-plan . Free
+Courses (e.g. 7-Day Journaling Challenge) and seasonal prompts,Guided,could,yes,no,V https://mindsera.com/help/frameworks/frameworks ; seasonal prompts R in App Store review 13737662254
+Daily Ritual: Set the Day and End the Day conversational reflections,Guided,should,yes,no,V https://mindsera.com/help/frameworks/rituals-morningevening . 'connects to your past entries'; custom guidance; carry-over evening to morning not documented
+Streak tracker with stats and calendar (can be hidden),Habit,should,yes,no,"V https://mindsera.com/help/getting-started/dashboard . Shows streak, journaling time, word count, entries; hide streaks shipped Oct 2026"
+Weekly targets,Habit,could,yes,no,V https://apps.apple.com/us/app/mindsera-ai-journal-diary/id6742319153 store listing feature text; no help article found
+"Morning and evening reminders, smart and context-based notifications",Habit,should,yes,no,V https://mindsera.com/help/account/settings and https://mindsera.com/help/general/roadmap (Jun 2026)
+"Body-Mind: Oura or Whoop readiness vs journal Mood scores, trend/correlation/anomaly insights",Integrations,could,yes,no,"V https://mindsera.com/help/insights/body-mind . Numeric Body and Mood scores, Overlap percentage; Genius"
+Apple Health integration,Integrations,could,yes,no,V https://mindsera.com/help/general/roadmap . Apr 2026
+"MCP connector for Claude, ChatGPT, Gemini (read, search, optional create and edit)",Integrations,could,yes,no,V https://mindsera.com/help/account/connect-ai-assistants-mcp . Create and edit off by default; no delete; 100 edits per day; 30-day idle expiry
+Passcode lock,Privacy,should,yes,no,V https://mindsera.com/help/account/settings . Web passcode activates after inactivity
+"Export data (.zip or Markdown, PDF)",Privacy,should,yes,no,V https://mindsera.com/help/account/settings . PDF export May 2026 per roadmap; free plan
+Import entries from other apps,Privacy,could,yes,no,V https://mindsera.com/help/account/settings . Import runs on web
+Account deletion in Settings,Privacy,should,yes,no,V https://mindsera.com/help/general/privacy
+AI memory off switch,Privacy,should,yes,no,V https://mindsera.com/help/account/memory-profile
+"Themes, dark mode, editor fonts, app language",Personalisation,could,yes,no,V https://mindsera.com/help/account/settings . Seven colour themes per https://apps.apple.com/us/app/mindsera-ai-journal-diary/id6742319153
+Custom illustrated portrait from a photo (after 21 days),Personalisation,could,yes,no,V https://mindsera.com/help/account/settings
+AI replies in the language you write in,Personalisation,could,yes,no,V https://mindsera.com/help/general/roadmap . Oct 2026; homepage FAQ says optimized for English https://mindsera.com
+Free plan with one-time tries of each paid AI feature,Monetisation,should,yes,no,"V https://mindsera.com/help/comparison/free-plan-vs-paid-plan . Go Deeper 3, Ask 2, others 1 each"
+"Genius subscription monthly or annual, pause 1 to 3 months on web",Monetisation,must,yes,no,V https://mindsera.com/help/account/subscription and https://mindsera.com
+"Gift cards, referrals, student/senior/disability discounts",Monetisation,could,yes,no,V https://mindsera.com/help/ (help index) and https://mindsera.com/help/account/settings

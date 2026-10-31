@@ -1,0 +1,59 @@
+feature,area,priority,original,clone,notes
+"Automatic sync from Apple Health (steps, sleep stages, workouts, heart rate and HRV, weight, mindfulness, alcohol, sexual activity, menstrual flow)",integrations,must,yes,no,V https://itunes.apple.com/lookup?id=986201088 (App Store description) and https://exist.io/apps-data-syncing/
+"Automatic sync from Health Connect on Android (incl. nutrition, energy in, water, meditation)",integrations,must,yes,no,V https://exist.io/blog/post/exist-2025-redesign/ and Play release notes https://play.google.com/store/apps/details?id=co.hellocode.exist
+"OAuth integrations: Oura, Garmin, Withings, Strava, Fitbit",integrations,must,yes,no,V https://exist.io/apps-data-syncing/; Fitbit service ends Oct 2026 per https://kb.exist.io/article/131-migrating-from-fitbit-to-apple-health-and-health-connect
+"Productivity integrations: RescueTime, Todoist, Toggl, GitHub",integrations,should,yes,no,V https://exist.io/apps-data-syncing/
+"Media and social integrations: last.fm, Instapaper, Trakt, Mastodon, Swarm check-ins",integrations,could,yes,no,V https://exist.io/apps-data-syncing/
+"Calendar sync (iCal feeds incl. Google and iCloud, plus phone calendar on iOS): events count and time in events",integrations,should,yes,no,V https://exist.io/apps-data-syncing/ and App Store description
+"Weather from Apple Weather using coarse phone location (temp, precipitation, cloud cover, wind, humidity, day length)",integrations,should,yes,no,V https://exist.io/privacy/ and https://kb.exist.io/article/100-how-is-location-data-used
+Coarse location sync from mobile apps with location correlations,integrations,could,yes,no,V https://kb.exist.io/article/100-how-is-location-data-used
+Initial backfill of about 30 days on connect (at least 14),integrations,should,yes,no,V https://kb.exist.io/article/63-how-much-data-will-sync-when-i-connect-a-service
+Choose which service supplies each attribute (one owner at a time),integrations,should,yes,no,V https://exist.io/page/faqs/ and https://developer.exist.io/reference/attribute_ownership/
+Disconnect service keeps past data,integrations,could,yes,no,V https://exist.io/page/faqs/
+Nightly mood rating 1-9 with optional note (max 1000 chars),manual tracking,must,yes,no,V https://kb.exist.io/article/36-what-is-mood-tracking and https://developer.exist.io/reference/object_types/
+Nightly mood reminder by push or reply-by-email,manual tracking,must,yes,no,M https://exist.io/about/mood/ ; R App Store GB review 1223182955
+Mood tracking cannot be hidden,manual tracking,could,yes,no,V https://kb.exist.io/article/112-can-mood-tracking-be-turned-off
+Energy level and stress level 1-9 scales,manual tracking,should,yes,no,V https://developer.exist.io/reference/object_types/ (templates energy_level and stress_level)
+Custom tags: boolean 'this happened' per day,manual tracking,must,yes,no,V https://developer.exist.io/reference/object_types/ and https://exist.io/about/custom-tags/
+"Custom numeric attributes: quantity, decimal, percentage, duration, time of day, scale 1-9",manual tracking,must,yes,no,V https://exist.io/about/custom-tags/ and https://developer.exist.io/reference/object_types/
+Suggested starter tags until user has more than 6 tags,manual tracking,could,yes,no,V https://kb.exist.io/article/110-what-are-suggested-tags
+Tag and manual attribute subgroups; Symptoms and Medication groups,manual tracking,should,yes,no,V https://exist.io/blog/post/exist-2025-redesign/
+Merge one tag into another; rename and delete tags,manual tracking,could,yes,no,V https://exist.io/blog/post/pdf-export/
+One value per attribute per day (no intraday entries),data model,must,yes,no,V https://kb.exist.io/article/57-can-i-track-multiple-values-per-day ; top roadmap request 'Multiple mood entries per day' 557 votes https://changemap.co/hellocode/exist/
+iOS Shortcuts to set or increment any manual attribute,manual tracking,could,yes,no,V App Store release notes 4.4.1 https://apps.apple.com/us/app/exist/id986201088
+"Home tab with daily insight cards (graphs, album art)",insights,must,yes,no,V https://exist.io/blog/post/exist-2025-redesign/ and https://developer.exist.io/reference/insights/
+"Insights generated automatically by day, week and month (e.g. surprisingly long sleep, day-of-week patterns, highest in N days)",insights,must,yes,no,V https://developer.exist.io/reference/object_types/
+Pin four attributes to Home,insights,could,yes,no,V https://exist.io/blog/post/exist-2025-redesign/
+'One year ago' mood and note card,insights,should,yes,no,V https://kb.exist.io/article/36-what-is-mood-tracking
+"Rolling averages as weekly medians of last 60 days, per weekday",trends,must,yes,no,V https://developer.exist.io/reference/object_types/ and https://developer.exist.io/reference/averages/
+Auto goals: progress bar vs recent median for today's weekday,trends,should,yes,no,V https://kb.exist.io/article/39-how-does-exist-calculate-goals
+Attribute trends page with graph of strongest related attributes,trends,should,yes,no,V https://exist.io/blog/post/2023-updates/
+"Mood trends page (good and bad day breakdown, words written most per mood)",trends,should,yes,no,V https://exist.io/blog/post/2023-updates/ ; M https://exist.io/ for words written most
+Browse tab: raw history by month for any attribute,trends,should,yes,no,V https://exist.io/blog/post/exist-2025-redesign/ and https://exist.io/blog/post/exist-survey-2025/
+"Weekly correlations between any two attributes (Sunday run, shown Monday)",correlations,must,yes,no,V https://developer.exist.io/reference/object_types/ and https://kb.exist.io/article/18-how-long-does-it-take-to-find-correlations
+Minimum three weeks of non-empty data before correlations,correlations,must,yes,no,V https://kb.exist.io/article/18-how-long-does-it-take-to-find-correlations
+Next-day lag correlations when same-day not found,correlations,should,yes,no,V https://kb.exist.io/article/55-will-exist-find-correlations-across-multiple-days
+Plain-English second-person sentence per correlation (effect / when / condition),correlations,must,yes,no,V https://developer.exist.io/reference/correlations/
+Strength shown as percent plus phrase (e.g. 'Quite often go together'),correlations,must,yes,no,V https://developer.exist.io/reference/correlations/
+Confidence shown as 1-5 stars mapped from p-value plus phrase (e.g. 'Certain to be related'),correlations,must,yes,no,V https://developer.exist.io/reference/object_types/ and https://developer.exist.io/reference/correlations/
+Correlation-is-not-causation explanation in help and API terms,correlations,must,yes,no,V https://kb.exist.io/article/37-what-are-correlations and https://developer.exist.io/reference/object_types/
+User rating on each correlation (e.g. 'Useful'),correlations,should,yes,no,V https://developer.exist.io/reference/correlations/
+Sub-correlations for a category such as one specific calendar,correlations,could,yes,no,V https://developer.exist.io/reference/object_types/
+Filter correlations by strong or five-star confident,correlations,could,yes,no,V https://developer.exist.io/reference/correlations/
+Template-pair explanations with 'occurrence' and description,correlations,could,yes,no,V https://developer.exist.io/reference/object_types/
+Weekly summary email (mood notes optional),reports,should,yes,no,M https://exist.io/ ; V roadmap items completed https://changemap.co/hellocode/exist/
+Yearly in-review report,reports,could,yes,no,V roadmap '2025 in review yearly report' completed https://changemap.co/hellocode/exist/ ; content unknown
+"PDF report of one or two attributes with graphs, correlations, averages, raw table",reports,should,yes,no,V https://exist.io/blog/post/pdf-export/
+CSV export of up to five attributes over custom dates,export,should,yes,no,V https://exist.io/blog/post/pdf-export/
+Full JSON export of account data,export,should,yes,no,V https://kb.exist.io/article/14-how-do-i-export-my-data
+No file import (CSV or JSON),export,could,yes,no,V https://kb.exist.io/article/118-can-i-import-data-from-a-file
+"Public REST API v2 with token and OAuth2, group-based read and write scopes, 300 requests per hour",developer,should,yes,no,V https://developer.exist.io/reference/important_values/ and https://developer.exist.io/reference/authentication/oauth2/
+Third-party services can acquire and write attributes,developer,could,yes,no,V https://developer.exist.io/reference/attribute_ownership/
+Web app plus native iOS and Android apps with dark mode and Dynamic Type,platform,must,yes,no,V https://exist.io/blog/post/exist-2025-redesign/
+Imperial or metric display per unit type; per-account timezone,platform,could,yes,no,V https://developer.exist.io/reference/object_types/ and https://exist.io/page/faqs/
+Two-factor authentication,account,should,yes,no,V roadmap completed https://changemap.co/hellocode/exist/
+30-day free trial then single plan (web USD 6.99 per month or 62.90 per year; iOS IAP),account,must,yes,no,V https://exist.io/ and https://apps.apple.com/us/app/exist/id986201088
+Suspend account for long-term paid users,account,could,yes,no,V https://kb.exist.io/article/24-can-i-suspend-my-account
+Account deletion wipes data (payment records and support email kept),privacy,should,yes,no,V https://exist.io/about/values/ and https://exist.io/privacy/
+"No selling of data, no third-party analytics, no generative AI stated as values",privacy,should,yes,no,V https://exist.io/about/values/
+Public voting roadmap,community,could,yes,no,V https://changemap.co/hellocode/exist/

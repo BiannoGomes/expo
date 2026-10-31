@@ -25,6 +25,9 @@ export interface GeneratePlanInput extends ModelSummaryInput {
   yesterdayOutcome: DebriefExtraction | null;
   /** Set by the load guard when yesterday flagged exhaustion/overload. */
   reducedLoad: boolean;
+  /** The person's own recent evenings, verbatim, minus any they left out.
+   * Steps and the question may quote these; the server verifies every quote. */
+  recentWords: { recordId: string; date: string; transcript: string }[];
 }
 
 export interface ExtractDebriefInput {

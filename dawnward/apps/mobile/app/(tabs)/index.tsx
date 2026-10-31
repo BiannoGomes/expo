@@ -28,6 +28,7 @@ import { LivingSky, skyModeForNow } from "@/lib/sky";
 import { Press, useReducedMotion } from "@/lib/motion";
 import { Constellation } from "@/lib/constellation";
 import { syncPresence } from "@/lib/presence";
+import { EveningQuote, eveningDate } from "@/lib/quote";
 
 const SLOT_LABELS: Record<PlanSlot["slot"], string> = {
   build: "One thing to build",
@@ -131,7 +132,10 @@ function SlotCard({
       style={[styles.card, done && styles.cardDone]}
       onPress={press}
       accessibilityRole="button"
-      accessibilityLabel={`${SLOT_LABELS[slot.slot]}: ${slot.text}`}
+      accessibilityLabel={
+        `${SLOT_LABELS[slot.slot]}: ${slot.text}. ${slot.because}` +
+        (slot.source ? `. From your evening, ${eveningDate(slot.source.date)}: ${slot.source.quote}` : "")
+      }
       accessibilityState={{ selected: done }}
       accessibilityHint={done ? "Tap to mark not done" : "Tap to mark done"}
     >
@@ -149,6 +153,7 @@ function SlotCard({
       </View>
       <Text style={[theme.type.body, styles.slotText]}>{slot.text}</Text>
       <Text style={theme.type.dim}>{slot.because}</Text>
+      {slot.source && <EveningQuote source={slot.source} />}
     </Pressable>
   );
 }
@@ -408,6 +413,7 @@ export default function TodayScreen() {
                     <Text style={[theme.type.epigraph, styles.questionText]}>
                       {plan.question}
                     </Text>
+                    {plan.questionSource && <EveningQuote source={plan.questionSource} />}
                   </View>
                 </DealtCard>
               )}

@@ -163,6 +163,10 @@ export function registerAccountRoutes(app: FastifyInstance) {
       "select plan_date, plan from daily_plans where user_id = $1 order by plan_date",
       [userId],
     );
+    const leftOut = await query(
+      "select record_id, created_at from record_exclusions where user_id = $1 order by created_at",
+      [userId],
+    );
     return {
       exportedAt: new Date().toISOString(),
       format: "dawnward-export-v1",
@@ -172,6 +176,7 @@ export function registerAccountRoutes(app: FastifyInstance) {
       campaigns,
       futureSelves,
       dailyPlans: plans,
+      leftOutEvenings: leftOut,
     };
   });
 

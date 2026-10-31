@@ -1,0 +1,55 @@
+feature,area,priority,original,clone,notes
+"Morning Intention check-in (3am to 12pm, three questions)",Daily journaling,must,yes,no,V https://help.rosebud.app/daily-journaling/morning-intention ; prompts editable on mobile
+"Evening Reflection check-in (12pm to 3am, Rose Bud Thorn)",Daily journaling,must,yes,no,V https://help.rosebud.app/daily-journaling/evening-reflection
+Chat-style entry with AI reflection and follow-up per message,Entry,must,yes,no,V https://apps.apple.com/us/app/rosebud-ai-journal-diary/id6451135127 store text 'Interactive Daily Diary'; R https://apps.apple.com/us/app/id6451135127?see-all=reviews#11588403440
+Entry reflection summary with key insights at end of entry,AI analysis,must,yes,no,V https://help.rosebud.app/ai-analysis/entry-reflection ; web summaries less in-depth than mobile per R https://apps.apple.com/us/app/id6451135127?see-all=reviews#13936814131
+Long-term memory across entries (Bloom only),Memory,must,yes,no,"V https://help.rosebud.app/ai-analysis/long-term-memory ; no documented view, edit or delete of memories"
+Memory Precision Experiment toggle for time-based recall,Memory,could,yes,no,V https://help.rosebud.app/ai-analysis/long-term-memory ; mobile Settings; may slow responses
+"Learned Preferences saved from user feedback, manageable and can be disabled",Memory,should,yes,no,V https://help.rosebud.app/ai-analysis/learned-preferences
+"Brief bio (values, relationships, milestones, aspirations)",Personalization,should,yes,no,V https://help.rosebud.app/ai-analysis/ai-personalization
+Go deeper: Interactive mode (one perspective plus one pointed question),Follow-up questions,must,yes,no,V https://help.rosebud.app/tools-for-growth/dig-deeper
+Go deeper: Focused mode (three questions from entry so far),Follow-up questions,should,yes,no,V https://help.rosebud.app/tools-for-growth/dig-deeper
+"Guiding Light helper when stuck (ideas, challenge, reframes, thinking traps)",Follow-up questions,could,yes,no,V https://help.rosebud.app/tools-for-growth/guiding-light
+Ask Rosebud Q and A over all entries with links to related entries,Memory,should,yes,no,V https://help.rosebud.app/tools-for-growth/ask-rosebud
+"Personalized daily prompts from recent entries (Explore tab, bookmark, removed after use)",Prompts,should,yes,no,V https://help.rosebud.app/tools-for-growth/personalized-prompts
+"Guided journals using CBT, gratitude, IFS frameworks",Journals,should,yes,no,V https://apps.apple.com/us/app/rosebud-ai-journal-diary/id6451135127 store text 'Expert-Crafted Experiences'; M https://www.rosebud.app/ (Guided IFS journal)
+Custom journals with AI-generated or own prompts and imagination level,Journals,could,yes,no,V https://help.rosebud.app/daily-journaling/custom-journals
+Blank entry,Entry,could,yes,no,V https://help.rosebud.app/ (help article title only)
+Voice journaling transcription with hands-free mode,Voice,must,yes,no,V https://help.rosebud.app/tools-for-growth/voice-journaling ; R reliability complaints https://apps.apple.com/us/app/id6451135127?see-all=reviews#12757740440
+Voice mode / call mode with spoken AI replies,Voice,should,yes,no,V https://apps.apple.com/us/app/rosebud-ai-journal-diary/id6451135127 store text 'voice mode'; R https://apps.apple.com/us/app/id6451135127?see-all=reviews#12907053741 ; premium per press https://techcrunch.com/2025/06/04/rosebud-lands-6m-to-scale-its-interactive-ai-journaling-app
+"Auto stop timer sensitivity (Low, Medium, High)",Voice,could,yes,no,V https://help.rosebud.app/tools-for-growth/voice-journaling
+Transcription Glossary (up to 10 names or words),Voice,could,yes,no,V https://help.rosebud.app/tools-for-growth/voice-journaling
+Choose AI reply voice per persona with preview,Voice,could,yes,no,V https://help.rosebud.app/tools-for-growth/voice-journaling ; ElevenLabs named in privacy policy
+Voice input in 20 languages,Voice,should,yes,no,M https://apps.apple.com/us/app/rosebud-ai-journal-diary/id6451135127 store text '20 languages'; 18 languages listed in store metadata
+"Personas with own instructions, AI model and voice (mobile)",Personalization,should,yes,no,V https://help.rosebud.app/ai-analysis/ai-personalization
+"Persona library presets (Sage, Challenger, Connector, Gardener, Strategist)",Personalization,could,yes,no,V https://help.rosebud.app/ai-analysis/ai-personalization
+Tailor your experience tone setting (web),Personalization,could,yes,no,V https://help.rosebud.app/ai-analysis/ai-personalization
+"Weekly report: writing stats, emotional landscape, key themes, cast of characters, up to five insights",Insights,must,yes,no,V https://help.rosebud.app/ai-analysis/weekly-report
+"In-depth weekly analysis unlocked above 1,500 words a week",Insights,could,yes,no,V https://help.rosebud.app/ai-analysis/weekly-report ; conflicts with Dawnward no-gating rule
+"Auto-tagging of mood, relationships, life themes; add or remove tags",Insights,should,yes,no,V https://help.rosebud.app/ai-analysis/auto-tagging ; not searchable yet
+Smart mood tracker,Insights,should,yes,no,M https://apps.apple.com/us/app/rosebud-ai-journal-diary/id6451135127 store text 'Smart Mood Tracker'
+"Happiness Recipe: goal suggestions after each entry, editable before adding",Goals,should,yes,no,V https://help.rosebud.app/tools-for-growth/happiness-recipe
+"Goals with categories, Add Goal with AI-suggested steps, swipe to snooze or archive",Goals,should,yes,no,V https://help.rosebud.app/tools-for-growth/happiness-recipe ; R daily weekly monthly goals https://apps.apple.com/us/app/id6451135127?see-all=reviews#12852119112
+Goal accountability and habit suggestions,Goals,should,yes,no,M https://apps.apple.com/us/app/rosebud-ai-journal-diary/id6451135127 store text 'Smart Goal Tracker'
+"Daily quotes, haikus, affirmations tailored to entries",Delight,could,yes,no,M https://apps.apple.com/us/app/rosebud-ai-journal-diary/id6451135127 store text 'Daily Quotes'; V haiku on History https://help.rosebud.app/daily-journaling/entry-history
+Streaks counting daily morning or evening check-ins,Habit,should,yes,no,V https://help.rosebud.app/daily-journaling/streaks ; conflicts with Dawnward no-streaks rule
+Change entry date (also used to keep a streak),Entry,could,yes,no,V https://help.rosebud.app/daily-journaling/entry-history ; V https://help.rosebud.app/daily-journaling/streaks
+Entry history list with digest; highlight haiku and insights,History,should,yes,no,V https://help.rosebud.app/daily-journaling/entry-history ; R https://apps.apple.com/us/app/id6451135127?see-all=reviews#11588403440
+Edit previous user message in an entry (mobile),Entry,could,yes,no,V https://help.rosebud.app/daily-journaling/entry-history ; editing finished entries not possible yet
+Add photos to entries,Entry,could,yes,no,V https://help.rosebud.app/ (help article title); R https://apps.apple.com/us/app/id6451135127?see-all=reviews#13854316251
+Scan handwritten journal pages,Entry,could,yes,no,V https://help.rosebud.app/ (help article title); R https://apps.apple.com/us/app/id6451135127?see-all=reviews#12173065344
+"Push reminders for morning, evening and weekly report; skip if done",Notifications,should,yes,no,V https://help.rosebud.app/daily-journaling/notifications
+Personalized Evening Reflection notification after Morning Intention,Notifications,should,yes,no,V https://help.rosebud.app/daily-journaling/notifications ; R reminder references past entry https://apps.apple.com/us/app/id6451135127?see-all=reviews#13209717082
+SMS reminders (US and Canada),Notifications,could,yes,no,V https://help.rosebud.app/daily-journaling/notifications
+Midweek progress update toward unlocking weekly report,Notifications,could,yes,no,V https://help.rosebud.app/daily-journaling/notifications ; conflicts with Dawnward no-score rule
+"Biometric lock (Face ID, Touch ID, PIN)",Privacy,should,yes,no,V https://apps.apple.com/us/app/rosebud-ai-journal-diary/id6451135127 store text; help title https://help.rosebud.app/getting-started/biometric-lock
+Encryption in transit and at rest; named AI providers under ZDR and BAAs,Privacy,must,yes,no,V https://help.rosebud.app/about-us/privacy-policy
+Export entries to Markdown (single or all),Account,should,yes,no,V https://help.rosebud.app/account/export-data ; entries only
+Delete account and all data,Account,should,yes,no,V https://help.rosebud.app/account/delete-your-account ; up to 30 days in backups per privacy policy
+"Web app, iOS app, Android app with sync (web drafts do not sync)",Platform,must,yes,no,V https://help.rosebud.app/daily-journaling/entry-history ; https://apps.apple.com/us/app/rosebud-ai-journal-diary/id6451135127
+Add to Dock web push,Platform,could,yes,no,V https://help.rosebud.app/getting-started/add-to-dock (title) and https://help.rosebud.app/daily-journaling/notifications
+"Paid tiers Bloom, Thrive 2x, Thrive 5x with weekly usage budget",Monetisation,must,yes,no,V https://help.rosebud.app/ai-analysis/usage-limits ; V https://apps.apple.com/us/app/rosebud-ai-journal-diary/id6451135127 IAP list
+Free plan retired 2026-09-30,Monetisation,must,yes,no,V https://help.rosebud.app/account/changes-to-the-free-plan
+Free trial,Monetisation,should,yes,no,M https://www.rosebud.app/ 'Start Free Trial'; length not stated
+"Student, senior, disability, military discounts; gift cards; promo codes; referral and affiliate programs",Monetisation,could,yes,no,V https://help.rosebud.app/ (help article titles only)
+"Crisis and limitations guidance (not therapy, helpline pointers)",Safety,should,yes,no,V https://help.rosebud.app/getting-started/rosebud's-limitations

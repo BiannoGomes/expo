@@ -1,0 +1,74 @@
+feature,area,priority,original,clone,notes
+Text entry editor,capture,must,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 App Store description: minimalist editor; rich text is Premium per FAQ
+Today page with daily prompt,home,must,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.0.x redesigned Today; prompt stays the same all day on web per https://www.reflection.app/changelog 6.24
+Personalised prompts from past entries,ai,must,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.05
+Inline AI coach (Instant Chat) inside entry,ai,must,yes,no,V https://www.reflection.app/changelog 6.21; https://play.google.com/store/apps/details?id=app.reflection.reflection v7: press Enter and Coach replies on next line
+AI follow-up question from current entry (Depth),ai,must,yes,no,M https://www.reflection.app/feature/depth-ai-companion: one follow-up drawn from the entry just written
+"Coach actions: Go Deeper, Get Perspective, Coach Me, Action Items",ai,should,yes,no,V https://play.google.com/store/apps/details?id=app.reflection.reflection listing feature text (Reflection 7)
+"Post-entry insights: summary, Patterns, Action Items",ai,must,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.08 and 6.15; Action Items avoid invented names per 6.27.0
+Voice journaling with transcription,capture,must,yes,no,"V https://www.reflection.app/faq; recorder with waveform, pause, resume per https://www.reflection.app/changelog 6.23 and 6.24"
+Voice recording backup and recovery,reliability,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes: real-time backup with recovery; 6.25.0 recordings recover on their own
+Upload audio file for transcription,capture,could,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.27.0 Upload audio option is back
+Spoken formatting (new paragraph),capture,could,yes,no,V https://www.reflection.app/changelog 6.26
+10-minute voice recording limit,capture,could,yes,no,V https://www.reflection.app/changelog 6.18
+"Voice Call: spoken back-and-forth with AI, transcript or summary saved",ai,should,yes,no,"V https://www.reflection.app/faq: iPhone, iPad and Android only; Premium per https://play.google.com/store/apps/details?id=app.reflection.reflection"
+Ask Your Journal: natural-language search over all entries,search,must,yes,no,V https://play.google.com/store/apps/details?id=app.reflection.reflection: answer drawn from your entries with the dates you wrote them
+Search follow-up questions with context,search,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.0.x Smarter Search
+Search stable on large multi-year journals,search,should,yes,no,V https://www.reflection.app/changelog 6.29: years of entries return a result instead of timing out
+Long-press app icon opens Search,capture,could,yes,no,V https://www.reflection.app/changelog 6.28
+Create entry from iOS Spotlight,capture,could,yes,no,V https://www.reflection.app/changelog 6.27
+Share text from any app into journal,capture,could,yes,no,V https://www.reflection.app/changelog 6.27
+Catch up missed days from photo library,capture,could,yes,no,V https://play.google.com/store/apps/details?id=app.reflection.reflection What's new (Reflection 7)
+Home-screen widget,capture,could,yes,no,A not found in any source; R https://apps.apple.com/ph/app/id1504547616?see-all=reviews#13222801549 asks for widgets
+Offline writing with later sync,reliability,must,yes,no,"V https://www.reflection.app/faq: write without connection, entries cached on each device"
+"Cross-device sync iOS, iPadOS, macOS, visionOS, Android, web",platform,must,yes,no,"V https://www.reflection.app/faq; App Store lists iPhone, iPad, Mac, Apple Vision"
+Free plan limited sync (10 most recent entries on other platform),pricing,should,yes,no,V https://www.reflection.app/faq
+Web app at web.reflection.app (WebAssembly),platform,should,yes,no,V https://www.reflection.app/changelog 6.29
+AI retries automatically on network drop,reliability,should,yes,no,V https://www.reflection.app/changelog 6.29
+Autosave and draft recovery,reliability,must,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.12.0 autosave; 6.21.0 improved draft recovery
+Undo and redo in editor,capture,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.19
+"Photos in entries (1 free, up to 10 Premium)",capture,should,yes,no,V https://www.reflection.app/faq
+Scan handwritten pages with AI transcription,capture,could,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.22.0; Premium per https://www.reflection.app/faq
+Focus Mode with ambient sound,capture,could,yes,no,V https://play.google.com/store/apps/details?id=app.reflection.reflection What's new (Reflection 7)
+"Single + button for photos, voice, scan, templates, prompts",capture,should,yes,no,V https://play.google.com/store/apps/details?id=app.reflection.reflection What's new (Reflection 7)
+Guided journal library 100+ guides by named experts,guides,must,yes,no,V https://www.reflection.app/journal-prompts-guides-library; Premium per https://www.reflection.app/faq
+"Guide tags, collections, featured creators, search by creator/title/topic",guides,should,yes,no,V https://www.reflection.app/journal-prompts-guides-library; https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.08
+Multi-day Journeys (e.g. 14-day program),guides,should,yes,no,V https://www.reflection.app/changelog 6.20; https://play.google.com/store/apps/details?id=app.reflection.reflection
+Gentler alternate prompt on emotionally heavy days,guides,could,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.27.0
+Guide recommendations,guides,could,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.18
+"Weekly, monthly and annual AI-generated reviews (editable, shareable)",reviews,must,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.16 and 6.19
+"Guided monthly review across six life areas (Mind, Body, Soul, Work, Play, Love)",reviews,should,yes,no,V https://www.reflection.app/guided-monthly-review
+Look Back to revisit past entries,reviews,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.14
+"Insights page: themes, sentiment, emotional landscape, life domains",insights,should,yes,no,V https://www.reflection.app/changelog 6.28
+Journaling consistency view and activity calendar,insights,could,yes,no,V https://www.reflection.app/changelog 6.28; conflicts with Dawnward no-scores rule
+Writing streak,insights,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 description: writing streak and stats to stay motivated; conflicts with Dawnward no-streaks rule
+Mood and emotion tracking over time,insights,should,yes,no,V https://play.google.com/store/apps/details?id=app.reflection.reflection listing feature text
+Editable long-term AI memory (Depth),ai,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.08
+Coach uses saved custom templates,ai,could,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.20
+Responses match user language and tone,ai,should,yes,no,V https://www.reflection.app/changelog 6.29
+Report problematic AI response,ai,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.22.0
+Crisis prompt detection (tuned to not fire on reflective entries),safety,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.27.0
+Global AI off toggle,privacy,must,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.17 AI Opt-out; https://www.reflection.app/ FAQ single toggle
+"Private entries excluded from all AI, search and reviews",privacy,must,yes,no,V https://www.reflection.app/changelog 6.21
+"App lock with Face ID, Touch ID, fingerprint or PIN",privacy,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 description; Premium per https://www.reflection.app/faq
+PIN-protected individual entries,privacy,could,yes,no,V https://www.reflection.app/faq Premium list
+Encryption AES-256 at rest and TLS in transit (not end-to-end),privacy,must,yes,no,V https://www.reflection.app/faq; end-to-end not claimed
+Entries not used for AI training (Gemini paid tier),privacy,must,yes,no,V https://www.reflection.app/faq and https://www.reflection.app/terms-privacy-policy
+"Custom templates (quick templates, named)",organise,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.27.0; Premium per https://www.reflection.app/premium
+"Tags with chips, usage counts, suggestions, reserved system tags",organise,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.0.10 and 6.17
+Bookmarked entries,organise,could,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.17 bookmarked moments prioritised in Annual Review
+Import from Day One and CSV,data,should,yes,no,V https://www.reflection.app/changelog 6.18; https://www.reflection.app/
+Export JSON and CSV (free) and PDF (Premium) via emailed link,data,should,yes,no,V https://www.reflection.app/faq
+Private share link for one entry,data,could,yes,no,M https://www.reflection.app/ feature list
+"Reflection MCP for Claude, ChatGPT (read and write)",data,could,yes,no,V https://www.reflection.app/faq; https://www.reflection.app/changelog 6.26; Premium
+Daily reminders,engagement,should,yes,no,M https://www.reflection.app/; V https://www.reflection.app/faq journaling reminders on free plan
+Journal without account at first launch,onboarding,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.05
+Personalised onboarding,onboarding,should,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.06
+"Sign in with Apple, Google, email; last-used method remembered",account,must,yes,no,V https://www.reflection.app/changelog 6.24
+Delete account in app,account,should,yes,no,V https://www.reflection.app/faq
+Email change with verification,account,could,yes,no,V https://www.reflection.app/changelog 6.27
+Profile photo,account,could,yes,no,V https://www.reflection.app/changelog 6.28
+"Nine colour themes, light and dark",personalise,could,yes,no,V https://play.google.com/store/apps/details?id=app.reflection.reflection What's new (Reflection 7); homepage marked Coming soon
+"Freemium with daily AI allowance, monthly, annual, lifetime, 7-day trial",pricing,must,yes,no,V https://www.reflection.app/faq; https://www.reflection.app/premium; App Store IAP list
+Customer Centre for subscription management,pricing,could,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 notes 6.08
+In-app review requests,engagement,could,yes,no,V https://apps.apple.com/us/app/reflection-ai-journal-coach/id1504547616 every release note; R https://apps.apple.com/us/app/id1504547616?see-all=reviews#13102286180

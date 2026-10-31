@@ -24,10 +24,27 @@ export const mockIntelligence: Intelligence = {
       { slot: "confront" as const, text: "Mock confrontation", because: "fear" },
       { slot: "experience" as const, text: "Mock novelty", because: "novelty" },
     ];
+    // Quote steering for tests: the build step quotes the latest evening
+    // exactly; the train step claims words that were never said, which the
+    // server must drop.
+    const latest = input.recentWords[0];
+    const firstSentence = latest?.transcript.split(/(?<=[.!?])\s/)[0]?.slice(0, 200) ?? "";
+    const sourced = latest
+      ? slots.map((s) =>
+          s.slot === "build"
+            ? { ...s, sourceRecordId: latest.recordId, quote: firstSentence }
+            : s.slot === "train"
+              ? { ...s, sourceRecordId: latest.recordId, quote: "words this person never said" }
+              : s,
+        )
+      : slots;
     return {
       date: input.date,
-      slots: input.reducedLoad ? slots.slice(0, 2) : slots,
+      slots: input.reducedLoad ? sourced.slice(0, 2) : sourced,
       question: "What would make tonight feel like you actually lived today?",
+      ...(latest
+        ? { questionSourceRecordId: latest.recordId, questionQuote: firstSentence }
+        : {}),
       restDay: false,
     };
   },

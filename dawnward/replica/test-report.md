@@ -1,0 +1,68 @@
+# Test report (replica-test, replica-diff)
+
+Date: 2026-10-31.
+
+**What was tested:** the server against a local Postgres 16, using the deterministic test double for the AI; the app type check; and the app's web build in Chromium at 390 × 844.
+
+**What was not tested:** a real phone, VoiceOver or TalkBack, the real AI model, or a production database.
+
+## Automated
+
+| Suite | Before this change | After |
+|---|---|---|
+| Server unit (`npm test`) | 15 pass | **23 pass**, 0 fail |
+| Server integration (`npm run test:integration`) | 25 pass | **33 pass**, 0 fail |
+| Server typecheck | clean | clean |
+| App typecheck (`tsc --noEmit`) | not run before (no dependencies installed) | clean |
+
+**New tests:**
+- `server/test/provenance.test.ts` covers the quote check:
+  - exact quotes are accepted;
+  - whitespace, case and curly quotes are tolerated, and the original text is returned;
+  - paraphrase is dropped;
+  - a quote cited to the wrong evening is dropped;
+  - unknown evenings are dropped;
+  - quotes that start or stop inside a word are dropped;
+  - very short quotes and missing claims are dropped;
+  - `attachSources` keeps every step and strips the raw claims.
+- `server/test/integration/loop.test.ts`, "your evenings":
+  - the list comes newest first;
+  - search is literal, so `%` matches nothing;
+  - another person gets an empty list and a 404 on leave out and bring back;
+  - steps quote the right evening and invented words are dropped;
+  - a left-out evening is never quoted and comes back on undo;
+  - a belief resting only on a left-out evening is hidden from the model and the summary, survives a nightly pass, and is restored;
+  - the constellation omits it.
+- A "web clients" test checks that the CORS preflight allows PATCH and DELETE. It fails before the fix and passes after.
+
+## Browser click-through (`scratchpad/e2e-evenings.cjs`, not committed)
+
+| Check | Result |
+|---|---|
+| Today shows "From your evening" on the build step and the question | 2 of 2 |
+| The quote the test AI invented ("words this person never said") is shown | 0 times (correct) |
+| Your evenings lists the three demo evenings | 3 |
+| Search "brother" | 1 result |
+| Leave this out → "Left out" notice and card status | shown |
+| Undo → back to "Leave this out" | yes |
+| Search "zebra" → "None of your evenings mention" | shown |
+| Tab from the search field | reaches "Leave out your evening of Friday, October 30" |
+
+Screenshots are in the scratchpad (`shots/`). They use labelled demo data from the test AI and are not for marketing.
+
+## Bugs
+
+| ID | Severity | What | Status |
+|---|---|---|---|
+| B1 | S2 | The CORS default blocked every PATCH and DELETE from the web build: account deletion, settings, ticking a step, and Bring it back | **Fixed**, with a test |
+| B2 | S3 | A quote could stop mid-word ("chapter befor"), which reads as a glitch and changes the words | **Fixed**: whole words only, with a test |
+| B3 | S3 | The search field's edge was 1.25:1 against its background, under the 3:1 WCAG 1.4.11 minimum | **Fixed**: now 4.9:1 |
+| B4 | S4 | React error #419 on the first load of Today when the plan is generated on the static web build | **Already there**: the build from before this change shows it too. Not caused by this change; left open. |
+
+No S1 bugs are open.
+
+## To check (not reproduced, not proven)
+
+- Screen reader order on the evening card: the date, then the text, then the status, then the action. Needs VoiceOver.
+- Long evenings with "Read all": the numberOfLines behaviour on Android.
+- Search speed with more than 1,000 evenings (see the pg_trgm note in `architecture.md`).

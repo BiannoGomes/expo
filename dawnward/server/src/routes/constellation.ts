@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { domainOfFacet } from "@dawnward/core";
 import { query } from "../db.js";
 import { requireAuth } from "../auth.js";
+import { notExcluded } from "../model/exclusions.js";
 
 /**
  * The constellation (roadmap C1, design-direction: THE LIVING SKY).
@@ -43,6 +44,7 @@ export function registerConstellationRoutes(app: FastifyInstance) {
          from records r
         where r.user_id = $1
           and r.kind in ('reflection','evidence','onboarding_response','campaign_event')
+          and ${notExcluded("r.id")}
         order by r.occurred_at desc
         limit 72`,
       [request.userId],

@@ -53,10 +53,14 @@ const planSchema = z.object({
         slot: z.enum(["build", "train", "learn", "confront", "experience"]),
         text: z.string(),
         because: z.string(),
+        sourceRecordId: z.string().optional(),
+        quote: z.string().optional(),
       }),
     )
     .max(5),
   question: z.string(),
+  questionSourceRecordId: z.string().optional(),
+  questionQuote: z.string().optional(),
   restDay: z.boolean(),
 });
 
@@ -242,8 +246,18 @@ export const intelligence: Intelligence = {
           "Never two builds. confront only from probable+ assertions, phrased as invitation. " +
           "The total plan must fit the user's available minutes. " +
           `If reducedLoad is true, shrink to build plus one other slot, or set restDay true. ` +
+          "recentWords are the person's own evenings, verbatim. Where a step grows out of " +
+          "something they said, set sourceRecordId to that evening's recordId and quote to " +
+          "a short span (8 to 200 characters) copied character for character from its " +
+          "transcript. Never paraphrase inside quote; if no exact span fits, leave both out. " +
+          "The question picks up one thread from a recent evening the person left open, " +
+          "cited the same way with questionSourceRecordId and questionQuote. " +
+          "Never invent people, places, dates or commitments the person did not mention, " +
+          "and honour every constraint they stated. " +
           "Respond with JSON only matching " +
-          '{"slots":[{"slot","text","because"}],"question":string,"restDay":boolean}.',
+          '{"slots":[{"slot","text","because","sourceRecordId"?,"quote"?}],' +
+          '"question":string,"questionSourceRecordId"?:string,"questionQuote"?:string,' +
+          '"restDay":boolean}.',
         messages: [{ role: "user", content: JSON.stringify(input) }],
       },
       planSchema,

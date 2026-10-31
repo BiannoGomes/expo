@@ -108,6 +108,7 @@ export default function RootLayout() {
         <Stack.Screen name="onboarding" options={{ presentation: "modal" }} />
         <Stack.Screen name="campaign" options={{ presentation: "modal" }} />
         <Stack.Screen name="settings" options={{ presentation: "modal" }} />
+        <Stack.Screen name="evenings" options={{ presentation: "modal" }} />
       </Stack>
     </>
   );

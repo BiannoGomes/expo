@@ -223,6 +223,16 @@ export default function YouScreen() {
             every time.
           </Text>
 
+          <Link href="/evenings" asChild>
+            <Pressable
+              style={styles.eveningsLink}
+              accessibilityRole="button"
+              accessibilityHint="Read, search, or leave out any evening"
+            >
+              <Text style={styles.eveningsText}>Your evenings, in your own words</Text>
+            </Pressable>
+          </Link>
+
           {futureSelf && <FutureSelfCard futureSelf={futureSelf} />}
 
           {(empty || assertions === null) && (
@@ -266,6 +276,8 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     color: theme.colors.faint,
   },
+  eveningsLink: { marginTop: theme.spacing(2), minHeight: 44, justifyContent: "center" },
+  eveningsText: { fontFamily: fonts.body, fontSize: 15, color: theme.colors.gold },
   root: { flex: 1, backgroundColor: theme.colors.ground },
   screen: { flex: 1 },
   content: { padding: theme.spacing(3), paddingBottom: theme.spacing(6) },

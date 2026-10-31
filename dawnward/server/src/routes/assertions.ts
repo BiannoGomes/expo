@@ -5,6 +5,7 @@ import { query } from "../db.js";
 import { rebuildModelSummary } from "../model/summary.js";
 import { humanizeBasis } from "../model/voice.js";
 import { requireAuth } from "../auth.js";
+import { notExcluded, stillSupported } from "../model/exclusions.js";
 
 /**
  * The correction loop (spec 02 §6): inspect, dispute, correct.
@@ -28,10 +29,11 @@ export function registerAssertionRoutes(app: FastifyInstance) {
     }>(
       `select a.id, a.kind, a.statement, a.domain_ids, a.source,
               a.confidence, a.confidence_basis, a.status, a.last_confirmed_at,
-              count(e.record_id) as evidence_count
+              count(e.record_id) filter (where ${notExcluded("e.record_id")}) as evidence_count
          from assertions a
          left join assertion_evidence e on e.assertion_id = a.id
         where a.user_id = $1 and a.status in ('active','disputed')
+          and ${stillSupported("a")}
         group by a.id
         order by a.confidence desc, a.last_confirmed_at desc`,
       [userId],

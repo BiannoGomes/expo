@@ -4,6 +4,7 @@ import { pool, query } from "../db.js";
 import { intelligence } from "../intelligence/index.js";
 import { confirmAssertion, linkEvidence } from "../model/integrate.js";
 import { rebuildModelSummary } from "../model/summary.js";
+import { notExcluded } from "../model/exclusions.js";
 
 /**
  * Weekly deep pass (spec 02 §4 step 4) + campaign day-14 revision
@@ -45,6 +46,7 @@ async function reviewUser(userId: string) {
     `select id, payload from records
       where user_id = $1 and kind = 'action_event' and payload ? 'extractionOf'
         and occurred_at > now() - interval '14 days'
+        and ${notExcluded("(payload->>'extractionOf')::uuid")}
       order by occurred_at`,
     [userId],
   );

@@ -1,0 +1,85 @@
+feature,area,priority,original,clone,notes
+Morning Preparation check-in,core ritual,must,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/home-screen/6f9eBdDY7kpekp8AYu18Xq Home card; focus selection redesigned in 2026.6 per https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037
+Evening Reflection check-in,core ritual,must,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/home-screen/6f9eBdDY7kpekp8AYu18Xq Evening card with reflection prompts and habit tracker per store text https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037
+Single Daily Check-In mode,core ritual,must,yes,no,V https://help.getstoic.com/faq/3sfUSwpkyPFw22e8F1CRHk/journaling-and-customization/6f9eBdDY7njMvRmxFbraod choose once or twice a day via Personalize
+Personalize daily ritual (pick prompts and metrics and own questions),core ritual,must,yes,no,V https://help.getstoic.com/faq/3sfUSwpkyPFw22e8F1CRHk/journaling-and-customization/6f9eBdDY7njMvRmxFbraod
+Daily focus selection in morning,core ritual,should,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 release 2026.6; evening guided by focus R https://apps.apple.com/us/app/id1312926037?see-all=reviews#5950189546
+Mood check-in on app launch (toggle),mood,must,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/daily-journaling-flow/6f9eBdDY7m4AnbXtALLGtM Track Mood on Launch setting
+Emotions check-in,mood,should,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/explore-screen/6f9eBdDY7mmGmvLJB6xkCh; new look in 2026.7 per https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037
+Mood factors marking,mood,should,yes,no,V https://getstoic.com/features mark the factors that influence mood
+Mood check-in from quick action button,mood,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 release 2026.21
+Daily prompt (new each day),prompts,must,yes,no,V https://getstoic.com/features
+Weekly Themes with one prompt per day,prompts,should,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/explore-screen/6f9eBdDY7mmGmvLJB6xkCh
+Guided journals library by topic,prompts,should,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 store text; https://help.getstoic.com/getting-started/nMb4jABmc8oatYuUUyT5Q5/subscription--plans/6f9eBdDY7ngGS3y5u7kPU6 basic set free
+Journaling Suggestions from memories and Apple Health,prompts,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/add-button/6f9eBdDY7nQhVPFjkq29Ka needs Health and iOS permissions
+"Templates for situations (therapy prep, CBT thought dump, dream journal)",prompts,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 store text
+"Custom journaling templates with prompts, metrics and habits",journaling,should,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/add-button/6f9eBdDY7nQhVPFjkq29Ka Premium per https://help.getstoic.com/getting-started/nMb4jABmc8oatYuUUyT5Q5/subscription--plans/6f9eBdDY7ngGS3y5u7kPU6
+Empty Page free writing,journaling,must,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/add-button/6f9eBdDY7nQhVPFjkq29Ka
+Markdown styling toolbar (Aa),journaling,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/daily-journaling-flow/6f9eBdDY7m4AnbXtALLGtM
+"Photo, video and file attachments",journaling,should,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/daily-journaling-flow/6f9eBdDY7m4AnbXtALLGtM
+Voice notes journaling,journaling,should,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 store text; voice memo redesign 2026.4; dictation R https://apps.apple.com/au/app/id1312926037?see-all=reviews#13648176257
+Tags with icons,journaling,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/daily-journaling-flow/6f9eBdDY7m4AnbXtALLGtM
+Favorites for journals and exercises,journaling,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/add-button/6f9eBdDY7nQhVPFjkq29Ka
+Back-fill a missed day from Home date strip,journaling,must,yes,no,V https://help.getstoic.com/faq/3sfUSwpkyPFw22e8F1CRHk/journaling-and-customization/6f9eBdDY7njMvRmxFbraod; loved by users R https://apps.apple.com/us/app/id1312926037?see-all=reviews#13146260799
+Day start time setting (For Night Owls),journaling,could,yes,no,V https://help.getstoic.com/faq/3sfUSwpkyPFw22e8F1CRHk/journaling-and-customization/6f9eBdDY7njMvRmxFbraod
+Habit tracker in evening,habits,should,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 store text; Premium per https://help.getstoic.com/getting-started/nMb4jABmc8oatYuUUyT5Q5/subscription--plans/6f9eBdDY7ngGS3y5u7kPU6
+Writing goals,habits,could,yes,no,M https://getstoic.com/features only on features page
+Streaks behind fire icon,gamification,should,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/daily-journaling-flow/6f9eBdDY7m4AnbXtALLGtM; conflicts with Dawnward rules
+Streak restore by completing past check-in,gamification,should,yes,no,V https://help.getstoic.com/faq/3sfUSwpkyPFw22e8F1CRHk/journaling-and-customization/6f9eBdDY7njMvRmxFbraod
+Badges for milestones and activities,gamification,should,yes,no,V https://help.getstoic.com/faq/3sfUSwpkyPFw22e8F1CRHk/journaling-and-customization/6f9eBdDY7njMvRmxFbraod; marketed as Fun Incentives M https://getstoic.com/
+Toggle off streaks and badges,gamification,could,yes,no,V https://help.getstoic.com/faq/3sfUSwpkyPFw22e8F1CRHk/journaling-and-customization/6f9eBdDY7njMvRmxFbraod Show Streak and Show Badges
+Community counter (hideable),gamification,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 release 2025.47 hide-community-counter option
+Daily reminder notifications,reminders,must,yes,no,V https://help.getstoic.com/faq/3sfUSwpkyPFw22e8F1CRHk/privacy-data-and-ai/6f9eBdDY7nmUseRBxVxvQV basic reminders for premium users; onboarding asks for alerts https://help.getstoic.com/getting-started/nMb4jABmc8oatYuUUyT5Q5/download--set-up/6f9eBdDY7muH12dseBvJap
+AI reminders timed to habits and mood patterns,reminders,could,yes,no,V https://help.getstoic.com/premium-ai-features/xcBoxz1TZA2bdrEzFsGkhJ/premium-ai-subscription/6f9eBdDY7nj4ZYuAFi7UMj and https://help.getstoic.com/premium-ai-features/xcBoxz1TZA2bdrEzFsGkhJ/using-ai-features-in-the-app/6f9eBdDY7mQ224fRxsXxYY AI Premium only
+Journaling suggestion notifications,reminders,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 release 2026.17
+Guided breathing exercises,wellbeing tools,should,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 store text; no audio cue R https://apps.apple.com/us/app/id1312926037?see-all=reviews#14677247666
+Meditation guided or unguided with sounds and chimes,wellbeing tools,should,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 store text
+Stoic Shield app blocker,wellbeing tools,could,yes,no,V https://help.getstoic.com/getting-started/nMb4jABmc8oatYuUUyT5Q5/setting-up-and-exploring-your-profile/6f9eBdDY7mPSQyUthaS2ei needs Screen Time permission; bugs R https://apps.apple.com/us/app/id1312926037?see-all=reviews#10509991504
+Sleep Better lessons and dream journal,wellbeing tools,could,yes,no,M https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 store text names Huberman and Sleep Foundation lessons
+GAD-7 and PHQ-9 questionnaires,wellbeing tools,could,yes,no,M https://apps.apple.com/us/iphone/story/id1841742937 Apple editorial; R https://apps.apple.com/au/app/id1312926037?see-all=reviews#13970836430
+Therapy notes and export for therapist,wellbeing tools,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 store text; TXT export https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/data-storage-import-and-backups/6f9eBdDY7jYcoaF9t9ytqz
+Quotes screen with full-screen themes and slideshow,inspiration,should,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 release 2026.21; https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/ideas-screen/6f9eBdDY7kQrq6SWcwmXtt
+Paths (inspiration styles),inspiration,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/ideas-screen/6f9eBdDY7kQrq6SWcwmXtt
+Affirmations,inspiration,should,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/ideas-screen/6f9eBdDY7kQrq6SWcwmXtt
+Write It Out from a quote,inspiration,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/ideas-screen/6f9eBdDY7kQrq6SWcwmXtt
+Explore with Featured and For You,discovery,should,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/explore-screen/6f9eBdDY7mmGmvLJB6xkCh
+Themed events and seasonal journals,discovery,could,yes,no,V https://getstoic.com/features; https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/explore-screen/6f9eBdDY7mmGmvLJB6xkCh
+"Search across prompts, themes, exercises",discovery,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/explore-screen/6f9eBdDY7mmGmvLJB6xkCh
+"History with time frames (Days to Years, Smart)",history,should,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/history-screen/6f9eBdDY7k2Stic7r4orYU
+"Memories in History (photos, videos)",history,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/history-screen/6f9eBdDY7k2Stic7r4orYU Show Memories toggle
+Trends charts for mood and emotions,insights,should,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/history-screen/6f9eBdDY7k2Stic7r4orYU; Premium mood tracker per https://help.getstoic.com/getting-started/nMb4jABmc8oatYuUUyT5Q5/subscription--plans/6f9eBdDY7ngGS3y5u7kPU6
+"Apple Health integration (sleep, activity, mindful minutes, State of Mind)",insights,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/history-screen/6f9eBdDY7k2Stic7r4orYU and https://help.getstoic.com/getting-started/nMb4jABmc8oatYuUUyT5Q5/setting-up-and-exploring-your-profile/6f9eBdDY7mPSQyUthaS2ei
+Calendar of completed exercises,insights,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/history-screen/6f9eBdDY7k2Stic7r4orYU
+Insights card,insights,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/history-screen/6f9eBdDY7k2Stic7r4orYU
+Personalized insights from entries,insights,could,yes,no,M https://getstoic.com/features
+AI mentors (10 personas),AI,should,yes,no,V https://help.getstoic.com/premium-ai-features/xcBoxz1TZA2bdrEzFsGkhJ/using-ai-features-in-the-app/6f9eBdDY7mQ224fRxsXxYY
+Go Deeper AI follow-up questions,AI,should,yes,no,V https://help.getstoic.com/premium-ai-features/xcBoxz1TZA2bdrEzFsGkhJ/using-ai-features-in-the-app/6f9eBdDY7mQ224fRxsXxYY
+AI questions inside morning and evening routines,AI,should,yes,no,V https://help.getstoic.com/premium-ai-features/xcBoxz1TZA2bdrEzFsGkhJ/using-ai-features-in-the-app/6f9eBdDY7mQ224fRxsXxYY; in place since 2026.21 per https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037
+AI personalisation profile (personal details),AI,could,yes,no,V https://help.getstoic.com/premium-ai-features/xcBoxz1TZA2bdrEzFsGkhJ/using-ai-features-in-the-app/6f9eBdDY7mQ224fRxsXxYY
+AI reflective analysis of past entries,AI,could,yes,no,V https://help.getstoic.com/premium-ai-features/xcBoxz1TZA2bdrEzFsGkhJ/premium-ai-subscription/6f9eBdDY7nj4ZYuAFi7UMj
+AI check-in reactions,AI,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 release 2026.12
+Weekly AI token limit,AI,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 release 2026.16
+On-device Foundation Model AI (iOS 26),AI,could,yes,no,V https://help.getstoic.com/premium-ai-features/xcBoxz1TZA2bdrEzFsGkhJ/stoic%E2%80%99s-foundation-model-ai-features/6f9eBdDY7kLBJL6XSFHaB9 features not listed
+On-device photo descriptions,AI,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 release 2026.19
+Local-only storage with no own servers,privacy,must,yes,no,V https://help.getstoic.com/privacy--security/i65nxnVdxPXQfGZJXynaYu/where-your-data-is-kept/6f9eBdDY7m3fVtcX2B5Mv5
+"App lock with PIN, Face ID, Touch ID",privacy,should,yes,no,V https://help.getstoic.com/privacy--security/i65nxnVdxPXQfGZJXynaYu/password-protection/6f9eBdDY7mo5FmhGjhtrAe Premium only
+Anonymous behavioural analytics with opt-out,privacy,should,yes,no,V https://help.getstoic.com/privacy--security/i65nxnVdxPXQfGZJXynaYu/behavioral-data/6f9eBdDY7nimzzHgUfvyow
+Only current entry sent to cloud AI,privacy,should,yes,no,"V https://help.getstoic.com/privacy--security/i65nxnVdxPXQfGZJXynaYu/privacy-for-ai-features-users/6f9eBdDY7n6xp3yDruS4SW; policy names OpenAI, Anthropic, Google Gemini https://getstoic.com/privacy-policy"
+No account; delete via app and iCloud folder,privacy,could,yes,no,V https://help.getstoic.com/faq/3sfUSwpkyPFw22e8F1CRHk/privacy-data-and-ai/6f9eBdDY7nmUseRBxVxvQV
+iCloud sync and backup,data,should,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/data-storage-import-and-backups/6f9eBdDY7jYcoaF9t9ytqz Premium only
+Export JSON and TXT with attachments,data,should,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/data-storage-import-and-backups/6f9eBdDY7jYcoaF9t9ytqz
+Import from Day One JSON,data,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/data-storage-import-and-backups/6f9eBdDY7jYcoaF9t9ytqz
+Offload assets to iCloud,data,could,yes,no,V https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/data-storage-import-and-backups/6f9eBdDY7jYcoaF9t9ytqz
+Home and lock screen widgets,platform,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 releases 2025.47 and 2026.2; quote widget removal R https://apps.apple.com/us/app/id1312926037?see-all=reviews#14279773939
+Siri Shortcuts and App Intents,platform,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 store text and release 2026.19
+"Apple Watch, Mac, iPad, Vision, Web apps",platform,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 platforms; Web app at https://app.getstoic.com M https://getstoic.com/
+Android app with fewer features,platform,could,yes,no,V https://help.getstoic.com/android-app/6f9eBdDY7nBErZqN88hSpP/android-app/6f9eBdDY7jYfqgb9xsw3Gi; no iOS to Android sync https://help.getstoic.com/stoic-user-guide/mooMJC6qGFVeG62FpCwNAw/data-storage-import-and-backups/6f9eBdDY7jYcoaF9t9ytqz
+8 languages,platform,could,yes,no,V https://help.getstoic.com/faq/3sfUSwpkyPFw22e8F1CRHk/journaling-and-customization/6f9eBdDY7njMvRmxFbraod
+"Onboarding with objectives, age, notifications",onboarding,must,yes,no,V https://help.getstoic.com/getting-started/nMb4jABmc8oatYuUUyT5Q5/download--set-up/6f9eBdDY7muH12dseBvJap
+Free tier plus Premium plus Premium AI plus Lifetime,monetisation,must,yes,no,V https://help.getstoic.com/getting-started/nMb4jABmc8oatYuUUyT5Q5/subscription--plans/6f9eBdDY7ngGS3y5u7kPU6; prices https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037
+"Annual-only free trials (7 days Premium, 3 days AI)",monetisation,must,yes,no,V https://help.getstoic.com/getting-started/nMb4jABmc8oatYuUUyT5Q5/subscription--plans/6f9eBdDY7ngGS3y5u7kPU6; trial charge complaints R https://apps.apple.com/us/app/id1312926037?see-all=reviews#14575004861
+Gift vouchers,monetisation,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 releases 2025.47 and 2026.2
+Student discount,monetisation,could,yes,no,V https://help.getstoic.com FAQ title Do You Offer Educational Discounts; 50 percent R https://apps.apple.com/gb/app/id1312926037?see-all=reviews#13236058306
+In-app newsletter sign-up with premium promo,monetisation,could,yes,no,V https://apps.apple.com/us/app/stoic-journal-mental-health/id1312926037 release 2026.13; https://play.google.com/store/apps/details?id=com.stoicroutine.stoic whats new
+Medical disclaimer and 988 crisis line,safety,should,yes,no,V https://play.google.com/store/apps/details?id=com.stoicroutine.stoic description
+Community (Discord) and feedback board,community,could,yes,no,M https://getstoic.com/features; links on https://getstoic.com/

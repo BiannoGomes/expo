@@ -1,0 +1,6 @@
+{
+  "_about": "Competitor names, domains and developers that must never appear in Dawnward's product, site, films or store listing. Generic words they also use (reflection, stoic, exist, journal, mind, body, soul, future) are deliberately not listed: they are everyday language, and Mind, Body, Soul and Future are Dawnward's own four worlds (owner decision 2026-10-31).",
+  "avoid": ["Rosebud", "Mindsera", "Reflection.app", "Journal Better Inc", "Stoic app inc", "getstoic", "Stoic.", "Exist.io", "Hello Code"],
+  "domains": ["rosebud.app", "mindsera.com", "reflection.app", "getstoic.com", "exist.io"],
+  "colors": []
+}

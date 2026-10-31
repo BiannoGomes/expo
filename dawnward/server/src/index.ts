@@ -13,6 +13,9 @@ import { registerAccountRoutes } from "./routes/account.js";
 import { registerConstellationRoutes } from "./routes/constellation.js";
 import { registerAuthRoutes, requireAuth } from "./auth.js";
 import { transcription } from "./intelligence/transcription.js";
+import { registerEveningRoutes } from "./routes/evenings.js";
+import { notExcluded } from "./model/exclusions.js";
+import { attachSources, type ClaimedPlan, type RecentWords } from "./model/provenance.js";
 
 export function buildApp() {
   const app = Fastify({
@@ -21,7 +24,12 @@ export function buildApp() {
   });
 
   // Browser clients (Expo web) call cross-origin in development.
-  app.register(cors, { origin: true });
+  // @fastify/cors allows only GET, HEAD and POST unless told otherwise, which
+  // silently broke every PATCH and DELETE from the web build.
+  app.register(cors, {
+    origin: true,
+    methods: ["GET", "HEAD", "POST", "PATCH", "DELETE"],
+  });
 
   registerAuthRoutes(app);
   registerAccountRoutes(app);
@@ -30,6 +38,7 @@ export function buildApp() {
   registerCampaignRoutes(app);
   registerEventRoutes(app);
   registerConstellationRoutes(app);
+  registerEveningRoutes(app);
 
   app.get("/health", async () => ({ ok: true }));
 
@@ -43,6 +52,22 @@ async function hadSafetyEvent(userId: string, hours: number): Promise<boolean> {
   return rows.length > 0;
 }
 
+async function recentWords(userId: string, limit: number): Promise<RecentWords[]> {
+  const rows = await query<{ id: string; payload: { date?: string; transcript?: string } }>(
+    `select id, payload from records r
+      where user_id = $1 and kind = 'reflection' and ${notExcluded("r.id")}
+      order by occurred_at desc limit $2`,
+    [userId, limit],
+  );
+  return rows
+    .filter((r) => typeof r.payload.transcript === "string")
+    .map((r) => ({
+      recordId: r.id,
+      date: r.payload.date ?? "",
+      transcript: r.payload.transcript!,
+    }));
+}
+
 async function recentExtractions(
   userId: string,
   limit: number,
@@ -50,6 +75,7 @@ async function recentExtractions(
   const rows = await query<{ payload: DebriefExtraction & { extractionOf: string } }>(
     `select payload from records
       where user_id = $1 and kind = 'action_event' and payload ? 'extractionOf'
+        and ${notExcluded("(payload->>'extractionOf')::uuid")}
       order by occurred_at desc limit $2`,
     [userId, limit],
   );
@@ -112,6 +138,10 @@ app.get("/plan/:date", { preHandler: requireAuth }, async (request, reply) => {
     [userId],
   );
 
+  // The person's own recent evenings, minus any they left out. Steps may
+  // quote them; attachSources keeps a quote only if it is really theirs.
+  const words = await recentWords(userId, 5);
+
   const plan = await intelligence.generatePlan({
     date,
     summary:
@@ -122,14 +152,16 @@ app.get("/plan/:date", { preHandler: requireAuth }, async (request, reply) => {
     recentDebriefs: extractions,
     yesterdayOutcome,
     reducedLoad,
+    recentWords: words,
   });
 
   // Deterministic guardrails on top of whatever the model produced:
   // confront requires opt-in and no recent distress (spec 04 §2).
   const confrontAllowed = user.challenge_opt_in && !distressRecently;
+  const sourced = attachSources(plan as ClaimedPlan, words);
   const finalPlan: DailyPlan = {
-    ...plan,
-    slots: plan.slots.filter((s) => s.slot !== "confront" || confrontAllowed),
+    ...sourced,
+    slots: sourced.slots.filter((s) => s.slot !== "confront" || confrontAllowed),
     ...(gapDays >= 3 ? { reentryGapDays: gapDays } : {}),
   };
 
