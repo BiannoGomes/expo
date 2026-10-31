@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T23:17:47.823Z",
+  "when": "2026-10-31T23:25:48.625Z",
   "checks": [
     {
       "name": "address #/home opens earth",
@@ -207,13 +207,13 @@
       "detail": ""
     },
     {
-      "name": "AI Creation is marked for members",
-      "ok": false,
+      "name": "AI Creation says some worlds are free",
+      "ok": true,
       "detail": ""
     },
     {
-      "name": "AI Creation is labelled a preview with its planned purpose",
-      "ok": false,
+      "name": "AI Creation never presents its AI studios as working",
+      "ok": true,
       "detail": ""
     },
     {
@@ -234,6 +234,6 @@
   },
   "summary": {
     "total": 45,
-    "failed": 2
+    "failed": 0
   }
 }
