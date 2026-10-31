@@ -4,7 +4,7 @@
 //
 // Progress here means places discovered and things done, never a measure of
 // the person (owner decision, 2026-10-31: discoveries only, no XP or levels).
-import { MISSIONS, SYSTEMS, missionById, type Mission, type Step, type WorldId } from "./catalog.js";
+import { MISSIONS, SYSTEMS, missionById, type Access, type Mission, type Step, type WorldId } from "./catalog.js";
 
 export type AttemptStatus = "in_progress" | "paused" | "completed" | "abandoned";
 export type Answer =
@@ -209,3 +209,24 @@ export function describeDiscovery(d: Discovery): { title: string; why: string; w
 }
 
 export { MISSIONS };
+
+// ----- membership: who may open what -----
+export type Plan = Access;
+const RANK: Record<Access, number> = { free: 0, plus: 1, pro: 2 };
+export const accessOf = (m: Mission): Access => m.access ?? "free";
+/**
+ * Whether this person may open a mission. Rules (docs/monetisation-plan.md):
+ * - free missions are open to everyone;
+ * - an attempt already under way can always be finished, even if a membership has ended;
+ * - a "free once" piece may be taken once by anyone;
+ * - otherwise the plan must reach the mission's level.
+ * Never used for writing, memories, export or delete: those are never gated.
+ */
+export function canPlay(m: Mission, plan: Plan, attempts: Pick<Attempt, "missionId" | "status">[]): { ok: true } | { ok: false; need: Access } {
+  const need = accessOf(m);
+  if (RANK[plan] >= RANK[need]) return { ok: true };
+  const mine = attempts.filter((a) => a.missionId === m.id);
+  if (mine.some((a) => a.status === "in_progress" || a.status === "paused")) return { ok: true };
+  if (m.freeOnce && !mine.some((a) => a.status === "completed")) return { ok: true };
+  return { ok: false, need };
+}

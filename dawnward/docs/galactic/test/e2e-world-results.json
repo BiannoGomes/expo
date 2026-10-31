@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T20:11:28.294Z",
+  "when": "2026-10-31T20:59:50.246Z",
   "checks": [
     {
       "name": "address #/home opens earth",
@@ -132,6 +132,51 @@
       "detail": ""
     },
     {
+      "name": "in Mind's Expeditions, Chapter 2 is marked Plus",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the Compass never offers a members' chapter to a free visitor",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a members' chapter shows what's inside, and says plainly membership isn't open yet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no fake checkout or price on the gate",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a free alternative is offered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: gate",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "You › Plan says Free, and how membership will work",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "member preview switches on, on this device only",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "as a member, Chapter 2 is open",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "Library lists the four real worksheets",
       "ok": true,
       "detail": ""
@@ -162,6 +207,11 @@
       "detail": ""
     },
     {
+      "name": "AI Creation is marked for members",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "AI Creation is labelled a preview with its planned purpose",
       "ok": true,
       "detail": ""
@@ -179,10 +229,11 @@
   ],
   "axe": {
     "mind expeditions": [],
+    "gate": [],
     "mind progress": []
   },
   "summary": {
-    "total": 35,
+    "total": 45,
     "failed": 0
   }
 }

@@ -344,7 +344,7 @@ function main(data, failed) {
         el("ul", { class: "missions" }, sys.missionIds.map(missionById).map((m) => el("li", {}, el("button", {
           class: `mission${done(m.id) ? " done" : ""}`, "aria-label": `${m.title}, ${m.part}. ${m.objective} ${done(m.id) ? "Done." : `${m.minutes} minutes.`}`,
           onclick: () => explore.play(m.id, fromWorld(w)),
-        }, el("span", { class: "mstate", "aria-hidden": "true" }, done(m.id) ? "✦" : ""), el("span", { class: "rtext" }, el("span", { class: "rtitle" }, sys.kind === "expedition" ? m.part : m.title), el("span", { class: "rsub" }, sys.kind === "expedition" ? m.objective : m.part)), el("span", { class: "mmeta" }, done(m.id) ? "Done" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`)))),
+        }, el("span", { class: "mstate", "aria-hidden": "true" }, done(m.id) ? "✦" : ""), el("span", { class: "rtext" }, el("span", { class: "rtitle" }, sys.kind === "expedition" ? m.part : m.title), el("span", { class: "rsub" }, sys.kind === "expedition" ? m.objective : m.part)), el("span", { class: "mmeta" }, done(m.id) ? "Done" : explore?.locked?.(m) ? "Plus" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`)))),
           (sys.planned ?? []).map((p, k) => el("li", { class: "planned" }, el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `Chapter ${sys.missionIds.length + k + 1}: ${p.title}`), el("span", { class: "rsub" }, p.line)), el("span", { class: "mmeta" }, "Planned")))))),
       el("p", { class: "quiet small" }, systems.length ? `Planned next here: ${play.planned.join(", ")}.` : `Planned here: ${play.planned.join(", ")}. Reflection is open now.`),
       play.planned.some((p) => ART.planned[p]) ? el("ul", { class: "planned-row", "aria-label": "Pathways being written" }, play.planned.filter((p) => ART.planned[p]).map((p) =>
@@ -353,7 +353,7 @@ function main(data, failed) {
   // Overview: the one next step in this world, if there is one
   function worldNext(w) {
     const open = (explore?.data.attempts ?? []).find((a) => (a.status === "in_progress" || a.status === "paused") && missionById(a.missionId)?.world === w);
-    const m = open ? missionById(open.missionId) : MISSIONS.find((x) => x.world === w && !chapterDone(x.id));
+    const m = open ? missionById(open.missionId) : MISSIONS.find((x) => x.world === w && !chapterDone(x.id) && !explore?.locked?.(x));
     const play = WORLD_PLAY[w];
     return el("section", { class: "group", "aria-labelledby": "w-next-h" },
       el("h3", { id: "w-next-h" }, `Next in ${META[w].name}`),
@@ -371,7 +371,7 @@ function main(data, failed) {
       el("h3", { id: "w-lib-h" }, "Worksheets"),
       withSheets.length
         ? el("ul", { class: "missions" }, withSheets.map((m) => el("li", {}, el("button", { class: "mission", onclick: () => explore.sheet(m.id, () => { goWorld(w); }) },
-            el("span", { class: "mstate", "aria-hidden": "true" }, ""), el("span", { class: "rtext" }, el("span", { class: "rtitle" }, m.worksheet.title), el("span", { class: "rsub" }, `${m.title} · ${m.part}`)), el("span", { class: "mmeta" }, "Print")))))
+            el("span", { class: "mstate", "aria-hidden": "true" }, ""), el("span", { class: "rtext" }, el("span", { class: "rtitle" }, m.worksheet.title), el("span", { class: "rsub" }, `${m.title} · ${m.part}`)), el("span", { class: "mmeta" }, explore?.locked?.(m) && !chapterDone(m.id) ? "Plus" : "Print")))))
         : el("p", { class: "quiet" }, "No worksheets here yet. They arrive with each written chapter."),
       el("h3", {}, "Books and audio"),
       el("p", { class: "quiet" }, "None yet. Books are added only from manuscripts you own, chapter by chapter, after review. Lessons can already be listened to inside each chapter."));
@@ -802,6 +802,14 @@ function main(data, failed) {
     const themes = liveThemes(), sugs = suggestions();
     $("y-understand").replaceChildren(themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : el("p", { class: "quiet" }, "I don't have enough evidence to conclude anything yet. Patterns appear when evenings share something and you confirm it."));
     $("y-connections").replaceChildren(...(sugs.length ? sugs.map((s) => connectionCard(s, drawYou)) : [el("p", { class: "quiet" }, "None right now.")]));
+    const plan = explore?.plan?.() ?? "free", label = { free: "Free", plus: "Plus", pro: "Pro" }[plan];
+    $("y-plan").replaceChildren(
+      el("p", { class: "statement" }, data.local && plan !== "free" ? `${label}, as a member preview on this device` : label),
+      el("p", { class: "quiet" }, "Free is yours for good: reflection, memories, Journey, your Daily Compass, the first chapter of every expedition, and the Quantum Gateway once. Plus adds every chapter, all worksheets and lessons, and new expeditions as they're written."),
+      el("p", { class: "quiet" }, "Membership isn't open yet. It opens after the beta, with a reminder before any charge and one-tap cancel. Your own words are never behind it."),
+      data.local ? el("div", { class: "actions" }, el("button", { class: "ghost", id: "y-member", "aria-pressed": String(plan !== "free"),
+        onclick: async () => { await explore.setPlan(plan === "free" ? "plus" : "free"); drawYou(); renderHome(); announce(plan === "free" ? "Member preview on." : "Member preview off."); $("y-member").focus(); } },
+        plan === "free" ? "Preview as a member" : "Member preview on · switch off")) : null);
     $("y-data-line").textContent = data.local
       ? `${plural(data.stars.length, "memory", "memories")} kept on this device, and nowhere else.`
       : `${plural(data.stars.length, "memory", "memories")} in your Dawnward.`;
@@ -938,7 +946,7 @@ function main(data, failed) {
     const art = orb ? el("img", { class: `gx-img gx-orb${g.kind ? ` gx-${g.kind}-orb` : ""}`, alt: "", src: asset(artPath(orb)) })
       : el("img", { class: "gx-img", alt: "", src: asset("img/worlds/galaxy-core-1024.webp") });
     inner.append(el("button", { class: `gx g-${g.id}${g.open ? "" : " closed"}`, "data-id": g.id, style: `--lx:${g.x}%;--ly:${g.y}%;--gx:${g.size};--px:${g.p[0]}%;--py:${g.p[1]}%;--pw:${g.p[2]}`, "aria-label": `${g.name}. ${g.tag} ${g.open ? "Open." : "Not open yet."}`, "aria-pressed": "false", onclick: () => selectGalaxy(g) },
-      art, el("span", { class: "gx-name" }, g.name), g.open ? null : el("span", { class: "gx-soon" }, g.kind === "gateway" ? "Opens next" : "Preview")));
+      art, el("span", { class: "gx-name" }, g.name), g.open ? null : el("span", { class: "gx-soon" }, g.access === "plus" ? "Members · preview" : "Preview")));
   }
   $("a-list").append(...GALAXIES.map((g) => el("li", {}, el("button", { class: "row", onclick: () => selectGalaxy(g) },
     el("span", { class: "rtext" }, el("span", { class: "rtitle" }, g.name), el("span", { class: "rsub" }, g.tag)),
@@ -968,7 +976,7 @@ function main(data, failed) {
     if (!field.hidden && b) inner.style.transform = `translate(${Math.round(inner.clientWidth / 2 - b.offsetLeft)}px, ${Math.round(inner.clientHeight * 0.42 - b.offsetTop)}px) scale(1.3)`;
     const panel = $("a-panel");
     panel.replaceChildren(
-      el("p", { class: "kicker" }, g.open ? "Open" : g.kind === "gateway" ? "Opens next · preview" : "Preview · not open yet"),
+      el("p", { class: "kicker" }, g.open ? (g.id === "gateway" ? "Open · free once, then for members" : "Open") : g.access === "plus" ? "Preview · not open yet · for members" : "Preview · not open yet"),
       el("h2", { class: "s-title", id: "a-name", tabindex: "-1" }, g.name),
       el("p", { class: "lead" }, g.tag),
       g.planned ? el("p", { class: "quiet" }, g.open ? g.planned : `Planned: ${g.planned}`) : null,
@@ -1000,6 +1008,7 @@ function main(data, failed) {
   const COMPASS_HIDE = "dw-compass-hide";
   const localDay = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
   const missionDone = (id) => (explore?.data.attempts ?? []).some((a) => a.missionId === id && a.status === "completed");
+  const canOpen = (m) => !explore?.locked?.(m);
   function compassPick() {
     const attempts = explore?.data.attempts ?? [];
     const open = attempts.find((a) => (a.status === "in_progress" || a.status === "paused") && missionById(a.missionId));
@@ -1011,15 +1020,15 @@ function main(data, failed) {
     for (const f of explore?.data.following ?? []) {
       const sys = SYSTEMS.find((x) => x.id === f.systemId);
       const next = sys?.missionIds.find((id) => !missionDone(id));
-      if (next) return { m: missionById(next), step: 0, following: sys, why: `You chose to follow ${sys.title}, and this is its next chapter.` };
+      if (next && canOpen(missionById(next))) return { m: missionById(next), step: 0, following: sys, why: `You chose to follow ${sys.title}, and this is its next chapter.` };
     }
     for (const sys of SYSTEMS) {
       const next = sys.missionIds.find((id) => !missionDone(id));
-      if (next && sys.missionIds.some(missionDone)) return { m: missionById(next), step: 0, why: `It's the next part of ${sys.title} in ${META[sys.world].name}, which you've already begun.` };
+      if (next && canOpen(missionById(next)) && sys.missionIds.some(missionDone)) return { m: missionById(next), step: 0, why: `It's the next part of ${sys.title} in ${META[sys.world].name}, which you've already begun.` };
     }
-    const inWorld = data.stars.length ? MISSIONS.find((m) => m.world === state.lastWorld && !missionDone(m.id)) : null;
+    const inWorld = data.stars.length ? MISSIONS.find((m) => m.world === state.lastWorld && !missionDone(m.id) && canOpen(m)) : null;
     if (inWorld) return { m: inWorld, step: 0, why: `Your last reflection was in ${META[inWorld.world].name}, and this is its expedition.` };
-    const first = MISSIONS.find((m) => !missionDone(m.id));
+    const first = MISSIONS.find((m) => !missionDone(m.id) && canOpen(m));
     if (first) return { m: first, step: 0, why: attempts.length ? "It's the next expedition you haven't tried yet." : "It's a short first expedition: about six minutes, nothing to prepare." };
     return null;
   }
@@ -1059,7 +1068,7 @@ function main(data, failed) {
         ? el("div", { class: "compass slim" }, el("p", { class: "quiet" }, "No suggestion today, as you asked."),
             el("button", { class: "text-btn", onclick: () => { try { localStorage.removeItem(COMPASS_HIDE); } catch {} drawEarth(); } }, "Show it"))
         : compassCard(pick);
-    const other = MISSIONS.find((m) => m.systemId !== pick?.m.systemId && !missionDone(m.id));
+    const other = MISSIONS.find((m) => m.systemId !== pick?.m.systemId && !missionDone(m.id) && canOpen(m));
     const next = [
       other
         ? { icon: ICON.explore, t: "Practise", s: `${other.title} · ${other.minutes} min`, go: () => explore.play(other.id, { from: fromHome }) }

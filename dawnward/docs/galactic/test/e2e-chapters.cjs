@@ -5,6 +5,9 @@
 // star → Home suggests Chapter 2 and says why → Chapter 2 → Learn lists 7 chapters,
 // 5 planned. axe on every new screen.
 const { chromium } = require("playwright");
+// members' content is tested as a member (the gates themselves are tested in e2e-world.cjs)
+const MEMBER = () => { const k = "dw-expeditions-v1"; if (!localStorage.getItem(k)) localStorage.setItem(k, JSON.stringify({ plan: "plus" })); };
+
 const fs = require("fs");
 const path = require("path");
 const AXE = fs.readFileSync(path.join(__dirname, "../../../experience/node_modules/axe-core/axe.min.js"), "utf8");
@@ -34,6 +37,7 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
   const browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
   for (const [name, vp] of [["phone", { width: 390, height: 844 }], ["small", { width: 320, height: 568 }]]) {
     const ctx = await browser.newContext({ viewport: vp, isMobile: true, hasTouch: true });
+    await ctx.addInitScript(MEMBER);
     const page = await ctx.newPage();
     const errors = [];
     page.on("pageerror", (e) => errors.push(String(e)));

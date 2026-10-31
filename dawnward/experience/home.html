@@ -138,6 +138,12 @@
   .lab-opt legend { padding:0 var(--s2); font-weight:600; overflow-wrap:anywhere; }
   .lab-sum td.m1 { color:var(--body); } .lab-sum td.m3 { color:var(--gold-ink); }
   .lab-sum th, .lab-sum td { padding:var(--s2); height:auto; overflow-wrap:anywhere; }
+  #x-body .plus-kicker { color:var(--gold-ink); }
+  .plus-card h3 { text-transform:none; letter-spacing:0; color:var(--ink); font-size:18px; }
+  .plus-list { display:flex; flex-direction:column; gap:var(--s2); padding-left:var(--s5); line-height:1.45; }
+  .plus-list li::marker { color:var(--gold); }
+  .mission.locked .mmeta, .missions .mission .mmeta:only-child { color:var(--gold-ink); }
+  .mission.locked .rtitle { color:var(--dim); }
   .follow[aria-pressed="true"] { border-color:var(--gold); color:var(--gold-ink); }
   .readings { display:flex; flex-direction:column; gap:var(--s3); padding:0; list-style:none; }
   .readings li { line-height:1.45; }
@@ -615,6 +621,7 @@
         <p class="quiet">Discoveries are places that appear in your galaxy when you practise or come back to say how something went. Hiding them deletes nothing.</p>
       </section>
       <section aria-labelledby="y-c-h"><h3 id="y-c-h">Possible connections</h3><div id="y-connections" class="cards"></div></section>
+      <section aria-labelledby="y-plan-h"><h3 id="y-plan-h">Your plan</h3><div id="y-plan"></div></section>
       <section aria-labelledby="y-d-h"><h3 id="y-d-h">Your memories</h3>
         <p id="y-data-line" class="quiet"></p>
         <div class="actions"><button id="y-export" class="ghost">Save a copy as a file</button><button id="y-delete" class="danger">Delete everything on this device</button></div>

@@ -1,6 +1,8 @@
 // Expedition catalog: hand-written, reviewed content. Never generated freely.
 // The server validates it at startup; the web preview bundles the same file.
 
+/** Membership levels. Your own words, memories, export and delete are never behind any of them. */
+export type Access = "free" | "plus" | "pro";
 export type WorldId = "mind" | "body" | "soul" | "spirit" | "future";
 export type StepType = "intro" | "lesson" | "pause" | "portal" | "choice" | "lens" | "sort" | "lab" | "rehearse" | "plan" | "reflect" | "close";
 
@@ -72,6 +74,10 @@ export interface Mission {
   safetyNote?: string;
   /** Chapters of an expedition carry their number. */
   chapter?: number;
+  /** Who it's for. Omitted means free. "plus" and "pro" are for members (docs/monetisation-plan.md §3). */
+  access?: Access;
+  /** A members' piece that everyone may take once (the Quantum Gateway). */
+  freeOnce?: boolean;
   /** "draft" until Bianno (and, for anything touching mental health, a qualified reviewer) has approved it. */
   status?: "draft" | "reviewed";
   worksheet?: Worksheet;
@@ -199,6 +205,7 @@ export const MISSIONS: Mission[] = [
   {
     id: "overthinking-2",
     version: 1,
+    access: "plus",
     systemId: "mind-beyond-overthinking",
     world: "mind",
     title: "Beyond Overthinking",
@@ -296,6 +303,7 @@ export const MISSIONS: Mission[] = [
   {
     id: "overthinking-3",
     version: 1,
+    access: "plus",
     systemId: "mind-beyond-overthinking",
     world: "mind",
     title: "Beyond Overthinking",
@@ -395,6 +403,7 @@ export const MISSIONS: Mission[] = [
   {
     id: "overthinking-4",
     version: 1,
+    access: "plus",
     systemId: "mind-beyond-overthinking",
     world: "mind",
     title: "Beyond Overthinking",
@@ -633,6 +642,7 @@ export const MISSIONS: Mission[] = [
   {
     id: "bridge-2",
     version: 1,
+    access: "plus",
     systemId: "soul-communication",
     world: "soul",
     title: "The Bridge",
@@ -708,6 +718,7 @@ export const MISSIONS: Mission[] = [
   {
     id: "bridge-3",
     version: 1,
+    access: "plus",
     systemId: "soul-communication",
     world: "soul",
     title: "The Bridge",
@@ -786,6 +797,8 @@ export const MISSIONS: Mission[] = [
   {
     id: "gateway-1",
     version: 1,
+    access: "plus",
+    freeOnce: true,
     systemId: "future-quantum-gateway",
     world: "future",
     title: "The Quantum Gateway",

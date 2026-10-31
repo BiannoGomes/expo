@@ -7,6 +7,7 @@ import {
   MISSIONS,
   SYSTEMS,
   LAB,
+  canPlay,
   answerStep,
   beginAttempt,
   completeAttempt,
@@ -21,7 +22,7 @@ const KEY = "dw-expeditions-v1";
 
 /** The same calls, kept on this device. Every write is read back before it counts. */
 export function localStore(device) {
-  const empty = () => ({ attempts: {}, experiments: [], events: [], discoveries: [], gameLayer: true, following: [] });
+  const empty = () => ({ attempts: {}, experiments: [], events: [], discoveries: [], gameLayer: true, following: [], plan: "free" });
   let s = Object.assign(empty(), device.read(KEY, {}));
   const id = (p) => `${p}-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e6).toString(36)}`;
   const keep = () => device.write(KEY, s);
@@ -35,7 +36,7 @@ export function localStore(device) {
   return {
     local: true,
     async load() {
-      return { attempts: Object.values(s.attempts), experiments: s.experiments, discoveries: s.discoveries.map((d) => ({ ...d, ...describeDiscovery(d) })), gameLayer: s.gameLayer, following: [...(s.following ?? [])] };
+      return { attempts: Object.values(s.attempts), experiments: s.experiments, discoveries: s.discoveries.map((d) => ({ ...d, ...describeDiscovery(d) })), gameLayer: s.gameLayer, following: [...(s.following ?? [])], plan: s.plan ?? "free" };
     },
     async begin(missionId) {
       const m = missionById(missionId);
@@ -79,6 +80,8 @@ export function localStore(device) {
       });
     },
     async setGameLayer(on) { return tx(() => { s.gameLayer = on; return { gameLayer: on }; }); },
+    /** Member preview, on this device only: no payment exists yet, so this only lets Bianno see members' content. */
+    async setPlan(plan) { return tx(() => { s.plan = plan; return { plan }; }); },
     async follow(systemId, on) {
       return tx(() => { const f = (s.following ?? []).filter((x) => x.systemId !== systemId); if (on) f.push({ systemId, since: new Date().toISOString() }); s.following = f; return { following: on }; });
     },
@@ -96,7 +99,7 @@ export function remoteStore(call) {
     local: false,
     async load() {
       const r = await call("/expeditions");
-      return { attempts: r.attempts, experiments: r.experiments, discoveries: r.discoveries, gameLayer: r.gameLayer, following: r.following ?? [] };
+      return { attempts: r.attempts, experiments: r.experiments, discoveries: r.discoveries, gameLayer: r.gameLayer, following: r.following ?? [], plan: r.plan ?? "free" };
     },
     begin: (missionId) => wrap(post("/attempts", { missionId })),
     answer: async (attempt, stepIndex, answer) => { const r = await wrap(post(`/attempts/${attempt.id}/answer`, { stepIndex, answer })); return r.error || r.crisis ? r : { attempt: r }; },
@@ -116,7 +119,9 @@ export function remoteStore(call) {
  */
 export function createExplore(store, h) {
   const { $, el, svg, ICON, META } = h;
-  let data = { attempts: [], experiments: [], discoveries: [], gameLayer: true, following: [] };
+  let data = { attempts: [], experiments: [], discoveries: [], gameLayer: true, following: [], plan: "free" };
+  const gateOf = (m) => canPlay(m, data.plan ?? "free", data.attempts);
+  const locked = (m) => !gateOf(m).ok;
   const isFollowing = (systemId) => (data.following ?? []).some((f) => f.systemId === systemId);
   async function follow(systemId, on) {
     const r = await store.follow(systemId, on);
@@ -179,8 +184,9 @@ export function createExplore(store, h) {
         sys.kind === "expedition" ? el("div", { class: "actions" }, followButton(sys, () => { draw(); body().querySelector(`[aria-labelledby="x-${sys.id}"] .follow`)?.focus(); })) : null,
         el("ul", { class: "missions" }, ms.map((m) => {
           const a = attemptFor(m.id), done = a?.status === "completed" || data.attempts.some((x) => x.missionId === m.id && x.status === "completed");
-          const state = done ? "Done" : a ? "In progress" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`;
-          return el("li", {}, el("button", { class: `mission${done ? " done" : ""}`, onclick: () => play(m.id), "aria-label": `${m.title}, ${m.part}. ${m.objective} ${state}.` },
+          const lock = !done && !a && locked(m);
+          const state = done ? "Done" : a ? "In progress" : lock ? "Plus" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`;
+          return el("li", {}, el("button", { class: `mission${done ? " done" : ""}${lock ? " locked" : ""}`, onclick: () => play(m.id), "aria-label": `${m.title}, ${m.part}. ${m.objective} ${lock ? "Part of Dawnward Plus." : `${state}.`}` },
             el("span", { class: "mstate", "aria-hidden": "true" }, done ? "✦" : ""),
             el("span", { class: "rtext" }, el("span", { class: "rtitle" }, m.part), el("span", { class: "rsub" }, m.objective)),
             el("span", { class: "mmeta" }, state)));
@@ -201,7 +207,10 @@ export function createExplore(store, h) {
     const m = missionById(missionId);
     h.showPlace("explore");
     body().replaceChildren(el("p", { class: "quiet", role: "status" }, "Opening…"));
+    await refresh();
+    if (locked(m)) { gate(m); return; }
     const r = await store.begin(m.id);
+    if (r.status === 402) { await refresh(); gate(m); return; }
     if (r.error) { body().replaceChildren(...head(m.title, null, back), el("p", { class: "error", role: "alert" }, r.error)); return; }
     current = { mission: m, attempt: r };
     await refresh();
@@ -620,6 +629,32 @@ export function createExplore(store, h) {
     if (b) b.replaceWith(el("p", { class: "quiet", role: "status" }, `You're following ${sys.title}. Home will suggest its next chapter, and you can stop any time in Learn.`));
   }
 
+  // ----- members' pieces: say what's inside, say honestly that membership isn't open yet -----
+  function gate(m) {
+    h.quiet(false);
+    setArt(m, { type: "intro", id: "intro" });
+    const free = MISSIONS.find((x) => !locked(x) && x.id !== m.id && !data.attempts.some((a) => a.missionId === x.id && a.status === "completed"));
+    body().replaceChildren(
+      el("div", { class: "qhead" },
+        h.crumbs([...(from?.trail ?? [{ label: "Learn", root: true, go: () => { from = null; draw(); } }]), { label: m.title }]),
+        el("button", { class: "text-btn back", onclick: () => { const f = from; from = null; f ? f.go() : draw(); } }, el("span", { html: svg(ICON.back, 16) }), ` ${from?.label ?? "Learn"}`)),
+      el("p", { class: "kicker plus-kicker" }, "Dawnward Plus"),
+      el("h2", { class: "s-title", id: "x-title", tabindex: "-1" }, `${m.title}: ${m.part}`),
+      el("p", { class: "lead" }, m.objective),
+      el("p", { class: "quiet" }, `About ${m.minutes} minutes${m.worksheet ? `, with a worksheet: ${m.worksheet.title}` : ""}.${m.freeOnce ? " Everyone can take this once; you already have." : ""}`),
+      el("section", { class: "card plus-card", "aria-labelledby": "plus-h" },
+        el("h3", { id: "plus-h" }, "What Plus includes"),
+        el("ul", { class: "plus-list" }, ["Every chapter of every expedition", "All worksheets and listen-along lessons", "The Quantum Gateway, any time", "New expeditions as they're written", "Bianno's books, as guided expeditions"].map((t) => el("li", {}, t))),
+        el("p", { class: "quiet" }, "Membership isn't open yet. It opens after the beta, with a reminder before any charge and one-tap cancel."),
+        el("p", { class: "quiet" }, "Your reflections, memories and everything you've written stay free, always.")),
+      el("div", { class: "actions" },
+        store.local ? el("button", { class: "primary", onclick: async () => { await store.setPlan("plus"); await refresh(); h.announce("Member preview on, on this device only."); play(m.id, { from }); } }, "Preview as a member") : null,
+        free ? el("button", { class: "ghost", onclick: () => play(free.id, { from }) }, `Free now: ${free.title}`) : null),
+      store.local ? el("p", { class: "quiet small" }, "Member preview is for seeing what members get. It changes nothing but what this device shows, and you can switch it off in You.") : null);
+    $("x-title").focus();
+    $("explore").scrollTop = 0;
+  }
+
   function crisis(text) {
     setArt(null);
     h.quiet(false);
@@ -672,7 +707,9 @@ export function createExplore(store, h) {
     get data() { return data; },
     isFollowing, follow,
     /** Opens a chapter's worksheet on its own, from a world's Library. */
-    sheet(missionId, back) { const m = missionById(missionId); if (!m?.worksheet) return; h.showPlace("explore"); worksheet(m, back); },
+    sheet(missionId, back) { const m = missionById(missionId); if (!m?.worksheet) return; h.showPlace("explore"); if (locked(m) && !data.attempts.some((a) => a.missionId === m.id && a.status === "completed")) { from = { label: "Back", go: back }; gate(m); return; } worksheet(m, back); },
+    locked, plan: () => data.plan ?? "free",
+    async setPlan(plan) { const r = await store.setPlan?.(plan); await refresh(); return r; },
     get missions() { return MISSIONS; },
     textSummary() {
       return SYSTEMS.map((sys) => ({ sys, missions: sys.missionIds.map((id) => ({ m: missionById(id), done: data.attempts.some((a) => a.missionId === id && a.status === "completed") })) }));

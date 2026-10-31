@@ -132,6 +132,27 @@ These are targets to test, not industry facts.
   - no offer appears on reflection or crisis screens;
   - the trial-reminder rules.
 
+## 9a. Built so far (2026-10-31): the gates, with no payments
+
+- **Every piece of content has a level.** In `packages/core/src/expeditions/catalog.ts`:
+  - `access: "plus"` or `"pro"` on a mission; omitted means free.
+  - `freeOnce: true` lets anyone take it once (the Quantum Gateway).
+  - Galaxies get `access: "plus"` in `experience/src/registry.js`; the four unopened galaxies already have it.
+- **One rule decides, everywhere.** `canPlay` in the shared engine:
+  - free is open;
+  - members' pieces need the plan;
+  - anything already started can always be finished;
+  - "free once" means once.
+- **The server enforces it.** Beginning a members' chapter without a plan returns 402. Membership lives in a new `entitlements` table (migration 0011): included in the export, deleted with the account, written only by tests until payments exist.
+- **In the app:**
+  - members' chapters show "Plus" in Learn, in each world's Expeditions and Library;
+  - the Compass and "Next" only suggest what the person can open;
+  - opening a locked chapter shows an honest gate: what's inside, what Plus includes, that membership isn't open yet, and a free alternative.
+- **You › Plan** explains the plans. On this device, "Preview as a member" shows members' content without payment, so Bianno can see everything. It's off by default.
+- **Never gated:** writing, memories, Journey, export, delete, the crisis screen.
+
+**Adding something members-only later:** give it `access: "plus"` in the catalog (or the registry for a galaxy). Nothing else is needed.
+
 ## 10. Decisions for Bianno
 
 | # | Decision | My recommendation |

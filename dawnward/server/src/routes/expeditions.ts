@@ -10,6 +10,8 @@ import {
   discoveriesFrom,
   missionById,
   systemById,
+  canPlay,
+  type Plan,
   plannedAction,
   type Answer,
   type Attempt,
@@ -84,6 +86,12 @@ async function inTransaction<T>(fn: (c: { query: typeof pool.query }) => Promise
   }
 }
 
+/** The person's plan: an entitlement that hasn't run out, otherwise free. */
+async function planOf(userId: string): Promise<Plan> {
+  const [e] = await query<{ plan: Plan }>("select plan from entitlements where user_id = $1 and (active_until is null or active_until > now())", [userId]);
+  return e?.plan ?? "free";
+}
+
 /** Safety triage on any free text. A crisis stops everything; only level and time are logged. */
 async function triage(userId: string, texts: string[], reply: FastifyReply, beforeReply?: () => Promise<unknown>): Promise<boolean> {
   for (const t of texts) {
@@ -131,6 +139,7 @@ export function registerExpeditionRoutes(app: FastifyInstance) {
       discoveries: discoveries.map((d) => ({ key: d.key, discoveredAt: d.discovered_at, ...describeDiscovery({ key: d.key, causeKind: d.cause_kind, causeRef: d.cause_ref }) })),
       gameLayer: prefs?.game_layer ?? true,
       following: enrollments.map((e) => ({ systemId: e.system_id, since: e.started_at })),
+      plan: await planOf(userId),
     };
   });
 
@@ -160,6 +169,10 @@ export function registerExpeditionRoutes(app: FastifyInstance) {
     const { missionId } = z.object({ missionId: z.string().max(60) }).parse(request.body);
     const mission = missionById(missionId);
     if (!mission) return reply.code(404).send({ error: "no such mission" });
+    // members' pieces: checked here, never only on the screen
+    const mine = await query<{ mission_id: string; status: AttemptRow["status"] }>("select mission_id, status from mission_attempts where user_id = $1 and mission_id = $2", [userId, mission.id]);
+    const gate = canPlay(mission, await planOf(userId), mine.map((a) => ({ missionId: a.mission_id, status: a.status })));
+    if (!gate.ok) return reply.code(402).send({ error: "This is part of Dawnward Plus.", need: gate.need });
     const [row] = await query<AttemptRow>(
       `with ins as (
          insert into mission_attempts (user_id, mission_id, mission_version)

@@ -26,6 +26,9 @@ interface Session {
   userId: string;
 }
 
+/** A Plus membership, as a payment webhook would record it (tests only: payments aren't built). */
+const member = (s: Session) => query("insert into entitlements (user_id, plan, source) values ($1, 'plus', 'grant') on conflict (user_id) do update set plan = 'plus', active_until = null", [s.userId]);
+
 async function createSession(consent = true): Promise<Session> {
   const res = await app.inject({
     method: "POST",
@@ -946,6 +949,7 @@ describe("expeditions (Soul · Communication, first slice)", () => {
 
   it("Beyond Overthinking, chapter 4: the Decision Lab is kept as the person's own words, and a crisis in it stops everything", async () => {
     const s = await createSession();
+    await member(s);
     const attempt = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "overthinking-4" } })).json();
     const mission = (await inject(s, { method: "GET", url: "/expeditions/missions/overthinking-4" })).json();
     const labIdx = mission.steps.findIndex((x: { type: string }) => x.type === "lab");
@@ -964,6 +968,31 @@ describe("expeditions (Soul · Communication, first slice)", () => {
     assert.equal(res.statusCode, 200, res.body);
     const exp = (await inject(s, { method: "GET", url: "/export" })).json();
     assert.ok(exp.records.some((r: { kind: string; payload: { stepId: string } }) => r.kind === "mission_response" && r.payload.stepId === "lab"), "kept as a record, so it exports and deletes with everything else");
+  });
+
+  it("membership: members' chapters are refused on the free plan, open with Plus, the Gateway is free once, and a lapsed plan can still finish what it started", async () => {
+    const s = await createSession();
+    const begin = (missionId: string) => inject(s, { method: "POST", url: "/attempts", payload: { missionId } });
+    assert.equal((await inject(s, { method: "GET", url: "/expeditions" })).json().plan, "free");
+    assert.equal((await begin("overthinking-1")).statusCode, 200, "chapter 1 is free");
+    const refused = await begin("overthinking-2");
+    assert.equal(refused.statusCode, 402);
+    assert.equal(refused.json().need, "plus");
+    // the Gateway, once: begin is allowed; after a completed attempt it isn't
+    assert.equal((await begin("gateway-1")).statusCode, 200, "free once");
+    await query("update mission_attempts set status = 'completed' where user_id = $1 and mission_id = 'gateway-1'", [s.userId]);
+    assert.equal((await begin("gateway-1")).statusCode, 402, "only once");
+    // a membership opens everything
+    await query("insert into entitlements (user_id, plan, source) values ($1, 'plus', 'grant')", [s.userId]);
+    assert.equal((await inject(s, { method: "GET", url: "/expeditions" })).json().plan, "plus");
+    const ch2 = await begin("overthinking-2");
+    assert.equal(ch2.statusCode, 200);
+    // it runs out: what was started can still be finished, nothing new opens
+    await query("update entitlements set active_until = now() - interval '1 day' where user_id = $1", [s.userId]);
+    assert.equal((await begin("overthinking-2")).statusCode, 200, "an attempt under way can be finished");
+    assert.equal((await begin("overthinking-3")).statusCode, 402);
+    const exp = (await inject(s, { method: "GET", url: "/export" })).json();
+    assert.equal(exp.membership.length, 1, "membership is in the export");
   });
 
   it("beginning twice resumes the same attempt", async () => {
@@ -1020,6 +1049,7 @@ describe("expeditions (Soul · Communication, first slice)", () => {
 
   it("finishing all three missions reveals the moon", async () => {
     const s = await createSession();
+    await member(s);
     for (const m of ["bridge-1", "bridge-2"]) {
       const id = await playMission(s, m);
       assert.equal((await inject(s, { method: "POST", url: `/attempts/${id}/complete` })).statusCode, 200);
@@ -1061,6 +1091,7 @@ describe("expeditions (Soul · Communication, first slice)", () => {
   it("is scoped to its owner: another person sees 404", async () => {
     const owner = await createSession();
     const other = await createSession();
+    await member(owner);
     const a = (await inject(owner, { method: "POST", url: "/attempts", payload: { missionId: "bridge-2" } })).json();
     const peek = await inject(other, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: 0, answer: { ack: true } } });
     assert.equal(peek.statusCode, 404);

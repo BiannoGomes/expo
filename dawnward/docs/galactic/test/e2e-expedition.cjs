@@ -5,6 +5,9 @@
 // journey log → hide discoveries → resume mid-mission after reload → crisis stops it →
 // text view lists the practices → delete everything wipes it.
 const { chromium } = require("playwright");
+// members' content is tested as a member (the gates themselves are tested in e2e-world.cjs)
+const MEMBER = () => { const k = "dw-expeditions-v1"; if (!localStorage.getItem(k)) localStorage.setItem(k, JSON.stringify({ plan: "plus" })); };
+
 const fs = require("fs");
 const path = require("path");
 const AXE = fs.readFileSync(path.join(__dirname, "../../../experience/node_modules/axe-core/axe.min.js"), "utf8");
@@ -24,6 +27,7 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
   const browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
   for (const [name, vp, mobile] of [["phone", { width: 390, height: 844 }, true], ["desktop", { width: 1440, height: 900 }, false]]) {
     const ctx = await browser.newContext({ viewport: vp, isMobile: mobile, hasTouch: mobile });
+    await ctx.addInitScript(MEMBER);
     const page = await ctx.newPage();
     const errors = [];
     page.on("pageerror", (e) => errors.push(String(e)));

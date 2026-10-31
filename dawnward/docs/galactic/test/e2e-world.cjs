@@ -93,6 +93,26 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   check("the next chapter is ringed", (await page.locator("svg.solar").first().locator(".next-ring").count()) === 1);
   await shot(page, "mind-expeditions-after");
 
+  // ---- membership: a free visitor sees members' chapters marked, and an honest gate ----
+  check("in Mind's Expeditions, Chapter 2 is marked Plus", /Chapter 2: Separate facts from assumptions[\s\S]*Plus/.test(await page.textContent("#w-panel")));
+  await page.goto(BASE + "#/home"); await ready(page);
+  check("the Compass never offers a members' chapter to a free visitor", !/Chapter 2 of 7/.test(await page.textContent("#earth .compass")));
+  await page.goto(BASE + "#/learn"); await ready(page);
+  await page.getByRole("button", { name: /Chapter 2: Separate facts from assumptions/ }).click();
+  await page.waitForSelector(".plus-card");
+  const gateText = await page.textContent("#x-body");
+  check("a members' chapter shows what's inside, and says plainly membership isn't open yet", /Dawnward Plus/.test(gateText) && /Separate what you know from what you're guessing/.test(gateText) && /Membership isn't open yet/.test(gateText) && /stay free, always/.test(gateText));
+  check("no fake checkout or price on the gate", !/€|\$|buy now|subscribe now|trial/i.test(gateText));
+  check("a free alternative is offered", (await page.getByRole("button", { name: /^Free now:/ }).count()) === 1);
+  await shot(page, "gate");
+  await axe(page, "gate");
+  await page.goto(BASE + "#/you"); await ready(page);
+  check("You › Plan says Free, and how membership will work", /Your plan[\s\S]*Free/.test(await page.textContent("#you")) && /reminder before any charge/.test(await page.textContent("#y-plan")));
+  await page.getByRole("button", { name: "Preview as a member" }).click();
+  check("member preview switches on, on this device only", /member preview on this device/.test(await page.textContent("#y-plan")));
+  await page.goto(BASE + "#/world/mind/expeditions"); await ready(page); await page.waitForTimeout(500);
+  check("as a member, Chapter 2 is open", !/Separate facts from assumptions[^\n]*Plus/.test(await page.textContent("#w-panel")) && /8 min/.test(await page.textContent("#w-panel")));
+
   // ---- Library and Progress show only real things ----
   await page.getByRole("tab", { name: "Library" }).click();
   check("Library lists the four real worksheets", (await page.locator("#w-panel .mission").count()) === 4);
@@ -112,6 +132,7 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   await page.goto(BASE + "#/universe"); await ready(page);
   await page.locator('#a-inner [data-id="ai"]').click();
   const panel = await page.textContent("#a-panel");
+  check("AI Creation is marked for members", /for members/.test(panel));
   check("AI Creation is labelled a preview with its planned purpose", /Preview · not open yet/.test(panel) && /AI Creation/.test(panel) && /creation studio/.test(panel) && !(await page.locator("#a-panel .primary").count()));
   check("no page errors", errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
