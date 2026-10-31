@@ -1,0 +1,366 @@
+{
+  "when": "2026-10-31T12:32:02.419Z",
+  "url": "http://localhost:8771/home.html",
+  "checks": [
+    {
+      "name": "phone: entrance shows on a first visit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: entrance skipped and remembered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: sample is labelled",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: four world buttons",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: planet labels on screen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: nothing overlaps",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: focus lands on the world title",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone mind",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: a move can be interrupted and Escape returns home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: capture is quiet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: text box focused",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: empty save is refused with a message",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone capture",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: saving adds exactly one star",
+      "ok": true,
+      "detail": "12 -> 13"
+    },
+    {
+      "name": "phone: the new star is shown with the exact words",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: it says nothing was sent",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: suggestion labelled as sample logic",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: review separates what you said from what I think",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone review",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: accepting draws one new line",
+      "ok": true,
+      "detail": "7 -> 8"
+    },
+    {
+      "name": "phone: evidence count updates",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: setting aside asks first",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: themes still present after keeping",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: back home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: text view lists every world",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: text view includes the new evening",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone text",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: back to the galaxy from text view",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: no page errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: entrance shows on a first visit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: entrance skipped and remembered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: sample is labelled",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: four world buttons",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: planet labels on screen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: nothing overlaps",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: focus lands on the world title",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop mind",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: a move can be interrupted and Escape returns home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: capture is quiet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: text box focused",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: empty save is refused with a message",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop capture",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: saving adds exactly one star",
+      "ok": true,
+      "detail": "12 -> 13"
+    },
+    {
+      "name": "desktop: the new star is shown with the exact words",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: it says nothing was sent",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: suggestion labelled as sample logic",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: review separates what you said from what I think",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop review",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: accepting draws one new line",
+      "ok": true,
+      "detail": "7 -> 8"
+    },
+    {
+      "name": "desktop: evidence count updates",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: setting aside asks first",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: themes still present after keeping",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: back home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: text view lists every world",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: text view includes the new evening",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop text",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: back to the galaxy from text view",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: no page errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "token never goes to another origin",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "token removed from the address bar",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "falls back to the labelled sample",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: no entrance",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: arrival is immediate",
+      "ok": true,
+      "detail": "56 ms"
+    }
+  ],
+  "axe": {
+    "phone home": [],
+    "phone mind": [],
+    "phone capture": [],
+    "phone review": [],
+    "phone text": [],
+    "desktop home": [],
+    "desktop mind": [],
+    "desktop capture": [],
+    "desktop review": [],
+    "desktop text": []
+  },
+  "timings": {
+    "phone.ready_ms": 420,
+    "phone.mind_arrival_ms": 1029,
+    "phone.frames_swiftshader": {
+      "n": 73,
+      "median": 33.400000000001455,
+      "p95": 83.29999999999927,
+      "degraded": true
+    },
+    "desktop.ready_ms": 583,
+    "desktop.mind_arrival_ms": 1153,
+    "desktop.frames_swiftshader": {
+      "n": 10,
+      "median": 316.6999999999971,
+      "p95": 466.6999999999971,
+      "degraded": false
+    },
+    "reduced.soul_arrival_ms": 56
+  },
+  "summary": {
+    "total": 65,
+    "failed": 0
+  }
+}

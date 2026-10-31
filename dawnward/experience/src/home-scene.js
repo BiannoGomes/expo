@@ -1,100 +1,113 @@
-// Galaxy Home: the full-screen universe. Presentation only; the data and
-// every readable word live in HTML (home.js). Four worlds orbit a central
-// star; each memory star is a real evening (or labelled sample) placed in
-// its world's sector of the spiral; lines are beliefs two evenings share.
-// The camera moves on an arc that any new request interrupts.
+// Galaxy Home: the full-screen universe, laid out like the Galaxy Home board
+// (Mind above, Body and Soul either side, Future below, a spiral core of light
+// between them). Presentation only: every word a person reads is HTML in
+// home.js. The planets are Bianno's ChatGPT paintings (assets/img/worlds,
+// provenance in SOURCE.md), shown as camera-facing worlds lit from the core.
+// Memory stars are real evenings (or the labelled sample) placed near their
+// world; a line joins two evenings that support the same belief.
 import * as THREE from "three";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-import { STAR_VERT, STAR_FRAG, DUST_VERT, DUST_FRAG, LINK_VERT, LINK_FRAG, NEBULA_FRAG, rand } from "./galaxy-scene.js";
+import { STAR_VERT, STAR_FRAG, DUST_VERT, DUST_FRAG, LINK_VERT, LINK_FRAG, rand } from "./galaxy-scene.js";
 
+const R = 2.6; // distance of each world from the core
+// x, z in the disc. Each painting is lit from its upper left; worlds left of
+// the core are mirrored so their gold edge always faces the light.
 export const WORLDS = [
-  { key: "mind", angle: -2.35, base: "#0A1F5C", band: "#37D5E8", rim: "#5B8CFF", size: 0.42 },
-  { key: "body", angle: -0.8, base: "#05302C", band: "#4FE3B5", rim: "#37D5E8", size: 0.34 },
-  { key: "soul", angle: 2.45, base: "#1E0F44", band: "#9B5BFF", rim: "#B98BFF", size: 0.38 },
-  { key: "future", angle: 0.75, base: "#3A1F08", band: "#E6C07B", rim: "#F2D29A", size: 0.4 },
+  { key: "mind", x: 0, z: -R, size: 2.05, flip: false, disk: [0.499, 0.493, 0.41], rim: "#5B8CFF" },
+  { key: "body", x: -R * 0.98, z: -0.15 * R, size: 1.85, flip: true, disk: [0.498, 0.49, 0.43], rim: "#37D5E8" },
+  { key: "soul", x: R * 0.98, z: -0.15 * R, size: 1.85, flip: false, disk: [0.497, 0.49, 0.43], rim: "#9B5BFF" },
+  { key: "future", x: 0, z: R * 0.98, size: 2.75, flip: false, disk: [0.515, 0.473, 0.28], rim: "#E6C07B" },
 ];
-const ORBIT = 2.7;
-const TILT = 0.5;
+const TILT = 0.55;
 
-const PLANET_VERT = /* glsl */ `
-  varying vec3 vN; varying vec3 vP; varying vec3 vView;
+const asset = (p) => (window.DW_ASSETS ? window.DW_ASSETS(p) : `assets/${p}`);
+
+const SPRITE_VERT = /* glsl */ `
+  varying vec2 vUv;
+  void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+// The paintings sit on pure black. Their colour is treated as light already
+// multiplied by coverage; coverage comes from the planet's disc plus how bright
+// the glow is, so the halo blends into the sky and the night side stays solid.
+const WORLD_FRAG = /* glsl */ `
+  uniform sampler2D uMap; uniform vec3 uDisk; uniform float uFlip, uAlpha, uFocus, uTime, uReduced;
+  varying vec2 vUv;
   void main() {
-    vN = normalize(normalMatrix * normal); vP = position;
-    vec4 mv = modelViewMatrix * vec4(position, 1.0); vView = normalize(-mv.xyz);
-    gl_Position = projectionMatrix * mv;
+    vec2 uv = vUv; if (uFlip > 0.5) uv.x = 1.0 - uv.x;
+    vec4 t = texture2D(uMap, uv);
+    float d = distance(uv, vec2(uFlip > 0.5 ? 1.0 - uDisk.x : uDisk.x, uDisk.y));
+    float disk = smoothstep(uDisk.z, uDisk.z - 0.012, d);
+    float m = max(t.r, max(t.g, t.b));
+    float a = max(disk, clamp(m * 2.5, 0.0, 1.0));
+    float e = smoothstep(0.0, 0.06, min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y)));
+    // a slow breath of light across the atmosphere
+    float breath = uReduced > 0.5 ? 0.0 : 0.04 * sin(uTime * 0.6 + uv.y * 3.0);
+    vec3 col = t.rgb * (1.0 + breath + 0.12 * uFocus) * e;
+    gl_FragColor = vec4(col, a * e) * uAlpha;
+    #include <colorspace_fragment>
   }`;
-const PLANET_FRAG = /* glsl */ `
-  uniform vec3 uBase, uBand, uRim; uniform float uTime, uReduced, uFocus;
-  varying vec3 vN; varying vec3 vP; varying vec3 vView;
-  float h(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
-  float n3(vec3 p) { vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
-    return mix(mix(mix(h(i), h(i + vec3(1,0,0)), f.x), mix(h(i + vec3(0,1,0)), h(i + vec3(1,1,0)), f.x), f.y),
-               mix(mix(h(i + vec3(0,0,1)), h(i + vec3(1,0,1)), f.x), mix(h(i + vec3(0,1,1)), h(i + vec3(1,1,1)), f.x), f.y), f.z); }
-  float fbm(vec3 p) { float v = 0.0, a = 0.5; for (int i = 0; i < 5; i++) { v += a * n3(p); p *= 2.07; a *= 0.5; } return v; }
+const GLOW_FRAG = /* glsl */ `
+  uniform sampler2D uMap; uniform float uAlpha;
+  varying vec2 vUv;
   void main() {
-    vec3 p = normalize(vP);
-    float t = uReduced > 0.5 ? 0.0 : uTime * 0.04;
-    // swirling bands: domain-warped latitude, like a storm around the planet
-    float warp = fbm(p * 2.4 + vec3(t, 0.0, -t));
-    float lat = p.y * 3.2 + warp * 2.2 + sin(p.x * 3.0 + t * 2.0) * 0.25;
-    float band = smoothstep(0.55, 1.0, sin(lat * 2.2) * 0.5 + 0.5) * (0.35 + 0.65 * fbm(p * 6.0 - t));
-    float storm = smoothstep(0.62, 0.95, fbm(p * 3.5 + warp));
-    vec3 col = mix(uBase, uBand * 0.9, band * 0.85) + uBand * storm * 0.35;
-    // lit from the central star, with a night side
-    float light = clamp(dot(vN, normalize(vec3(-0.4, 0.3, 0.85))) * 0.6 + 0.45, 0.12, 1.0);
-    col *= light;
-    float fres = pow(1.0 - max(dot(vN, vView), 0.0), 2.6);
-    col += uRim * fres * (1.4 + uFocus * 0.8);
-    gl_FragColor = vec4(col, 1.0);
+    vec4 t = texture2D(uMap, vUv);
+    float e = smoothstep(0.0, 0.08, min(min(vUv.x, 1.0 - vUv.x), min(vUv.y, 1.0 - vUv.y)));
+    gl_FragColor = vec4(t.rgb * e * uAlpha, 0.0);
+    #include <colorspace_fragment>
   }`;
-const ATMOS_FRAG = /* glsl */ `
-  uniform vec3 uRim; uniform float uFocus;
-  varying vec3 vN; varying vec3 vP; varying vec3 vView;
+const BEAM_FRAG = /* glsl */ `
+  uniform float uTime, uReduced, uAlpha; varying vec2 vUv;
   void main() {
-    float f = pow(1.0 - abs(dot(vN, vView)), 3.0);
-    gl_FragColor = vec4(uRim * f * (1.1 + uFocus), f * 0.9);
+    float across = exp(-pow((vUv.x - 0.5) * 9.0, 2.0));
+    float along = smoothstep(0.0, 0.25, vUv.y) * smoothstep(1.0, 0.75, vUv.y);
+    float pulse = uReduced > 0.5 ? 0.0 : 0.35 * pow(0.5 + 0.5 * sin(vUv.y * 18.0 - uTime * 1.6), 6.0);
+    vec3 gold = vec3(1.0, 0.78, 0.45);
+    gl_FragColor = vec4(gold * across * along * (0.55 + pulse) * uAlpha, 0.0);
   }`;
 
-function glowTexture(stops) {
-  const c = document.createElement("canvas");
-  c.width = c.height = 256;
-  const g = c.getContext("2d");
-  const grad = g.createRadialGradient(128, 128, 0, 128, 128, 128);
-  for (const [o, col] of stops) grad.addColorStop(o, col);
-  g.fillStyle = grad;
-  g.fillRect(0, 0, 256, 256);
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
+// Additive light on a transparent canvas: colour adds, coverage stays as it was,
+// so the painted sky behind shows through everywhere the light is dim.
+const addLight = { transparent: true, depthWrite: false, blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor };
 
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 export function buildHome({ stage, reduced, hash }) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.setClearColor(0x000000, 0);
+  renderer.toneMapping = THREE.NoToneMapping; // the paintings keep their own colour
   renderer.xr.enabled = true;
   stage.appendChild(renderer.domElement);
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#05070D");
-  const camera = new THREE.PerspectiveCamera(48, 1, 0.05, 140);
+  const scene = new THREE.Scene(); // transparent: the painted sky is the page behind it
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 140);
+  const loader = new THREE.TextureLoader();
+  const tex = (p) => { const t = loader.load(asset(p)); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
 
   const uniforms = {
     uTime: { value: 0 }, uIntro: { value: 0 }, uPixel: { value: renderer.getPixelRatio() },
     uReduced: { value: reduced ? 1 : 0 }, uScale: { value: 300 },
   };
 
-  // ---- sky ----
-  scene.add(new THREE.Mesh(new THREE.SphereGeometry(70, 48, 24), new THREE.ShaderMaterial({
-    side: THREE.BackSide, depthWrite: false, uniforms,
-    vertexShader: "varying vec3 vDir; void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
-    fragmentShader: NEBULA_FRAG.replace("col *= 0.06 + 0.7", "col = mix(col, vec3(0.04,0.08,0.2), 0.35); col *= 0.06 + 0.7"),
-  })));
-  const pointsMat = (scale, alpha = "0.38") => new THREE.ShaderMaterial({
+  // The disc: tilted towards the viewer. The spin group turns slowly; worlds stay put.
+  const sys = new THREE.Group();
+  sys.rotation.x = TILT;
+  scene.add(sys);
+  const spin = new THREE.Group();
+  sys.add(spin);
+
+  // ---- the core: Bianno's spiral, lying in the disc ----
+  const coreMat = new THREE.ShaderMaterial({
+    uniforms: { uMap: { value: tex("img/worlds/galaxy-core-1024.webp") }, uAlpha: { value: 1 } },
+    vertexShader: SPRITE_VERT, fragmentShader: GLOW_FRAG, ...addLight,
+  });
+  const core = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 4.4), coreMat);
+  core.rotation.x = -Math.PI / 2;
+  spin.add(core);
+
+  // ---- dust that sparkles over the painting ----
+  const pointsMat = (scale, alpha) => new THREE.ShaderMaterial({
     uniforms, vertexShader: DUST_VERT.replace("60.0", scale), fragmentShader: DUST_FRAG.replace("0.38", alpha),
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
   });
@@ -116,87 +129,74 @@ export function buildHome({ stage, reduced, hash }) {
     g.setAttribute("aPhase", new THREE.BufferAttribute(ph, 1));
     return new THREE.Points(g, pointsMat(scale, alpha));
   };
-  scene.add(cloud(2400, 3, (r) => {
-    const u = r(), v = r(), R = 45 + 20 * r(), th = 2 * Math.PI * u, ph = Math.acos(2 * v - 1);
-    return [R * Math.sin(ph) * Math.cos(th), R * Math.cos(ph), R * Math.sin(ph) * Math.sin(th), r() < 0.6 ? 3 : 2];
-  }, "70.0", "0.6"));
-
-  // ---- the system: tilted disc holding the spiral, worlds and memories ----
-  const sys = new THREE.Group();
-  sys.rotation.x = TILT;
-  scene.add(sys);
-  const spin = new THREE.Group();
-  sys.add(spin);
-  const dustN = Math.min(12000, Math.round(7000 * Math.min(devicePixelRatio, 2)));
+  const dustN = Math.min(6000, Math.round(3500 * Math.min(devicePixelRatio, 2)));
   const dust = cloud(dustN, 11, (r) => {
-    const t = Math.pow(r(), 1.3), arm = r() < 0.5 ? 0 : Math.PI;
+    const t = Math.pow(r(), 1.2), arm = r() < 0.5 ? 0 : Math.PI;
     const g = () => (r() + r() + r() - 1.5) / 1.5;
-    const spread = r() < 0.1 ? 1.6 : 0.3 + 0.45 * (1 - t);
-    const R = 0.25 + 3.6 * t, th = t * Math.PI * 2.2 + arm + g() * spread;
-    return [R * Math.cos(th), g() * 0.12 * (1 - 0.6 * t), R * Math.sin(th), t < 0.35 ? 0 : r() < 0.55 ? 3 : r() < 0.6 ? 1 : 2];
-  }, "14.0", "0.36");
+    const Rr = 0.3 + 3.9 * t, th = t * Math.PI * 2.4 + arm + g() * (0.35 + 0.5 * (1 - t));
+    return [Rr * Math.cos(th), g() * 0.1, Rr * Math.sin(th), t < 0.3 ? 0 : r() < 0.5 ? 3 : r() < 0.5 ? 1 : 4];
+  }, "12.0", "0.5");
   spin.add(dust);
 
-  // central star: the voice of the universe
-  const coreGlow = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: glowTexture([[0, "rgba(255,240,205,1)"], [0.12, "rgba(255,214,150,0.85)"], [0.35, "rgba(230,192,123,0.25)"], [1, "rgba(0,0,0,0)"]]),
-    blending: THREE.AdditiveBlending, depthWrite: false, transparent: true,
-  }));
-  coreGlow.scale.set(1.5, 1.5, 1);
-  sys.add(coreGlow);
+  // ---- the beam joining Mind, the core and Future, and the orbit through all four ----
+  const beamMat = new THREE.ShaderMaterial({ uniforms: { uTime: uniforms.uTime, uReduced: uniforms.uReduced, uAlpha: { value: 1 } }, vertexShader: SPRITE_VERT, fragmentShader: BEAM_FRAG, ...addLight, side: THREE.DoubleSide });
+  const beam = new THREE.Mesh(new THREE.PlaneGeometry(0.16, R * 2), beamMat);
+  beam.rotation.x = -Math.PI / 2;
+  sys.add(beam);
+  const orbitMat = new THREE.MeshBasicMaterial({ color: new THREE.Color("#E6C07B"), transparent: true, opacity: 0.28, blending: THREE.AdditiveBlending, depthWrite: false });
+  const orbit = new THREE.Mesh(new THREE.TorusGeometry(R * 0.99, 0.006, 6, 360), orbitMat);
+  orbit.rotation.x = Math.PI / 2;
+  sys.add(orbit);
 
-  // ---- four worlds ----
+  // ---- the worlds and their moons ----
+  sys.updateMatrixWorld(true);
   const planets = new Map();
-  for (const w of WORLDS) {
-    const pivot = new THREE.Group();
-    sys.add(pivot);
-    const u = { uBase: { value: new THREE.Color(w.base) }, uBand: { value: new THREE.Color(w.band) }, uRim: { value: new THREE.Color(w.rim) }, uTime: uniforms.uTime, uReduced: uniforms.uReduced, uFocus: { value: 0 } };
-    const mesh = new THREE.Mesh(new THREE.SphereGeometry(w.size, 64, 48), new THREE.ShaderMaterial({ uniforms: u, vertexShader: PLANET_VERT, fragmentShader: PLANET_FRAG }));
-    const atmos = new THREE.Mesh(new THREE.SphereGeometry(w.size * 1.16, 48, 32), new THREE.ShaderMaterial({
-      uniforms: u, vertexShader: PLANET_VERT, fragmentShader: ATMOS_FRAG, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.BackSide,
-    }));
-    const orbit = new THREE.Mesh(new THREE.TorusGeometry(ORBIT, 0.0035, 6, 256), new THREE.MeshBasicMaterial({ color: new THREE.Color(w.rim), transparent: true, opacity: 0.0 }));
-    orbit.rotation.x = Math.PI / 2;
-    const holder = new THREE.Group();
-    holder.position.set(ORBIT * Math.cos(w.angle), 0.1, ORBIT * Math.sin(w.angle));
-    holder.add(mesh, atmos);
-    pivot.add(holder);
-    planets.set(w.key, { w, holder, mesh, u, angle: w.angle });
-  }
-  // one faint orbit ring for all four
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(ORBIT, 0.004, 6, 300), new THREE.MeshBasicMaterial({ color: new THREE.Color("#5B8CFF"), transparent: true, opacity: 0.22 }));
-  ring.rotation.x = Math.PI / 2;
-  sys.add(ring);
+  const moons = [];
+  const worldMat = (map, disk, flip) => new THREE.ShaderMaterial({
+    uniforms: { uMap: { value: map }, uDisk: { value: new THREE.Vector3(...disk) }, uFlip: { value: flip ? 1 : 0 }, uAlpha: { value: 1 }, uFocus: { value: 0 }, uTime: uniforms.uTime, uReduced: uniforms.uReduced },
+    vertexShader: SPRITE_VERT, fragmentShader: WORLD_FRAG, transparent: true, depthWrite: false,
+    blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor,
+  });
+  WORLDS.forEach((w, i) => {
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w.size, w.size), worldMat(tex(`img/worlds/planet-${w.key}-640.webp`), w.disk, w.flip));
+    const home = sys.localToWorld(new THREE.Vector3(w.x, 0.05, w.z));
+    mesh.position.copy(home);
+    mesh.renderOrder = 10;
+    scene.add(mesh);
+    planets.set(w.key, { w, mesh, home, phase: i * 1.7 });
+    const moonSize = 0.22 + 0.06 * (i % 3);
+    const moon = new THREE.Mesh(new THREE.PlaneGeometry(moonSize, moonSize), worldMat(tex(`img/worlds/moon-${i + 1}.webp`), [0.5, 0.5, 0.44], w.flip));
+    moon.renderOrder = 11;
+    scene.add(moon);
+    moons.push({ moon, of: w.key, r: w.size * w.disk[2] * 1.35, speed: 0.12 + 0.05 * i, phase: i * 2.1 });
+  });
 
   // ---- memories ----
-  let stars = null, links = [], starData = [], pos = new Map();
+  let stars = null, links = [], starData = [];
   const starGroup = new THREE.Group();
   sys.add(starGroup);
-  function placeMemory(s, i, n) {
+  function placeMemory(s) {
     const w = WORLDS.find((x) => x.key === s.world) ?? WORLDS[0];
-    const t = n > 1 ? i / (n - 1) : 0.5;
-    const R = 1.0 + 1.45 * hash(s.id, 4) + 0.25 * t;
-    const th = w.angle + (hash(s.id, 5) - 0.5) * 1.15;
-    return new THREE.Vector3(R * Math.cos(th), (hash(s.id, 9) - 0.5) * 0.3, R * Math.sin(th));
+    const ang = Math.atan2(w.z, w.x) + (hash(s.id, 5) - 0.5) * 1.1;
+    const rr = 1.05 + 1.15 * hash(s.id, 4);
+    return new THREE.Vector3(rr * Math.cos(ang), 0.06 + (hash(s.id, 9) - 0.5) * 0.18, rr * Math.sin(ang));
   }
   function setMemories(galaxy, bornId) {
     if (stars) { starGroup.remove(stars); stars.geometry.dispose(); }
     for (const l of links) { starGroup.remove(l.tube); l.tube.geometry.dispose(); }
     starData = galaxy.stars;
     const n = starData.length;
-    pos = new Map(starData.map((s, i) => [s.id, placeMemory(s, i, n)]));
+    const pos = new Map(starData.map((s) => [s.id, placeMemory(s)]));
     const sp = new Float32Array(n * 3), sc = new Float32Array(n * 3), ss = new Float32Array(n), sph = new Float32Array(n), sb = new Float32Array(n);
-    const lit = new Float32Array(n), sel = new Float32Array(n);
-    const ink = new THREE.Color("#F1EEE6"), cyan = new THREE.Color("#9BE8F2");
+    const ink = new THREE.Color("#F6F1E4"), cyan = new THREE.Color("#9BE8F2");
     starData.forEach((s, i) => {
       const p = pos.get(s.id);
       sp.set([p.x, p.y, p.z], i * 3);
       const c = s.themeIds.length ? ink : cyan;
       sc.set([c.r, c.g, c.b], i * 3);
-      ss[i] = s.themeIds.length ? 0.95 : 0.72;
+      ss[i] = s.themeIds.length ? 0.85 : 0.65;
       sph[i] = hash(s.id, 13);
-      // a newly saved memory is born now; the rest were born during the entrance
-      sb[i] = s.id === bornId ? uniforms.uIntro.value + 0.15 : 0.9 + (2.2 * i) / Math.max(n, 1);
+      sb[i] = s.id === bornId ? uniforms.uIntro.value + 0.2 : 0.9 + (2.2 * i) / Math.max(n, 1);
     });
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(sp, 3));
@@ -204,97 +204,100 @@ export function buildHome({ stage, reduced, hash }) {
     g.setAttribute("aSize", new THREE.BufferAttribute(ss, 1));
     g.setAttribute("aPhase", new THREE.BufferAttribute(sph, 1));
     g.setAttribute("aBirth", new THREE.BufferAttribute(sb, 1));
-    g.setAttribute("aLit", new THREE.BufferAttribute(lit, 1));
-    g.setAttribute("aSel", new THREE.BufferAttribute(sel, 1));
+    g.setAttribute("aLit", new THREE.BufferAttribute(new Float32Array(n), 1));
+    g.setAttribute("aSel", new THREE.BufferAttribute(new Float32Array(n), 1));
     stars = new THREE.Points(g, new THREE.ShaderMaterial({ uniforms, vertexShader: STAR_VERT, fragmentShader: STAR_FRAG, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+    stars.renderOrder = 5;
     starGroup.add(stars);
     links = galaxy.links.map((l, k) => {
       const a = pos.get(l.from), b = pos.get(l.to);
       if (!a || !b) return null;
       const mid = a.clone().add(b).multiplyScalar(0.5);
-      mid.y += 0.1 + 0.08 * a.distanceTo(b);
+      mid.y += 0.12 + 0.08 * a.distanceTo(b);
       const mat = new THREE.ShaderMaterial({
         uniforms: { uTime: uniforms.uTime, uIntro: uniforms.uIntro, uReduced: uniforms.uReduced, uLit: { value: 0 }, uOffset: { value: (k * 0.37) % 1 }, uBorn: { value: 1.6 } },
         vertexShader: LINK_VERT, fragmentShader: LINK_FRAG, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
       });
-      const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(a, mid, b), 40, 0.0075, 6, false), mat);
+      const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(a, mid, b), 40, 0.007, 6, false), mat);
       starGroup.add(tube);
       return { link: l, mat, tube };
     }).filter(Boolean);
   }
 
-  // ---- camera: home pose, world poses, an interruptible arc between ----
-  const target = new THREE.Vector3(0, 0, 0);
+  // ---- camera: a home pose per screen shape, a close pose per world, and an
+  // eased arc between them that any new request interrupts ----
   const look = new THREE.Vector3();
-  let from = null, to = null, tStart = 0, dur = 1;
-  let focusKey = null;
+  let from = null, to = null, tStart = 0, dur = 1, onSettle = null;
+  let focusKey = null, off = { x: 0, y: 0 }, size = { w: 1, h: 1 }, fit = 1;
   function homePose() {
-    const k = camera.aspect < 1.1 ? Math.pow(1.1 / camera.aspect, 0.85) : 1;
-    return { pos: new THREE.Vector3(0, 3.3 * k, 6.4 * k), look: new THREE.Vector3(0, -0.15, 0) };
+    const a = camera.aspect;
+    if (a < 0.8) {
+      // portrait: look down steeply so Mind sits high and Future low, as on the board
+      const k = Math.max(1, 0.62 / a) * fit;
+      return { pos: new THREE.Vector3(0, 9.6 * k, 4.4 * k), look: new THREE.Vector3(0, -0.2, 0.55) };
+    }
+    const k = (a < 1.25 ? 1.25 / a : 1) * fit;
+    return { pos: new THREE.Vector3(0, 5.2 * k, 7.6 * k), look: new THREE.Vector3(0, -0.35, 0.2) };
   }
   function worldPose(key) {
     const p = planets.get(key);
-    const wp = p.holder.getWorldPosition(new THREE.Vector3());
-    const out = wp.clone().setY(0).normalize();
-    const k = camera.aspect < 1.1 ? Math.pow(1.1 / camera.aspect, 0.6) : 1;
-    // stand off the planet, slightly outside its orbit, looking back toward it
-    const pos = wp.clone().add(out.multiplyScalar(1.15 * k)).add(new THREE.Vector3(0, 0.55 * k, 0)).add(new THREE.Vector3(0, 0, 0.9 * k));
-    // in portrait the panel sits low, so look a little below the planet
-    return { pos, look: wp.clone().add(new THREE.Vector3(0, camera.aspect < 1 ? -0.35 : 0, 0)) };
+    const h = homePose();
+    const dir = h.pos.clone().sub(p.home).normalize();
+    const dist = (p.w.size * p.w.disk[2] * 2.2) / Math.tan((camera.fov * Math.PI) / 360) / Math.min(1, camera.aspect);
+    return { pos: p.home.clone().add(dir.multiplyScalar(dist)), look: p.home.clone() };
   }
-  let current = null;
   function go(pose, ms) {
-    const now = uniforms.uTime.value;
     if (reduced || ms === 0) {
-      current = pose; from = to = null;
+      from = to = null;
       camera.position.copy(pose.pos); look.copy(pose.look); camera.lookAt(look);
       return;
     }
     from = { pos: camera.position.clone(), look: look.clone() };
-    to = pose; tStart = now; dur = ms / 1000;
+    to = pose; tStart = performance.now() / 1000; dur = ms / 1000;
   }
   function stepCamera() {
     if (!to) return;
-    const t = Math.min(1, (uniforms.uTime.value - tStart) / dur), e = ease(t);
-    // an arc: lerp, lifted at the middle of the move
+    // real time, so a slow frame never stretches a move: it lands when promised
+    const t = Math.min(1, (performance.now() / 1000 - tStart) / dur), e = ease(t);
     camera.position.lerpVectors(from.pos, to.pos, e);
-    camera.position.y += Math.sin(Math.PI * e) * 0.6;
+    camera.position.y += Math.sin(Math.PI * e) * 0.35;
     look.lerpVectors(from.look, to.look, e);
     camera.lookAt(look);
-    if (t >= 1) { current = to; to = null; onSettle?.(); onSettle = null; }
+    if (t >= 1) { to = null; const f = onSettle; onSettle = null; f?.(); }
   }
-  let onSettle = null;
-  let shift = 0, size = { w: 1, h: 1 };
 
-  // ---- glow ----
-  const composer = new EffectComposer(renderer);
+  // ---- glow: only the brightest light blooms ----
+  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, format: THREE.RGBAFormat }));
   composer.addPass(new RenderPass(scene, camera));
-  composer.addPass(new UnrealBloomPass(new THREE.Vector2(512, 512), 0.8, 0.55, 0.5));
+  const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.55, 0.45, 0.86);
+  composer.addPass(bloom);
   composer.addPass(new OutputPass());
   let bloomOn = true;
 
   const ray = new THREE.Raycaster();
   ray.params.Points.threshold = 0.12;
-  const v = new THREE.Vector3();
+  const v = new THREE.Vector3(), up = new THREE.Vector3();
 
-  return {
+  const api = {
     renderer,
     get bloomOn() { return bloomOn; },
     setMemories,
-    /** Screen position (CSS px) of a world, for its HTML label. */
+    /** Screen position (CSS px) and on-screen radius of a world, for its HTML label. */
     project(key, w, h) {
       const p = planets.get(key);
-      p.holder.getWorldPosition(v);
-      const r = p.w.size;
-      const top = v.clone().add(new THREE.Vector3(0, r, 0)).project(camera);
-      v.project(camera);
+      up.set(0, 1, 0).applyQuaternion(camera.quaternion).multiplyScalar(p.w.size * p.w.disk[2]);
+      const c = p.mesh.position.clone();
+      const top = c.clone().add(up).project(camera);
+      v.copy(c).project(camera);
       return { x: (v.x * 0.5 + 0.5) * w, y: (-v.y * 0.5 + 0.5) * h, r: Math.abs((top.y - v.y) * 0.5 * h), visible: v.z < 1 };
     },
-    pickStar(ndc) {
-      if (!stars) return null;
+    pickWorld(ndc) {
       ray.setFromCamera(ndc, camera);
-      const hit = ray.intersectObject(stars)[0];
-      return hit ? starData[hit.index]?.id ?? null : null;
+      for (const [k, p] of planets) {
+        const d = ray.ray.distanceToPoint(p.mesh.position);
+        if (d < p.w.size * p.w.disk[2]) return k;
+      }
+      return null;
     },
     setSelection({ litIds, selId, litThemes }) {
       if (!stars) return;
@@ -303,23 +306,29 @@ export function buildHome({ stage, reduced, hash }) {
       lit.needsUpdate = sel.needsUpdate = true;
       for (const l of links) l.mat.uniforms.uLit.value = litThemes.has(l.link.themeId) ? 1 : 0;
     },
+    /** Fly to a world (or home with null). onDone runs when the move lands. */
     focusWorld(key, onDone) {
       focusKey = key;
-      for (const [k, p] of planets) p.u.uFocus.value = k === key ? 1 : 0;
+      for (const [k, p] of planets) p.mesh.material.uniforms.uFocus.value = k === key ? 1 : 0;
       onSettle = onDone ?? null;
-      go(key ? worldPose(key) : homePose(), key ? 950 : 1000);
-      if (reduced) { onSettle?.(); onSettle = null; }
+      go(key ? worldPose(key) : homePose(), key ? 950 : 900);
+      if (reduced) { const f = onSettle; onSettle = null; f?.(); }
     },
     get focus() { return focusKey; },
     skipIntro() { uniforms.uIntro.value = Math.max(uniforms.uIntro.value, 6); },
-    /** Slide the whole view sideways (CSS px) so a side panel never hides the worlds. */
-    setShift(px) { shift = px; this.resize(size.w, size.h); },
+    /** Fit the four worlds into the free part of the screen (CSS px), so no panel covers one. */
+    setFrame({ left, right, top, bottom }, scale = 1) {
+      const W = size.w, H = size.h;
+      off = { x: Math.round(W / 2 - (left + right) / 2), y: Math.round(H / 2 - (top + bottom) / 2) };
+      fit = Math.max(1, Math.max(H / Math.max(80, bottom - top), W / Math.max(80, right - left)) * scale);
+      api.resize(W, H);
+    },
     resize(w, h) {
       size = { w, h };
       renderer.setSize(w, h, false);
       composer.setSize(w, h);
       camera.aspect = w / Math.max(h, 1);
-      if (shift) camera.setViewOffset(w, h, shift, 0, w, h); else camera.clearViewOffset();
+      if (off.x || off.y) camera.setViewOffset(w, h, off.x, off.y, w, h); else camera.clearViewOffset();
       camera.updateProjectionMatrix();
       uniforms.uPixel.value = renderer.getPixelRatio();
       go(focusKey ? worldPose(focusKey) : homePose(), 0);
@@ -330,24 +339,36 @@ export function buildHome({ stage, reduced, hash }) {
       uniforms.uPixel.value = 1;
       dust.geometry.setDrawRange(0, Math.round(dustN * 0.5));
     },
-    entranceScale() {
-      // a point of light that opens into the galaxy
-      if (reduced) return 1;
-      const t = uniforms.uIntro.value;
-      return Math.min(1, ease(Math.min(1, t / 2.4)) * 1.0 + 0.0);
-    },
     frame(dt) {
       uniforms.uTime.value += dt;
       uniforms.uIntro.value += dt;
-      const s = Math.max(0.001, this.entranceScale());
+      const t = uniforms.uTime.value;
+      // the entrance: a point of light opens into the galaxy
+      const s = reduced ? 1 : Math.max(0.001, ease(Math.min(1, uniforms.uIntro.value / 2.4)));
       sys.scale.setScalar(s);
-      coreGlow.material.opacity = 0.35 + 0.65 * s;
-      if (!reduced && !renderer.xr.isPresenting) spin.rotation.y += dt * 0.03;
-      for (const p of planets.values()) if (!reduced) p.mesh.rotation.y += dt * 0.12;
+      if (!reduced && !renderer.xr.isPresenting) spin.rotation.y += dt * 0.025;
+      for (const p of planets.values()) {
+        const bob = reduced ? 0 : Math.sin(t * 0.5 + p.phase) * 0.04;
+        p.mesh.position.copy(p.home).multiplyScalar(s).add(new THREE.Vector3(0, bob, 0));
+        p.mesh.scale.setScalar(s);
+        p.mesh.quaternion.copy(camera.quaternion);
+        p.mesh.material.uniforms.uAlpha.value = Math.min(1, Math.max(0, (uniforms.uIntro.value - 1.0) / 1.2));
+      }
+      for (const m of moons) {
+        const p = planets.get(m.of);
+        const a = m.phase + (reduced ? 0 : t * m.speed);
+        up.set(Math.cos(a) * m.r, Math.sin(a) * m.r * 0.35, 0).applyQuaternion(camera.quaternion);
+        m.moon.position.copy(p.mesh.position).add(up);
+        m.moon.quaternion.copy(camera.quaternion);
+        m.moon.scale.setScalar(s);
+        // behind the planet for half its orbit
+        m.moon.renderOrder = Math.sin(a) > 0 ? 9 : 11;
+        m.moon.material.uniforms.uAlpha.value = p.mesh.material.uniforms.uAlpha.value;
+      }
       stepCamera();
       if (renderer.xr.isPresenting || !bloomOn) renderer.render(scene, camera);
       else composer.render(dt);
     },
-    worldOfStar(id) { return starData.find((s) => s.id === id)?.world ?? null; },
   };
+  return api;
 }
