@@ -187,6 +187,7 @@ export function registerAccountRoutes(app: FastifyInstance) {
     const experiments = await query("select * from experiments where user_id = $1 order by created_at", [userId]);
     const progressEvents = await query("select kind, ref, created_at from progress_events where user_id = $1 order by created_at", [userId]);
     const discoveries = await query("select key, cause_kind, cause_ref, discovered_at from discoveries where user_id = $1 order by discovered_at", [userId]);
+    const following = await query("select system_id, started_at from enrollments where user_id = $1 order by started_at", [userId]);
     return {
       exportedAt: new Date().toISOString(),
       format: "dawnward-export-v1",
@@ -206,6 +207,7 @@ export function registerAccountRoutes(app: FastifyInstance) {
       experiments,
       progressEvents,
       discoveries,
+      following,
     };
   });
 

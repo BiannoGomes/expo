@@ -261,6 +261,9 @@ export function buildHome({ stage, reduced, hash }) {
     if (reduced || ms === 0) {
       from = to = null;
       camera.position.copy(pose.pos); look.copy(pose.look); camera.lookAt(look);
+      // A snap lands any move in flight: its arrival must still happen, or a
+      // resize during a flight would leave a world without its close-up.
+      const f = onSettle; onSettle = null; f?.();
       return;
     }
     from = { pos: camera.position.clone(), look: look.clone() };

@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T14:55:13.888Z",
+  "when": "2026-10-31T15:55:51.724Z",
   "checks": [
     {
       "name": "phone: the Compass starts with Beyond Overthinking, Chapter 1 of 7",
@@ -127,12 +127,92 @@
       "detail": ""
     },
     {
+      "name": "phone: following is confirmed in plain words",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the Compass offers Chapter 3 of 7, as the expedition you follow",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: and says why: you chose to follow it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch3: lesson",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch3: a one-minute pause, waiting for you to start",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch3: the first cue appears",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch3: the pause stops at once, kindly",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch3: every step can be read instead",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone pause",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch3: the choice says what tends to happen, never right or wrong",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch3: the pocket card is offered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch3: no second follow offer once following",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch3: the card lists the five steps",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "phone: Learn lists Beyond Overthinking as 7 chapters",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "phone: chapters 3 to 7 are marked Planned and can't be opened",
+      "name": "phone: chapters 4 to 7 are marked Planned and can't be opened",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Learn shows you're following, as a pressed toggle",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: stopping is one tap",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: stopping keeps every chapter done",
       "ok": true,
       "detail": ""
     },
@@ -272,12 +352,92 @@
       "detail": ""
     },
     {
+      "name": "small: following is confirmed in plain words",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: the Compass offers Chapter 3 of 7, as the expedition you follow",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: and says why: you chose to follow it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch3: lesson",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch3: a one-minute pause, waiting for you to start",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch3: the first cue appears",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch3: the pause stops at once, kindly",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch3: every step can be read instead",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: small pause",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch3: the choice says what tends to happen, never right or wrong",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch3: the pocket card is offered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch3: no second follow offer once following",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch3: the card lists the five steps",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "small: Learn lists Beyond Overthinking as 7 chapters",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "small: chapters 3 to 7 are marked Planned and can't be opened",
+      "name": "small: chapters 4 to 7 are marked Planned and can't be opened",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: Learn shows you're following, as a pressed toggle",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: stopping is one tap",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: stopping keeps every chapter done",
       "ok": true,
       "detail": ""
     },
@@ -296,14 +456,16 @@
     "phone worksheet": [],
     "phone lesson": [],
     "phone sort": [],
+    "phone pause": [],
     "phone learn": [],
     "small worksheet": [],
     "small lesson": [],
     "small sort": [],
+    "small pause": [],
     "small learn": []
   },
   "summary": {
-    "total": 58,
+    "total": 90,
     "failed": 0
   }
 }

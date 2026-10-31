@@ -34,8 +34,8 @@ function play(mission = bridge1): Attempt {
 describe("expedition catalog", () => {
   it("is sound: every mission has a completion state, valid options and a close step", () => {
     assert.deepEqual(checkCatalog(), []);
-    assert.equal(MISSIONS.length, 6);
-    assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-beyond-overthinking", 2], ["mind-thought-patterns", 1], ["soul-communication", 3]]);
+    assert.equal(MISSIONS.length, 7);
+    assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-beyond-overthinking", 3], ["mind-thought-patterns", 1], ["soul-communication", 3]]);
   });
   it("contains no scoring or forbidden words", () => {
     const text = JSON.stringify(MISSIONS).toLowerCase();
@@ -137,6 +137,19 @@ describe("Beyond Overthinking: lesson and sort steps (drafts)", () => {
   });
   it("a sort that differs from the suggested reading is still accepted: nothing is scored", () => {
     assert.equal(validateAnswer(sort1, { sorted: all(sort1, "round") }), null);
+  });
+  it("chapter 3's pause lasts a minute, is optional, and is only acknowledged, never measured", () => {
+    const c3 = missionById("overthinking-3")!;
+    const pause = c3.steps.find((x) => x.type === "pause")!;
+    assert.equal(pause.cues!.reduce((a, c) => a + c.seconds, 0), 60);
+    assert.equal(pause.required, false);
+    assert.equal(validateAnswer(pause, { ack: true }), null);
+    assert.equal(validateAnswer(pause, { skip: true }), null);
+    assert.match(validateAnswer(pause, { text: "calm" })!, /Nothing to answer/);
+  });
+  it("the expedition lists 7 chapters: 3 written, 4 planned", () => {
+    const sys = SYSTEMS.find((x) => x.id === "mind-beyond-overthinking")!;
+    assert.equal(sys.missionIds.length + sys.planned!.length, 7);
   });
   it("a lesson is acknowledged like an intro", () => {
     const lesson = c1.steps.find((x) => x.type === "lesson")!;

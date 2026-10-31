@@ -2,7 +2,7 @@
 // The server validates it at startup; the web preview bundles the same file.
 
 export type WorldId = "mind" | "body" | "soul" | "spirit" | "future";
-export type StepType = "intro" | "lesson" | "choice" | "lens" | "sort" | "rehearse" | "plan" | "reflect" | "close";
+export type StepType = "intro" | "lesson" | "pause" | "choice" | "lens" | "sort" | "rehearse" | "plan" | "reflect" | "close";
 
 export interface ChoiceOption {
   id: string;
@@ -35,7 +35,8 @@ export interface SortItem {
 export interface Worksheet {
   title: string;
   intro: string;
-  sections: { heading: string; lines?: number; columns?: string[]; rows?: number }[];
+  /** A section prints blank lines, a table, or a short list of steps to keep. */
+  sections: { heading: string; lines?: number; columns?: string[]; rows?: number; items?: string[] }[];
 }
 
 export interface Step {
@@ -49,6 +50,8 @@ export interface Step {
   /** A lesson: short paragraphs, read or listened to. */
   paragraphs?: string[];
   bins?: SortBin[];
+  /** A guided pause: cues shown one after another, each for its seconds. Never measured. */
+  cues?: { text: string; seconds: number }[];
   items?: SortItem[];
   /** Shown once every lens is rated or every item sorted. */
   feedback?: string;
@@ -282,7 +285,106 @@ export const MISSIONS: Mission[] = [
         id: "close",
         type: "close",
         title: "Return to Earth",
-        body: "You've separated what you know from what you're guessing. Chapter 3, Practise a pause, is still being written. Your worksheet, Facts and Assumptions, stays in this chapter whenever you want it.",
+        body: "You've separated what you know from what you're guessing. Next: Chapter 3, Practise a pause. Your worksheet, Facts and Assumptions, stays in this chapter whenever you want it.",
+        required: false,
+      },
+    ],
+  },
+  {
+    id: "overthinking-3",
+    version: 1,
+    systemId: "mind-beyond-overthinking",
+    world: "mind",
+    title: "Beyond Overthinking",
+    part: "Chapter 3: Practise a pause",
+    chapter: 3,
+    status: "draft",
+    objective: "Put a little space between a racing thought and what you do next.",
+    minutes: 7,
+    safetyNote: MIND_SAFETY,
+    worksheet: {
+      title: "The One-Minute Pause",
+      intro: "A pocket card for when the loop speeds up. Keep it somewhere you'll see it.",
+      sections: [
+        { heading: "The pause, step by step", items: [
+          "Notice the thought, and name it: \"loop\".",
+          "Breathe out slowly, a little longer than you breathe in. Three times.",
+          "Look: find three things you can see.",
+          "Listen: find two things you can hear.",
+          "Return: is there one next step, or a time to come back to this?",
+        ] },
+        { heading: "When I'll use it", lines: 2 },
+        { heading: "What I noticed", columns: ["When", "The thought", "After the pause"], rows: 4 },
+      ],
+    },
+    steps: [
+      {
+        id: "intro",
+        type: "intro",
+        title: "Practise a pause",
+        body: "When the loop speeds up, thoughts arrive faster than you can look at them. In this chapter you'll learn why a short pause helps, try a one-minute pause, and choose when you might use it. Nothing here is scored, and you can stop the pause at any time.",
+        required: false,
+      },
+      {
+        id: "lesson",
+        type: "lesson",
+        title: "Space between the thought and you",
+        paragraphs: [
+          "A pause doesn't stop thoughts, and it isn't meant to. It puts a little space between a thought and what you do next, so the thought stops deciding for you.",
+          "Attention is something you can move. Right now it might be on a worry. You can move it to your breathing, then to what you can see, then to what you can hear. Moving it on purpose, even for a minute, is practice in stepping out of the loop.",
+          "Many people find that breathing out a little more slowly than they breathe in helps them settle. If focusing on your breath feels uncomfortable, skip that part and use what you can see and hear instead.",
+          "The thought may still be there afterwards. That's fine. The aim isn't to get rid of it. It's to come back to it on purpose, at a time you choose, rather than because it pulled you there.",
+        ],
+        required: false,
+      },
+      {
+        id: "pause",
+        type: "pause",
+        title: "A one-minute pause",
+        body: "Find a position that's comfortable. You can keep your eyes open. Follow the words as they change, or read them all at your own pace.",
+        cues: [
+          { text: "Notice the thought that's been loudest today. Name it quietly: \"loop\".", seconds: 10 },
+          { text: "Breathe out slowly, a little longer than you breathe in.", seconds: 12 },
+          { text: "Again. Out a little longer than in.", seconds: 10 },
+          { text: "Look around. Find three things you can see.", seconds: 10 },
+          { text: "Listen. Find two things you can hear.", seconds: 10 },
+          { text: "Come back. Is there one next step, or a time you'll return to the thought?", seconds: 8 },
+        ],
+        required: false,
+      },
+      {
+        id: "late-night",
+        type: "choice",
+        title: "When the loop speeds up",
+        body: "It's late. You're replaying a conversation from today, and it's getting louder. What do you do?",
+        options: [
+          { id: "solve", text: "Keep going over it until it's sorted", outcome: "Often it isn't sorted, and sleep gets later.", why: "Late at night there's rarely new information, so the same question keeps coming back without an answer." },
+          { id: "phone", text: "Pick up your phone to take your mind off it", outcome: "It can work for a while, and the thought is often waiting when the phone goes down.", why: "Distraction moves attention away without choosing a time to come back, so the loop stays open." },
+          { id: "pause", text: "Pause, write one line about it, and set a time to come back", outcome: "The thought tends to loosen its grip, because it has a place to go.", why: "Naming it and choosing when to return tells your mind it won't be forgotten, so it has less reason to keep reminding you." },
+        ],
+        required: true,
+      },
+      {
+        id: "noticed",
+        type: "reflect",
+        title: "After the pause",
+        prompt: "What did you notice during the pause, or afterwards? The thought might be quieter, the same, or louder. Any of these is fine to write.",
+        examples: ["Quieter for a minute, then it came back, but less urgent."],
+        required: true,
+      },
+      {
+        id: "apply",
+        type: "plan",
+        title: "Try it for real",
+        prompt: "If you want, choose one moment this week to try a one-minute pause. What will you do, and when?",
+        examples: ["When I notice I'm replaying a meeting: one-minute pause, then one line in my notes."],
+        required: false,
+      },
+      {
+        id: "close",
+        type: "close",
+        title: "Return to Earth",
+        body: "You've practised putting space between a thought and what you do next. Chapter 4, Enter the Decision Lab, is still being written. Your pocket card, The One-Minute Pause, stays in this chapter whenever you want it.",
         required: false,
       },
     ],
@@ -588,10 +690,9 @@ export const SYSTEMS: SolarSystem[] = [
     title: "Beyond Overthinking",
     objective: "Stop going round in circles on important decisions, and find a clearer next step.",
     kind: "expedition",
-    missionIds: ["overthinking-1", "overthinking-2"],
+    missionIds: ["overthinking-1", "overthinking-2", "overthinking-3"],
     // Titles from Bianno's outline (2026-10-31). Shown as planned until written and reviewed.
     planned: [
-      { title: "Practise a pause", line: "A short attention exercise for when the loop speeds up." },
       { title: "Enter the Decision Lab", line: "Explore alternative choices and their trade-offs." },
       { title: "Choose one small action", line: "Test a realistic decision-making strategy." },
       { title: "Reflect on the outcome", line: "Record what happened without judging success or failure." },
@@ -642,6 +743,7 @@ export function checkCatalog(): string[] {
         if (new Set(ls.map((l) => l.id)).size !== ls.length) problems.push(`${m.id}/${s.id}: duplicate lens ids`);
         if (!s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);
       }
+      if (s.type === "pause" && !(s.cues ?? []).length) problems.push(`${m.id}/${s.id}: a pause needs cues`);
       if (s.type === "lesson" && !(s.paragraphs ?? []).length) problems.push(`${m.id}/${s.id}: a lesson needs paragraphs`);
       if (s.type === "sort") {
         const bins = new Set((s.bins ?? []).map((b) => b.id)), items = s.items ?? [];

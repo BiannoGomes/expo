@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T14:55:27.225Z",
+  "when": "2026-10-31T15:52:12.622Z",
   "checks": [
     {
       "name": "320x568: Atlas galaxies and names never overlap",
@@ -168,6 +168,11 @@
     },
     {
       "name": "phone: no repeated Explore buttons; each world shows its name",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: entering Mind arrives",
       "ok": true,
       "detail": ""
     },
@@ -347,6 +352,11 @@
       "detail": ""
     },
     {
+      "name": "desktop: entering Mind arrives",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "desktop: breadcrumb reads Universe › Personal Growth › Mind",
       "ok": true,
       "detail": ""
@@ -442,6 +452,11 @@
       "detail": ""
     },
     {
+      "name": "a resize mid-flight still arrives in the world",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "reduced motion: opens on Home without an entrance",
       "ok": true,
       "detail": ""
@@ -470,11 +485,15 @@
     "desktop earth": []
   },
   "timings": {
-    "phone.to_first_step_ms": 129,
-    "desktop.to_first_step_ms": 153
+    "phone.arrival_fallbacks": 0,
+    "phone.webgl_context_lost": 0,
+    "phone.to_first_step_ms": 117,
+    "desktop.arrival_fallbacks": 1,
+    "desktop.webgl_context_lost": 0,
+    "desktop.to_first_step_ms": 131
   },
   "summary": {
-    "total": 91,
+    "total": 94,
     "failed": 0
   }
 }

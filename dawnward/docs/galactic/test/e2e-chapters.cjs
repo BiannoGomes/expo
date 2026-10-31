@@ -104,12 +104,55 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.locator("#x-body .found").waitFor();
     check(`${name} ch2: the real action is kept`, /Ask Sam for twenty minutes/.test(await page.textContent("#x-body")));
 
-    // Learn shows the whole expedition honestly
+    // follow the expedition from the end of a chapter
+    await page.getByRole("button", { name: "Follow this expedition" }).click();
+    check(`${name}: following is confirmed in plain words`, /You're following Beyond Overthinking/.test(await page.textContent("#x-body")));
+    await page.getByRole("button", { name: "Return to Earth" }).first().click();
+    await page.waitForTimeout(300);
+    const comp3 = await page.textContent("#earth .compass");
+    check(`${name}: the Compass offers Chapter 3 of 7, as the expedition you follow`, /Practise a pause/.test(comp3) && /Chapter 3 of 7/.test(comp3) && /You're following Beyond Overthinking · 2 of 7 chapters done/.test(comp3));
+    await page.locator("#earth .c-why summary").click();
+    check(`${name}: and says why: you chose to follow it`, /You chose to follow Beyond Overthinking/.test(await page.textContent("#earth .c-why")));
+
+    // Chapter 3: the pause
+    await page.locator("#earth .compass .primary").click();
+    await page.getByRole("button", { name: "Begin" }).click();
+    check(`${name} ch3: lesson`, (await page.locator(".lesson p").count()) === 4);
+    await page.getByRole("button", { name: "Continue" }).click();
+    check(`${name} ch3: a one-minute pause, waiting for you to start`, /About 1 minute/.test(await page.textContent("#x-body")) && /press Start/.test(await page.textContent(".cue")));
+    await page.getByRole("button", { name: "Start" }).click();
+    check(`${name} ch3: the first cue appears`, /Name it quietly/.test(await page.textContent(".cue")));
+    await page.getByRole("button", { name: "Stop" }).click();
+    check(`${name} ch3: the pause stops at once, kindly`, /Stopped\. That's fine/.test(await page.textContent(".cue")) && (await page.getByRole("button", { name: "Start" }).count()) === 1);
+    await page.getByRole("button", { name: "Start" }).click();
+    await page.getByRole("button", { name: "Read the steps instead" }).click();
+    check(`${name} ch3: every step can be read instead`, (await page.locator(".cue-list li").count()) === 6);
+    await shot(page, `${name}-pause`);
+    await axe(page, `${name} pause`);
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByRole("button", { name: /Pause, write one line/ }).click();
+    check(`${name} ch3: the choice says what tends to happen, never right or wrong`, /tends to loosen its grip/.test(await page.textContent(".explain")) && !/wrong answer|correct/i.test(await page.textContent(".explain")));
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.fill("#q-words", "Quieter for a minute, then less urgent.");
+    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Not this time" }).click();
+    await page.locator("#x-body .found").waitFor();
+    check(`${name} ch3: the pocket card is offered`, (await page.getByRole("button", { name: "Worksheet: The One-Minute Pause" }).count()) === 1);
+    check(`${name} ch3: no second follow offer once following`, (await page.locator("#x-body .follow").count()) === 0);
+    await page.getByRole("button", { name: "Worksheet: The One-Minute Pause" }).click();
+    check(`${name} ch3: the card lists the five steps`, (await page.locator(".ws-items li").count()) === 5);
+
+    // Learn shows the whole expedition honestly, and following can stop
     await page.locator('#tabs [data-tab="learn"]').click();
     await page.waitForTimeout(300);
     const learn = await page.textContent("#x-body");
     check(`${name}: Learn lists Beyond Overthinking as 7 chapters`, /expedition · 7 chapters/.test(learn));
-    check(`${name}: chapters 3 to 7 are marked Planned and can't be opened`, (await page.locator("#x-body li.planned").count()) === 5 && (await page.locator("#x-body li.planned button").count()) === 0);
+    check(`${name}: chapters 4 to 7 are marked Planned and can't be opened`, (await page.locator("#x-body li.planned").count()) === 4 && (await page.locator("#x-body li.planned button").count()) === 0);
+    const stopBtn = page.getByRole("button", { name: "Following · stop" });
+    check(`${name}: Learn shows you're following, as a pressed toggle`, (await stopBtn.getAttribute("aria-pressed")) === "true");
+    await stopBtn.click();
+    check(`${name}: stopping is one tap`, (await page.getByRole("button", { name: "Follow this expedition" }).count()) === 1);
+    check(`${name}: stopping keeps every chapter done`, (await page.locator("#x-body .mission.done").count()) >= 3);
     await shot(page, `${name}-learn`);
     await axe(page, `${name} learn`);
     check(`${name}: no page errors`, errors.length === 0, errors.slice(0, 2).join(" | "));

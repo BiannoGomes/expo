@@ -19,7 +19,7 @@ const KEY = "dw-expeditions-v1";
 
 /** The same calls, kept on this device. Every write is read back before it counts. */
 export function localStore(device) {
-  const empty = () => ({ attempts: {}, experiments: [], events: [], discoveries: [], gameLayer: true });
+  const empty = () => ({ attempts: {}, experiments: [], events: [], discoveries: [], gameLayer: true, following: [] });
   let s = Object.assign(empty(), device.read(KEY, {}));
   const id = (p) => `${p}-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e6).toString(36)}`;
   const keep = () => device.write(KEY, s);
@@ -33,7 +33,7 @@ export function localStore(device) {
   return {
     local: true,
     async load() {
-      return { attempts: Object.values(s.attempts), experiments: s.experiments, discoveries: s.discoveries.map((d) => ({ ...d, ...describeDiscovery(d) })), gameLayer: s.gameLayer };
+      return { attempts: Object.values(s.attempts), experiments: s.experiments, discoveries: s.discoveries.map((d) => ({ ...d, ...describeDiscovery(d) })), gameLayer: s.gameLayer, following: [...(s.following ?? [])] };
     },
     async begin(missionId) {
       const m = missionById(missionId);
@@ -77,6 +77,9 @@ export function localStore(device) {
       });
     },
     async setGameLayer(on) { return tx(() => { s.gameLayer = on; return { gameLayer: on }; }); },
+    async follow(systemId, on) {
+      return tx(() => { const f = (s.following ?? []).filter((x) => x.systemId !== systemId); if (on) f.push({ systemId, since: new Date().toISOString() }); s.following = f; return { following: on }; });
+    },
     noteReflection(recordId) { return tx(() => ({ discoveries: progress([{ kind: "reflection_saved", ref: `record:${recordId}` }]) })); },
     wipe() { s = empty(); return device.remove(KEY); },
     snapshot() { return JSON.parse(JSON.stringify(s)); },
@@ -91,13 +94,14 @@ export function remoteStore(call) {
     local: false,
     async load() {
       const r = await call("/expeditions");
-      return { attempts: r.attempts, experiments: r.experiments, discoveries: r.discoveries, gameLayer: r.gameLayer };
+      return { attempts: r.attempts, experiments: r.experiments, discoveries: r.discoveries, gameLayer: r.gameLayer, following: r.following ?? [] };
     },
     begin: (missionId) => wrap(post("/attempts", { missionId })),
     answer: async (attempt, stepIndex, answer) => { const r = await wrap(post(`/attempts/${attempt.id}/answer`, { stepIndex, answer })); return r.error || r.crisis ? r : { attempt: r }; },
     complete: (attempt) => wrap(post(`/attempts/${attempt.id}/complete`)),
     exit: (attempt) => wrap(post(`/attempts/${attempt.id}/exit`)),
     review: (experimentId, outcome, text) => wrap(post(`/experiments/${experimentId}/review`, { outcome, text })),
+    follow: (systemId, on) => wrap(call(`/enrollments/${encodeURIComponent(systemId)}`, { method: on ? "PUT" : "DELETE" })),
     setGameLayer: (on) => wrap(call("/preferences/game-layer", { method: "PUT", body: JSON.stringify({ on }) })),
     noteReflection() { return { discoveries: [] }; },
     wipe() { return true; },
@@ -110,7 +114,17 @@ export function remoteStore(call) {
  */
 export function createExplore(store, h) {
   const { $, el, svg, ICON, META } = h;
-  let data = { attempts: [], experiments: [], discoveries: [], gameLayer: true };
+  let data = { attempts: [], experiments: [], discoveries: [], gameLayer: true, following: [] };
+  const isFollowing = (systemId) => (data.following ?? []).some((f) => f.systemId === systemId);
+  async function follow(systemId, on) {
+    const r = await store.follow(systemId, on);
+    if (r?.error) { h.announce(r.error); return false; }
+    await refresh();
+    h.announce(on ? `Following ${SYSTEMS.find((x) => x.id === systemId)?.title}. Home will suggest its next chapter.` : "Stopped following. Nothing is lost.");
+    return true;
+  }
+  const followButton = (sys, after) => el("button", { class: "ghost follow", "aria-pressed": String(isFollowing(sys.id)), onclick: async () => { if (await follow(sys.id, !isFollowing(sys.id))) after(); } },
+    isFollowing(sys.id) ? "Following · stop" : "Follow this expedition");
   const body = () => $("x-body");
   const attemptFor = (missionId) => data.attempts.find((a) => a.missionId === missionId && a.status !== "abandoned");
   const DRAFT = (a, step) => `dw-qdraft-${a.id}-${step}`;
@@ -157,6 +171,7 @@ export function createExplore(store, h) {
         el("p", { class: "kicker" }, `${META[sys.world].name} · ${sys.kind === "expedition" ? `expedition · ${sys.missionIds.length + (sys.planned?.length ?? 0)} chapters` : "solar system"}`),
         el("h3", { id: `x-${sys.id}`, class: "sys-title" }, sys.title),
         el("p", { class: "quiet" }, sys.objective),
+        sys.kind === "expedition" ? el("div", { class: "actions" }, followButton(sys, () => { draw(); body().querySelector(`[aria-labelledby="x-${sys.id}"] .follow`)?.focus(); })) : null,
         el("ul", { class: "missions" }, ms.map((m) => {
           const a = attemptFor(m.id), done = a?.status === "completed" || data.attempts.some((x) => x.missionId === m.id && x.status === "completed");
           const state = done ? "Done" : a ? "In progress" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`;
@@ -246,6 +261,32 @@ export function createExplore(store, h) {
       frame(m, i, title, el("p", { class: "quiet" }, `Lesson · about ${Math.max(1, Math.ceil(words / 180))} min to read`),
         el("div", { class: "lesson" }, step.paragraphs.map((t) => el("p", {}, t))),
         err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => { if (canSpeak) speechSynthesis.cancel(); next({ ack: true }); } }, "Continue"), listen));
+      return;
+    }
+    if (step.type === "pause") {
+      h.quiet(false);
+      const cues = step.cues;
+      const total = cues.reduce((a, c) => a + c.seconds, 0);
+      const cue = el("p", { class: "cue", "aria-live": "polite" }, "When you're ready, press Start.");
+      const ring = el("div", { class: "pause-ring", "aria-hidden": "true" });
+      const all = el("ol", { class: "cue-list", hidden: true }, cues.map((c) => el("li", {}, c.text)));
+      let timer = null, k = -1;
+      const stop = () => { clearTimeout(timer); timer = null; ring.classList.remove("on"); };
+      const advance = () => {
+        k++;
+        if (k >= cues.length) { stop(); cue.textContent = "That's the minute. Notice how you are now, without judging it."; start.textContent = "Again"; return; }
+        cue.textContent = cues[k].text;
+        timer = setTimeout(advance, cues[k].seconds * 1000);
+      };
+      // one button: Start, Stop while it runs, Again when it's done
+      const start = el("button", { class: "ghost", onclick: () => {
+        if (timer) { stop(); cue.textContent = "Stopped. That's fine. Start again whenever you like, or continue."; start.textContent = "Start"; return; }
+        k = -1; start.textContent = "Stop"; ring.classList.add("on"); advance();
+      } }, "Start");
+      const read = el("button", { class: "text-btn", "aria-expanded": "false", onclick: () => { all.hidden = !all.hidden; read.setAttribute("aria-expanded", String(!all.hidden)); read.textContent = all.hidden ? "Read the steps instead" : "Hide the steps"; } }, "Read the steps instead");
+      frame(m, i, title, el("p", { class: "lead" }, step.body), el("p", { class: "quiet" }, `About ${Math.round(total / 60)} minute. You can stop at any moment.`),
+        el("div", { class: "pause-box" }, ring, cue), el("div", { class: "actions" }, start, read), all,
+        err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => { stop(); next({ ack: true }); } }, "Continue")));
       return;
     }
     if (step.type === "sort") {
@@ -371,6 +412,7 @@ export function createExplore(store, h) {
       found && data.gameLayer ? el("div", { class: "card found" }, el("p", { class: "kicker" }, "Discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
       el("div", { class: "actions" },
         el("button", { class: "primary", onclick: () => { current = null; from = null; h.goEarth(found ?? null); } }, "Return to Earth"),
+        (() => { const sys = SYSTEMS.find((x) => x.id === m.systemId); return sys?.kind === "expedition" && !isFollowing(sys.id) ? followButton(sys, () => finishFollowNote(sys)) : null; })(),
         m.worksheet ? el("button", { class: "ghost", onclick: () => worksheet(m, () => { current = null; draw(); $("x-title")?.focus(); }) }, `Worksheet: ${m.worksheet.title}`) : null,
         el("button", { class: "ghost", onclick: () => { current = null; draw(); $("x-title")?.focus(); } }, "Back to Learn")));
     h.announce(found ? `Done. ${found.title} appeared.` : "Done.");
@@ -384,7 +426,8 @@ export function createExplore(store, h) {
       el("h2", { id: "ws-title", class: "s-title", tabindex: "-1" }, w.title),
       el("p", { class: "lead" }, w.intro),
       ...w.sections.map((sec) => el("section", { class: "ws-sec" }, el("h3", {}, sec.heading),
-        sec.columns
+        sec.items ? el("ol", { class: "ws-items" }, sec.items.map((t) => el("li", {}, t)))
+        : sec.columns
           ? el("table", { class: "ws-table" }, el("thead", {}, el("tr", {}, sec.columns.map((c) => el("th", { scope: "col" }, c)))),
               el("tbody", {}, Array.from({ length: sec.rows ?? 3 }, () => el("tr", {}, sec.columns.map(() => el("td", {}, ""))))))
           : el("div", { class: "ws-lines", "aria-hidden": "true" }, Array.from({ length: sec.lines ?? 2 }, () => el("span", {}))))),
@@ -396,6 +439,11 @@ export function createExplore(store, h) {
       sheet);
     $("ws-title").focus();
     $("explore").scrollTop = 0;
+  }
+
+  function finishFollowNote(sys) {
+    const b = body().querySelector(".follow");
+    if (b) b.replaceWith(el("p", { class: "quiet", role: "status" }, `You're following ${sys.title}. Home will suggest its next chapter, and you can stop any time in Learn.`));
   }
 
   function crisis(text) {
@@ -447,6 +495,7 @@ export function createExplore(store, h) {
   return {
     store, open, refresh, play, review,
     get data() { return data; },
+    isFollowing, follow,
     get missions() { return MISSIONS; },
     textSummary() {
       return SYSTEMS.map((sys) => ({ sys, missions: sys.missionIds.map((id) => ({ m: missionById(id), done: data.attempts.some((a) => a.missionId === id && a.status === "completed") })) }));

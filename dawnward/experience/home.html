@@ -93,6 +93,14 @@
   .lesson { display:flex; flex-direction:column; gap:var(--s4); max-width:62ch; }
   .lesson p { font-size:18px; line-height:1.6; color:var(--ink); }
   .draft-tag { align-self:flex-start; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-ink); border:1px solid rgba(230,192,123,.45); border-radius:var(--r-pill); padding:var(--s1) var(--s3); }
+  .pause-box { display:flex; flex-direction:column; align-items:center; gap:var(--s5); padding:var(--s6) var(--s4); border-radius:var(--s6); background:rgba(23,32,58,.6); border:1px solid var(--edge); text-align:center; }
+  .pause-ring { width:96px; height:96px; border-radius:50%; border:2px solid rgba(201,184,255,.55); box-shadow:0 0 24px -6px rgba(201,184,255,.6); }
+  .pause-ring.on { animation:breathe 10s ease-in-out infinite; }
+  @keyframes breathe { 0%, 100% { transform:scale(.82); } 40% { transform:scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .pause-ring.on { animation:none; } }
+  .cue { font-family:var(--display); font-size:22px; line-height:1.35; max-width:30ch; min-height:3.4em; }
+  .cue-list, .ws-items { display:flex; flex-direction:column; gap:var(--s2); padding-left:var(--s5); line-height:1.5; }
+  .follow[aria-pressed="true"] { border-color:var(--gold); color:var(--gold-ink); }
   .readings { display:flex; flex-direction:column; gap:var(--s3); padding:0; list-style:none; }
   .readings li { line-height:1.45; }
   .readings .rb { display:inline-block; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-ink); margin-right:var(--s1); }

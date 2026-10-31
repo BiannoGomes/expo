@@ -98,7 +98,12 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
 
     // Mind: its own way of playing, its solar system, the breadcrumb
     await page.locator("#planets .planet-mind").evaluate((b) => b.click());
-    await page.waitForFunction(() => document.body.classList.contains("closeup-on"), null, { timeout: 15000 });
+    // polled on a timer, not on animation frames: a stalled render loop must not hide whether the world opened
+    const arrived = await page.waitForFunction(() => document.body.classList.contains("closeup-on"), null, { timeout: 15000, polling: 100 }).then(() => true, () => false);
+    if (!arrived) console.log("DIAG", JSON.stringify(await page.evaluate(() => ({ place: window.__dwHome.state.place, world: window.__dwHome.state.world, scene: window.__dwHome.scene, cls: document.body.className, frames: window.__dwFrames.length, last: window.__dwFrames.slice(-6).map(Math.round), mode: window.__dwHome.state.mode }))));
+    check(`${name}: entering Mind arrives`, arrived);
+    results.timings[`${name}.arrival_fallbacks`] = await page.evaluate(() => window.__dwArrivalFallbacks ?? 0);
+    results.timings[`${name}.webgl_context_lost`] = await page.evaluate(() => window.__dwContextLost ?? 0);
     const crumbText = await page.textContent("#w-crumbs");
     check(`${name}: breadcrumb reads Universe › Personal Growth › Mind`, /Universe.*Personal Growth.*Mind/.test(crumbText));
     const world = await page.textContent("#w-body");
@@ -162,6 +167,20 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     check(`${name}: after reload Journey still lists the discoveries`, /The Thought Labyrinth/.test(await page.textContent("#m-miles")));
     check(`${name}: no page errors`, errors.length === 0, errors.slice(0, 2).join(" | "));
     await ctx.close();
+  }
+
+  // regression: a resize during the flight into a world (rotation, a phone's address bar)
+  // used to drop the arrival, leaving the world without its close-up
+  {
+    const p = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+    await p.goto(PAGE); await ready(p);
+    await p.evaluate(() => document.getElementById("skip")?.click());
+    await p.locator('#tabs [data-tab="universe"]').click(); await p.locator('#a-inner [data-id="growth"]').click();
+    await p.getByRole("button", { name: "Enter Personal Growth" }).click(); await p.waitForTimeout(1500);
+    await p.locator("#planets .planet-mind").evaluate((b) => b.click());
+    await p.setViewportSize({ width: 1180, height: 820 });
+    check("a resize mid-flight still arrives in the world", await p.waitForFunction(() => document.body.classList.contains("closeup-on"), null, { timeout: 15000 }).then(() => true, () => false));
+    await p.close();
   }
 
   // reduced motion: no move toward the galaxy, still fully usable

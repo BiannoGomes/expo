@@ -55,6 +55,7 @@ export function validateAnswer(step: Step, answer: unknown): string | null {
   switch (step.type) {
     case "intro":
     case "lesson":
+    case "pause":
     case "close":
       return a.ack === true ? null : "Nothing to answer here.";
     case "choice":

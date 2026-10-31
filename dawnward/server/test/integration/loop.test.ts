@@ -928,6 +928,22 @@ describe("expeditions (Soul · Communication, first slice)", () => {
     assert.ok(!keys.some((k: string) => k.startsWith("moon:")), "no moon while chapters remain planned");
   });
 
+  it("following an expedition: idempotent, per person, exported, and stoppable", async () => {
+    const s = await createSession(), other = await createSession();
+    const put = () => inject(s, { method: "PUT", url: "/enrollments/mind-beyond-overthinking" });
+    assert.equal((await put()).statusCode, 200);
+    assert.equal((await put()).statusCode, 200, "following twice is fine");
+    assert.equal((await inject(s, { method: "PUT", url: "/enrollments/nope" })).statusCode, 404);
+    const mine = (await inject(s, { method: "GET", url: "/expeditions" })).json();
+    assert.deepEqual(mine.following.map((f: { systemId: string }) => f.systemId), ["mind-beyond-overthinking"]);
+    const theirs = (await inject(other, { method: "GET", url: "/expeditions" })).json();
+    assert.deepEqual(theirs.following, [], "nobody else sees it");
+    const exp = (await inject(s, { method: "GET", url: "/export" })).json();
+    assert.equal(exp.following.length, 1);
+    assert.equal((await inject(s, { method: "DELETE", url: "/enrollments/mind-beyond-overthinking" })).statusCode, 200);
+    assert.deepEqual((await inject(s, { method: "GET", url: "/expeditions" })).json().following, []);
+  });
+
   it("beginning twice resumes the same attempt", async () => {
     const s = await createSession();
     const a = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "bridge-1" } })).json();

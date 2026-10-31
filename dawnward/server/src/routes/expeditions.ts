@@ -9,6 +9,7 @@ import {
   describeDiscovery,
   discoveriesFrom,
   missionById,
+  systemById,
   plannedAction,
   type Answer,
   type Attempt,
@@ -118,6 +119,7 @@ export function registerExpeditionRoutes(app: FastifyInstance) {
     const discoveries = await query<{ key: string; cause_kind: ProgressEvent["kind"]; cause_ref: string; discovered_at: string }>(
       "select key, cause_kind, cause_ref, discovered_at from discoveries where user_id = $1 order by discovered_at", [userId]);
     const [prefs] = await query<{ game_layer: boolean }>("select game_layer from users where id = $1", [userId]);
+    const enrollments = await query<{ system_id: string; started_at: string }>("select system_id, started_at from enrollments where user_id = $1 order by started_at", [userId]);
     return {
       systems: SYSTEMS,
       missions: MISSIONS.map(({ steps, ...m }) => ({ ...m, steps: steps.length })),
@@ -125,7 +127,21 @@ export function registerExpeditionRoutes(app: FastifyInstance) {
       experiments,
       discoveries: discoveries.map((d) => ({ key: d.key, discoveredAt: d.discovered_at, ...describeDiscovery({ key: d.key, causeKind: d.cause_kind, causeRef: d.cause_ref }) })),
       gameLayer: prefs?.game_layer ?? true,
+      following: enrollments.map((e) => ({ systemId: e.system_id, since: e.started_at })),
     };
+  });
+
+  // Following an expedition: a choice, never a commitment. Idempotent both ways.
+  app.put("/enrollments/:systemId", { onRequest: requireAuth }, async (request, reply) => {
+    const { systemId } = z.object({ systemId: z.string().max(60) }).parse(request.params);
+    if (!systemById(systemId)) return reply.code(404).send({ error: "no such expedition" });
+    await query("insert into enrollments (user_id, system_id) values ($1, $2) on conflict do nothing", [request.userId, systemId]);
+    return { systemId, following: true };
+  });
+  app.delete("/enrollments/:systemId", { onRequest: requireAuth }, async (request) => {
+    const { systemId } = z.object({ systemId: z.string().max(60) }).parse(request.params);
+    await query("delete from enrollments where user_id = $1 and system_id = $2", [request.userId, systemId]);
+    return { systemId, following: false };
   });
 
   app.get("/expeditions/missions/:missionId", { onRequest: requireAuth }, async (request, reply) => {

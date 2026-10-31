@@ -808,8 +808,14 @@ function main(data, failed) {
     highlight();
     if (arriving) {
       document.body.classList.remove("closeup-on");
-      const reveal = () => { if (state.place === "world" && state.world === w) document.body.classList.add("closeup-on"); };
-      if (ctx && state.mode === "galaxy") ctx.focusWorld(w, reveal); else reveal();
+      let fallback = 0;
+      const reveal = () => { clearTimeout(fallback); if (state.place === "world" && state.world === w) document.body.classList.add("closeup-on"); };
+      if (ctx && state.mode === "galaxy") {
+        ctx.focusWorld(w, reveal);
+        // Safeguard: the flight takes 0.7 s. If its arrival hasn't come by 1.6 s
+        // (a lost frame, a paused tab), open the world anyway, and count it.
+        fallback = setTimeout(() => { if (!document.body.classList.contains("closeup-on")) { window.__dwArrivalFallbacks = (window.__dwArrivalFallbacks ?? 0) + 1; reveal(); } }, 1600);
+      } else reveal();
       announce(`${META[w].name}. ${plural(worldStars(w).length, "memory", "memories")}.`);
     }
   }
@@ -900,6 +906,12 @@ function main(data, failed) {
       const m = missionById(open.missionId);
       return { m, step: open.step, resume: true, why: `You started it and stopped at step ${open.step + 1} of ${m.steps.length}. It picks up exactly where you left off.` };
     }
+    // the expedition you chose to follow comes first
+    for (const f of explore?.data.following ?? []) {
+      const sys = SYSTEMS.find((x) => x.id === f.systemId);
+      const next = sys?.missionIds.find((id) => !missionDone(id));
+      if (next) return { m: missionById(next), step: 0, following: sys, why: `You chose to follow ${sys.title}, and this is its next chapter.` };
+    }
     for (const sys of SYSTEMS) {
       const next = sys.missionIds.find((id) => !missionDone(id));
       if (next && sys.missionIds.some(missionDone)) return { m: missionById(next), step: 0, why: `It's the next part of ${sys.title} in ${META[sys.world].name}, which you've already begun.` };
@@ -920,6 +932,7 @@ function main(data, failed) {
       el("h3", { id: "c-title", class: "c-title" }, m.title),
       el("p", { class: "c-part" }, `${META[m.world].name} · ${m.part}${m.status === "draft" ? " · draft" : ""}`),
       el("p", { class: "c-mission" }, `Today's mission: ${m.objective}`),
+      pick.following ? el("p", { class: "c-part" }, `You're following ${pick.following.title} · ${pick.following.missionIds.filter(missionDone).length} of ${chaptersIn(m)} chapters done`) : null,
       pick.resume ? el("p", { class: "c-part" }, `Step ${pick.step + 1} of ${total}`) : null,
       el("div", { class: "c-bar", role: "progressbar", "aria-label": "Your progress through this expedition", "aria-valuemin": "0", "aria-valuemax": String(total), "aria-valuenow": String(pick.step), "aria-valuetext": pick.step ? `Step ${pick.step + 1} of ${total}` : "Not started" },
         el("span", { style: `width:${Math.round((100 * pick.step) / total)}%` })),
@@ -1153,7 +1166,15 @@ function main(data, failed) {
     });
   }
   entrance();
-  window.__dwHome = { state, data };
+  if (ctx) {
+    // A lost GPU context stops the render loop (three.js pauses it until the context returns).
+    // Count it, and never let it strand anyone mid-flight: open the world now.
+    ctx.renderer.domElement.addEventListener("webglcontextlost", () => {
+      window.__dwContextLost = (window.__dwContextLost ?? 0) + 1;
+      if (state.place === "world") document.body.classList.add("closeup-on");
+    });
+  }
+  window.__dwHome = { state, data, get scene() { return ctx ? { moving: ctx.moving, focus: ctx.focus, settled: ctx.settled } : null; } };
   window.__dwHomeReady = true;
 }
 

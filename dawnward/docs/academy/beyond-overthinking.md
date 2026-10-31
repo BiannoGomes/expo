@@ -1,4 +1,4 @@
-# Beyond Overthinking: chapters 1 and 2 for review
+# Beyond Overthinking: written chapters for review
 
 **Status:** draft. Generated from `packages/core/src/expeditions/catalog.ts`, so this is exactly what the app shows. Edit here or in the catalog; I'll apply your changes to the catalog and regenerate this file.
 
@@ -7,7 +7,7 @@
 **Chapters:**
 1. Understand the loop (draft, written)
 2. Separate facts from assumptions (draft, written)
-3. Practise a pause: A short attention exercise for when the loop speeds up. (planned)
+3. Practise a pause (draft, written)
 4. Enter the Decision Lab: Explore alternative choices and their trade-offs. (planned)
 5. Choose one small action: Test a realistic decision-making strategy. (planned)
 6. Reflect on the outcome: Record what happened without judging success or failure. (planned)
@@ -164,7 +164,7 @@ Maya is deciding whether to move to another city for a job. This is what's on he
 
 ### Return to Earth (close, optional)
 
-You've separated what you know from what you're guessing. Chapter 3, Practise a pause, is still being written. Your worksheet, Facts and Assumptions, stays in this chapter whenever you want it.
+You've separated what you know from what you're guessing. Next: Chapter 3, Practise a pause. Your worksheet, Facts and Assumptions, stays in this chapter whenever you want it.
 
 ### Worksheet: Facts and Assumptions
 
@@ -180,11 +180,97 @@ For a decision that's been going round. Split what you know from what you're gue
 
 **The real trade-off that no amount of thinking will remove:** 2 blank lines.
 
+
+---
+
+## Chapter 3: Practise a pause
+
+**Objective:** Put a little space between a racing thought and what you do next.
+
+**Time:** about 7 minutes
+
+**Safety note:** If overthinking comes with low mood or anxiety that's affecting your sleep, work or relationships, please talk to a doctor or a mental health professional. findahelpline.com lists free, confidential support lines for your country.
+
+### Practise a pause (intro, optional)
+
+When the loop speeds up, thoughts arrive faster than you can look at them. In this chapter you'll learn why a short pause helps, try a one-minute pause, and choose when you might use it. Nothing here is scored, and you can stop the pause at any time.
+
+
+### Space between the thought and you (lesson, optional)
+
+A pause doesn't stop thoughts, and it isn't meant to. It puts a little space between a thought and what you do next, so the thought stops deciding for you.
+
+Attention is something you can move. Right now it might be on a worry. You can move it to your breathing, then to what you can see, then to what you can hear. Moving it on purpose, even for a minute, is practice in stepping out of the loop.
+
+Many people find that breathing out a little more slowly than they breathe in helps them settle. If focusing on your breath feels uncomfortable, skip that part and use what you can see and hear instead.
+
+The thought may still be there afterwards. That's fine. The aim isn't to get rid of it. It's to come back to it on purpose, at a time you choose, rather than because it pulled you there.
+
+
+### A one-minute pause (pause, optional)
+
+Find a position that's comfortable. You can keep your eyes open. Follow the words as they change, or read them all at your own pace.
+
+| Cue | Seconds |
+|---|---|
+| Notice the thought that's been loudest today. Name it quietly: "loop". | 10 |
+| Breathe out slowly, a little longer than you breathe in. | 12 |
+| Again. Out a little longer than in. | 10 |
+| Look around. Find three things you can see. | 10 |
+| Listen. Find two things you can hear. | 10 |
+| Come back. Is there one next step, or a time you'll return to the thought? | 8 |
+
+
+### When the loop speeds up (choice)
+
+It's late. You're replaying a conversation from today, and it's getting louder. What do you do?
+
+| Option | What tends to happen | Why |
+|---|---|---|
+| Keep going over it until it's sorted | Often it isn't sorted, and sleep gets later. | Late at night there's rarely new information, so the same question keeps coming back without an answer. |
+| Pick up your phone to take your mind off it | It can work for a while, and the thought is often waiting when the phone goes down. | Distraction moves attention away without choosing a time to come back, so the loop stays open. |
+| Pause, write one line about it, and set a time to come back | The thought tends to loosen its grip, because it has a place to go. | Naming it and choosing when to return tells your mind it won't be forgotten, so it has less reason to keep reminding you. |
+
+
+### After the pause (reflect)
+
+**Prompt:** What did you notice during the pause, or afterwards? The thought might be quieter, the same, or louder. Any of these is fine to write.
+
+**Example offered (never prefilled):** Quieter for a minute, then it came back, but less urgent.
+
+
+### Try it for real (plan, optional)
+
+**Prompt:** If you want, choose one moment this week to try a one-minute pause. What will you do, and when?
+
+**Example offered (never prefilled):** When I notice I'm replaying a meeting: one-minute pause, then one line in my notes.
+
+
+### Return to Earth (close, optional)
+
+You've practised putting space between a thought and what you do next. Chapter 4, Enter the Decision Lab, is still being written. Your pocket card, The One-Minute Pause, stays in this chapter whenever you want it.
+
+### Worksheet: The One-Minute Pause
+
+A pocket card for when the loop speeds up. Keep it somewhere you'll see it.
+
+**The pause, step by step:**
+1. Notice the thought, and name it: "loop".
+2. Breathe out slowly, a little longer than you breathe in. Three times.
+3. Look: find three things you can see.
+4. Listen: find two things you can hear.
+5. Return: is there one next step, or a time to come back to this?
+
+**When I'll use it:** 2 blank lines.
+
+**What I noticed:** a table with columns "When", "The thought", "After the pause", and 4 blank rows.
+
 ---
 
 ## Sources and claims to check before publishing
 
 - **Chapter 1, lesson paragraph 3** (concrete "how" thinking versus abstract "why" thinking): Watkins, E. R. (2008). "Constructive and unconstructive repetitive thought." *Psychological Bulletin*, 134(2), 163–206. The paragraph paraphrases the review's general finding; a reviewer should confirm the wording isn't overstated.
+- **Chapter 3, lesson paragraph 3** ("breathing out a little more slowly than you breathe in helps many people settle"): worded as a common experience, not a physiological claim. It also offers an alternative for people who find breath focus uncomfortable. A reviewer should confirm the wording.
 - No other factual claims are made. Everything else is practice guidance, not research findings.
 
 ## Review checklist
