@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T13:27:16.830Z",
+  "when": "2026-10-31T14:21:24.729Z",
   "url": "http://localhost:8771/home.html",
   "checks": [
     {
@@ -94,6 +94,11 @@
     },
     {
       "name": "axe: phone home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone galaxy",
       "ok": true,
       "detail": ""
     },
@@ -284,6 +289,11 @@
     },
     {
       "name": "axe: desktop home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop galaxy",
       "ok": true,
       "detail": ""
     },
@@ -485,17 +495,19 @@
     {
       "name": "reduced motion: arrival is immediate",
       "ok": true,
-      "detail": "47 ms"
+      "detail": "19 ms"
     }
   ],
   "axe": {
     "phone home": [],
+    "phone galaxy": [],
     "phone mind": [],
     "phone editor": [],
     "phone memories": [],
     "phone you": [],
     "phone text": [],
     "desktop home": [],
+    "desktop galaxy": [],
     "desktop mind": [],
     "desktop editor": [],
     "desktop memories": [],
@@ -503,26 +515,26 @@
     "desktop text": []
   },
   "timings": {
-    "phone.ready_ms": 441,
-    "phone.mind_arrival_ms": 760,
+    "phone.ready_ms": 313,
+    "phone.mind_arrival_ms": 753,
     "phone.frames_swiftshader": {
-      "n": 31,
-      "median": 66.60000000000036,
-      "p95": 233.39999999999964,
+      "n": 37,
+      "median": 83.29999999999927,
+      "p95": 149.89999999999964,
       "degraded": false
     },
-    "desktop.ready_ms": 366,
-    "desktop.mind_arrival_ms": 834,
+    "desktop.ready_ms": 331,
+    "desktop.mind_arrival_ms": 886,
     "desktop.frames_swiftshader": {
-      "n": 15,
-      "median": 166.79999999999563,
-      "p95": 583.2000000000044,
+      "n": 12,
+      "median": 266.7000000000007,
+      "p95": 466.7000000000007,
       "degraded": false
     },
-    "reduced.soul_arrival_ms": 47
+    "reduced.soul_arrival_ms": 19
   },
   "summary": {
-    "total": 97,
+    "total": 99,
     "failed": 0
   }
 }

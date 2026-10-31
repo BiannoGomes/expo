@@ -1,8 +1,8 @@
 {
-  "when": "2026-10-31T13:32:15.781Z",
+  "when": "2026-10-31T14:23:55.648Z",
   "checks": [
     {
-      "name": "phone: Explore lists the Communication system",
+      "name": "phone: Learn lists the Communication system",
       "ok": true,
       "detail": ""
     },
@@ -62,7 +62,7 @@
       "detail": ""
     },
     {
-      "name": "phone: home, with the new discovery selected",
+      "name": "phone: Home, with the new discovery selected",
       "ok": true,
       "detail": ""
     },
@@ -122,7 +122,7 @@
       "detail": ""
     },
     {
-      "name": "desktop: Explore lists the Communication system",
+      "name": "desktop: Learn lists the Communication system",
       "ok": true,
       "detail": ""
     },
@@ -182,7 +182,7 @@
       "detail": ""
     },
     {
-      "name": "desktop: home, with the new discovery selected",
+      "name": "desktop: Home, with the new discovery selected",
       "ok": true,
       "detail": ""
     },

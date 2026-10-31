@@ -1036,4 +1036,19 @@ describe("expeditions (Soul · Communication, first slice)", () => {
       assert.equal(n, 0, t);
     }
   });
+
+  it("the Mind mission's lens step is validated by the server, and completes", async () => {
+    const s = await createSession();
+    const a = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "labyrinth-1" } })).json();
+    await inject(s, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: 0, answer: { ack: true } } });
+    const bad = await inject(s, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: 1, answer: { ratings: { annoyed: 3 } } } });
+    assert.equal(bad.statusCode, 422);
+    for (const [i, answer] of [{ ratings: { annoyed: 3, busy: 1, forgot: 2 } }, { text: "She didn't reply." }, { text: "She was at work." }, { skip: true }, { ack: true }].entries()) {
+      const r = await inject(s, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: i + 1, answer } });
+      assert.equal(r.statusCode, 200, `step ${i + 1}: ${r.body}`);
+    }
+    const done = (await inject(s, { method: "POST", url: `/attempts/${a.id}/complete` })).json();
+    assert.deepEqual(done.discoveries.map((d: { key: string }) => d.key), ["star:labyrinth-1", "moon:mind-thought-patterns"]);
+    assert.equal(done.experiment, null);
+  });
 });

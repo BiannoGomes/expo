@@ -34,8 +34,8 @@ function play(mission = bridge1): Attempt {
 describe("expedition catalog", () => {
   it("is sound: every mission has a completion state, valid options and a close step", () => {
     assert.deepEqual(checkCatalog(), []);
-    assert.equal(MISSIONS.length, 3);
-    assert.equal(SYSTEMS[0]!.missionIds.length, 3);
+    assert.equal(MISSIONS.length, 4);
+    assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-thought-patterns", 1], ["soul-communication", 3]]);
   });
   it("contains no scoring or forbidden words", () => {
     const text = JSON.stringify(MISSIONS).toLowerCase();
@@ -98,6 +98,27 @@ describe("expedition engine", () => {
     }
     assert.ok("attempt" in completeAttempt(m, a));
     assert.equal(plannedAction(m, a), null);
+  });
+});
+
+describe("the Mind lens step", () => {
+  const lab = missionById("labyrinth-1")!;
+  const lens = lab.steps.find((x) => x.type === "lens")!;
+  it("needs every reading rated 1 to 3, and nothing else", () => {
+    assert.match(validateAnswer(lens, { ratings: { annoyed: 3 } })!, /Rate each/);
+    assert.match(validateAnswer(lens, { ratings: { annoyed: 3, busy: 2, forgot: 5 } })!, /Rate each/);
+    assert.match(validateAnswer(lens, { ratings: { annoyed: 3, busy: 2, forgot: 1, extra: 2 } })!, /Rate each/);
+    assert.equal(validateAnswer(lens, { ratings: { annoyed: 3, busy: 2, forgot: 1 } }), null);
+  });
+  it("a full Thought Labyrinth completes and finds its star and moon", () => {
+    let a = beginAttempt(lab, "l1");
+    for (const [i, s] of lab.steps.entries()) {
+      const ans = s.type === "lens" ? { ratings: { annoyed: 3, busy: 2, forgot: 2 } } : s.type === "plan" ? { skip: true as const } : s.type === "rehearse" || s.type === "reflect" ? { text: "Words." } : { ack: true as const };
+      const r = answerStep(lab, a, i, ans); assert.ok("attempt" in r, s.id); a = r.attempt;
+    }
+    const done = completeAttempt(lab, a);
+    assert.ok("attempt" in done);
+    assert.deepEqual(discoveriesFrom(done.events).map((d) => d.key), ["star:labyrinth-1", "moon:mind-thought-patterns"]);
   });
 });
 

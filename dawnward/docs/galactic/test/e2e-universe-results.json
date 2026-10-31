@@ -1,0 +1,480 @@
+{
+  "when": "2026-10-31T14:24:24.784Z",
+  "checks": [
+    {
+      "name": "320x568: Atlas galaxies and names never overlap",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "320x568: every galaxy and name is fully on screen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "320x568: no sideways page scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "360x800: Atlas galaxies and names never overlap",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "360x800: every galaxy and name is fully on screen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "360x800: no sideways page scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "390x844: Atlas galaxies and names never overlap",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "390x844: every galaxy and name is fully on screen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "390x844: no sideways page scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "430x932: Atlas galaxies and names never overlap",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "430x932: every galaxy and name is fully on screen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "430x932: no sideways page scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "tablet: Atlas galaxies and names never overlap",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "tablet: every galaxy and name is fully on screen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "tablet: no sideways page scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Atlas galaxies and names never overlap",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: every galaxy and name is fully on screen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: no sideways page scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Dawnward opens on Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the Compass offers a first expedition",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the Compass says why",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the first action is visible without scrolling",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: \"Not today\" sets the suggestion aside",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: and it comes back on request",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: five worlds on Home, each a button",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the Universe tab opens the Atlas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: seven destinations, each a real button",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone atlas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: list view has every destination",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: an unopened galaxy says so plainly",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: selecting moves toward the galaxy",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Personal Growth opens the five worlds",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: no repeated Explore buttons; each world shows its name",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: breadcrumb reads Universe › Personal Growth › Mind",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Mind shows its mechanic and the Thought Patterns system",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone mind world",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the mission keeps the trail back to Mind",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: three readings to weigh",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Continue waits until every reading is rated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the lesson appears once all are rated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone lens step",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: discovery reward: a star for The Thought Labyrinth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Return to Earth lands on Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Home shows what was just discovered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the Compass moves on to the next expedition",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Home has no urgency, streaks or scores",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone earth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Journey lists the star and the moon",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: reflecting is one tap from Earth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the Universe crumb returns to the Atlas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: after reload Journey still lists the discoveries",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: no page errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Dawnward opens on Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the Compass offers a first expedition",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the Compass says why",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the first action is visible without scrolling",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: \"Not today\" sets the suggestion aside",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: and it comes back on request",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: five worlds on Home, each a button",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the Universe tab opens the Atlas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: seven destinations, each a real button",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop atlas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: list view has every destination",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: an unopened galaxy says so plainly",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: selecting moves toward the galaxy",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Personal Growth opens the five worlds",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: no repeated Explore buttons; each world shows its name",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: breadcrumb reads Universe › Personal Growth › Mind",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Mind shows its mechanic and the Thought Patterns system",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop mind world",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the mission keeps the trail back to Mind",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: three readings to weigh",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Continue waits until every reading is rated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the lesson appears once all are rated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop lens step",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: discovery reward: a star for The Thought Labyrinth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Return to Earth lands on Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Home shows what was just discovered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the Compass moves on to the next expedition",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Home has no urgency, streaks or scores",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop earth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Journey lists the star and the moon",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: reflecting is one tap from Earth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the Universe crumb returns to the Atlas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: after reload Journey still lists the discoveries",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: no page errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: opens on Home without an entrance",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: no animated transition in the Atlas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: Personal Growth opens",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "phone home": [],
+    "phone atlas": [],
+    "phone mind world": [],
+    "phone lens step": [],
+    "phone earth": [],
+    "desktop home": [],
+    "desktop atlas": [],
+    "desktop mind world": [],
+    "desktop lens step": [],
+    "desktop earth": []
+  },
+  "timings": {
+    "phone.to_first_step_ms": 126,
+    "desktop.to_first_step_ms": 119
+  },
+  "summary": {
+    "total": 91,
+    "failed": 0
+  }
+}

@@ -2,7 +2,7 @@
 // The server validates it at startup; the web preview bundles the same file.
 
 export type WorldId = "mind" | "body" | "soul" | "spirit" | "future";
-export type StepType = "intro" | "choice" | "rehearse" | "plan" | "reflect" | "close";
+export type StepType = "intro" | "choice" | "lens" | "rehearse" | "plan" | "reflect" | "close";
 
 export interface ChoiceOption {
   id: string;
@@ -12,6 +12,12 @@ export interface ChoiceOption {
   why: string;
 }
 
+/** A reading of an event (Mind's lens mechanic), rated against what you actually know. */
+export interface Lens {
+  id: string;
+  text: string;
+}
+
 export interface Step {
   id: string;
   type: StepType;
@@ -19,6 +25,9 @@ export interface Step {
   body?: string;
   prompt?: string;
   options?: ChoiceOption[];
+  lenses?: Lens[];
+  /** Shown once every lens is rated. */
+  feedback?: string;
   /** Example wording, offered as a starting point, never prefilled. */
   examples?: string[];
   required: boolean;
@@ -49,6 +58,69 @@ const SOUL_SAFETY =
   "If a relationship feels unsafe, this isn't the right practice. findahelpline.com lists free, confidential support lines for your country.";
 
 export const MISSIONS: Mission[] = [
+  {
+    id: "labyrinth-1",
+    version: 1,
+    systemId: "mind-thought-patterns",
+    world: "mind",
+    title: "The Thought Labyrinth",
+    part: "Part 1: One event, three readings",
+    objective: "See an event from more than one angle before deciding what it means.",
+    minutes: 6,
+    steps: [
+      {
+        id: "intro",
+        type: "intro",
+        title: "One event, many readings",
+        body: "Something small happened, and your mind has already decided what it means. Here you'll look at it through three lenses, weigh what you actually know, and find a second reading of something from your own life. Nothing here is scored.",
+        required: false,
+      },
+      {
+        id: "readings",
+        type: "lens",
+        title: "A message left on read",
+        body: "This morning you sent a friend a long, careful message. It's evening now. It says \"read\", and they haven't replied.",
+        prompt: "For each reading, how well does it fit what you actually know?",
+        lenses: [
+          { id: "annoyed", text: "They're annoyed with me." },
+          { id: "busy", text: "They're busy and want to reply properly when they have time." },
+          { id: "forgot", text: "They read it on the go and forgot to come back to it." },
+        ],
+        feedback: "You know one thing for certain: they read it. Every reading beyond that is a guess. The guess that feels most true often says more about how your day has been than about them.",
+        required: true,
+      },
+      {
+        id: "facts",
+        type: "rehearse",
+        title: "Your own labyrinth",
+        prompt: "Think of something recent that your mind decided the meaning of quickly. Write only what happened, just the facts.",
+        examples: ["My manager moved our one-to-one without saying why."],
+        required: true,
+      },
+      {
+        id: "second-reading",
+        type: "reflect",
+        title: "A second reading",
+        prompt: "Write one other way of reading it that also fits those facts.",
+        required: true,
+      },
+      {
+        id: "learn-more",
+        type: "plan",
+        title: "If you want to know more",
+        prompt: "Choose one small thing that would tell you more, like asking, or waiting a day before deciding. You can also leave this for now.",
+        examples: ["Ask her on Friday whether everything's okay"],
+        required: false,
+      },
+      {
+        id: "close",
+        type: "close",
+        title: "Return to Earth",
+        body: "You practised finding a second reading before deciding. Next time your mind decides fast, look for one more way the facts could fit.",
+        required: false,
+      },
+    ],
+  },
   {
     id: "bridge-1",
     version: 1,
@@ -282,6 +354,13 @@ export const MISSIONS: Mission[] = [
 
 export const SYSTEMS: SolarSystem[] = [
   {
+    id: "mind-thought-patterns",
+    world: "mind",
+    title: "Thought Patterns",
+    objective: "Notice how quickly meaning is decided, and find more than one reading.",
+    missionIds: ["labyrinth-1"],
+  },
+  {
     id: "soul-communication",
     world: "soul",
     title: "Communication",
@@ -312,9 +391,24 @@ export function checkCatalog(): string[] {
         if (opts.length < 2 || opts.length > 4) problems.push(`${m.id}/${s.id}: 2 to 4 options`);
         if (new Set(opts.map((o) => o.id)).size !== opts.length) problems.push(`${m.id}/${s.id}: duplicate option ids`);
       }
+      if (s.type === "lens") {
+        const ls = s.lenses ?? [];
+        if (ls.length < 2 || ls.length > 4) problems.push(`${m.id}/${s.id}: 2 to 4 lenses`);
+        if (new Set(ls.map((l) => l.id)).size !== ls.length) problems.push(`${m.id}/${s.id}: duplicate lens ids`);
+        if (!s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);
+      }
       if ((s.type === "rehearse" || s.type === "reflect" || s.type === "plan") && !s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);
     }
   }
   for (const sys of SYSTEMS) for (const id of sys.missionIds) if (!missionById(id)) problems.push(`${sys.id}: unknown mission ${id}`);
   return problems;
 }
+
+/** Each world plays differently. What it offers now, and what is planned (shown as planned, never as available). */
+export const WORLD_PLAY: Record<WorldId, { mechanic: string; planned: string[] }> = {
+  mind: { mechanic: "Lenses: one event, seen through several readings, weighed against what you know.", planned: ["Focus", "Emotional Awareness", "Decisions"] },
+  body: { mechanic: "Experiments: a small habit tried for a week, and what you noticed.", planned: ["Energy", "Recovery", "Sleep", "Movement"] },
+  soul: { mechanic: "Dialogue: conversations to practise, with what tends to happen and why.", planned: ["Values", "Gratitude", "Compassion"] },
+  spirit: { mechanic: "Stillness: short practices of awe, attention and the big questions.", planned: ["Awe", "Contemplation", "Questions"] },
+  future: { mechanic: "Crossroads: paths compared by their assumptions and trade-offs, then one first step.", planned: ["Decisions", "Goals", "Skills", "Purpose"] },
+};

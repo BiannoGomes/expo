@@ -13,7 +13,7 @@
     /* colour */
     --void:#05070D; --deep:#0A1426; --cyan:#37D5E8; --blue:#5B8CFF; --violet:#9B5BFF; --gold:#E6C07B; --gold-ink:#F0D6A2;
     --ink:#F3F0E8; --mark:#EFE8DA; --dim:#C3C9D4; --faint:#9AA3B2; --danger:#E39A92;
-    --mind:#7FB2FF; --body:#5FE3C0; --soul:#C59BFF; --future:#F0C987;
+    --spirit:#C9B8FF; --mind:#7FB2FF; --body:#5FE3C0; --soul:#C59BFF; --future:#F0C987;
     --glass:rgba(12,20,38,.66); --glass-strong:rgba(8,13,26,.9); --edge:rgba(214,228,255,.16); --edge-strong:rgba(230,192,123,.45);
     /* spacing: a 4 px grid, nothing in between */
     --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s8:32px; --s10:40px; --s12:48px; --s16:64px;
@@ -60,7 +60,10 @@
   /* ============ Top bar ============ */
   #topbar { position:fixed; top:0; left:0; right:0; z-index:6; display:flex; justify-content:space-between; align-items:flex-start; gap:var(--s3); padding:calc(var(--safe-t) + var(--s4)) var(--gutter) 0; pointer-events:none; }
   #topbar > * { pointer-events:auto; }
-  body:not([data-place="home"]) #topbar { display:none; }
+  body:not([data-place="home"]):not([data-place="earth"]) #topbar { display:none; }
+  body[data-place="earth"] #topbar { padding-bottom:var(--s4); background:linear-gradient(rgba(5,7,13,.96) 60%, rgba(5,7,13,0)); }
+  body[data-place="earth"] .e-hero { display:none; }
+  #earth .ycol { padding-top:calc(var(--safe-t) + 88px); }
   /* the wordmark sits on its own patch of night so it reads over any sky */
   #brand { position:relative; display:block; text-decoration:none; color:var(--mark); padding:var(--s2) var(--s3) var(--s2) 0; }
   #brand::before { content:""; position:absolute; inset:-28px -48px -28px -40px; z-index:-1; background:radial-gradient(ellipse at 40% 50%, rgba(3,5,10,.82) 0%, rgba(3,5,10,.6) 45%, rgba(3,5,10,0) 75%); filter:blur(6px); border-radius:50%; }
@@ -83,10 +86,55 @@
   .aname { font-family:var(--display); font-weight:600; font-size:15px; letter-spacing:.34em; }
   .awords { font-family:var(--ui); font-size:12px; letter-spacing:.06em; fill:var(--dim) !important; }
   .planet { position:absolute; left:0; top:0; pointer-events:auto; display:inline-flex; align-items:center; gap:var(--s2); min-height:var(--tap); padding:0 var(--s4) 0 var(--s3); border-radius:var(--r-pill); font-size:13px; letter-spacing:.12em; text-transform:uppercase; background:rgba(6,10,20,.7); border:1px solid currentColor; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); white-space:nowrap; will-change:transform; }
-  .planet-mind { color:var(--mind); } .planet-body { color:var(--body); } .planet-soul { color:var(--soul); } .planet-future { color:var(--future); }
+  .planet-mind { color:var(--mind); } .planet-spirit { color:var(--spirit); } .planet-body { color:var(--body); } .planet-soul { color:var(--soul); } .planet-future { color:var(--future); }
   .planet:hover, .planet:focus-visible { background:rgba(230,192,123,.14); }
   .planet.off, .arc.off { visibility:hidden; }
-  @media (max-width: 440px) { .planet .picon, .planet span:last-child { display:none; } .planet { padding:0 var(--s4); } }
+  /* ----- Home: the Daily Compass ----- */
+  .e-kick { margin-top:var(--s2); }
+  #earth .ycol { gap:var(--s6); }
+  .compass { display:flex; flex-direction:column; gap:var(--s3); padding:var(--s5); border-radius:var(--s6); background:linear-gradient(160deg, rgba(23,32,58,.92), rgba(10,14,28,.92)); border:1px solid rgba(230,192,123,.28); box-shadow:0 12px 40px rgba(0,0,0,.45); }
+  .compass .c-top { display:flex; justify-content:space-between; align-items:baseline; gap:var(--s3); flex-wrap:wrap; }
+  .compass .kicker { color:var(--gold-ink); }
+  .c-meta { font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--dim); }
+  .compass .c-title { text-transform:none; letter-spacing:0; color:var(--ink); font-family:var(--display); font-weight:600; font-size:clamp(28px, 7.4vw, 36px); line-height:1.08; }
+  .c-part { color:var(--dim); font-size:14px; margin-top:calc(-1 * var(--s2)); }
+  .c-mission { font-size:17px; line-height:1.45; color:var(--ink); }
+  .c-bar { height:6px; border-radius:3px; background:rgba(255,255,255,.12); overflow:hidden; }
+  .c-bar span { display:block; height:100%; min-width:6px; border-radius:3px; background:var(--gold); }
+  .compass .primary.wide { min-height:56px; font-size:17px; }
+  .c-why summary { min-height:var(--tap); display:inline-flex; align-items:center; color:var(--gold-ink); cursor:pointer; font-size:15px; }
+  .c-why p { color:var(--dim); font-size:15px; line-height:1.5; }
+  .c-more { display:flex; gap:var(--s5); flex-wrap:wrap; margin-top:calc(-1 * var(--s2)); }
+  .compass .c-why { margin-top:calc(-1 * var(--s1)); }
+  .compass.slim { flex-direction:row; align-items:center; justify-content:space-between; padding:var(--s3) var(--s4); }
+  .sec-head { display:flex; justify-content:space-between; align-items:center; gap:var(--s3); }
+  .sec-head h3, .moment h3 { text-transform:none; letter-spacing:0; color:var(--ink); }
+  .sec-head h3 { font-family:var(--display); font-size:22px; font-weight:600; }
+  .wplanets { display:grid; grid-template-columns:repeat(5, 1fr); gap:var(--s2); }
+  .wplanets button { display:flex; flex-direction:column; align-items:center; gap:var(--s2); min-height:var(--tap); padding:var(--s1) 0; border-radius:var(--s4); font-size:14px; }
+  .wplanets img { width:min(64px, 15vw); aspect-ratio:1; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px currentColor, 0 0 16px -2px currentColor; }
+  .wplanets button > span { color:var(--ink); }
+  .wplanets button:hover img, .wplanets button:focus-visible img { transform:scale(1.06); }
+  .nextrow { display:grid; grid-template-columns:repeat(3, 1fr); gap:var(--s3); }
+  .nextrow button { display:flex; flex-direction:column; align-items:flex-start; gap:var(--s1); text-align:left; padding:var(--s4) var(--s3); min-height:112px; border-radius:var(--s5); background:rgba(23,32,58,.75); border:1px solid var(--edge); }
+  .nextrow button:hover, .nextrow button:focus-visible { border-color:var(--edge-strong); }
+  .nextrow .ni { color:var(--gold-ink); margin-bottom:var(--s1); }
+  .nextrow b { font-size:16px; font-weight:600; }
+  .nextrow .ns { font-size:13px; color:var(--dim); line-height:1.35; overflow-wrap:anywhere; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  @media (max-width: 359px) { .nextrow { grid-template-columns:1fr; } .nextrow button { min-height:0; } }
+  .moment { display:flex; flex-direction:column; gap:var(--s2); padding:var(--s5); border-radius:var(--s6); background:rgba(23,32,58,.75); border:1px solid var(--edge); }
+  .moment .kicker { color:var(--gold-ink); }
+  .moment h3 { font-size:20px; font-weight:600; }
+  .moment .ghost { align-self:flex-start; display:inline-flex; gap:var(--s2); align-items:center; }
+  #m-miles { padding:0 var(--gutter) calc(var(--tabs-h) + var(--safe-b) + var(--s8)); max-width:640px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:var(--s6); overflow-y:auto; }
+  /* the worlds in the galaxy: a plain, readable name under each planet */
+  .arc { display:none; }
+  .planet { flex-direction:column; gap:0; padding:var(--s1) var(--s3); border:0; background:none; backdrop-filter:none; -webkit-backdrop-filter:none; text-transform:none; letter-spacing:0; line-height:1.2; }
+  .planet .pn { font-family:var(--display); font-size:19px; font-weight:600; letter-spacing:.04em; color:var(--ink); text-shadow:0 1px 2px #000, 0 2px 12px #000; }
+  .planet .pk { font-size:12px; color:currentColor; text-shadow:0 1px 6px #000; }
+  @media (max-width: 599px) { .planet .pk { display:none; } }
+  .planet:hover, .planet:focus-visible { background:rgba(6,10,20,.55); border-radius:var(--s3); }
+
   @media (max-width: 380px) { .aname { font-size:13px; } }
   @media (min-width: 1000px) { .aname { font-size:18px; } }
 
@@ -247,6 +295,64 @@
   .journey .when { font-family:var(--mono); font-size:12px; color:var(--faint); }
   body[data-place="explore"] #stage { opacity:.35; }
 
+  /* ============ Breadcrumbs ============ */
+  .crumbs ol { list-style:none; display:flex; flex-wrap:wrap; align-items:center; gap:0 var(--s1); font-size:13px; color:var(--faint); }
+  .crumbs li { display:flex; align-items:center; }
+  .crumbs li + li::before { content:"›"; margin:0 var(--s1); color:var(--faint); }
+  .crumbs button { min-height:var(--tap); padding:0 var(--s1); color:var(--gold-ink); text-decoration:underline; text-underline-offset:3px; text-decoration-color:rgba(240,214,162,.35); }
+  .crumbs [aria-current] { color:var(--dim); }
+  .wtitle { display:flex; flex-direction:column; align-items:center; min-width:0; }
+  #w-crumbs .crumbs ol { justify-content:center; font-size:12px; }
+  #w-crumbs .crumbs button { min-height:32px; min-width:var(--tap); }
+  .tools { display:flex; gap:var(--s2); }
+  #notice { top:calc(var(--tap) + var(--s3)); }
+
+  /* ============ The Universe Atlas ============ */
+  #atlas { position:fixed; inset:0; z-index:4; display:flex; flex-direction:column; padding-bottom:calc(var(--tabs-h) + var(--safe-b)); background:radial-gradient(ellipse at 50% 45%, rgba(5,7,13,.2), rgba(5,7,13,.85)); }
+  body[data-place="atlas"] #stage { opacity:0; }
+  .atop { padding:calc(var(--safe-t) + var(--s4)) var(--gutter) var(--s2); display:flex; flex-direction:column; gap:var(--s2); }
+  #a-title, #e-title { font-family:var(--display); font-weight:500; font-size:var(--t-world); line-height:1.1; }
+  #a-field { position:relative; flex:1; min-height:0; overflow:hidden; container:atlas / size; }
+  #a-inner { position:relative; width:100%; height:100%; transition:transform 600ms var(--ease); transform-origin:50% 50%; }
+  /* The map measures its own box, never the window: landscape sizes follow its height, portrait has its own composition sized by width (and capped by height on short phones). */
+  .gx { position:absolute; left:var(--lx); top:var(--ly); transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; gap:var(--s1); width:min(300px, calc(var(--gx) * 1.25cqh + 40px)); border-radius:var(--r-card); padding:var(--s1); }
+  @container atlas (orientation: portrait) {
+    .gx { left:var(--px); top:var(--py); width:calc(var(--pw) * min(1cqw, .62cqh)); min-width:56px; max-width:300px; }
+    .gx-name { font-size:15px; letter-spacing:.03em; line-height:1.15; }
+  }
+  .gx-img, .gx-earth, .gx-gate { width:100%; aspect-ratio:1; border-radius:50%; object-fit:cover; }
+  .gx-img { mix-blend-mode:screen; transition:transform var(--t-ui) var(--ease); }
+  .gx:hover .gx-img, .gx[aria-pressed="true"] .gx-img { transform:scale(1.06); }
+  .gx.closed .gx-img { opacity:.7; }
+  .gx-earth { width:78%; background:radial-gradient(circle at 35% 30%, #8fd3ff 0%, #2e7bd1 30%, #134a8a 55%, #0a1f3d 80%); box-shadow:inset -10px -8px 20px rgba(0,0,0,.6), 0 0 24px rgba(91,140,255,.45), -4px -3px 0 1px rgba(230,192,123,.55); }
+  .gx-gate { width:80%; border:2px solid rgba(185,166,255,.85); box-shadow:0 0 18px rgba(155,91,255,.8), inset 0 0 18px rgba(155,91,255,.6); background:radial-gradient(circle, rgba(255,240,210,.35), rgba(155,91,255,0) 60%); }
+  .gx-name { font-family:var(--display); font-size:17px; font-weight:600; letter-spacing:.06em; text-shadow:0 1px 2px #000, 0 2px 12px #000; text-align:center; }
+  .gx-soon { font-size:13px; color:var(--faint); text-shadow:0 1px 6px #000; }
+  .gx[aria-pressed="true"] .gx-name { color:var(--gold-ink); }
+  .alist { list-style:none; display:flex; flex-direction:column; gap:var(--s2); padding:0 var(--gutter) calc(var(--tabs-h) + var(--safe-b) + var(--s4)); overflow:auto; flex:1; }
+  #a-panel { position:fixed; left:var(--gutter); right:var(--gutter); bottom:calc(var(--tabs-h) + var(--safe-b) + var(--s3)); z-index:6; padding:var(--s5); display:flex; flex-direction:column; gap:var(--s2); max-height:60vh; overflow:auto; }
+  .arow { display:flex; align-items:center; justify-content:space-between; gap:var(--s3); flex-wrap:wrap; }
+  #a-crumbs:has(li:only-child) { display:none; }
+  .gx-name, .gx-soon { width:max-content; max-width:36cqw; text-wrap:balance; }
+  .g-gateway .gx-name, .g-earth .gx-name, .g-growth .gx-name { max-width:60cqw; }
+  @media (max-height: 760px) { .atop .quiet { display:none; } }
+  @container atlas (max-height: 460px) { .gx-soon { display:none; } .gx { gap:0; } }
+  @media (min-width: 1000px) { #atlas { padding-bottom:0; padding-right:120px; } #a-panel { left:auto; right:136px; bottom:auto; top:50%; transform:translateY(-50%); width:380px; } .atop { padding-left:var(--s8); } }
+
+  /* ============ Earth Realm ============ */
+  #earth { position:fixed; inset:0; z-index:4; overflow-y:auto; background:linear-gradient(180deg, rgba(5,7,13,.75), rgba(5,7,13,.97) 40%); }
+  body[data-place="earth"] #stage { opacity:.25; }
+  .e-hero { height:clamp(110px, 18vh, 180px); margin:0 calc(-1 * var(--gutter)); background:radial-gradient(140% 120% at 50% 175%, #0a1f3d 46%, #134a8a 55%, #2e7bd1 58%, rgba(143,211,255,.55) 59.5%, rgba(230,192,123,.35) 61%, rgba(5,7,13,0) 66%); }
+  .ebody { display:flex; flex-direction:column; gap:var(--s2); }
+  .worldrow { display:grid; grid-template-columns:repeat(5, 1fr); gap:var(--s2); }
+  .worldrow button { min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border-radius:var(--s3); border:1px solid currentColor; background:rgba(6,10,20,.6); font-size:12px; }
+
+  /* ============ Mind's lens step ============ */
+  .lens { display:flex; flex-direction:column; gap:var(--s2); padding:var(--s3) 0; border-bottom:1px solid var(--edge); }
+  .lens-text { font-family:var(--display); font-size:var(--t-card); line-height:1.3; }
+  .lens-scale button { flex:1; min-width:0; }
+  .card.event { border-color:var(--edge-strong); }
+
   /* ============ You ============ */
   #you { overflow-y:auto; background:linear-gradient(180deg, rgba(5,7,13,.86), rgba(5,7,13,.96)); }
   .ycol { width:100%; max-width:640px; margin:0 auto; padding:calc(var(--safe-t) + var(--s5)) var(--gutter) calc(var(--tabs-h) + var(--safe-b) + var(--s10)); display:flex; flex-direction:column; gap:var(--s8); }
@@ -305,7 +411,9 @@
     <span class="tag">Your universe remembers</span>
   </a>
   <div class="rcol">
-    <button class="round" id="search" aria-label="Search your memories"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+    <div class="tools">
+      <button class="round" id="to-you" aria-label="You: your data, privacy and display"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>
+    </div>
     <button id="notice" hidden><span class="ni"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></span><span><b>Possible connection</b><span class="s" id="notice-n"></span></span></button>
   </div>
 </header>
@@ -314,18 +422,18 @@
 
 <main id="main">
   <h1 class="sr">Dawnward</h1>
-  <section id="home-ui" class="glass" aria-label="Tonight">
+  <section id="home-ui" class="glass" aria-label="Personal Growth">
     <nav id="worldbar" aria-label="Worlds"></nav>
-    <p id="hello">Good evening</p>
-    <h2 id="home-q">What's on your mind tonight?</h2>
+    <p id="hello">Personal Growth</p>
+    <h2 id="home-q">Where would you like to go?</h2>
     <p id="home-meta"></p>
-    <button id="begin" class="primary">Begin reflection</button>
+    <button id="begin" class="ghost">Begin reflection</button>
   </section>
 
   <section id="world" hidden aria-labelledby="w-name">
     <div class="wbar">
       <button class="round" id="w-back" aria-label="Back to your galaxy"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
-      <h2 id="w-name"></h2>
+      <div class="wtitle"><h2 id="w-name"></h2><div id="w-crumbs"></div></div>
       <span></span>
     </div>
     <div class="wcol"><div id="w-body"></div></div>
@@ -333,7 +441,7 @@
 
   <section id="memories" hidden aria-labelledby="m-title">
     <div class="mhead">
-      <div class="mhead-row"><h2 id="m-title" tabindex="-1">Memories</h2><p id="m-count"></p></div>
+      <div class="mhead-row"><h2 id="m-title" tabindex="-1">Your journey</h2><p id="m-count"></p></div>
       <div id="m-tools">
         <label class="sr" for="m-q">Search your memories</label>
         <input id="m-q" class="search" type="search" placeholder="Search your words" autocomplete="off">
@@ -342,6 +450,7 @@
           <div id="m-views" class="seg" role="radiogroup" aria-label="View">
             <button role="radio" data-v="galaxy" aria-checked="true">Galaxy</button>
             <button role="radio" data-v="list" aria-checked="false">List</button>
+            <button role="radio" data-v="miles" aria-checked="false">Milestones</button>
           </div>
           <div id="m-zoom">
             <button class="round" id="m-zoom-out" aria-label="Zoom out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
@@ -353,8 +462,36 @@
     <div id="m-field" aria-label="Your memories as stars" role="group"></div>
     <ul id="m-list" hidden></ul>
     <div class="mfoot"></div>
+    <div id="m-miles" hidden></div>
   </section>
   <section id="m-detail" hidden aria-label="Memory"></section>
+
+  <section id="atlas" hidden aria-labelledby="a-title">
+    <div class="atop">
+      <div id="a-crumbs"></div>
+      <div class="arow">
+        <h2 id="a-title" tabindex="-1">The Universe</h2>
+        <div id="a-views" class="seg" role="radiogroup" aria-label="View">
+          <button role="radio" data-v="map" aria-checked="true">Map</button>
+          <button role="radio" data-v="list" aria-checked="false">List</button>
+        </div>
+      </div>
+      <p class="quiet">Choose a place to go. Earth is your everyday life.</p>
+    </div>
+    <div id="a-field" role="group" aria-label="Galaxies"><div id="a-inner"></div></div>
+    <ul id="a-list" class="alist" hidden></ul>
+    <section id="a-panel" class="glass" hidden aria-labelledby="a-name"></section>
+  </section>
+
+  <section id="earth" hidden aria-labelledby="e-title">
+    <div class="ycol">
+      <div id="e-crumbs"></div>
+      <div class="e-hero" aria-hidden="true"></div>
+      <p class="kicker e-kick">Earth · your everyday life</p>
+      <h2 id="e-title" tabindex="-1">Welcome</h2>
+      <div id="e-body" class="ebody"></div>
+    </div>
+  </section>
 
   <section id="explore" hidden aria-labelledby="x-title">
     <div class="ycol"><div id="x-body"></div></div>
@@ -399,11 +536,11 @@
 </main>
 
 <nav id="tabs" aria-label="Main">
-  <button data-tab="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-20 12 12)"/><circle cx="12" cy="12" r="2.2"/></svg>Home</button>
+  <button data-tab="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20h-5.5v-5.5h-5V20H4z"/></svg>Home</button>
+  <button data-tab="universe"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-20 12 12)"/><circle cx="12" cy="12" r="2.2"/></svg>Universe</button>
   <button data-tab="reflect"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.6 4.8 2.2 7.4 10 10-7.8 2.6-9.4 5.2-10 10-.6-4.8-2.2-7.4-10-10 7.8-2.6 9.4-5.2 10-10Z"/></svg>Reflect</button>
-  <button data-tab="explore"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></svg>Explore</button>
-  <button data-tab="memories"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="5" cy="7" r="1.4"/><circle cx="12" cy="4" r="1.4"/><circle cx="18" cy="9" r="1.4"/><circle cx="9" cy="14" r="1.4"/><circle cx="16" cy="18" r="1.4"/><path d="M6.2 6.4 10.8 4.6M13.2 4.8l3.6 3.4M17.3 10.2 16.3 16.7M14.8 17.4 10 14.8"/></svg>Memories</button>
-  <button data-tab="you"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>You</button>
+  <button data-tab="learn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5Zm0 0v13"/></svg>Learn</button>
+  <button data-tab="journey"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="5" cy="7" r="1.4"/><circle cx="12" cy="4" r="1.4"/><circle cx="18" cy="9" r="1.4"/><circle cx="9" cy="14" r="1.4"/><circle cx="16" cy="18" r="1.4"/><path d="M6.2 6.4 10.8 4.6M13.2 4.8l3.6 3.4M17.3 10.2 16.3 16.7M14.8 17.4 10 14.8"/></svg>Journey</button>
 </nav>
 
 <div id="entrance" hidden>

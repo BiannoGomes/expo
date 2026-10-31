@@ -41,6 +41,13 @@ const overlaps = (page) => page.evaluate(() => {
   const offscreen = items.filter(({ r }) => r.left < -1 || r.right > innerWidth + 1 || r.top < -1 || r.bottom > innerHeight + 1).map((i) => i.label);
   return { out, offscreen, hOverflow: document.documentElement.scrollWidth > innerWidth };
 });
+// Personal Growth sits inside the Universe: Universe tab, the galaxy, Enter.
+const toGalaxy = async (p) => {
+  await p.locator('#tabs [data-tab="universe"]').click();
+  await p.locator('#a-inner [data-id="growth"]').click();
+  await p.getByRole("button", { name: "Enter Personal Growth" }).click();
+  await p.waitForTimeout(1200);
+};
 const ready = (page) => page.waitForFunction(() => window.__dwHomeReady, null, { timeout: 30000 });
 const arrive = (page) => page.waitForFunction(() => document.body.classList.contains("closeup-on"), null, { timeout: 15000 });
 const stars = (page) => page.evaluate(() => window.__dwHome.data.stars.length);
@@ -53,11 +60,11 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
   for (const [name, w, h, mobile] of [["320x568", 320, 568, true], ["360x800", 360, 800, true], ["390x844", 390, 844, true], ["430x932", 430, 932, true], ["tablet-portrait", 820, 1180, true], ["tablet-landscape", 1180, 820, true], ["desktop", 1440, 900, false]]) {
     const p = await browser.newPage({ viewport: { width: w, height: h }, isMobile: mobile, hasTouch: mobile });
     await p.addInitScript(() => localStorage.setItem("dw-home-seen", "1"));
-    await p.goto(PAGE); await ready(p); await p.waitForTimeout(1500);
+    await p.goto(PAGE); await ready(p); await toGalaxy(p);
     const o = await overlaps(p);
     check(`${name}: nothing overlaps`, o.out.length === 0, o.out.join(", "));
     check(`${name}: nothing off screen, no sideways scroll`, !o.offscreen.length && !o.hOverflow, o.offscreen.join(","));
-    await p.screenshot({ path: `${OUT}/vp-${name}.png` });
+    await p.screenshot({ path: `${OUT}/vp-${name}.png`, timeout: 90000 });
     await p.close();
   }
 
@@ -77,9 +84,11 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     await page.waitForTimeout(1200);
     const body = await page.textContent("body");
     check(`${name}: no sample or invented data`, !/sample|invented/i.test(body) && (await stars(page)) === 0);
-    check(`${name}: empty state invites the first reflection`, (await page.textContent("#home-meta")).includes("Your first reflection becomes your first star"));
-    await page.screenshot({ path: `${OUT}/${name}-1-home-empty.png` });
+    check(`${name}: empty state invites the first reflection`, (await page.textContent("#earth")).includes("Begins with your first reflection"));
+    await page.screenshot({ path: `${OUT}/${name}-1-home-empty.png`, timeout: 90000 });
     await axe(page, `${name} home`);
+    await toGalaxy(page);
+    await axe(page, `${name} galaxy`);
 
     // into Mind
     const tm = Date.now();
@@ -89,7 +98,7 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     check(`${name}: focus on the world's question`, await page.evaluate(() => document.activeElement?.id === "w-q"));
     check(`${name}: one primary action`, (await page.locator("#w-body .primary").count()) === 1);
     await page.waitForTimeout(500);
-    await page.screenshot({ path: `${OUT}/${name}-2-mind.png` });
+    await page.screenshot({ path: `${OUT}/${name}-2-mind.png`, timeout: 90000 });
     await axe(page, `${name} mind`);
 
     // reflect: empty refused; a draft survives leaving and coming back
@@ -106,7 +115,7 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     await page.locator('#tabs [data-tab="reflect"]').click();
     await arrive(page);
     check(`${name}: draft comes back after navigating away`, (await page.inputValue("#words")).includes("A long walk before work"));
-    await page.screenshot({ path: `${OUT}/${name}-3-editor.png` });
+    await page.screenshot({ path: `${OUT}/${name}-3-editor.png`, timeout: 90000 });
     await axe(page, `${name} editor`);
 
     // the blocked microphone (as in the preview window): said plainly
@@ -124,11 +133,12 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     check(`${name}: the new star shows the exact words`, (await page.textContent("blockquote.said")).includes("A long walk before work"));
     check(`${name}: it says where it is kept`, (await page.textContent("#w-body")).includes("Kept on this device"));
     check(`${name}: draft cleared after keeping`, await page.evaluate(() => localStorage.getItem("dw-draft-v1") === null));
-    await page.screenshot({ path: `${OUT}/${name}-4-new-star.png` });
+    await page.screenshot({ path: `${OUT}/${name}-4-new-star.png`, timeout: 90000 });
     await page.reload(); await ready(page); await page.waitForTimeout(600);
     check(`${name}: still there after a reload`, (await stars(page)) === 1 && (await page.textContent("#home-meta")).includes("1 memory"));
 
     // a second evening in Body that shares a word: a possible connection
+    await toGalaxy(page);
     await page.locator('#planets .planet-body').evaluate((b) => b.click());
     await arrive(page);
     await page.getByRole("button", { name: "Begin reflection" }).click();
@@ -141,10 +151,10 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     check(`${name}: linking draws one line and keeps it`, (await page.evaluate(() => window.__dwHome.data.links.length)) === 1 && (await page.evaluate(() => JSON.parse(localStorage.getItem("dw-local-v1")).themes.length)) === 1);
 
     // Memories: galaxy, filter, search, list, detail
-    await page.locator('#tabs [data-tab="memories"]').click();
+    await page.locator('#tabs [data-tab="journey"]').click();
     await page.waitForTimeout(300);
     check(`${name}: two stars, each a button`, (await page.locator(".mstar").count()) === 2);
-    await page.screenshot({ path: `${OUT}/${name}-5-memories.png` });
+    await page.screenshot({ path: `${OUT}/${name}-5-memories.png`, timeout: 90000 });
     await axe(page, `${name} memories`);
     await page.locator('#m-filters [data-f="body"]').click();
     check(`${name}: filter by world`, (await page.locator(".mstar").count()) === 1);
@@ -160,7 +170,7 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     check(`${name}: Escape closes the detail`, await page.evaluate(() => document.getElementById("m-detail").hidden));
 
     // You: the pattern with its evidence, review asks before setting aside
-    await page.locator('#tabs [data-tab="you"]').click();
+    await page.locator('#tabs [data-tab="home"]').click(); await page.locator("#to-you").click();
     await page.waitForTimeout(300);
     check(`${name}: pattern listed with its evidence count`, (await page.textContent("#y-understand")).includes("Seen in 2 of your evenings"));
     await axe(page, `${name} you`);
@@ -170,10 +180,10 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     await page.getByRole("button", { name: "That's not right" }).click();
     check(`${name}: setting aside asks first`, (await page.textContent("#w-body")).includes("Set this aside?"));
     await page.getByRole("button", { name: "Keep it as it is" }).click();
-    await page.screenshot({ path: `${OUT}/${name}-6-review.png` });
+    await page.screenshot({ path: `${OUT}/${name}-6-review.png`, timeout: 90000 });
 
     // text view
-    await page.locator('#tabs [data-tab="you"]').click();
+    await page.locator('#tabs [data-tab="home"]').click(); await page.locator("#to-you").click();
     await page.click("#y-text");
     const txt = await page.textContent("#text");
     check(`${name}: text view has every world and both evenings`, ["Mind", "Body", "Soul", "Spirit", "Future"].every((w) => txt.includes(w)) && txt.includes("Took the walk at lunch"));
@@ -181,14 +191,14 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     await page.click("#text-close");
 
     // delete everything
-    await page.locator('#tabs [data-tab="you"]').click();
+    await page.locator('#tabs [data-tab="home"]').click(); await page.locator("#to-you").click();
     await page.click("#y-delete");
     check(`${name}: delete asks first`, (await page.textContent("#y-delete-confirm")).includes("can't be undone"));
     await page.getByRole("button", { name: "Delete everything", exact: true }).click();
     check(`${name}: everything deleted from this device`, (await stars(page)) === 0 && (await page.evaluate(() => localStorage.getItem("dw-local-v1"))) === null);
 
     // frame timing (software GPU: not a device measurement)
-    await page.locator('#tabs [data-tab="home"]').click();
+    await toGalaxy(page);
     await page.evaluate(() => (window.__dwFrames.length = 0));
     await page.waitForTimeout(3000);
     results.timings[`${name}.frames_swiftshader`] = await page.evaluate(() => { const f = window.__dwFrames.slice().sort((a, b) => a - b); return { n: f.length, median: f[Math.floor(f.length / 2)], p95: f[Math.floor(f.length * 0.95)], degraded: Boolean(window.__dwDegraded) }; });
@@ -200,7 +210,7 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
   {
     const p = await browser.newPage({ viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true });
     await p.addInitScript(() => localStorage.setItem("dw-home-seen", "1"));
-    await p.goto(PAGE); await ready(p); await p.waitForTimeout(800);
+    await p.goto(PAGE); await ready(p); await toGalaxy(p);
     check("320x568: five world buttons shown", (await p.locator("#worldbar button").count()) === 5 && (await p.locator("#worldbar").isVisible()));
     await p.locator('#worldbar [data-world="soul"]').click();
     await arrive(p);
@@ -227,11 +237,11 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     const p = await ctx.newPage();
     await p.goto(PAGE); await ready(p);
     check("reduced motion: no entrance", await p.evaluate(() => document.getElementById("entrance").hidden));
-    const t = Date.now();
-    await p.locator("#planets .planet-soul").evaluate((b) => b.click());
-    await p.waitForFunction(() => document.body.classList.contains("closeup-on"), null, { timeout: 4000 });
-    results.timings["reduced.soul_arrival_ms"] = Date.now() - t;
-    check("reduced motion: arrival is immediate", Date.now() - t < 600, `${Date.now() - t} ms`);
+    await toGalaxy(p);
+    // timed inside the page: from the tap to the world being shown (a software GPU's slow frames are not the app's)
+    const arr = await p.evaluate(() => { const t = performance.now(); document.querySelector("#planets .planet-soul").click(); return { ms: performance.now() - t, on: document.body.classList.contains("closeup-on") }; });
+    results.timings["reduced.soul_arrival_ms"] = Math.round(arr.ms);
+    check("reduced motion: arrival is immediate", arr.on && arr.ms < 100, `${Math.round(arr.ms)} ms`);
     await ctx.close();
   }
 

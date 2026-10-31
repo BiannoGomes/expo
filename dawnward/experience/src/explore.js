@@ -119,7 +119,8 @@ export function createExplore(store, h) {
 
   function head(title, sub, back) {
     return [
-      back ? el("button", { class: "text-btn back", onclick: back }, el("span", { html: svg(ICON.back, 16) }), " Explore") : null,
+      h.crumbs([{ label: "Learn", root: true }]),
+      back ? el("button", { class: "text-btn back", onclick: back }, el("span", { html: svg(ICON.back, 16) }), " Learn") : null,
       el("h2", { class: "s-title", id: "x-title", tabindex: "-1" }, title),
       sub ? el("p", { class: "quiet" }, sub) : null,
     ].filter(Boolean);
@@ -133,7 +134,7 @@ export function createExplore(store, h) {
     $("x-title")?.focus();
   }
   function draw() {
-    const kids = [...head("Explore", "The Discovery Galaxy: short practices for real life. Reflect stays one tap away.")];
+    const kids = [...head("Learn", "Expeditions: short guided practices for real life. Understand, practise, try it for real if you want, then reflect.")];
     const going = data.attempts.filter((a) => a.status === "in_progress" || a.status === "paused");
     if (going.length) {
       kids.push(el("section", { class: "group", "aria-labelledby": "x-cont" }, el("h3", { id: "x-cont" }, "Continue"),
@@ -170,8 +171,11 @@ export function createExplore(store, h) {
   }
 
   // ----- the quest player: one step at a time, saved before it moves on -----
-  let current = null; // { mission, attempt }
-  async function play(missionId) {
+  let current = null; // { mission, attempt, from }
+  // Where Back leads: Explore by default, or the world the mission was opened from.
+  let from = null; // { label, go, trail }
+  async function play(missionId, opts = {}) {
+    from = opts.from ?? null;
     const m = missionById(missionId);
     h.showPlace("explore");
     body().replaceChildren(el("p", { class: "quiet", role: "status" }, "Opening…"));
@@ -181,12 +185,18 @@ export function createExplore(store, h) {
     await refresh();
     show(Math.min(r.step, m.steps.length - 1));
   }
-  async function back() { if (current && current.attempt.status === "in_progress") { const r = await store.exit(current.attempt); if (r && !r.error) h.announce("Your place is kept."); } current = null; h.quiet(false); await refresh(); draw(); $("x-title")?.focus(); }
+  async function back() {
+    if (current && current.attempt.status === "in_progress") { const r = await store.exit(current.attempt); if (r && !r.error) h.announce("Your place is kept."); }
+    current = null; h.quiet(false); await refresh();
+    if (from) { const f = from; from = null; f.go(); return; }
+    draw(); $("x-title")?.focus();
+  }
 
   function frame(m, i, ...kids) {
     body().replaceChildren(
       el("div", { class: "qhead" },
-        el("button", { class: "text-btn back", onclick: back }, el("span", { html: svg(ICON.back, 16) }), " Explore"),
+        h.crumbs([...(from?.trail ?? [{ label: "Learn", root: true, go: () => { current = null; from = null; h.quiet(false); draw(); } }]), { label: m.title }]),
+        el("button", { class: "text-btn back", onclick: back }, el("span", { html: svg(ICON.back, 16) }), ` ${from?.label ?? "Learn"}`),
         el("p", { class: "kicker" }, `${META[m.world].name} · ${m.title} · ${m.part}`),
         el("p", { class: "qpos", role: "img", "aria-label": `Step ${i + 1} of ${m.steps.length}` }, ...m.steps.map((_, k) => el("span", { class: k < i ? "on" : k === i ? "here" : "" })))),
       ...kids.filter(Boolean));
@@ -234,6 +244,31 @@ export function createExplore(store, h) {
       for (const o of step.options) list.append(el("button", { class: "choice", "data-id": o.id, "aria-pressed": "false", onclick: () => pick(o) }, o.text));
       frame(m, i, title, step.body ? el("p", { class: "lead" }, step.body) : null, list, explain, err, el("div", { class: "actions" }, go));
       if (chosen) pick(step.options.find((o) => o.id === chosen));
+      return;
+    }
+    if (step.type === "lens") {
+      h.quiet(false);
+      const ratings = { ...(prev && "ratings" in prev ? prev.ratings : {}) };
+      const scale = [[1, "Doesn't fit"], [2, "Partly"], [3, "Fits well"]];
+      const feedback = el("div", { class: "explain", "aria-live": "polite" });
+      const go = el("button", { class: "primary", disabled: true, onclick: () => next({ ratings }) }, "Continue");
+      const update = () => {
+        const all = step.lenses.every((l) => ratings[l.id]);
+        go.disabled = !all;
+        feedback.replaceChildren(...(all ? [el("p", { class: "outcome" }, "Your readings"), el("p", { class: "quiet" }, step.feedback)] : []));
+      };
+      const rows = step.lenses.map((l) => {
+        const group = el("div", { class: "seg lens-scale", role: "radiogroup", "aria-label": `How well does this fit: ${l.text}` },
+          scale.map(([v, label]) => el("button", { role: "radio", "aria-checked": String(ratings[l.id] === v), onclick: (e) => {
+            ratings[l.id] = v;
+            group.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b === e.currentTarget)));
+            update();
+          } }, label)));
+        return el("div", { class: "lens" }, el("p", { class: "lens-text" }, l.text), group);
+      });
+      frame(m, i, title, el("div", { class: "card event" }, el("p", { class: "kicker" }, "What happened"), el("p", { class: "lead" }, step.body)),
+        el("p", { class: "lead" }, step.prompt), ...rows, feedback, err, el("div", { class: "actions" }, go));
+      update();
       return;
     }
     if (step.type === "rehearse" || step.type === "reflect") {
@@ -290,8 +325,8 @@ export function createExplore(store, h) {
       plan ? el("div", { class: "card" }, el("p", { class: "kicker" }, "Your real action"), el("p", { class: "statement" }, plan.action), el("p", { class: "why" }, plan.when_text)) : null,
       found && data.gameLayer ? el("div", { class: "card found" }, el("p", { class: "kicker" }, "Discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
       el("div", { class: "actions" },
-        el("button", { class: "primary", onclick: () => { current = null; h.goHomeWith(found?.key ?? null); } }, "Return to Earth"),
-        el("button", { class: "ghost", onclick: () => { current = null; draw(); $("x-title")?.focus(); } }, "Back to Explore")));
+        el("button", { class: "primary", onclick: () => { current = null; from = null; h.goEarth(found ?? null); } }, "Return to Earth"),
+        el("button", { class: "ghost", onclick: () => { current = null; draw(); $("x-title")?.focus(); } }, "Back to Learn")));
     h.announce(found ? `Done. ${found.title} appeared.` : "Done.");
   }
 
@@ -335,7 +370,7 @@ export function createExplore(store, h) {
         body().replaceChildren(...head("Thank you for coming back", null, () => { draw(); $("x-title")?.focus(); }),
           el("p", { class: "lead" }, outcome === "didnt" ? "Not doing it is information too. Next time, notice what got in the way." : "You tried something real. That's the part that changes things."),
           found && data.gameLayer ? el("div", { class: "card found" }, el("p", { class: "kicker" }, "Discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
-          el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => h.goHomeWith(found?.key ?? null) }, "Return to Earth"), el("button", { class: "ghost", onclick: () => { draw(); $("x-title")?.focus(); } }, "Back to Explore")));
+          el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => h.goEarth(found ?? null) }, "Return to Earth"), el("button", { class: "ghost", onclick: () => { draw(); $("x-title")?.focus(); } }, "Back to Explore")));
         $("x-title")?.focus();
       } }, "Save")));
     $("x-title")?.focus();

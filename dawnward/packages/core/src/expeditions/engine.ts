@@ -12,7 +12,8 @@ export type Answer =
   | { skip: true }
   | { choice: string }
   | { text: string }
-  | { action: string; when: string };
+  | { action: string; when: string }
+  | { ratings: Record<string, number> };
 
 export interface Attempt {
   id: string;
@@ -56,6 +57,13 @@ export function validateAnswer(step: Step, answer: unknown): string | null {
       return a.ack === true ? null : "Nothing to answer here.";
     case "choice":
       return typeof a.choice === "string" && (step.options ?? []).some((o) => o.id === a.choice) ? null : "Choose one of the options.";
+    case "lens": {
+      const r = a.ratings as Record<string, unknown> | undefined;
+      if (!r || typeof r !== "object") return "Rate each reading first.";
+      for (const l of step.lenses ?? []) if (![1, 2, 3].includes(r[l.id] as number)) return "Rate each reading first.";
+      if (Object.keys(r).some((k) => !(step.lenses ?? []).some((l) => l.id === k))) return "Rate each reading first.";
+      return null;
+    }
     case "rehearse":
     case "reflect": {
       const t = typeof a.text === "string" ? a.text.trim() : "";
@@ -97,6 +105,7 @@ export function answerStep(mission: Mission, attempt: Attempt, stepIndex: number
 
 function normalise(step: Step, answer: Answer): Answer {
   if ("skip" in answer) return { skip: true };
+  if ("ratings" in answer) return { ratings: { ...answer.ratings } };
   if ("text" in answer) return { text: answer.text.trim() };
   if ("action" in answer) return { action: answer.action.trim(), when: answer.when.trim() };
   if ("choice" in answer) return { choice: answer.choice };

@@ -105,6 +105,7 @@ const answerSchema = z.union([
   z.object({ choice: z.string().min(1).max(40) }),
   z.object({ text: z.string().max(4000) }),
   z.object({ action: z.string().max(400), when: z.string().max(200) }),
+  z.object({ ratings: z.record(z.string().max(40), z.number().int().min(1).max(3)) }),
 ]);
 
 export function registerExpeditionRoutes(app: FastifyInstance) {

@@ -32,9 +32,9 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     await page.waitForFunction(() => window.__dwHomeReady, null, { timeout: 30000 });
 
     // three taps to a mission: Explore, the mission, Begin
-    await page.locator('#tabs [data-tab="explore"]').click();
+    await page.locator('#tabs [data-tab="learn"]').click();
     await page.waitForSelector("#x-title");
-    check(`${name}: Explore lists the Communication system`, (await page.textContent("#x-body")).includes("Communication"));
+    check(`${name}: Learn lists the Communication system`, (await page.textContent("#x-body")).includes("Communication"));
     check(`${name}: no XP, levels or scores anywhere`, !/\bxp\b|\blevel \d|\bscore|\bstreak/i.test(await page.textContent("body")));
     await page.screenshot({ path: `${OUT}/x-${name}-1-explore.png` });
     await axe(page, `${name} explore`);
@@ -80,12 +80,12 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     check(`${name}: kept on this device: completed, one experiment, one star`, s1.attempts["bridge-1"].status === "completed" && s1.experiments.length === 1 && s1.discoveries.some((d) => d.key === "star:bridge-1"));
     await page.getByRole("button", { name: "Return to Earth" }).first().click();
     await page.waitForTimeout(800);
-    check(`${name}: home, with the new discovery selected`, await page.evaluate(() => window.__dwHome.state.place === "home" && window.__dwHome.state.selStar === "d:star:bridge-1"));
+    check(`${name}: Home, with the new discovery selected`, await page.evaluate(() => window.__dwHome.state.place === "earth" && window.__dwHome.state.selStar === "d:star:bridge-1"));
 
     // reload: progress survives; the check-in waits
     await page.reload();
     await page.waitForFunction(() => window.__dwHomeReady, null, { timeout: 30000 });
-    await page.locator('#tabs [data-tab="explore"]').click();
+    await page.locator('#tabs [data-tab="learn"]').click();
     await page.waitForSelector("#x-title");
     const ex = await page.textContent("#x-body");
     check(`${name}: after reload, Part 1 is done and the action waits for a check-in`, /Waiting to hear how it went/.test(ex) && /Ask Sam for ten minutes/.test(ex));
@@ -97,7 +97,7 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     check(`${name}: "I didn't" still counts: a landmark appears`, /lantern in Soul/.test(await page.textContent("#x-body")));
 
     // journey log, and hiding discoveries keeps the data
-    await page.locator('#tabs [data-tab="you"]').click();
+    await page.locator('#tabs [data-tab="home"]').click(); await page.locator("#to-you").click();
     const j = await page.textContent("#y-journey");
     check(`${name}: journey log explains each discovery`, /Why this appeared/.test(j) && /The Bridge/.test(j) && /lantern/i.test(j));
     await page.click("#y-game");
@@ -105,7 +105,7 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     await page.click("#y-game");
 
     // resume mid-mission after a reload
-    await page.locator('#tabs [data-tab="explore"]').click();
+    await page.locator('#tabs [data-tab="learn"]').click();
     await page.getByRole("button", { name: /Part 2: Listening back/ }).click();
     await page.getByRole("button", { name: "Begin" }).click();
     await page.getByRole("button", { name: /So work has been crushing you/ }).click();
@@ -114,7 +114,7 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     await page.waitForTimeout(200);
     await page.reload();
     await page.waitForFunction(() => window.__dwHomeReady, null, { timeout: 30000 });
-    await page.locator('#tabs [data-tab="explore"]').click();
+    await page.locator('#tabs [data-tab="learn"]').click();
     check(`${name}: Continue offers the open mission at step 3`, /Step 3 of 5/.test(await page.textContent("#x-body")));
     await page.getByRole("button", { name: /Part 2: Listening back.*Step 3/ }).click();
     check(`${name}: the unsaved draft comes back`, (await page.inputValue("#q-words")) === "a draft I haven't saved");
@@ -125,7 +125,7 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     check(`${name}: crisis words show support and pause the mission`, /You matter more than any practice/.test(await page.textContent("#x-body")) && (await store(page)).attempts["bridge-2"].status === "paused");
 
     // text view lists the practices
-    await page.locator('#tabs [data-tab="you"]').click();
+    await page.locator('#tabs [data-tab="home"]').click(); await page.locator("#to-you").click();
     await page.click("#y-text");
     check(`${name}: text view lists the practices`, /Practise/.test(await page.textContent("#text")) && /Part 1: Opening/.test(await page.textContent("#text")));
     await page.click("#text-close");
@@ -135,7 +135,7 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     await page.waitForSelector("#words");
     await page.fill("#words", "A quiet evening.");
     await page.getByRole("button", { name: "Keep it" }).click();
-    await page.locator('#tabs [data-tab="you"]').click();
+    await page.locator('#tabs [data-tab="home"]').click(); await page.locator("#to-you").click();
     check(`${name}: first light appears with the first reflection`, /First light/.test(await page.textContent("#y-journey")));
     await page.click("#y-delete");
     await page.getByRole("button", { name: "Delete everything", exact: true }).click();
