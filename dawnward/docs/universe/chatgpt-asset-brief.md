@@ -1,5 +1,7 @@
 # Dawnward: the art brief for ChatGPT (round 2)
 
+> **Update:** Spirit is now made without crystals. Use S1 and S2 in [`chatgpt-chapter-art-brief.md`](chatgpt-chapter-art-brief.md) instead of A1 and A2 below.
+
 Everything the app still needs, in the order it's needed. Each prompt is ready to paste.
 
 ## How to do it
