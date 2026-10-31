@@ -332,7 +332,7 @@
   #x-art { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; background:#05070D; }
   #x-art img { width:100%; height:100%; object-fit:cover; object-position:50% 0%; }
   #x-art::after { content:""; position:absolute; inset:0; }
-  #explore[data-art="scene"] #x-art::after { background:linear-gradient(rgba(5,7,13,.72) 0, rgba(5,7,13,0) 14%, rgba(5,7,13,0) 30%, rgba(5,7,13,.86) 50%, #05070D 64%); }
+  #explore[data-art="scene"] #x-art::after { background:linear-gradient(rgba(5,7,13,.88) 0, rgba(5,7,13,.7) 13%, rgba(5,7,13,.2) 21%, rgba(5,7,13,0) 28%, rgba(5,7,13,.86) 50%, #05070D 64%); }
   #explore[data-art="dim"] #x-art::after { background:linear-gradient(rgba(5,7,13,.78), rgba(5,7,13,.86) 40%, rgba(5,7,13,.95)); }
   #explore[data-art="scene"] #x-art img { animation:drift 28s ease-in-out infinite alternate; }
   @keyframes drift { from { transform:scale(1.02) translateY(0); } to { transform:scale(1.08) translateY(-1.5%); } }
@@ -341,6 +341,19 @@
   #explore[data-art="scene"] .qhead + * { margin-top:clamp(120px, 26vh, 300px); }
   #explore[data-art] .qhead, #explore[data-art] .s-title { text-shadow:0 1px 3px #000, 0 2px 16px rgba(0,0,0,.8); }
   @media (min-width: 1000px) { #x-art img { object-position:50% 22%; } #explore[data-art="scene"] .qhead + * { margin-top:clamp(120px, 30vh, 320px); } }
+  /* the passage through the gateway: four rings of the tunnel flying past in depth, streaks of light, a gold flash */
+  #passage { position:fixed; inset:0; z-index:50; background:#05070D; overflow:hidden; animation:fadein 400ms ease both; }
+  #passage.out { animation:fadeout 420ms ease both; }
+  #passage.still.out { animation-duration:200ms; }
+  @keyframes fadein { from { opacity:0; } } @keyframes fadeout { to { opacity:0; } }
+  #passage .tunnel { position:absolute; inset:0; perspective:620px; perspective-origin:var(--ox, 50%) var(--oy, 50%); transform-style:preserve-3d; }
+  #passage .ring { position:absolute; left:50%; top:50%; width:150vmax; height:150vmax; transform:translate(-50%, -50%); border-radius:50%; mix-blend-mode:screen; opacity:0; -webkit-mask-image:radial-gradient(circle, #000 52%, transparent 70%); mask-image:radial-gradient(circle, #000 52%, transparent 70%); }
+  #passage.still .ring { opacity:1; }
+  #passage.still .ring:not(:first-child) { display:none; }
+  #passage .streaks { position:absolute; inset:0; width:100%; height:100%; mix-blend-mode:screen; }
+  #passage.still .streaks { display:none; }
+  #passage .flash { position:absolute; inset:0; opacity:0; background:radial-gradient(circle at var(--ox, 50%) var(--oy, 50%), #FFF8E6 0, #E6C07B 30%, rgba(230,192,123,0) 70%); }
+  #passage .skip-pass { position:absolute; right:var(--gutter); bottom:calc(var(--safe-b) + var(--s8)); z-index:2; }
   .reward-moon { width:min(180px, 46vw); aspect-ratio:1; align-self:center; margin:var(--s2) auto var(--s3); display:block; filter:drop-shadow(0 0 24px rgba(230,192,123,.45)); animation:rise 1.2s var(--ease) both; }
   @keyframes rise { from { opacity:0; transform:translateY(16px) scale(.9); } to { opacity:1; transform:none; } }
   @media (prefers-reduced-motion: reduce) { .reward-moon { animation:none; } }

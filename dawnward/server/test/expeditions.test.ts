@@ -34,8 +34,8 @@ function play(mission = bridge1): Attempt {
 describe("expedition catalog", () => {
   it("is sound: every mission has a completion state, valid options and a close step", () => {
     assert.deepEqual(checkCatalog(), []);
-    assert.equal(MISSIONS.length, 8);
-    assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-beyond-overthinking", 4], ["mind-thought-patterns", 1], ["soul-communication", 3]]);
+    assert.equal(MISSIONS.length, 9);
+    assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-beyond-overthinking", 4], ["mind-thought-patterns", 1], ["soul-communication", 3], ["future-quantum-gateway", 1]]);
   });
   it("contains no scoring or forbidden words", () => {
     const text = JSON.stringify(MISSIONS).toLowerCase();

@@ -183,6 +183,16 @@ const sound = {
   },
   stop() { if (this.ctx) this.master.gain.setTargetAtTime(0, this.ctx.currentTime, 0.3); this.on = false; },
   duck(on) { if (this.on && this.ctx) this.master.gain.setTargetAtTime(on ? 0.04 : 0.12, this.ctx.currentTime, 0.6); },
+  /** The passage: a slow rising sweep under the drone. Only when sound is already on. */
+  rise(sec = 2.6) {
+    if (!this.on || !this.ctx) return;
+    const t = this.ctx.currentTime, o = this.ctx.createOscillator(), g = this.ctx.createGain(), f = this.ctx.createBiquadFilter();
+    o.type = "sawtooth"; o.frequency.setValueAtTime(82, t); o.frequency.exponentialRampToValueAtTime(330, t + sec);
+    f.type = "lowpass"; f.frequency.setValueAtTime(300, t); f.frequency.exponentialRampToValueAtTime(2400, t + sec);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.05, t + sec * 0.7); g.gain.exponentialRampToValueAtTime(0.0001, t + sec + 0.6);
+    o.connect(f); f.connect(g); g.connect(this.ctx.destination); o.start(t); o.stop(t + sec + 0.7);
+    this.chime(1318);
+  },
   chime(freq = 880) {
     if (!this.on || !this.ctx) return;
     const t = this.ctx.currentTime, o = this.ctx.createOscillator(), g = this.ctx.createGain();
@@ -965,6 +975,7 @@ function main(data, failed) {
       el("div", { class: "actions" },
         g.id === "growth" ? el("button", { class: "primary", onclick: () => goHome() }, "Enter Personal Growth") : null,
         g.id === "earth" ? el("button", { class: "primary", onclick: () => openEarth() }, "Return to Earth") : null,
+        g.id === "gateway" ? el("button", { class: "primary", onclick: () => explore.play("gateway-1", { from: { label: "Universe", go: () => openAtlas(), trail: [] } }) }, "Enter the Gateway") : null,
         el("button", { class: "ghost", onclick: () => { resetAtlas(); inner.querySelector(`[data-id="${g.id}"]`)?.focus(); } }, "Back to the Universe")));
     panel.hidden = false;
     $("a-name").focus({ preventScroll: true });

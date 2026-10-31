@@ -1,0 +1,284 @@
+{
+  "when": "2026-10-31T19:12:26.538Z",
+  "checks": [
+    {
+      "name": "phone: the Gateway is open, and says it's imagination, not prediction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the trail reads Universe › The Quantum Gateway",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: opens on the unlit ring (B1)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: says plainly it's not a prediction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone portal",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the passage is a labelled dialog with Skip focused",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: four rings of the tunnel in depth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the passage ends by itself in about 2.6 s (plus its fade)",
+      "ok": true,
+      "detail": "3221 ms"
+    },
+    {
+      "name": "phone: arrives at A possible you, framed as imagined",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone future self",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the Mirror",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the Crossroads is the Decision Lab",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the First Step",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Return to Earth keeps the real step and finds a star",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the ending says the future isn't fixed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: home on Earth, with the action waiting",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the Gateway's moon is saved in Journey",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: no page errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the Gateway is open, and says it's imagination, not prediction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the trail reads Universe › The Quantum Gateway",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: opens on the unlit ring (B1)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: says plainly it's not a prediction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop portal",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the passage is a labelled dialog with Skip focused",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: four rings of the tunnel in depth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the passage ends by itself in about 2.6 s (plus its fade)",
+      "ok": true,
+      "detail": "3222 ms"
+    },
+    {
+      "name": "desktop: arrives at A possible you, framed as imagined",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: desktop future self",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the Mirror",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the Crossroads is the Decision Lab",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the First Step",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: Return to Earth keeps the real step and finds a star",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the ending says the future isn't fixed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: home on Earth, with the action waiting",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: the Gateway's moon is saved in Journey",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: no page errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "skip: the Gateway is open, and says it's imagination, not prediction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "skip: the trail reads Universe › The Quantum Gateway",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "skip: opens on the unlit ring (B1)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "skip: says plainly it's not a prediction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "skip: Skip ends the passage at once and carries on",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "escape: the Gateway is open, and says it's imagination, not prediction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "escape: the trail reads Universe › The Quantum Gateway",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "escape: opens on the unlit ring (B1)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "escape: says plainly it's not a prediction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "escape: Escape skips the passage and stays in the journey",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced: the Gateway is open, and says it's imagination, not prediction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced: the trail reads Universe › The Quantum Gateway",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced: opens on the unlit ring (B1)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced: says plainly it's not a prediction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced: the scene doesn't lean with the pointer",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced: a single still, no streaks",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced: carries on by itself",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "phone portal": [],
+    "phone future self": [],
+    "desktop portal": [],
+    "desktop future self": []
+  },
+  "timings": {
+    "phone.passage_ms": 3221,
+    "desktop.passage_ms": 3222
+  },
+  "summary": {
+    "total": 53,
+    "failed": 0
+  }
+}

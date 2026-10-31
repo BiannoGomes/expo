@@ -216,19 +216,102 @@ export function createExplore(store, h) {
 
   // The chapter's art: its scene behind the opening and the ending, a softer backdrop behind
   // practice and writing. Decorative only (alt=""), and never under text without a dark veil.
-  function setArt(m, type) {
-    const a = ART.missions[m?.id] ?? {};
-    const code = !m ? null : ["intro", "lesson", "close"].includes(type) ? a.hero : ["rehearse", "reflect", "plan"].includes(type) ? a.reflect ?? a.exercise : a.exercise ?? a.hero;
+  function setArt(m, step) {
+    const a = ART.missions[m?.id] ?? {}, type = step?.type;
+    const code = !m ? null : a.steps?.[step?.id] ?? (["intro", "lesson", "close"].includes(type) ? a.hero : ["rehearse", "reflect", "plan"].includes(type) ? a.reflect ?? a.exercise : a.exercise ?? a.hero);
     const box = $("x-art");
-    if (!code) { box.hidden = true; $("explore").dataset.art = ""; return; }
+    if (!code) { box.hidden = true; $("explore").dataset.art = ""; look.on(false); return; }
     const src = h.asset(artPath(code));
     const img = box.querySelector("img");
     if (img.getAttribute("src") !== src) img.setAttribute("src", src);
     box.hidden = false;
-    $("explore").dataset.art = ["intro", "close"].includes(type) ? "scene" : "dim";
+    $("explore").dataset.art = ["intro", "close"].includes(type) || a.scene?.includes(step?.id) ? "scene" : "dim";
+    look.on($("explore").dataset.art === "scene");
+  }
+  // Look around: the scene leans gently toward the pointer or the phone's tilt (Gravity: damped, half-life 0.32 s).
+  // Off under reduced motion, and off whenever no scene is showing.
+  const reduce = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const look = (() => {
+    let tx = 0, ty = 0, x = 0, y = 0, raf = 0, last = 0, active = false;
+    const aim = (nx, ny) => { tx = Math.max(-1, Math.min(1, nx)); ty = Math.max(-1, Math.min(1, ny)); };
+    const onPointer = (e) => aim((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1);
+    const onTilt = (e) => { if (e.gamma != null) aim(e.gamma / 25, (e.beta - 45) / 25); };
+    const step = (now) => {
+      const dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
+      const k = 1 - Math.pow(2, -dt / 0.32);
+      x += (tx - x) * k; y += (ty - y) * k;
+      $("x-art").style.transform = `translate3d(${(-x * 14).toFixed(1)}px, ${(-y * 10).toFixed(1)}px, 0) scale(1.05)`;
+      raf = active ? requestAnimationFrame(step) : 0;
+    };
+    return { on(want) {
+      const go = want && !reduce();
+      if (go === active) return;
+      active = go;
+      if (go) { addEventListener("pointermove", onPointer); addEventListener("deviceorientation", onTilt); last = 0; raf = requestAnimationFrame(step); }
+      else { removeEventListener("pointermove", onPointer); removeEventListener("deviceorientation", onTilt); cancelAnimationFrame(raf); $("x-art").style.transform = ""; }
+    } };
+  })();
+
+  // ----- the passage: through the gateway in one Revelation beat (2.6 s), always skippable -----
+  function passage(m, done) {
+    const still = reduce();
+    const src = h.asset(artPath(ART.missions[m.id]?.passage ?? "B3"));
+    const canvas = el("canvas", { class: "streaks", "aria-hidden": "true" });
+    const skip = el("button", { class: "ghost skip-pass" }, "Skip");
+    const ov = el("div", { id: "passage", role: "dialog", "aria-modal": "true", "aria-label": "Passing through the gateway", class: still ? "still" : "" },
+      el("div", { class: "tunnel", "aria-hidden": "true" }, [0, 1, 2, 3].map((k) => el("img", { src, alt: "", class: "ring", style: `--k:${k}` }))),
+      canvas, el("div", { class: "flash", "aria-hidden": "true" }), skip);
+    document.body.append(ov);
+    const anims = [];
+    let ended = false, raf = 0;
+    const onKey = (e) => { if (e.key === "Escape") { e.preventDefault(); e.stopImmediatePropagation(); end(); } };
+    const onPointer = (e) => { ov.style.setProperty("--ox", `${(e.clientX / innerWidth) * 100}%`); ov.style.setProperty("--oy", `${(e.clientY / innerHeight) * 100}%`); };
+    function end() {
+      if (ended) return; ended = true;
+      anims.forEach((a) => a.cancel()); cancelAnimationFrame(raf);
+      removeEventListener("keydown", onKey, true); removeEventListener("pointermove", onPointer);
+      ov.classList.add("out");
+      setTimeout(() => ov.remove(), still ? 200 : 420);
+      done();
+    }
+    skip.addEventListener("click", end);
+    addEventListener("keydown", onKey, true);
+    skip.focus();
+    h.announce("Passing through the gateway.");
+    if (still) { setTimeout(end, 1400); return; }   // Revelation, reduced: a 400 ms cross-fade, no travel
+    addEventListener("pointermove", onPointer);
+    h.sound?.rise?.(2.6);
+    const D = 2600, curve = "cubic-bezier(0.65, 0, 0.35, 1)";
+    ov.querySelectorAll(".ring").forEach((r, k) => anims.push(r.animate([
+      { transform: `translate(-50%, -50%) translateZ(-1800px) rotate(${k * 47}deg)`, opacity: 0 },
+      { opacity: 1, offset: 0.25 }, { opacity: 1, offset: 0.75 },
+      { transform: `translate(-50%, -50%) translateZ(560px) rotate(${k * 47 + 110}deg)`, opacity: 0 },
+    ], { duration: D / 2, delay: (k * D) / 8, easing: "linear", fill: "both" })));
+    anims.push(ov.querySelector(".tunnel").animate([{ transform: "rotate(0deg) scale(1)" }, { transform: "rotate(-40deg) scale(1.15)" }], { duration: D, easing: curve, fill: "both" }));
+    anims.push(ov.querySelector(".flash").animate([{ opacity: 0 }, { opacity: 0, offset: 0.78 }, { opacity: 0.95, offset: 0.93 }, { opacity: 0 }], { duration: D + 300, easing: "ease-out", fill: "both" }));
+    // streaks of light rushing outward, faster as the passage deepens
+    const ctx2 = canvas.getContext("2d"), dpr = Math.min(2, devicePixelRatio || 1);
+    canvas.width = innerWidth * dpr; canvas.height = innerHeight * dpr;
+    const cols = ["#E6C07B", "#C9B8FF", "#9B5BFF", "#37D5E8", "#FFF3D6"];
+    const P = Array.from({ length: innerWidth < 600 ? 140 : 260 }, () => ({ a: Math.random() * Math.PI * 2, r: Math.random() * 0.4, v: 0.25 + Math.random() * 0.75, c: cols[(Math.random() * cols.length) | 0] }));
+    const t0 = performance.now();
+    const draw = (now) => {
+      const p = Math.min(1, (now - t0) / D), sp = 0.004 + 0.05 * p * p;
+      const W = canvas.width, H = canvas.height, cx = (parseFloat(ov.style.getPropertyValue("--ox")) || 50) / 100 * W, cy = (parseFloat(ov.style.getPropertyValue("--oy")) || 50) / 100 * H, R = Math.hypot(W, H) / 2;
+      ctx2.clearRect(0, 0, W, H); ctx2.lineCap = "round";
+      for (const s of P) {
+        const r0 = s.r * R, r1 = r0 + (8 + 220 * p) * s.v * dpr;
+        ctx2.strokeStyle = s.c; ctx2.globalAlpha = Math.min(1, s.r * 2.2) * (0.35 + 0.65 * p); ctx2.lineWidth = (0.6 + 1.6 * s.r) * dpr;
+        ctx2.beginPath(); ctx2.moveTo(cx + Math.cos(s.a) * r0, cy + Math.sin(s.a) * r0); ctx2.lineTo(cx + Math.cos(s.a) * r1, cy + Math.sin(s.a) * r1); ctx2.stroke();
+        s.r += sp * s.v; if (s.r > 1.05) { s.r = Math.random() * 0.08; s.a = Math.random() * Math.PI * 2; }
+      }
+      if (p < 1 && !ended) raf = requestAnimationFrame(draw);
+    };
+    raf = requestAnimationFrame(draw);
+    setTimeout(end, D + 200);
   }
   function frame(m, i, ...kids) {
-    setArt(m, m.steps[i]?.type);
+    setArt(m, m.steps[i]);
     body().replaceChildren(
       el("div", { class: "qhead" },
         h.crumbs([...(from?.trail ?? [{ label: "Learn", root: true, go: () => { current = null; from = null; h.quiet(false); draw(); } }]), { label: m.title }]),
@@ -266,6 +349,14 @@ export function createExplore(store, h) {
         m.worksheet ? el("p", { class: "quiet" }, "Includes a worksheet to print or keep: ", el("button", { class: "text-btn", onclick: () => worksheet(m, () => show(i)) }, m.worksheet.title)) : null,
         m.safetyNote ? el("p", { class: "quiet safety" }, m.safetyNote) : null,
         err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => next({ ack: true }) }, "Begin")));
+      return;
+    }
+    if (step.type === "portal") {
+      h.quiet(false);
+      frame(m, i, title, el("p", { class: "lead" }, step.body), err,
+        el("div", { class: "actions" },
+          el("button", { class: "primary", onclick: () => passage(m, () => next({ ack: true })) }, "Open the gateway"),
+          el("button", { class: "text-btn", onclick: () => next({ ack: true }) }, "Skip the passage")));
       return;
     }
     if (step.type === "lesson") {

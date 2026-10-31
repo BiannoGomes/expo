@@ -60,6 +60,7 @@ export function validateAnswer(step: Step, answer: unknown): string | null {
     case "intro":
     case "lesson":
     case "pause":
+    case "portal":
     case "close":
       return a.ack === true ? null : "Nothing to answer here.";
     case "choice":

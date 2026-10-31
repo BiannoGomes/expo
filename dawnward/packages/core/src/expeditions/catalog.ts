@@ -2,7 +2,7 @@
 // The server validates it at startup; the web preview bundles the same file.
 
 export type WorldId = "mind" | "body" | "soul" | "spirit" | "future";
-export type StepType = "intro" | "lesson" | "pause" | "choice" | "lens" | "sort" | "lab" | "rehearse" | "plan" | "reflect" | "close";
+export type StepType = "intro" | "lesson" | "pause" | "portal" | "choice" | "lens" | "sort" | "lab" | "rehearse" | "plan" | "reflect" | "close";
 
 export interface ChoiceOption {
   id: string;
@@ -91,6 +91,9 @@ export interface SolarSystem {
 
 const MIND_SAFETY =
   "If overthinking comes with low mood or anxiety that's affecting your sleep, work or relationships, please talk to a doctor or a mental health professional. findahelpline.com lists free, confidential support lines for your country.";
+
+const GATEWAY_SAFETY =
+  "This is imagination, not a prediction: nobody can see your future, and this doesn't try. If thinking about the future feels heavy right now, stop at any step. findahelpline.com lists free, confidential support lines for your country.";
 
 const SOUL_SAFETY =
   "If a relationship feels unsafe, this isn't the right practice. findahelpline.com lists free, confidential support lines for your country.";
@@ -779,6 +782,95 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  // ----- The Quantum Gateway (Future). DRAFT, written 2026-10-31 for Bianno's review. -----
+  {
+    id: "gateway-1",
+    version: 1,
+    systemId: "future-quantum-gateway",
+    world: "future",
+    title: "The Quantum Gateway",
+    part: "A possible you",
+    status: "draft",
+    objective: "Imagine one possible future self, then choose one real first step toward it.",
+    minutes: 10,
+    safetyNote: GATEWAY_SAFETY,
+    worksheet: {
+      title: "A Letter From a Possible You",
+      intro: "Imagination, not prediction. Use it to choose one real step.",
+      sections: [
+        { heading: "What I want to move toward", lines: 1 },
+        { heading: "What a possible me, a year from now, might say to me today", lines: 4 },
+        { heading: "The Mirror: what's true right now", lines: 3 },
+        { heading: "The Crossroads: Helps, Mixed or Costs", columns: ["Path", "What matters: ……", "What matters: ……", "Easy or hard to undo?"], rows: 3 },
+        { heading: "My first step, and when", lines: 2 },
+      ],
+    },
+    steps: [
+      {
+        id: "intro",
+        type: "intro",
+        title: "The Quantum Gateway",
+        body: "Here you'll imagine one possible version of yourself, a year from now, who moved toward something you care about. It's imagination, not a prediction. Then you'll look honestly at where you are, compare two paths, and choose one small, real step. Nothing here is scored.",
+        required: false,
+      },
+      {
+        id: "intention",
+        type: "rehearse",
+        title: "Your intention",
+        prompt: "What would you like to move toward? One sentence is enough.",
+        examples: ["Feeling at ease speaking up in meetings.", "Starting the course I keep putting off."],
+        required: true,
+      },
+      {
+        id: "passage",
+        type: "portal",
+        title: "The gateway",
+        body: "When you're ready, open it. The passage takes a few seconds, and you can skip it.",
+        required: false,
+      },
+      {
+        id: "future-self",
+        type: "reflect",
+        title: "A possible you",
+        prompt: "Imagine a version of you, a year from now, who moved toward this. They're not a prediction, just one possibility. What might they say to you today?",
+        examples: ["Start smaller than you think. The first step was easier than the worrying."],
+        required: true,
+      },
+      {
+        id: "mirror",
+        type: "reflect",
+        title: "The Mirror",
+        prompt: "Back to now. What's true about where you are today? Only what you know, not what you fear.",
+        examples: ["I speak up in small groups, but not when my manager is there."],
+        required: true,
+      },
+      {
+        id: "crossroads",
+        type: "lab",
+        title: "The Crossroads",
+        body: "Two or three paths from where you are now, weighed against what matters to you.",
+        prompt: "Write two or three paths, including a smaller version. Then name what matters most to you here.",
+        examples: ["Ask to present at the next team meeting", "Share one idea in the weekly call", "Not yet: after the project ends", "Confidence", "Keeping my workload calm"],
+        feedback: "There's no total here, on purpose. Look for a path that helps with what matters, at a cost you could live with. A smaller version is often the way through.",
+        required: true,
+      },
+      {
+        id: "first-step",
+        type: "plan",
+        title: "The First Step",
+        prompt: "If you want, choose one small, real step toward that path, and when.",
+        examples: ["Write down one idea before Thursday's call and say it."],
+        required: false,
+      },
+      {
+        id: "close",
+        type: "close",
+        title: "Return to Earth",
+        body: "You imagined a possible you, looked honestly at now, and chose a path. The future isn't fixed; this was one possibility, and your first step is real. Your letter, A Letter From a Possible You, stays here whenever you want it.",
+        required: false,
+      },
+    ],
+  },
 ];
 
 export const SYSTEMS: SolarSystem[] = [
@@ -810,6 +902,13 @@ export const SYSTEMS: SolarSystem[] = [
     objective: "Say hard things with clarity and care.",
     missionIds: ["bridge-1", "bridge-2", "bridge-3"],
   },
+  {
+    id: "future-quantum-gateway",
+    world: "future",
+    title: "The Quantum Gateway",
+    objective: "Imagine a possible future self, then take one real first step.",
+    missionIds: ["gateway-1"],
+  },
 ];
 
 export const missionById = (id: string): Mission | undefined => MISSIONS.find((m) => m.id === id);
@@ -840,6 +939,7 @@ export function checkCatalog(): string[] {
         if (new Set(ls.map((l) => l.id)).size !== ls.length) problems.push(`${m.id}/${s.id}: duplicate lens ids`);
         if (!s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);
       }
+      if (s.type === "portal" && !s.body) problems.push(`${m.id}/${s.id}: a portal needs words`);
       if (s.type === "lab" && !s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);
       if (s.type === "pause" && !(s.cues ?? []).length) problems.push(`${m.id}/${s.id}: a pause needs cues`);
       if (s.type === "lesson" && !(s.paragraphs ?? []).length) problems.push(`${m.id}/${s.id}: a lesson needs paragraphs`);

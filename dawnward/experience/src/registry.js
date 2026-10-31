@@ -39,7 +39,7 @@ export const GALAXIES = [
   { id: "knowledge", p: [80, 27, 26], name: "Knowledge", tag: "A living knowledge atlas: learn subjects through visual explanations, reading and quizzes.", planned: "Guided explorations of ideas, one small world at a time, each with a short quiz you can retry.", hue: 215, x: 81, y: 19, size: 17 },
   { id: "spiritual", p: [20, 73, 26], name: "Spiritual Exploration", tag: "Immersive contemplation: meditation, philosophy, awe and meaning, never presenting speculation as fact.", planned: "Practices of awe and attention, and questions worth sitting with. Spirit's world in Personal Growth is already open.", hue: 265, x: 17, y: 74, size: 17 },
   { id: "creative", p: [80, 73, 26], name: "Creative Worlds", tag: "A world-building and storytelling studio.", planned: "Create stories, art concepts, music briefs and imaginative experiences, one small project at a time.", hue: 305, x: 83, y: 73, size: 17 },
-  { id: "gateway", p: [50, 9, 19], name: "Quantum Gateway", tag: "A step toward the person you are becoming.", planned: "Opens next: the Future Self Observatory, with the Mirror, the Crossroads and the First Step. A visual metaphor for imagining possible futures, never a prediction.", kind: "gateway", x: 50, y: 12, size: 13 },
+  { id: "gateway", p: [50, 9, 19], name: "Quantum Gateway", tag: "A step toward the person you are becoming.", planned: "Imagine one possible future self, look honestly at now, and choose one real first step. A way of imagining, never a prediction.", open: true, kind: "gateway", x: 50, y: 12, size: 13 },
   { id: "earth", p: [50, 90, 24], name: "Earth Realm", tag: "Your everyday life: today, your actions and your words.", open: true, kind: "earth", x: 50, y: 85, size: 13 },
 ];
 
@@ -56,9 +56,12 @@ export const ART = {
     "bridge-1": { hero: "BR1-H", exercise: "BR1-X", reflect: "BR1-X", moon: "BR1-K" },
     "bridge-2": { hero: "BR2-H", exercise: "BR2-X", reflect: "BR2-X", moon: "BR2-K" },
     "bridge-3": { hero: "C3", exercise: "BR2-X", reflect: "BR2-X", moon: "T9" },
+    // the Gateway journey: each step has its own place
+    "gateway-1": { hero: "B1", exercise: "B5", reflect: "B5", moon: "T9", passage: "B3",
+      steps: { intro: "B1", intention: "B1", passage: "B2", "future-self": "B4", close: "B6" }, scene: ["intention", "passage", "future-self"] },
   },
   /** each skill pathway's planet */
-  systems: { "mind-thought-patterns": "D1", "mind-beyond-overthinking": "D2" },
+  systems: { "mind-thought-patterns": "D1", "mind-beyond-overthinking": "D2", "future-quantum-gateway": "A8" },
   planned: { "Emotional Awareness": "D3", "Belief Transformation": "D5", "Learning & Creativity": "D6" },
   galaxies: { ai: "A3", knowledge: "A4", spiritual: "A5", creative: "A6", earth: "A7", gateway: "A8" },
   home: "E1", compass: "U11", star: "T10", moon: "T9",

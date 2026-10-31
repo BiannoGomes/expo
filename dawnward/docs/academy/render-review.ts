@@ -2,14 +2,14 @@
 // Run from dawnward/server: npx tsx ../docs/academy/render-review.ts > ../docs/academy/beyond-overthinking.md
 import { MISSIONS, SYSTEMS } from "../../packages/core/src/expeditions/index.ts";
 
-const sys = SYSTEMS.find((s) => s.id === "mind-beyond-overthinking")!;
+const sys = SYSTEMS.find((s) => s.id === (process.argv[2] ?? "mind-beyond-overthinking"))!;
 const out: string[] = [];
 const p = (s = "") => out.push(s);
 p(`# ${sys.title}: written chapters for review`);
 p();
 p(`**Status:** draft. Generated from \`packages/core/src/expeditions/catalog.ts\`, so this is exactly what the app shows. Edit here or in the catalog; I'll apply your changes to the catalog and regenerate this file.`);
 p();
-p(`**Expedition:** ${sys.title} (Mind). ${sys.objective}`);
+p(`**Expedition:** ${sys.title} (${sys.world[0].toUpperCase()}${sys.world.slice(1)}). ${sys.objective}`);
 p();
 p(`**Chapters:**`);
 sys.missionIds.forEach((id, i) => { const m = MISSIONS.find((x) => x.id === id)!; p(`${i + 1}. ${m.part.replace(/^Chapter \d+: /, "")} (draft, written)`); });
@@ -66,8 +66,8 @@ for (const id of sys.missionIds) {
 }
 p(`---`); p();
 p(`## Sources and claims to check before publishing`); p();
-p(`- **Chapter 1, lesson paragraph 3** (concrete "how" thinking versus abstract "why" thinking): Watkins, E. R. (2008). "Constructive and unconstructive repetitive thought." *Psychological Bulletin*, 134(2), 163–206. The paragraph paraphrases the review's general finding; a reviewer should confirm the wording isn't overstated.`);
-p(`- **Chapter 3, lesson paragraph 3** ("breathing out a little more slowly than you breathe in helps many people settle"): worded as a common experience, not a physiological claim. It also offers an alternative for people who find breath focus uncomfortable. A reviewer should confirm the wording.`);
+if (sys.id === "mind-beyond-overthinking") p(`- **Chapter 1, lesson paragraph 3** (concrete "how" thinking versus abstract "why" thinking): Watkins, E. R. (2008). "Constructive and unconstructive repetitive thought." *Psychological Bulletin*, 134(2), 163–206. The paragraph paraphrases the review's general finding; a reviewer should confirm the wording isn't overstated.`);
+if (sys.id === "mind-beyond-overthinking") p(`- **Chapter 3, lesson paragraph 3** ("breathing out a little more slowly than you breathe in helps many people settle"): worded as a common experience, not a physiological claim. It also offers an alternative for people who find breath focus uncomfortable. A reviewer should confirm the wording.`);
 p(`- No other factual claims are made. Everything else is practice guidance, not research findings.`);
 p(); p(`## Review checklist`); p();
 p(`- [ ] Bianno: tone, examples, and whether these feel like your voice`);
