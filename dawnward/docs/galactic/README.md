@@ -2,6 +2,8 @@
 
 Galaxy Home, the first full vertical slice, built from the October 2026 directive and Bianno's Galaxy Home board, using Bianno's ChatGPT world art.
 
+**Update (later on 2026-10-31):** the Precision pass removed all sample data and rebuilt navigation, the world template, reflection and Memories. Where this file and `docs/ux-ui-audit.md` differ, the audit is current.
+
 **Status: built and tested in a browser, not shipped.** Nothing is deployed. It was tested only on this machine's software GPU, not on any phone or headset.
 
 | Where | What |

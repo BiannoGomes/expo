@@ -1,0 +1,204 @@
+{
+ "320x568 home": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future"
+  ],
+  "offscreen": [
+   "q-next"
+  ]
+ },
+ "320x568 mind": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future",
+   ""
+  ],
+  "offscreen": [
+   "BODY",
+   "SOUL"
+  ]
+ },
+ "360x800 home": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future"
+  ],
+  "offscreen": [
+   "q-next"
+  ]
+ },
+ "360x800 mind": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future",
+   ""
+  ],
+  "offscreen": [
+   "BODY",
+   "SOUL"
+  ]
+ },
+ "390x844 home": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future"
+  ],
+  "offscreen": []
+ },
+ "390x844 mind": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future",
+   ""
+  ],
+  "offscreen": [
+   "BODY",
+   "SOUL"
+  ]
+ },
+ "430x932 home": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future"
+  ],
+  "offscreen": []
+ },
+ "430x932 mind": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future",
+   ""
+  ],
+  "offscreen": [
+   "BODY",
+   "SOUL"
+  ]
+ },
+ "tablet-portrait home": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future"
+  ],
+  "offscreen": []
+ },
+ "tablet-portrait mind": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future",
+   ""
+  ],
+  "offscreen": [
+   "BODY",
+   "SOUL"
+  ]
+ },
+ "tablet-landscape home": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "m-galaxy",
+   "m-text",
+   "sound",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future"
+  ],
+  "offscreen": []
+ },
+ "tablet-landscape mind": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "m-galaxy",
+   "m-text",
+   "sound",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future",
+   ""
+  ],
+  "offscreen": [
+   "BODY",
+   "ENERGY · HABITS · WELLBE",
+   "SOUL",
+   "VALUES · CONNECTION · ME"
+  ]
+ },
+ "desktop home": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "m-galaxy",
+   "m-text",
+   "sound",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future"
+  ],
+  "offscreen": []
+ },
+ "desktop mind": {
+  "hOverflow": false,
+  "small": [
+   "skip-link",
+   "m-galaxy",
+   "m-text",
+   "sound",
+   "planet planet-mind",
+   "planet planet-body",
+   "planet planet-soul",
+   "planet planet-future",
+   ""
+  ],
+  "offscreen": [
+   "BODY",
+   "ENERGY · HABITS · WELLBE",
+   "SOUL",
+   "VALUES · CONNECTION · ME"
+  ]
+ }
+}

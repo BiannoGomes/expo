@@ -17,8 +17,8 @@ const R = 2.6; // distance of each world from the core
 // the core are mirrored so their gold edge always faces the light.
 export const WORLDS = [
   { key: "mind", x: 0, z: -R, size: 2.05, flip: false, disk: [0.499, 0.493, 0.41], rim: "#5B8CFF" },
-  { key: "body", x: -R * 0.98, z: -0.15 * R, size: 1.85, flip: true, disk: [0.498, 0.49, 0.43], rim: "#37D5E8" },
-  { key: "soul", x: R * 0.98, z: -0.15 * R, size: 1.85, flip: false, disk: [0.497, 0.49, 0.43], rim: "#9B5BFF" },
+  { key: "body", x: -R * 0.98, z: -0.3 * R, size: 1.85, flip: true, disk: [0.498, 0.49, 0.43], rim: "#37D5E8" },
+  { key: "soul", x: R * 0.98, z: -0.3 * R, size: 1.85, flip: false, disk: [0.497, 0.49, 0.43], rim: "#9B5BFF" },
   { key: "future", x: 0, z: R * 0.98, size: 2.75, flip: false, disk: [0.515, 0.473, 0.28], rim: "#E6C07B" },
 ];
 const TILT = 0.55;
@@ -83,7 +83,8 @@ export function buildHome({ stage, reduced, hash }) {
   const scene = new THREE.Scene(); // transparent: the painted sky is the page behind it
   const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 140);
   const loader = new THREE.TextureLoader();
-  const tex = (p) => { const t = loader.load(asset(p)); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
+  // Each texture is sent to the GPU as soon as it decodes, not on the first frame that shows it.
+  const tex = (p) => { const t = loader.load(asset(p), (x) => renderer.initTexture(x)); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
 
   const uniforms = {
     uTime: { value: 0 }, uIntro: { value: 0 }, uPixel: { value: renderer.getPixelRatio() },
@@ -274,9 +275,19 @@ export function buildHome({ stage, reduced, hash }) {
   composer.addPass(new OutputPass());
   let bloomOn = true;
 
+  function applyCamera() {
+    camera.aspect = size.w / Math.max(size.h, 1);
+    if (off.x || off.y) camera.setViewOffset(size.w, size.h, off.x, off.y, size.w, size.h); else camera.clearViewOffset();
+    camera.updateProjectionMatrix();
+    go(focusKey ? worldPose(focusKey) : homePose(), 0);
+  }
   const ray = new THREE.Raycaster();
   ray.params.Points.threshold = 0.12;
   const v = new THREE.Vector3(), up = new THREE.Vector3();
+
+  // Compile every material's shaders now, in the background where the browser
+  // supports it, so the first sight of the worlds never stutters.
+  renderer.compileAsync?.(scene, camera).catch(() => {});
 
   const api = {
     renderer,
@@ -311,27 +322,28 @@ export function buildHome({ stage, reduced, hash }) {
       focusKey = key;
       for (const [k, p] of planets) p.mesh.material.uniforms.uFocus.value = k === key ? 1 : 0;
       onSettle = onDone ?? null;
-      go(key ? worldPose(key) : homePose(), key ? 950 : 900);
+      go(key ? worldPose(key) : homePose(), key ? 700 : 650); // within the directive's 450 to 850 ms
       if (reduced) { const f = onSettle; onSettle = null; f?.(); }
     },
     get focus() { return focusKey; },
+    get moving() { return Boolean(to); },
+    /** True once the entrance has opened fully and no move is under way. */
+    get settled() { return !to && (reduced || uniforms.uIntro.value > 2.6); },
     skipIntro() { uniforms.uIntro.value = Math.max(uniforms.uIntro.value, 6); },
-    /** Fit the four worlds into the free part of the screen (CSS px), so no panel covers one. */
+    /** Fit the four worlds into the free part of the screen (CSS px), so no panel covers one.
+     *  Moves only the camera: no buffers are rebuilt. */
     setFrame({ left, right, top, bottom }, scale = 1) {
       const W = size.w, H = size.h;
       off = { x: Math.round(W / 2 - (left + right) / 2), y: Math.round(H / 2 - (top + bottom) / 2) };
       fit = Math.max(1, Math.max(H / Math.max(80, bottom - top), W / Math.max(80, right - left)) * scale);
-      api.resize(W, H);
+      applyCamera();
     },
     resize(w, h) {
       size = { w, h };
       renderer.setSize(w, h, false);
       composer.setSize(w, h);
-      camera.aspect = w / Math.max(h, 1);
-      if (off.x || off.y) camera.setViewOffset(w, h, off.x, off.y, w, h); else camera.clearViewOffset();
-      camera.updateProjectionMatrix();
       uniforms.uPixel.value = renderer.getPixelRatio();
-      go(focusKey ? worldPose(focusKey) : homePose(), 0);
+      applyCamera();
     },
     degrade() {
       bloomOn = false;

@@ -1,0 +1,100 @@
+{
+ "320x568 home": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "320x568 mind": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "360x800 home": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "360x800 mind": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "390x844 home": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "390x844 mind": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "430x932 home": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "430x932 mind": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "tablet-portrait home": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "tablet-portrait mind": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "tablet-landscape home": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "tablet-landscape mind": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "desktop home": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ },
+ "desktop mind": {
+  "hOverflow": false,
+  "small": [
+   "sr"
+  ],
+  "offscreen": []
+ }
+}

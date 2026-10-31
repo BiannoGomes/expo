@@ -1,10 +1,14 @@
-// Galaxy Home: the vertical slice of the Living Intelligence Universe, in the
-// look of the Galaxy Home board. Galaxy home → a world → capture → save → a new
-// memory star → insight review → home. Every word a person reads is HTML; the
-// 3D scene is the setting, never the text. Without a token it runs on a clearly
-// labelled sample that lives in this page only. With a token it reads and
-// writes the real Dawnward API (/galaxy, /debrief, /assertions/:id/dispute,
-// /campaign), and only ever to this page's own origin or a local dev server.
+// Galaxy Home: Dawnward's universe in a browser. Home → a world → reflect →
+// a new star → Memories → You, with one tab bar everywhere.
+//
+// Data. Nothing here is invented. Without a token, what the person writes is
+// kept on this device (localStorage) and only reported as kept once it has
+// been written and read back. With a token, the real Dawnward API is used
+// (/galaxy, /debrief, /assertions/:id/dispute, /campaign), only ever on this
+// page's own origin or a local development server.
+//
+// Rendering. Every word is HTML. The 3D scene (home-scene.js) is the setting
+// and never the source of truth: state lives here.
 import { buildHome } from "./home-scene.js";
 
 const $ = (id) => document.getElementById(id);
@@ -12,12 +16,12 @@ const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const asset = (p) => (window.DW_ASSETS ? window.DW_ASSETS(p) : `assets/${p}`);
 const ORDER = ["mind", "body", "soul", "future"];
 const META = {
-  mind: { name: "Mind", words: "Reflect · Understand · Clarity", line: "Your thoughts, patterns and inner world.", ask: "What went on in your head today?" },
-  body: { name: "Body", words: "Energy · Habits · Wellbeing", line: "Your energy, movement, rest and the outdoors.", ask: "How did your body feel today?" },
-  soul: { name: "Soul", words: "Values · Connection · Meaning", line: "Your values, your people and what lights you up.", ask: "Who or what mattered today?" },
-  future: { name: "Future", words: "Goals · Pathways · Possibilities", line: "Where you're heading, and the steps that got you closer.", ask: "What moved you closer to where you're going?" },
+  mind: { name: "Mind", kicker: "Your inner world", q: "What is on your mind tonight?", line: "A quiet space to understand what you are carrying.", start: "Begin with a thought, a feeling, or a moment from today.", words: "Reflect · Understand · Clarity" },
+  body: { name: "Body", kicker: "Your energy and habits", q: "How did your body carry you today?", line: "A quiet space to notice energy, rest and movement.", start: "Begin with how you slept, moved or felt.", words: "Energy · Habits · Wellbeing" },
+  soul: { name: "Soul", kicker: "Your values and connections", q: "Who or what mattered today?", line: "A quiet space for people, meaning and feeling.", start: "Begin with a person, a moment or a feeling that stayed with you.", words: "Values · Connection · Meaning" },
+  future: { name: "Future", kicker: "Your goals and pathways", q: "What moved you closer today?", line: "A quiet space for where you're heading.", start: "Begin with a step you took, or one you're ready to take.", words: "Goals · Pathways · Possibilities" },
 };
-const CONFIDENCE = { hypothesis: "A guess", probable: "Probably true", established: "Well established" };
+const CONFIDENCE = { hypothesis: "Still forming", probable: "Probably true", established: "Well established" };
 const svg = (paths, size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 const ICON = {
   mind: '<path d="M12 4c-3.3 0-6 2.5-6 5.6 0 1.8.9 3.4 2.3 4.4V17h7.4v-3c1.4-1 2.3-2.6 2.3-4.4C18 6.5 15.3 4 12 4Z"/><path d="M9.5 20h5M12 8v6M9.5 10.5 12 12l2.5-1.5"/>',
@@ -26,16 +30,8 @@ const ICON = {
   future: '<path d="M4 16h16M7 16a5 5 0 0 1 10 0"/><path d="M12 5v3M5.5 9l1.8 1.5M18.5 9l-1.8 1.5M3 19h18"/>',
   arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
   back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
-  feather: '<path d="M20 4C12 4 6 9 5 19M5 19l5-5M9 15c4 0 8-2 9-6"/>',
-  constellation: '<circle cx="5" cy="7" r="1.4"/><circle cx="12" cy="4" r="1.4"/><circle cx="18" cy="9" r="1.4"/><circle cx="9" cy="14" r="1.4"/><circle cx="16" cy="18" r="1.4"/><path d="M6.2 6.4 10.8 4.6M13.2 4.8l3.6 3.4M17.3 10.2 16.3 16.7M14.8 17.4 10 14.8M8.4 12.8 5.6 8.3"/>',
-  target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/>',
-  memories: '<path d="M4 6h16M4 12h16M4 18h10"/>',
-  insight: '<path d="M12 3 14 9l6 .5-4.6 3.9L17 20l-5-3.2L7 20l1.6-6.6L4 9.5 10 9Z"/>',
-  review: '<path d="M4 20h4L19 9l-4-4L4 16Z"/><path d="M13 7l4 4"/>',
-  destination: '<path d="M6 21V4M6 4h11l-2 4 2 4H6"/>',
-  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
-  lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
-  galaxy: '<ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-20 12 12)"/><circle cx="12" cy="12" r="2.2"/>',
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
 };
 
 function hash(id, salt = 0) {
@@ -46,6 +42,7 @@ function hash(id, salt = 0) {
 }
 const longDate = (d) => new Date(`${d}T12:00:00`).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
 const shortDate = (d) => new Date(`${d}T12:00:00`).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+const weekday = (d) => new Date(`${d}T12:00:00`).toLocaleDateString(undefined, { weekday: "long" });
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const el = (tag, props = {}, ...kids) => {
   const n = document.createElement(tag);
@@ -58,53 +55,23 @@ const el = (tag, props = {}, ...kids) => {
   for (const c of kids.flat()) if (c !== null && c !== undefined && c !== false) n.append(c);
   return n;
 };
-const seenIn = (n, days) => (n <= 1 ? "Seen in one of your evenings so far." : `Seen in ${n} of your evenings, across ${days} ${days === 1 ? "day" : "days"}.`);
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
-const greeting = () => { const h = new Date().getHours(); return h < 5 ? "Good evening" : h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; };
+const seenIn = (n, days) => (n <= 1 ? "Seen in one of your evenings so far." : `Seen in ${n} of your evenings, across ${days} ${days === 1 ? "day" : "days"}.`);
+const greeting = () => { const h = new Date().getHours(); return h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 18 ? "Good afternoon" : "Good evening"; };
 
-// ---------- Data ----------
+// ---------- This device: memories, patterns and the unsent draft ----------
 
-function sampleData() {
-  const rows = [
-    ["mind", "2026-09-02", "Started the list on paper again. Did the first three before lunch."],
-    ["body", "2026-09-04", "Skipped the walk. Felt it in the afternoon."],
-    ["mind", "2026-09-07", "Wrote tomorrow down and kept to it, even the hard call."],
-    ["soul", "2026-09-09", "A long talk with my sister. We laughed about the old flat."],
-    ["body", "2026-09-12", "Walked at lunch and the afternoon was clearer."],
-    ["mind", "2026-09-15", "Planned the week on Sunday night. It held until Thursday."],
-    ["future", "2026-09-16", "Signed up for the spring half marathon. Scared, but it's done."],
-    ["soul", "2026-09-18", "Called my sister back. Easier than I thought."],
-    ["body", "2026-09-21", "Walked before the meeting. Said what I meant."],
-    ["future", "2026-09-23", "First 5k without stopping. Slow, but all of it."],
-    ["soul", "2026-09-26", "Sat with the quiet for ten minutes before bed. Slept better."],
-    ["future", "2026-09-30", "Ran 8k on Sunday. Legs heavy, head clear."],
-  ];
-  const stars = rows.map(([world, date, excerpt], i) => ({ id: `sample-${i}`, world, date, excerpt, themeIds: [] }));
-  const themes = [
-    { id: "t-mind", world: "mind", statement: "Writing the day down helps you keep to it.", confidence: "probable", starIds: ["sample-0", "sample-2", "sample-5"] },
-    { id: "t-body", world: "body", statement: "A walk at midday changes your afternoon.", confidence: "probable", starIds: ["sample-1", "sample-4", "sample-8"] },
-    { id: "t-soul", world: "soul", statement: "Your sister is someone you return to.", confidence: "hypothesis", starIds: ["sample-3", "sample-7"] },
-    { id: "t-future", world: "future", statement: "You keep going once a goal has a date on it.", confidence: "probable", starIds: ["sample-6", "sample-9", "sample-11"] },
-  ];
-  const goal = {
-    title: "Run the spring half marathon",
-    milestones: [
-      { title: "Sign up", evidence: "sample-6" },
-      { title: "Run 5k without stopping", evidence: "sample-9" },
-      { title: "Run 10k", evidence: null },
-      { title: "Race day", evidence: null },
-    ],
-  };
-  // Three morning steps, each drawn from an evening (sample, not the planner).
-  const steps = [
-    { text: "Write tomorrow down before bed.", from: "sample-2" },
-    { text: "Take the walk at lunch, even a short one.", from: "sample-4" },
-    { text: "Send your sister a message.", from: "sample-7" },
-  ];
-  return finish({ stars, themes, goal, steps, sample: true });
-}
+const STORE = "dw-local-v1", DRAFT = "dw-draft-v1";
+const device = {
+  read(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; } },
+  /** Writes, then reads back: true only if what was written is really there. */
+  write(key, value) {
+    try { const s = JSON.stringify(value); localStorage.setItem(key, s); return localStorage.getItem(key) === s; } catch { return false; }
+  },
+  remove(key) { try { localStorage.removeItem(key); return localStorage.getItem(key) === null; } catch { return false; } },
+};
 
-/** Works out what the screen shows from what the data holds, so counts always match. */
+/** Works out what the screen shows from what is kept, so every count matches. */
 function finish(data) {
   const byId = new Map(data.stars.map((s) => [s.id, s]));
   for (const s of data.stars) s.themeIds = [];
@@ -114,9 +81,20 @@ function finish(data) {
     t.why = seenIn(t.starIds.length, new Set(t.starIds.map((id) => byId.get(id).date)).size);
     t.forming = t.starIds.length < 2 || t.confidence === "hypothesis";
   }
+  data.themes = data.themes.filter((t) => t.starIds.length);
   data.links = data.themes.filter((t) => !t.rejected).flatMap((t) => t.starIds.slice(1).map((to, i) => ({ from: t.starIds[i], to, themeId: t.id })));
   return data;
 }
+function localData() {
+  const kept = device.read(STORE, { stars: [], themes: [] });
+  return finish({ stars: kept.stars ?? [], themes: kept.themes ?? [], goal: null, local: true });
+}
+const keepLocal = (data) => device.write(STORE, {
+  stars: data.stars.map(({ id, world, date, excerpt }) => ({ id, world, date, excerpt })),
+  themes: data.themes.map(({ id, world, statement, starIds, confidence, words, accepted, corrected, rejected }) => ({ id, world, statement, starIds, confidence, words, accepted, corrected, rejected })),
+});
+
+// ---------- The Dawnward API (with a token) ----------
 
 function trustedApi(raw) {
   if (!raw) return location.origin;
@@ -127,7 +105,6 @@ function trustedApi(raw) {
   } catch {}
   return null;
 }
-
 let api = null, token = null;
 async function call(path, init = {}) {
   const ctl = new AbortController();
@@ -138,9 +115,7 @@ async function call(path, init = {}) {
     return res.json();
   } finally { clearTimeout(timer); }
 }
-
 async function loadConnected() {
-  // Each world asked for separately: the server decides what belongs where.
   const per = await Promise.all(ORDER.map((w) => call(`/galaxy?world=${w}`)));
   const stars = new Map(), themes = new Map();
   per.forEach((g, i) => {
@@ -150,25 +125,23 @@ async function loadConnected() {
   let goal = null;
   try {
     const c = await call("/campaign");
-    goal = { title: c.title, milestones: (c.milestones ?? []).map((m) => ({ title: m.title, day: m.day, evidence: null })), planned: true };
+    goal = { title: c.title, milestones: (c.milestones ?? []).map((m) => ({ title: m.title, day: m.day })) };
   } catch {}
   const list = [...stars.values()].sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-  return finish({ stars: list, themes: [...themes.values()], goal, steps: null, sample: false });
+  return finish({ stars: list, themes: [...themes.values()], goal, local: false });
 }
-
 async function loadData() {
   const params = new URLSearchParams(location.hash.slice(1));
   token = params.get("token");
-  if (!token) return sampleData();
-  // Read once and removed from the address bar straight away.
-  history.replaceState(null, "", location.pathname + location.search);
+  if (!token) return localData();
+  history.replaceState(null, "", location.pathname + location.search); // read once, gone from the address bar
   api = trustedApi(new URLSearchParams(location.search).get("api"));
   if (!api) throw new Error("untrusted api origin");
   return loadConnected();
 }
 
-// Sample mode sends nothing anywhere, so Dawnward's real safety check can't run.
-// It still never answers words like these with anything but support.
+// Without the server, Dawnward's safety check can't run. Clear crisis phrases
+// still get only the hand-written support text the server uses, and nothing is kept.
 const DISTRESS = /\b(kill myself|suicid|end it all|end my life|hurt myself|self[- ]harm|don'?t want to (be here|live))/i;
 const CRISIS_TEXT = [
   "Thank you for telling me this. What you're carrying right now matters more than any plan or goal.",
@@ -177,7 +150,12 @@ const CRISIS_TEXT = [
   "If you are in immediate danger, please contact emergency services now.",
 ];
 
-// ---------- Sound: only after a click, never on its own ----------
+// Possible connections: two evenings that use the same meaningful word. A
+// plain fact the person can confirm or ignore, never a conclusion about them.
+const STOP = new Set("about after again also always before being could didn't doesn't every from have just know like little made make more much really should some still than that their them then there these they thing think this those through today tonight very want went were what when where which while with would your felt feel feeling good back into over time days evening night morning".split(" "));
+const wordsOf = (t) => new Set((t.toLowerCase().match(/[a-z']{4,}/g) ?? []).map((w) => w.replace(/'s$/, "")).filter((w) => !STOP.has(w)));
+
+// ---------- Sound: only after a click ----------
 
 const sound = {
   ctx: null, master: null, on: false,
@@ -213,19 +191,16 @@ const sound = {
 // ---------- The page ----------
 
 function main(data, failed) {
-  const state = { view: "home", mode: "galaxy", lastWorld: null, selStar: null, suggestion: null, draftWorld: "mind", opener: null };
+  const state = { place: "home", world: null, lastWorld: "mind", mode: "galaxy", selStar: null, filter: "all", query: "", view: "galaxy", zoom: 1, dismissed: new Set(), draftWorld: "mind" };
   const announce = (msg) => { const live = $("live"); live.textContent = ""; setTimeout(() => (live.textContent = msg), 30); };
   const starById = (id) => data.stars.find((s) => s.id === id);
   const themeById = (id) => data.themes.find((t) => t.id === id);
   const worldStars = (w) => data.stars.filter((s) => s.world === w);
-  const worldThemes = (w) => data.themes.filter((t) => t.world === w && t.starIds.length && !t.rejected);
-  const liveThemes = () => data.themes.filter((t) => t.starIds.length && !t.rejected);
-
-  const [short, long] = failed
-    ? ["Sample universe", ". I couldn't load yours, so these are invented evenings, not anyone's."]
-    : data.sample ? ["Sample universe", " · invented evenings, not anyone's · nothing you type leaves this page"] : ["Your universe", ", from your own evenings"];
-  $("source").replaceChildren(el("span", {}, short), el("span", { class: "long" }, long));
-  document.body.classList.toggle("is-sample", data.sample);
+  const liveThemes = () => data.themes.filter((t) => !t.rejected);
+  const worldThemes = (w) => liveThemes().filter((t) => t.world === w);
+  const keptWhere = data.local ? "on this device" : "in your Dawnward";
+  if (failed) $("note").textContent = "I couldn't reach your Dawnward, so this shows only what's kept on this device.";
+  $("note").hidden = !failed;
 
   // ----- 3D -----
   let ctx = null;
@@ -234,532 +209,603 @@ function main(data, failed) {
   const sync = (bornId) => { if (ctx) { ctx.setMemories({ stars: data.stars, links: data.links }, bornId); highlight(); } };
   function highlight() {
     if (!ctx) return;
-    const w = state.view === "home" ? null : state.view;
+    const w = state.place === "world" ? state.world : null;
     const lit = new Set(w ? worldStars(w).map((s) => s.id) : []);
+    if (state.selStar) lit.add(state.selStar);
     const litThemes = new Set(w ? worldThemes(w).map((t) => t.id) : []);
-    if (state.selStar) { lit.add(state.selStar); for (const t of starById(state.selStar)?.themeIds ?? []) litThemes.add(t); }
     ctx.setSelection({ litIds: lit, selId: state.selStar, litThemes });
   }
   sync();
 
-  // ----- the four worlds: the name curves around each planet, its three words
-  // follow the lower rim only where they fit, and one Explore button sits below.
-  // The curved words are decoration for sighted readers; the button carries
-  // the full name for everyone else. Nothing is allowed to overlap.
+  // ----- the four worlds: curved name, Explore below, nothing overlapping -----
   const NS = "http://www.w3.org/2000/svg";
   const labels = new Map(), arcs = new Map();
   for (const w of ORDER) {
-    const svgEl = document.createElementNS(NS, "svg");
-    svgEl.setAttribute("class", `arc arc-${w}`);
-    svgEl.setAttribute("aria-hidden", "true");
     const mk = (tag, attrs) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); return n; };
+    const s = mk("svg", { class: `arc arc-${w}`, "aria-hidden": "true" });
     const top = mk("path", { id: `arc-top-${w}`, fill: "none" }), bot = mk("path", { id: `arc-bot-${w}`, fill: "none" });
     const name = mk("text", { class: "aname" }), words = mk("text", { class: "awords" });
     const tp1 = mk("textPath", { href: `#arc-top-${w}`, startOffset: "50%", "text-anchor": "middle" }); tp1.textContent = META[w].name.toUpperCase();
     const tp2 = mk("textPath", { href: `#arc-bot-${w}`, startOffset: "50%", "text-anchor": "middle" }); tp2.textContent = META[w].words.toUpperCase();
-    name.append(tp1); words.append(tp2); svgEl.append(top, bot, name, words);
-    $("planets").append(svgEl);
-    arcs.set(w, { svg: svgEl, top, bot, words, last: "" });
+    name.append(tp1); words.append(tp2); s.append(top, bot, name, words);
+    $("planets").append(s);
+    arcs.set(w, { svg: s, top, bot, words, last: "" });
     const b = el("button", { class: `planet planet-${w}`, "data-world": w, onclick: () => goWorld(w) },
       el("span", { class: "picon", html: svg(ICON[w], 16) }), el("span", {}, "Explore"), el("span", { html: svg(ICON.arrow, 14) }));
     $("planets").append(b);
     labels.set(w, b);
   }
-  const refreshPlanetNames = () => { for (const w of ORDER) labels.get(w).setAttribute("aria-label", `${META[w].name}: ${META[w].words.replaceAll(" · ", ", ")}. ${plural(worldStars(w).length, "memory", "memories")}. Explore`); };
-  refreshPlanetNames();
+  for (const w of ORDER) $("worldbar").append(el("button", { class: `planet-${w}`, "data-world": w, onclick: () => goWorld(w) }, el("span", { html: svg(ICON[w], 16) }), el("span", {}, META[w].name)));
+  const refreshNames = () => { for (const w of ORDER) labels.get(w).setAttribute("aria-label", `${META[w].name}: ${META[w].kicker.toLowerCase()}. ${plural(worldStars(w).length, "memory", "memories")}. Explore`); };
 
-  // ----- home: notice, the evening card, three cards -----
+  // ----- home: one question, one action -----
   function renderHome() {
-    const ranked = liveThemes().sort((a, b) => b.starIds.length - a.starIds.length);
-    const lead = ranked[0];
-    const linked = ranked.find((t) => t.starIds.length >= 3);
-    $("notice").hidden = !linked;
-    if (linked) {
-      $("notice-n").textContent = `${plural(linked.starIds.length, "memory", "memories")} linked`;
-      $("notice").onclick = () => { state.opener = $("notice"); goWorld(linked.world, { open: () => openInsight(linked.id) }); };
-    }
     $("hello").textContent = greeting();
-    if (lead) {
-      $("hero-title").textContent = lead.corrected ?? lead.statement;
-      $("hero-body").textContent = `${lead.why} ${lead.forming ? "Still a guess." : CONFIDENCE[lead.confidence] ?? ""}`.trim();
-      $("hero-thumb").src = asset(`img/worlds/closeup-${lead.world}.webp`);
-      $("hero").onclick = () => { state.opener = $("hero"); goWorld(lead.world, { open: () => openInsight(lead.id) }); };
-    } else {
-      $("hero-title").textContent = "Your universe starts tonight.";
-      $("hero-body").textContent = "Tell it about your day. Each evening becomes a star.";
-      $("hero-thumb").src = asset("img/worlds/closeup-mind.webp");
-      $("hero").onclick = () => openCapture("mind");
-    }
-    const newest = [...liveThemes()].filter((t) => t.forming)[0] ?? lead;
-    $("q-insight-sub").textContent = newest ? (newest.forming ? "A pattern still forming" : "A pattern in your words") : "Nothing yet";
+    const n = data.stars.length, last = data.stars[data.stars.length - 1];
+    $("home-meta").textContent = n ? `${plural(n, "memory", "memories")} · last on ${weekday(last.date)}` : "Your first reflection becomes your first star.";
+    const sug = suggestions()[0];
+    $("notice").hidden = !sug;
+    if (sug) $("notice-n").textContent = `Two evenings both mention “${sug.word}”`;
+    refreshNames();
   }
 
-  // ----- the world screen: close-up art, title, rows, and a sheet for detail -----
-  const sheet = $("sheet");
-  function worldRows(w) {
-    const stars = worldStars(w), themes = worldThemes(w);
-    const row = (icon, title, sub, onclick) => el("li", {}, el("button", { class: "row", onclick },
-      el("span", { class: "ricon", html: svg(icon, 22) }),
-      el("span", { class: "rtext" }, el("span", { class: "rtitle" }, title), el("span", { class: "rsub" }, sub)),
-      el("span", { class: "rgo", html: svg(ICON.arrow, 16) })));
-    const reached = data.goal ? data.goal.milestones.filter((m) => m.evidence).length : 0;
-    return el("ul", { class: "rows" },
-      row(ICON.feather, "New reflection", `Write or speak, kept in ${META[w].name}`, () => openCapture(w)),
-      row(ICON.memories, "Memories here", stars.length ? `${plural(stars.length, "evening", "evenings")} you placed here` : "None yet", () => openMemories(w)),
-      row(ICON.insight, "What I understand here", themes.length ? `${plural(themes.length, "insight", "insights")}, each with its evenings` : "Not enough evidence yet", () => openReview(w)),
-      w === "future" && data.goal
-        ? row(ICON.destination, "Your destination", `${reached} of ${data.goal.milestones.length} milestones, from your words`, () => openGoal())
-        : row(ICON.review, "Correct what I think", "Accept, correct or set aside", () => openReview(w)));
-  }
-  function showWorld(w) {
-    $("w-title").textContent = META[w].name;
-    $("w-line").textContent = META[w].line;
-    $("w-kicker").textContent = `World ${ORDER.indexOf(w) + 1} of 4`;
-    $("closeup-img").src = asset(`img/worlds/closeup-${w}.webp`);
-    $("closeup-img").dataset.world = w;
-    document.body.dataset.world = w;
-    quiet(false);
+  // ----- the world template: the same structure for all four -----
+  const world = $("world"), wbody = $("w-body");
+  function worldIntro(w) {
+    const stars = [...worldStars(w)].reverse(), themes = worldThemes(w);
+    const more = [];
+    if (w === "future" && data.goal) more.push(goalBlock(data.goal));
+    more.push(el("section", { class: "group", "aria-labelledby": "w-mem-h" },
+      el("div", { class: "group-head" }, el("h3", { id: "w-mem-h" }, `Memories in ${META[w].name}`), stars.length > 3 ? el("button", { class: "text-btn", onclick: () => openMemories({ filter: w }) }, "See all") : null),
+      stars.length
+        ? el("ul", { class: "memories" }, stars.slice(0, 3).map((s) => el("li", {}, memoryButton(s, () => openMemory(s.id)))))
+        : el("p", { class: "quiet" }, "No memories here yet. Your first one becomes a star in this world.")));
+    more.push(el("section", { class: "group", "aria-labelledby": "w-und-h" },
+      el("h3", { id: "w-und-h" }, "What I understand here"),
+      themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : el("p", { class: "quiet" }, "I don't have enough evidence to conclude anything here yet.")));
+    wbody.replaceChildren(
+      el("p", { class: "kicker" }, META[w].kicker),
+      el("h2", { class: "w-q", id: "w-q", tabindex: "-1" }, META[w].q),
+      el("p", { class: "w-line" }, META[w].line),
+      el("p", { class: "w-start" }, META[w].start),
+      el("button", { class: "primary wide", onclick: () => openEditor(w) }, "Begin reflection"),
+      ...more);
     document.body.classList.remove("sheet-open");
-    sheet.replaceChildren(worldRows(w));
   }
-  function sheetHead(title, kicker, back = () => { quiet(false); stopSpeech(); document.body.classList.remove("sheet-open"); sheet.replaceChildren(worldRows(state.view)); $("w-title").focus(); }) {
-    quiet(false);
-    document.body.classList.add("sheet-open");
-    return [el("button", { class: "sback", onclick: back }, el("span", { html: svg(ICON.back, 16) }), ` ${META[state.view]?.name ?? "Back"}`),
-      kicker ? el("p", { class: "kicker" }, kicker) : null,
-      el("h2", { class: "stitle", tabindex: "-1" }, title)];
+  function memoryButton(s, onclick) {
+    return el("button", { class: "memory", onclick }, el("span", { class: "when" }, `${META[s.world].name} · ${longDate(s.date)}`), el("span", { class: "text" }, s.excerpt));
   }
-  const focusSheet = () => sheet.querySelector(".stitle")?.focus();
-  // While someone writes or speaks, the universe goes quiet around them.
-  function quiet(on) { document.body.classList.toggle("quiet", on); sound.duck(on); }
-
-  function quoteOf(id) {
-    const s = starById(id);
-    return el("li", { class: "quote" }, el("span", { class: "when" }, `${META[s.world].name} · ${longDate(s.date)}`), el("q", {}, s.excerpt));
-  }
-  function insightCard(t) {
+  function patternCard(t) {
     return el("article", { class: `card card-${t.world}` },
       el("p", { class: "kicker" }, `${META[t.world].name} · ${t.forming ? "Still forming" : CONFIDENCE[t.confidence] ?? "Probably true"}`),
       el("p", { class: "statement" }, t.corrected ?? t.statement),
       el("p", { class: "why" }, t.why),
-      t.accepted ? el("p", { class: "note" }, "You said this is right.") : null,
-      t.corrected ? el("p", { class: "note" }, "In your words, after you corrected it.") : null);
+      el("button", { class: "text-btn", onclick: () => openPattern(t.id) }, "See the evenings behind it"));
   }
-
-  function openMemories(w) {
-    const stars = [...worldStars(w)].reverse();
-    sheet.replaceChildren(...sheetHead(`Memories in ${META[w].name}`, plural(stars.length, "evening", "evenings")),
-      stars.length
-        ? el("ul", { class: "memories" }, stars.map((s) => el("li", {}, el("button", { class: "memory", onclick: () => showStar(s.id) },
-            el("span", { class: "when" }, longDate(s.date)), el("span", { class: "text" }, s.excerpt)))))
-        : el("p", { class: "why" }, "No memories here yet. Add one and it becomes a star."));
-    focusSheet();
+  function goalBlock(goal) {
+    return el("section", { class: "group goal" },
+      el("h3", {}, "Destination"),
+      el("p", { class: "statement" }, goal.title),
+      el("ol", { class: "milestones" }, goal.milestones.map((m) => el("li", {}, el("span", { class: "mt" }, m.title), el("span", { class: "quiet" }, `Planned for day ${m.day}. Marked only when an evening says it happened.`)))));
   }
-
-  function openInsight(id) {
-    const t = themeById(id);
-    if (!t) return;
-    sheet.replaceChildren(...sheetHead(t.corrected ?? t.statement, `${META[t.world].name} · ${t.forming ? "Still forming" : CONFIDENCE[t.confidence] ?? ""}`),
-      el("p", { class: "why gold" }, t.why),
-      t.forming ? el("p", { class: "why" }, "This is a guess. I don't have enough evidence to conclude it yet.") : null,
-      el("h3", {}, "What you said"),
-      el("ul", { class: "quotes" }, t.starIds.map(quoteOf)),
-      el("div", { class: "actions" },
-        el("button", { class: "primary", onclick: () => openReview(t.world) }, "Review what I understand"),
-        el("button", { class: "ghost", onclick: () => openMemories(t.world) }, "View memories")));
-    state.selStar = null; highlight();
-    if (ctx) ctx.setSelection({ litIds: new Set(t.starIds), selId: null, litThemes: new Set([t.id]) });
-    focusSheet();
+  // A sheet replaces the world's content; the world's name stays at the top.
+  function sheet(title, kicker, ...kids) {
+    wbody.replaceChildren(
+      el("button", { class: "text-btn back", onclick: () => { stopSpeech(); quiet(false); worldIntro(state.world); $("w-q").focus(); } }, el("span", { html: svg(ICON.back, 16) }), ` ${META[state.world].name}`),
+      ...(kicker ? [el("p", { class: "kicker" }, kicker)] : []),
+      el("h2", { class: "s-title", tabindex: "-1" }, title),
+      ...kids.filter(Boolean));
+    document.body.classList.add("sheet-open");
+    world.scrollTop = 0;
+    wbody.querySelector(".s-title").focus({ preventScroll: true });
   }
+  function quiet(on) { document.body.classList.toggle("quiet", on); sound.duck(on); markTabs(); }
 
-  function openGoal() {
-    const goal = data.goal;
-    const reached = goal.milestones.filter((m) => m.evidence).length;
-    sheet.replaceChildren(...sheetHead(goal.title, "Destination"),
-      el("ol", { class: "milestones" }, goal.milestones.map((m) => {
-        const s = m.evidence && starById(m.evidence);
-        return el("li", { class: s ? "done" : "" },
-          el("span", { class: "mt" }, m.title),
-          el("span", { class: "why" }, s ? `Reached. You said so on ${longDate(s.date)}: “${s.excerpt}”` : goal.planned ? `Planned for day ${m.day}. Marked only when an evening says it happened.` : "Not yet. It's marked when an evening says it happened."));
-      })),
-      el("p", { class: "why" }, `${reached} of ${goal.milestones.length} reached, each from your own words.`));
-    focusSheet();
-  }
-
-  function showStar(id, { born = false } = {}) {
-    const s = starById(id);
-    state.selStar = id;
-    const themes = s.themeIds.map(themeById).filter(Boolean);
-    sheet.replaceChildren(...sheetHead(born ? "A new star" : "Memory", `${META[s.world].name} · ${longDate(s.date)}`),
-      el("blockquote", { class: "said" }, el("p", {}, s.excerpt)),
-      el("p", { class: "why" }, born ? (data.sample ? "Kept, word for word, in this page only. Nothing was sent anywhere." : state.reply ?? "Kept, word for word.") : "Your words, as you said them."),
-      themes.length
-        ? el("div", {}, el("h3", {}, "It supports"), el("div", { class: "cards" }, themes.map(insightCard)))
-        : el("p", { class: "why" }, "Not linked to anything yet. That takes more than one evening."),
-      el("div", { class: "actions" },
-        el("button", { class: "primary", onclick: () => openReview(s.world) }, "Review what I understand"),
-        el("button", { class: "ghost", onclick: () => goHome({ show: s.id }) }, born ? "See it in your galaxy" : "Find it in your galaxy")));
-    highlight();
-    focusSheet();
-  }
-
-  // ----- capture: speak or type -----
-  let recog = null;
-  function openCapture(w, { speak = false } = {}) {
-    w = w ?? (state.view !== "home" ? state.view : "mind");
-    state.draftWorld = w;
-    if (state.view !== w) { goWorld(w, { open: () => openCapture(w, { speak }) }); return; }
+  // ----- reflecting: one question, a spacious editor, voice with clear states -----
+  let recog = null, autosave = null, saving = false, clientKey = null;
+  function openEditor(w, { speak = false } = {}) {
+    if (state.place !== "world" || state.world !== w) { goWorld(w, { then: () => openEditor(w, { speak }) }); return; }
+    const draft = device.read(DRAFT, null);
+    state.draftWorld = draft?.world && ORDER.includes(draft.world) && draft.text ? draft.world : w;
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const ta = el("textarea", { id: "words", rows: "6", maxlength: "20000", "aria-describedby": "cap-help", placeholder: "What's on your mind?" });
+    const ta = el("textarea", { id: "words", rows: "7", maxlength: "20000", "aria-labelledby": "ed-q", "aria-describedby": "ed-status" });
+    if (draft?.text) ta.value = draft.text;
+    const status = el("p", { id: "ed-status", class: "quiet", "aria-live": "polite" }, draft?.text ? "Your unsent words are back, just as you left them." : data.local ? "Only you can see this. It stays on this device." : "Only you can see this.");
     const err = el("p", { class: "error", role: "alert" });
-    const worlds = el("div", { class: "seg", role: "radiogroup", "aria-label": "Which world it belongs to" },
-      ORDER.map((k) => el("button", { role: "radio", "aria-checked": String(k === w), onclick: () => {
-        state.draftWorld = k;
-        worlds.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.textContent === META[k].name)));
-        $("cap-q").textContent = META[k].ask;
-      } }, META[k].name)));
-    const speakBtn = SR ? el("button", { class: "mic", "aria-pressed": "false", onclick: () => toggleSpeech(speakBtn, ta) },
-      el("span", { class: "mic-orb", html: svg('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>', 26) }), el("span", { class: "mic-label" }, "Speak")) : null;
-    sheet.replaceChildren(...sheetHead("Write or speak your reflection", "Tonight"),
-      el("p", { class: "sub" }, "A safe space for what's real."),
-      el("label", { for: "words", id: "cap-q", class: "ask" }, META[w].ask),
-      ta,
-      el("p", { id: "cap-help", class: "why" }, data.sample
-        ? "Sample: this stays in this page and is gone when you close it."
-        : "Kept word for word. You can leave any evening out later."),
-      SR ? null : el("p", { class: "why" }, "Speaking isn't available in this browser, so type instead."),
-      el("p", { class: "ask small" }, "It belongs to"), worlds,
-      err,
-      el("div", { class: "actions" }, speakBtn, el("button", { class: "primary", onclick: () => save(ta, err) }, "Keep it")));
+    const where = el("p", { class: "quiet where" });
+    const chips = el("div", { class: "seg", role: "radiogroup", "aria-label": "Which world it belongs to", hidden: true });
+    const drawWhere = () => { where.replaceChildren(`Kept in ${META[state.draftWorld].name}. `, el("button", { class: "text-btn", "aria-expanded": String(!chips.hidden), onclick: () => { chips.hidden = !chips.hidden; drawWhere(); } }, chips.hidden ? "Change" : "Done")); };
+    for (const k of ORDER) chips.append(el("button", { role: "radio", "aria-checked": String(k === state.draftWorld), onclick: () => {
+      state.draftWorld = k; chips.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.textContent === META[k].name))); drawWhere(); saveDraft(ta.value);
+    } }, META[k].name));
+    drawWhere();
+    const vstate = el("span", { class: "vstate" }, "Speak");
+    const micBtn = SR ? el("button", { class: "mic", "aria-pressed": "false", onclick: () => toggleSpeech(micBtn, vstate, ta, status) }, el("span", { class: "mic-orb", html: svg(ICON.mic, 22) }), vstate) : null;
+    ta.addEventListener("input", () => { clearTimeout(autosave); autosave = setTimeout(() => saveDraft(ta.value, status), 400); });
+    sheet(META[state.draftWorld].q, `${META[w].name} · tonight`,
+      ta, status, where, chips, err,
+      el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => save(ta, err, status) }, "Keep it"), micBtn),
+      SR ? null : el("p", { class: "quiet" }, "Speaking isn't available in this browser. Typing works everywhere."));
+    wbody.querySelector(".s-title").id = "ed-q";
     quiet(true);
-    if (speak && speakBtn) toggleSpeech(speakBtn, ta);
-    ta.focus();
+    ta.focus({ preventScroll: true });
+    if (speak && micBtn) toggleSpeech(micBtn, vstate, ta, status);
+  }
+  function saveDraft(text, status) {
+    if (!text.trim()) { device.remove(DRAFT); return; }
+    const ok = device.write(DRAFT, { world: state.draftWorld, text });
+    if (status) status.textContent = ok ? "Draft kept on this device." : "This browser won't keep a draft, so keep this page open until you save.";
   }
   function stopSpeech() { try { recog?.stop(); } catch {} recog = null; }
-  function toggleSpeech(btn, ta) {
-    const label = btn.querySelector(".mic-label");
-    if (recog) { stopSpeech(); btn.setAttribute("aria-pressed", "false"); label.textContent = "Speak"; return; }
+  // Speaking. The page first asks for the microphone, so a blocked one is said
+  // plainly instead of listening to silence; words appear as they are heard;
+  // nothing heard after a few seconds is said too. One phrase per press
+  // (Android's continuous mode repeats words); press again to add more.
+  async function toggleSpeech(btn, label, ta, status) {
+    if (recog) { status.textContent = "Writing it down…"; stopSpeech(); return; }
+    btn.disabled = true;
+    status.textContent = "Asking for the microphone…";
+    if (navigator.mediaDevices?.getUserMedia) {
+      try { const m = await navigator.mediaDevices.getUserMedia({ audio: true }); m.getTracks().forEach((t) => t.stop()); }
+      catch { btn.disabled = false; micBlocked(btn, status); return; }
+    }
+    btn.disabled = false;
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recog = new SR(); recog.continuous = true; recog.interimResults = false;
-    const base = ta.value ? `${ta.value} ` : "";
-    let said = "";
-    recog.onresult = (e) => { for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) said += e.results[i][0].transcript; ta.value = base + said.trim(); };
-    recog.onend = () => { recog = null; btn.setAttribute("aria-pressed", "false"); label.textContent = "Speak"; };
-    recog.onerror = () => announce("I couldn't hear that. You can type instead.");
-    try { recog.start(); } catch { recog = null; return; }
+    const r = (recog = new SR());
+    r.lang = navigator.language || "en-GB"; r.continuous = false; r.interimResults = true;
+    const base = ta.value.trim() ? `${ta.value.trimEnd()} ` : "";
+    let finalText = "", heard = false, failed = false;
+    const silence = setTimeout(() => { if (!heard && recog === r) status.textContent = "I'm not hearing anything yet. If nothing appears, speaking may not work in this browser, so typing is the surest way."; }, 6000);
+    r.onresult = (e) => {
+      heard = true;
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) { const t = e.results[i][0].transcript; if (e.results[i].isFinal) finalText += t; else interim += t; }
+      ta.value = (base + finalText + interim).replace(/\s+/g, " ").trimStart();
+      status.textContent = "Listening…";
+    };
+    r.onerror = (e) => {
+      failed = true; clearTimeout(silence);
+      if (e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture") micBlocked(btn, status);
+      else if (e.error === "no-speech") status.textContent = "I didn't catch anything. Press Speak and try again, or type instead.";
+      else if (e.error !== "aborted") status.textContent = "Speaking stopped working here. Your words so far are kept; you can type instead.";
+    };
+    r.onend = () => {
+      clearTimeout(silence);
+      if (recog === r) recog = null;
+      btn.setAttribute("aria-pressed", "false"); label.textContent = "Speak";
+      if (heard) { saveDraft(ta.value); status.textContent = "Your words are in the box. Change anything before you keep it, or press Speak to add more."; }
+      else if (!failed) status.textContent = "I didn't catch anything. Press Speak and try again, or type instead.";
+    };
+    try { r.start(); } catch { recog = null; status.textContent = "I couldn't start listening. You can type instead."; return; }
     btn.setAttribute("aria-pressed", "true"); label.textContent = "Stop";
-    announce("Listening.");
+    status.textContent = "Listening. Speak naturally.";
+  }
+  function micBlocked(btn, status) {
+    stopSpeech();
+    btn.disabled = true; btn.setAttribute("aria-pressed", "false");
+    btn.querySelector(".vstate").textContent = "Speak";
+    status.textContent = "The microphone isn't available on this page, so speaking can't work here. Type instead. In the Dawnward app, speaking uses its own recorder.";
   }
 
-  let clientKey = null, saving = false;
-  async function save(ta, err) {
+  async function save(ta, err, status) {
     const words = ta.value.trim();
     if (!words) { err.textContent = "Write or say something first."; ta.focus(); return; }
     if (saving) return;
     stopSpeech();
     saving = true; err.textContent = "";
+    status.textContent = "Keeping it…";
     const w = state.draftWorld;
     try {
-      if (DISTRESS.test(words) && data.sample) { showCrisis(CRISIS_TEXT.join("\n")); return; }
-      let id = null;
-      if (data.sample) {
-        id = `local-${Date.now()}`;
-        data.stars.push({ id, world: w, date: today(), excerpt: words.length > 220 ? `${words.slice(0, 217)}…` : words, themeIds: [] });
-        state.suggestion = suggest(id);
+      if (data.local && DISTRESS.test(words)) { showCrisis(CRISIS_TEXT.join("\n")); return; }
+      let id = null, reply = null;
+      if (data.local) {
+        id = `m-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e6).toString(36)}`;
+        data.stars.push({ id, world: w, date: today(), excerpt: words, themeIds: [] });
         finish(data);
+        if (!keepLocal(data)) {
+          data.stars = data.stars.filter((s) => s.id !== id); finish(data);
+          err.textContent = "I couldn't keep that on this device. Your words are still here.";
+          status.textContent = "Not kept yet.";
+          return;
+        }
       } else {
         clientKey ??= (crypto.randomUUID?.() ?? `${Date.now()}${Math.random()}`).replace(/[^a-z0-9]/gi, "").slice(0, 32);
         const before = new Set(data.stars.map((s) => s.id));
         const res = await call("/debrief", { method: "POST", body: JSON.stringify({ date: today(), transcript: words, world: w, clientKey }) });
         clientKey = null;
         if (res.crisis) { showCrisis(res.reply); return; }
-        state.reply = res.reply;
+        reply = res.reply;
         try { Object.assign(data, await loadConnected()); } catch {}
         id = data.stars.find((s) => !before.has(s.id))?.id ?? null;
       }
+      device.remove(DRAFT);
       sound.chime(988);
-      refreshPlanetNames();
       sync(id);
       renderHome();
-      announce(`Kept, word for word. A new star in ${META[w].name}.`);
-      if (state.view !== w) goWorld(w, { open: () => (id ? showStar(id, { born: true }) : null) });
-      else if (id) showStar(id, { born: true });
-      else sheet.replaceChildren(worldRows(w));
+      announce(`Kept. A new star in ${META[w].name}.`);
+      if (state.world !== w) goWorld(w, { then: () => showNewStar(id, reply) }); else showNewStar(id, reply);
     } catch (e) {
       err.textContent = e.status === 403 ? "Dawnward needs your consent before it keeps anything. Open the app to give it." : "I couldn't keep that just now. Your words are still here; try again.";
+      status.textContent = "Not kept yet.";
     } finally { saving = false; }
   }
-
   function showCrisis(text) {
-    sheet.replaceChildren(el("h2", { class: "stitle", tabindex: "-1" }, "You matter more than any plan"),
-      ...text.split("\n").map((l) => el("p", { class: "crisis" }, l)),
+    quiet(false);
+    sheet("You matter more than any plan", null, ...text.split("\n").map((l) => el("p", { class: "crisis" }, l)),
+      el("p", { class: "quiet" }, "Nothing was kept."),
       el("div", { class: "actions" }, el("button", { class: "ghost", onclick: () => goHome() }, "Return to your galaxy")));
-    focusSheet();
+  }
+  function showNewStar(id, reply) {
+    quiet(false);
+    const s = id && starById(id);
+    if (!s) { sheet("Kept", null, el("p", {}, reply ?? "Kept, word for word."), el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => openMemories() }, "See your memories"))); return; }
+    state.selStar = id; highlight();
+    const sug = suggestions().find((x) => x.a === id || x.b === id);
+    sheet(`A new star in ${META[s.world].name}`, longDate(s.date),
+      el("blockquote", { class: "said" }, el("p", {}, s.excerpt)),
+      el("p", { class: "quiet" }, reply ?? `Kept ${keptWhere}, word for word.`),
+      sug ? connectionCard(sug, () => showNewStar(id, reply)) : el("p", { class: "quiet" }, "One evening is a note, not a pattern. Nothing is concluded from it."),
+      el("div", { class: "actions" },
+        el("button", { class: "primary", onclick: () => openMemories({ select: id }) }, "See it in your memories"),
+        el("button", { class: "ghost", onclick: () => { worldIntro(state.world); $("w-q").focus(); } }, `Back to ${META[state.world].name}`)));
   }
 
-  // Sample logic only: a plain word match inside this page, labelled as such.
-  // It never decides anything; it asks.
-  const STOP = new Set(["with", "that", "this", "then", "than", "about", "before", "after", "again", "just", "really", "today", "felt", "have", "were", "what", "when", "into", "there"]);
-  function suggest(id) {
-    const s = starById(id);
-    const words = new Set(s.excerpt.toLowerCase().match(/[a-z']{4,}/g) ?? []);
-    let best = null, bestHits = 0;
-    for (const t of liveThemes()) {
-      const pool = new Set(t.starIds.flatMap((sid) => starById(sid).excerpt.toLowerCase().match(/[a-z']{4,}/g) ?? []));
-      const hits = [...words].filter((x) => pool.has(x) && !STOP.has(x));
-      if (hits.length > bestHits) { best = { theme: t.id, hits }; bestHits = hits.length; }
+  // ----- possible connections: a shared word between two of your own evenings -----
+  function suggestions() {
+    const out = [];
+    const linked = (a, b) => liveThemes().some((t) => t.starIds.includes(a) && t.starIds.includes(b));
+    const ws = data.stars.map((s) => [s, wordsOf(s.excerpt)]);
+    for (let i = ws.length - 1; i >= 0; i--) for (let j = i - 1; j >= 0; j--) {
+      const [a, A] = ws[i], [b, B] = ws[j];
+      if (linked(a.id, b.id)) continue;
+      const word = [...A].find((x) => B.has(x));
+      const key = `${a.id}|${b.id}`;
+      if (word && !state.dismissed.has(key)) out.push({ a: a.id, b: b.id, word, key });
+      if (out.length >= 3) return out;
     }
-    return best ? { star: id, ...best } : { star: id, theme: null };
+    return out;
+  }
+  function connectionCard(sug, after) {
+    const a = starById(sug.a), b = starById(sug.b);
+    return el("section", { class: "suggest", "aria-label": "Possible connection" },
+      el("p", { class: "kicker" }, el("span", { html: svg(ICON.link, 14) }), " Possible connection"),
+      el("p", {}, `Your evenings on ${longDate(b.date)} and ${longDate(a.date)} both mention “${sug.word}”.`),
+      el("p", { class: "quiet" }, "A word in common, nothing more. Link them only if they belong together."),
+      el("div", { class: "actions" },
+        el("button", { class: "ghost", onclick: () => { linkPair(sug); announce("Linked. A new line joins them."); after(); } }, "Link them"),
+        el("button", { class: "text-btn", onclick: () => { state.dismissed.add(sug.key); renderHome(); after(); } }, "Not now")));
+  }
+  function linkPair(sug) {
+    const a = starById(sug.a);
+    const existing = liveThemes().find((t) => t.words?.includes(sug.word) && (t.starIds.includes(sug.a) || t.starIds.includes(sug.b)));
+    if (existing) { for (const id of [sug.a, sug.b]) if (!existing.starIds.includes(id)) existing.starIds.push(id); }
+    else data.themes.push({ id: `p-${Date.now().toString(36)}`, world: a.world, statement: `Evenings that mention “${sug.word}”`, starIds: [sug.b, sug.a], confidence: "hypothesis", words: [sug.word] });
+    finish(data);
+    persist();
+    sound.chime(1175); sync(); renderHome();
   }
 
-  // ----- insight review: what you said, kept apart from what I think it means -----
-  function openReview(w) {
-    if (state.view !== w) { goWorld(w, { open: () => openReview(w) }); return; }
-    const themes = worldThemes(w);
-    const kids = [...sheetHead("Review what I understand", META[w].name),
-      el("p", { class: "sub" }, "What you said comes first. What I think it means is mine, and you can correct it or set it aside.")];
-    const sug = state.suggestion && starById(state.suggestion.star)?.world === w ? state.suggestion : null;
-    if (sug) {
-      const s = starById(sug.star);
-      const t = sug.theme && themeById(sug.theme);
-      if (t && !t.starIds.includes(s.id)) {
-        kids.push(el("section", { class: "suggest" },
-          el("p", { class: "kicker" }, "Sample logic · a word match in this page, not Dawnward's model"),
-          el("p", {}, "Your new evening might support:"),
-          el("p", { class: "statement" }, t.corrected ?? t.statement),
-          el("p", { class: "why" }, `Because it shares ${sug.hits.map((h) => `“${h}”`).join(", ")} with the evenings behind it.`),
-          el("div", { class: "actions" },
-            el("button", { class: "primary", onclick: () => { t.starIds.push(s.id); finish(data); state.suggestion = null; sync(); renderHome(); announce("Linked. The line between them is new."); sound.chime(1175); openReview(w); } }, "Yes, it does"),
-            el("button", { class: "ghost", onclick: () => { state.suggestion = null; announce("Left unlinked."); openReview(w); } }, "No, leave it"))));
-      } else if (!t) {
-        kids.push(el("section", { class: "suggest" },
-          el("p", { class: "kicker" }, "Your new evening"),
-          el("p", { class: "statement" }, "I don't have enough evidence to conclude anything from it yet."),
-          el("p", { class: "why" }, "One evening is a note, not a pattern. If it comes up again, I'll show you what links them.")));
-      }
-    }
-    if (!themes.length) kids.push(el("p", { class: "why" }, "I don't have enough evidence to conclude anything here yet."));
-    for (const t of themes) {
-      const box = el("article", { class: `review card-${t.world}` });
-      const draw = () => {
-        box.replaceChildren(
-          el("p", { class: "kicker" }, "What you said"),
-          el("ul", { class: "quotes" }, t.starIds.map(quoteOf)),
-          el("p", { class: "kicker" }, `What I think it means · ${t.forming ? "Still forming" : CONFIDENCE[t.confidence] ?? ""}`),
-          el("p", { class: "statement" }, t.corrected ?? t.statement),
-          el("p", { class: "why gold" }, t.why),
-          t.forming ? el("p", { class: "why" }, "This is a guess. I don't have enough evidence to conclude it yet.") : null,
-          t.accepted ? el("p", { class: "note" }, "You said this is right.") : null,
-          el("div", { class: "actions" },
-            el("button", { class: "ghost", onclick: () => { t.accepted = true; announce("Kept as it is."); draw(); box.querySelector("button")?.focus(); } }, "That's right"),
-            el("button", { class: "ghost", onclick: () => correct(t, box, draw) }, "Correct it"),
-            el("button", { class: "danger", onclick: () => reject(t, box, draw, w) }, "That's not right")));
-      };
-      draw();
-      kids.push(box);
-    }
-    kids.push(el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => goHome() }, "Return to your galaxy")));
-    sheet.replaceChildren(...kids);
-    if (ctx) ctx.setSelection({ litIds: new Set(themes.flatMap((t) => t.starIds)), selId: state.suggestion?.star ?? null, litThemes: new Set(themes.map((t) => t.id)) });
-    focusSheet();
+  // ----- one pattern and its evidence; correct or set aside -----
+  const persist = () => { if (data.local) keepLocal(data); };
+  function openPattern(id) {
+    const t = themeById(id);
+    if (!t) return;
+    if (state.place !== "world" || state.world !== t.world) { goWorld(t.world, { then: () => openPattern(id) }); return; }
+    const box = el("div", { class: "review" });
+    const draw = () => box.replaceChildren(
+      el("p", { class: "kicker" }, "What you said"),
+      el("ul", { class: "quotes" }, t.starIds.map((sid) => { const s = starById(sid); return el("li", { class: "quote" }, el("span", { class: "when" }, `${META[s.world].name} · ${longDate(s.date)}`), el("q", {}, s.excerpt)); })),
+      el("p", { class: "kicker" }, `What it might mean · ${t.forming ? "Still forming" : CONFIDENCE[t.confidence] ?? ""}`),
+      el("p", { class: "statement" }, t.corrected ?? t.statement),
+      el("p", { class: "why" }, t.why),
+      t.forming ? el("p", { class: "quiet" }, "I don't have enough evidence to conclude more than this.") : null,
+      t.accepted ? el("p", { class: "note" }, "You said this is right.") : null,
+      el("div", { class: "actions" },
+        el("button", { class: "ghost", onclick: () => { t.accepted = true; persist(); announce("Kept as it is."); draw(); box.querySelector("button")?.focus(); } }, "That's right"),
+        el("button", { class: "ghost", onclick: () => correct(t, box, draw) }, "Correct it"),
+        el("button", { class: "danger", onclick: () => reject(t, box, draw) }, "That's not right")));
+    draw();
+    sheet(t.corrected ?? t.statement, `${META[t.world].name} · what I understand`, box);
+    if (ctx) ctx.setSelection({ litIds: new Set(t.starIds), selId: null, litThemes: new Set([t.id]) });
   }
   function correct(t, box, draw) {
     const input = el("textarea", { rows: "3", id: `fix-${t.id}` });
     input.value = t.corrected ?? t.statement;
     const err = el("p", { class: "error", role: "alert" });
-    box.replaceChildren(el("label", { for: `fix-${t.id}`, class: "ask" }, "Say it the way it's true for you"), input, err,
+    box.replaceChildren(el("label", { for: `fix-${t.id}`, class: "label" }, "Say it the way it's true for you"), input, err,
       el("div", { class: "actions" },
         el("button", { class: "primary", onclick: async () => {
           const v = input.value.trim();
           if (!v) { err.textContent = "Write the version that's true, or cancel."; return; }
           try {
-            if (!data.sample) await call(`/assertions/${t.id}/dispute`, { method: "POST", body: JSON.stringify({ correction: v }) });
-            t.corrected = v; t.accepted = false; announce("Corrected. I'll use your words from now on."); draw(); renderHome();
-            box.querySelector("button")?.focus();
+            if (!data.local) await call(`/assertions/${t.id}/dispute`, { method: "POST", body: JSON.stringify({ correction: v }) });
+            t.corrected = v; t.accepted = false; persist(); announce("Corrected. Your words are used from now on."); draw(); box.querySelector("button")?.focus();
           } catch { err.textContent = "I couldn't save the correction. Nothing changed."; }
         } }, "Save my version"),
         el("button", { class: "ghost", onclick: () => { draw(); box.querySelector("button")?.focus(); } }, "Cancel")));
     input.focus();
   }
-  function reject(t, box, draw, w) {
+  function reject(t, box, draw) {
     const err = el("p", { class: "error", role: "alert" });
-    const ask = el("p", { class: "why", tabindex: "-1" }, "Set this aside? I'll stop drawing on it. Your evenings stay exactly as they are.");
-    box.replaceChildren(el("p", { class: "statement" }, t.corrected ?? t.statement), ask, err,
-      el("div", { class: "actions" },
-        el("button", { class: "danger", onclick: async () => {
-          try {
-            if (!data.sample) await call(`/assertions/${t.id}/dispute`, { method: "POST", body: "{}" });
-            t.rejected = true; finish(data); sync(); renderHome(); announce("Set aside. The lines it drew are gone.");
-            openReview(w);
-          } catch { err.textContent = "I couldn't set it aside. Nothing changed."; }
-        } }, "Set it aside"),
-        el("button", { class: "ghost", onclick: () => { draw(); box.querySelector("button")?.focus(); } }, "Keep it as it is")));
+    const ask = el("p", { tabindex: "-1" }, "Set this aside? It stops being used, and the lines it drew disappear. Your evenings stay exactly as they are.");
+    box.replaceChildren(ask, err, el("div", { class: "actions" },
+      el("button", { class: "danger", onclick: async () => {
+        try {
+          if (!data.local) await call(`/assertions/${t.id}/dispute`, { method: "POST", body: "{}" });
+          t.rejected = true; finish(data); persist(); sync(); renderHome(); announce("Set aside.");
+          worldIntro(state.world); $("w-q").focus();
+        } catch { err.textContent = "I couldn't set it aside. Nothing changed."; }
+      } }, "Set it aside"),
+      el("button", { class: "ghost", onclick: () => { draw(); box.querySelector("button")?.focus(); } }, "Keep it as it is")));
     ask.focus();
   }
 
-  // ----- places from the rail -----
-  function openPlace(kind) {
-    if (kind === "galaxy") return goHome();
-    if (kind === "text") return setMode("text");
-    const w = state.view === "home" ? "mind" : state.view;
-    goWorld(w, { open: () => {
-      if (kind === "evenings") {
-        const all = [...data.stars].reverse();
-        sheet.replaceChildren(...sheetHead("Evenings", plural(all.length, "memory", "memories")),
-          el("ul", { class: "memories" }, all.map((s) => el("li", {}, el("button", { class: "memory", onclick: () => { goWorld(s.world, { open: () => showStar(s.id) }); } },
-            el("span", { class: "when" }, `${META[s.world].name} · ${longDate(s.date)}`), el("span", { class: "text" }, s.excerpt))))));
-      } else if (kind === "insights") {
-        sheet.replaceChildren(...sheetHead("Insights", "What I understand about you"),
-          el("p", { class: "sub" }, "Each one shows the evenings it came from. Open one to correct it."),
-          el("div", { class: "cards" }, liveThemes().map((t) => el("button", { class: "cardbtn", onclick: () => goWorld(t.world, { open: () => openInsight(t.id) }) }, insightCard(t)))),
-          liveThemes().length < 4 ? el("p", { class: "why" }, "I don't have enough evidence to say more yet.") : null);
-      } else if (kind === "tomorrow") {
-        sheet.replaceChildren(...sheetHead("Tomorrow's three steps", data.steps ? "Sample" : "Made each morning"),
-          data.steps
-            ? el("ol", { class: "steps" }, data.steps.map((st) => { const s = starById(st.from); return el("li", {}, el("span", { class: "mt" }, st.text), el("span", { class: "why" }, `From ${longDate(s.date)}: “${s.excerpt}”`)); }))
-            : el("p", { class: "why" }, "Your three steps are drawn from last night's words each morning, in the app."),
-          data.steps ? el("p", { class: "why" }, "Sample: written by hand for this preview, to show how each step points back to an evening.") : null);
-      } else if (kind === "privacy") {
-        sheet.replaceChildren(...sheetHead("Private. Never sold.", "Your words"),
-          el("ul", { class: "facts" },
-            el("li", {}, "Every evening is kept word for word. Nothing is rewritten."),
-            el("li", {}, "You can leave any evening out, and everything it supported is worked out again without it."),
-            el("li", {}, "You can pause learning. Evenings are still kept, and none of them are learned from."),
-            el("li", {}, "You can export everything, or delete it."),
-            el("li", {}, data.sample ? "This page is a sample: nothing you type here leaves it." : "This page talks only to Dawnward's own server.")));
-      }
-      focusSheet();
-    } });
+  // ----- Memories: your evenings as stars you can open, filter, search or list -----
+  function openMemories({ filter, select, search } = {}) {
+    stopSpeech(); quiet(false);
+    if (filter) state.filter = filter;
+    if (search) state.view = "list";
+    showPlace("memories");
+    drawMemories();
+    if (select) openMemory(select);
+    else if (search) $("m-q").focus();
+    else $("m-title").focus();
   }
-  document.querySelectorAll("[data-place]").forEach((b) => b.addEventListener("click", () => {
-    if (b.closest("#menu-pop")) { $("menu-pop").hidden = true; $("menu").setAttribute("aria-expanded", "false"); state.opener = $("menu"); } else state.opener = b;
-    openPlace(b.dataset.place);
-  }));
+  function visibleStars() {
+    const q = state.query.trim().toLowerCase();
+    return data.stars.filter((s) => (state.filter === "all" || s.world === state.filter) && (!q || s.excerpt.toLowerCase().includes(q)));
+  }
+  function drawMemories() {
+    const vis = visibleStars();
+    $("m-count").textContent = data.stars.length
+      ? (vis.length === data.stars.length ? plural(data.stars.length, "memory", "memories") : `${vis.length} of ${plural(data.stars.length, "memory", "memories")}`)
+      : "No memories yet";
+    document.querySelectorAll("#m-filters button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.f === state.filter)));
+    document.querySelectorAll("#m-views button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === state.view)));
+    $("m-tools").hidden = !data.stars.length;
+    $("m-zoom").hidden = state.view !== "galaxy";
+    $("m-zoom-in").disabled = state.zoom >= 2; $("m-zoom-out").disabled = state.zoom <= 1;
+    const field = $("m-field"), list = $("m-list");
+    field.hidden = state.view !== "galaxy"; list.hidden = state.view !== "list";
+    if (!data.stars.length) {
+      field.hidden = true; list.hidden = false;
+      list.replaceChildren(el("li", { class: "empty" }, el("p", { class: "statement" }, "Your first reflection becomes your first star."), el("button", { class: "primary", onclick: () => openEditor(state.lastWorld) }, "Begin reflection")));
+      return;
+    }
+    if (!vis.length) {
+      list.hidden = false; field.hidden = true;
+      list.replaceChildren(el("li", { class: "empty" }, el("p", {}, state.query ? "Nothing matches that." : `No memories in ${META[state.filter]?.name ?? "this world"} yet.`)));
+      return;
+    }
+    if (state.view === "list") list.replaceChildren(...[...vis].reverse().map((s) => el("li", {}, memoryButton(s, () => openMemory(s.id)))));
+    else drawField(vis);
+  }
+  // Stars are buttons, never painted: each sits in its world's direction, the
+  // oldest near the centre, with at least 48 px between targets.
+  function drawField(vis) {
+    const field = $("m-field");
+    const W = field.clientWidth || 360, H = Math.max(field.clientHeight || 420, 300);
+    const z = state.zoom;
+    const cx = (W * z) / 2, cy = (H * z) / 2, R = (Math.min(W, H) * z) / 2 - 36;
+    const dir = { mind: -Math.PI / 2, soul: 0, future: Math.PI / 2, body: Math.PI };
+    const all = data.stars;
+    const pos = vis.map((s) => {
+      const rank = all.indexOf(s) / Math.max(1, all.length - 1);
+      const a = dir[s.world] + (hash(s.id, 5) - 0.5) * 1.3;
+      const r = R * (0.22 + 0.7 * rank) * (0.9 + 0.2 * hash(s.id, 9));
+      return { s, x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r };
+    });
+    for (let k = 0; k < 40; k++) for (let i = 0; i < pos.length; i++) for (let j = i + 1; j < pos.length; j++) {
+      const A = pos[i], B = pos[j], dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || 0.01;
+      if (d < 50) { const push = (50 - d) / 2, ux = dx / d, uy = dy / d; A.x -= ux * push; A.y -= uy * push; B.x += ux * push; B.y += uy * push; }
+    }
+    for (const p of pos) { p.x = Math.min(W * z - 26, Math.max(26, p.x)); p.y = Math.min(H * z - 26, Math.max(26, p.y)); }
+    const at = new Map(pos.map((p) => [p.s.id, p]));
+    const lines = document.createElementNS(NS, "svg");
+    lines.setAttribute("class", "m-lines"); lines.setAttribute("width", W * z); lines.setAttribute("height", H * z); lines.setAttribute("aria-hidden", "true");
+    for (const l of data.links) {
+      const A = at.get(l.from), B = at.get(l.to);
+      if (!A || !B) continue;
+      const line = document.createElementNS(NS, "line");
+      for (const [k, v] of Object.entries({ x1: A.x, y1: A.y, x2: B.x, y2: B.y })) line.setAttribute(k, v);
+      lines.append(line);
+    }
+    const inner = el("div", { class: "m-inner", style: `width:${W * z}px;height:${H * z}px` }, lines,
+      ...pos.map((p) => el("button", {
+        class: `mstar mstar-${p.s.world}${p.s.id === state.selStar ? " sel" : ""}`, style: `left:${p.x}px;top:${p.y}px`, "data-id": p.s.id,
+        "aria-label": `${META[p.s.world].name}, ${longDate(p.s.date)}: ${p.s.excerpt.slice(0, 80)}`, onclick: () => openMemory(p.s.id),
+      }, el("span", { class: "dot" }), z > 1 ? el("span", { class: "mlabel" }, shortDate(p.s.date)) : null)));
+    field.replaceChildren(inner);
+    const sel = state.selStar && at.get(state.selStar);
+    field.scrollTo(sel ? { left: sel.x - W / 2, top: sel.y - H / 2 } : { left: (W * z - W) / 2, top: (H * z - H) / 2 });
+  }
+  function openMemory(id) {
+    const s = starById(id);
+    if (!s) return;
+    if (state.place !== "memories") { showPlace("memories"); }
+    state.selStar = id; highlight();
+    drawMemories();
+    const themes = s.themeIds.map(themeById).filter((t) => t && !t.rejected);
+    const panel = $("m-detail");
+    panel.replaceChildren(
+      el("div", { class: "m-detail-head" }, el("p", { class: "kicker" }, `${META[s.world].name} · ${longDate(s.date)}`),
+        el("button", { class: "icon-btn", "aria-label": "Close this memory", html: svg('<path d="M6 6l12 12M18 6 6 18"/>', 18), onclick: closeMemory })),
+      el("h2", { class: "sr", id: "md-h", tabindex: "-1" }, `Memory from ${longDate(s.date)}`),
+      el("blockquote", { class: "said" }, el("p", {}, s.excerpt)),
+      themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : el("p", { class: "quiet" }, "Not linked to anything yet."),
+      el("div", { class: "actions" },
+        el("button", { class: "ghost", onclick: () => goWorld(s.world) }, `Open ${META[s.world].name}`),
+        data.local ? el("button", { class: "danger", onclick: () => deleteMemory(s.id) }, "Delete") : null));
+    panel.hidden = false;
+    $("md-h").focus();
+  }
+  function closeMemory() {
+    const id = state.selStar;
+    $("m-detail").hidden = true;
+    state.selStar = null; highlight(); drawMemories();
+    (document.querySelector(`.mstar[data-id="${id}"]`) ?? $("m-title")).focus();
+  }
+  function deleteMemory(id) {
+    const panel = $("m-detail");
+    const err = el("p", { class: "error", role: "alert" });
+    const ask = el("p", { tabindex: "-1" }, "Delete this memory from this device? This can't be undone.");
+    panel.append(el("div", { class: "confirm" }, ask, err, el("div", { class: "actions" },
+      el("button", { class: "danger", onclick: () => {
+        const keep = data.stars;
+        data.stars = data.stars.filter((s) => s.id !== id); finish(data);
+        if (!keepLocal(data)) { data.stars = keep; finish(data); err.textContent = "I couldn't delete it. Nothing changed."; return; }
+        $("m-detail").hidden = true; state.selStar = null; sync(); renderHome(); drawMemories(); announce("Deleted."); $("m-title").focus();
+      } }, "Delete it"),
+      el("button", { class: "ghost", onclick: () => openMemory(id) }, "Keep it"))));
+    ask.focus();
+  }
+  $("m-filters").append(...[["all", "All"], ...ORDER.map((w) => [w, META[w].name])].map(([f, label]) =>
+    el("button", { role: "radio", "data-f": f, "aria-checked": "false", onclick: () => { state.filter = f; drawMemories(); } }, label)));
+  document.querySelectorAll("#m-views button").forEach((b) => b.addEventListener("click", () => { state.view = b.dataset.v; drawMemories(); }));
+  $("m-q").addEventListener("input", (e) => { state.query = e.target.value; drawMemories(); });
+  $("m-zoom-in").addEventListener("click", () => { state.zoom = Math.min(2, state.zoom + 0.5); drawMemories(); });
+  $("m-zoom-out").addEventListener("click", () => { state.zoom = Math.max(1, state.zoom - 0.5); drawMemories(); });
 
-  // ----- navigation -----
-  function setView(v) {
-    state.view = v;
-    document.body.dataset.view = v === "home" ? "home" : "world";
-    document.querySelectorAll("#dots button").forEach((b) => b.toggleAttribute("aria-current", b.dataset.view === v));
-    document.querySelectorAll("#rail button").forEach((b) => b.toggleAttribute("aria-current", v === "home" && b.dataset.place === "galaxy"));
+  // ----- You: what Dawnward understands, connections, your data, display -----
+  function openYou() {
+    stopSpeech(); quiet(false);
+    showPlace("you");
+    drawYou();
+    $("y-title").focus();
   }
-  function goWorld(w, { open } = {}) {
-    stopSpeech();
-    const arriving = state.view !== w;
-    setView(w); state.lastWorld = w; state.selStar = null;
-    showWorld(w);
-    $("world").hidden = false;
+  function drawYou() {
+    const themes = liveThemes(), sugs = suggestions();
+    $("y-understand").replaceChildren(themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : el("p", { class: "quiet" }, "I don't have enough evidence to conclude anything yet. Patterns appear when evenings share something and you confirm it."));
+    $("y-connections").replaceChildren(...(sugs.length ? sugs.map((s) => connectionCard(s, drawYou)) : [el("p", { class: "quiet" }, "None right now.")]));
+    $("y-data-line").textContent = data.local
+      ? `${plural(data.stars.length, "memory", "memories")} kept on this device, and nowhere else.`
+      : `${plural(data.stars.length, "memory", "memories")} in your Dawnward.`;
+    $("y-export").hidden = !data.local || !data.stars.length; $("y-delete").hidden = !data.local || !data.stars.length;
+  }
+  let downloads = null;
+  window.claude?.use?.("downloads").then((d) => (downloads = d), () => {});
+  $("y-export").addEventListener("click", async () => {
+    const json = JSON.stringify({ exported: new Date().toISOString(), memories: data.stars.map(({ id, world, date, excerpt }) => ({ id, world, date, words: excerpt })), patterns: data.themes.map(({ id, world, statement, starIds, corrected, rejected }) => ({ id, world, statement, memories: starIds, corrected, rejected })) }, null, 2);
+    const filename = `dawnward-${today()}.json`;
+    if (downloads) {
+      try { await downloads.save({ filename, data: json }); announce("Saved."); }
+      catch (e) { if (e?.code !== "declined") announce("I couldn't save a copy here."); }
+      return;
+    }
+    const a = el("a", { href: URL.createObjectURL(new Blob([json], { type: "application/json" })), download: filename });
+    document.body.append(a); a.click(); a.remove();
+    announce("Your memories were saved as a file.");
+  });
+  $("y-delete").addEventListener("click", () => {
+    const box = $("y-delete-confirm");
+    box.hidden = false;
+    box.replaceChildren(el("p", { tabindex: "-1", id: "y-del-ask" }, `Delete all ${plural(data.stars.length, "memory", "memories")} from this device? This can't be undone.`),
+      el("div", { class: "actions" },
+        el("button", { class: "danger", onclick: () => {
+          const okA = device.remove(STORE), okB = device.remove(DRAFT);
+          if (!okA || !okB) { box.append(el("p", { class: "error", role: "alert" }, "I couldn't delete everything. Try again.")); return; }
+          data.stars = []; data.themes = []; finish(data); sync(); renderHome(); drawYou(); box.hidden = true; announce("Everything on this device was deleted."); $("y-title").focus();
+        } }, "Delete everything"),
+        el("button", { class: "ghost", onclick: () => { box.hidden = true; $("y-delete").focus(); } }, "Cancel")));
+    $("y-del-ask").focus();
+  });
+
+  // ----- places and navigation -----
+  function markTabs() {
+    const p = state.place, cur = p === "world" ? (document.body.classList.contains("quiet") ? "reflect" : "home") : p;
+    document.querySelectorAll("#tabs [data-tab]").forEach((b) => { if (b.dataset.tab === cur) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  }
+  function showPlace(p) {
+    state.place = p;
+    document.body.dataset.place = p;
+    for (const id of ["memories", "you"]) $(id).hidden = p !== id;
+    if (p !== "memories") $("m-detail").hidden = true;
+    world.hidden = p !== "world";
+    $("home-ui").hidden = p !== "home";
+    if (p !== "world") { document.body.classList.remove("closeup-on", "in-world", "sheet-open"); if (ctx && state.mode === "galaxy" && ctx.focus) ctx.focusWorld(null); }
+    markTabs();
+  }
+  function goWorld(w, { then } = {}) {
+    stopSpeech(); quiet(false);
+    const arriving = state.place !== "world" || state.world !== w;
+    state.world = w; state.lastWorld = w; state.selStar = null;
+    showPlace("world");
+    $("w-name").textContent = META[w].name;
+    document.body.dataset.world = w;
     document.body.classList.add("in-world");
-    if (open) open(); else $("w-title").focus();
+    $("closeup-img").src = asset(`img/worlds/closeup-${w}.webp`);
+    worldIntro(w);
+    if (then) then(); else $("w-q").focus({ preventScroll: true });
     highlight();
     if (arriving) {
       document.body.classList.remove("closeup-on");
-      const reveal = () => { if (state.view === w) document.body.classList.add("closeup-on"); };
+      const reveal = () => { if (state.place === "world" && state.world === w) document.body.classList.add("closeup-on"); };
       if (ctx && state.mode === "galaxy") ctx.focusWorld(w, reveal); else reveal();
       announce(`${META[w].name}. ${plural(worldStars(w).length, "memory", "memories")}.`);
     }
   }
-  function goHome({ show = null } = {}) {
-    if (show instanceof Event) show = null;
+  function goHome() {
     stopSpeech(); quiet(false);
-    const from = state.lastWorld;
-    setView("home"); state.selStar = show;
-    document.body.classList.remove("closeup-on", "in-world", "sheet-open");
-    $("world").hidden = true;
-    if (ctx && state.mode === "galaxy") ctx.focusWorld(null);
+    const from = state.place === "world" ? state.world : null;
+    state.selStar = null;
+    showPlace("home");
     renderHome(); highlight();
-    announce(show ? "Your galaxy. Your new star is the one shining brightest." : "Your galaxy.");
-    const target = state.opener && document.contains(state.opener) && !state.opener.closest("#world") ? state.opener : from ? labels.get(from) : null;
-    state.opener = null;
-    target?.focus();
+    announce("Your galaxy.");
+    (from ? labels.get(from) : $("begin"))?.focus({ preventScroll: true });
   }
   $("w-back").addEventListener("click", () => goHome());
-  $("dots").append(...["home", ...ORDER].map((v) => el("button", { "data-view": v, "aria-label": v === "home" ? "Galaxy home" : META[v].name, onclick: () => (v === "home" ? goHome() : goWorld(v)) })));
-  $("q-reflect").addEventListener("click", () => openCapture(state.view === "home" ? "mind" : state.view));
-  $("q-insight").addEventListener("click", () => { const t = liveThemes().find((x) => x.forming) ?? liveThemes()[0]; if (t) goWorld(t.world, { open: () => openInsight(t.id) }); });
-  $("q-next").addEventListener("click", () => openPlace("tomorrow"));
-  $("star").addEventListener("click", () => openCapture(state.view === "home" ? "mind" : state.view, { speak: true }));
+  $("begin").addEventListener("click", () => openEditor(state.lastWorld));
+  $("notice").addEventListener("click", () => openYou());
+  $("search").addEventListener("click", () => openMemories({ search: true }));
   $("brand").addEventListener("click", (e) => { e.preventDefault(); goHome(); });
+  document.querySelectorAll("#tabs [data-tab]").forEach((b) => b.addEventListener("click", () => {
+    const t = b.dataset.tab;
+    if (t === "home") goHome();
+    else if (t === "reflect") openEditor(state.place === "world" ? state.world : state.lastWorld);
+    else if (t === "memories") openMemories();
+    else if (t === "you") openYou();
+  }));
   addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
-    if (!$("menu-pop").hidden) return closeMenu();
-    if (!$("search-pop").hidden) return closeSearch();
-    if (state.mode === "text") return;
-    if (state.view !== "home") goHome();
+    if (e.key !== "Escape" || state.mode === "text") return;
+    if (!$("m-detail").hidden) return closeMemory();
+    if (state.place !== "home") goHome();
   });
-  // Tapping a planet in the picture does what its button does.
   if (ctx) {
     let down = null;
     ctx.renderer.domElement.addEventListener("pointerdown", (e) => { down = [e.clientX, e.clientY]; });
     ctx.renderer.domElement.addEventListener("click", (e) => {
-      if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6 || state.view !== "home") return;
+      if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6 || state.place !== "home") return;
       const k = ctx.pickWorld({ x: (e.clientX / innerWidth) * 2 - 1, y: -(e.clientY / innerHeight) * 2 + 1 });
       if (k) goWorld(k);
     });
   }
 
-  // ----- search -----
-  function closeSearch() { $("search-pop").hidden = true; $("search").setAttribute("aria-expanded", "false"); $("search").focus(); }
-  $("search").addEventListener("click", () => {
-    if (!$("search-pop").hidden) return closeSearch();
-    $("search-pop").hidden = false; $("search").setAttribute("aria-expanded", "true"); $("q").focus(); runSearch();
-  });
-  function runSearch() {
-    const q = $("q").value.trim().toLowerCase();
-    const hits = q ? data.stars.filter((s) => s.excerpt.toLowerCase().includes(q)).slice(-8).reverse() : [];
-    $("hits").replaceChildren(...hits.map((s) => el("li", {}, el("button", { onclick: () => { $("search-pop").hidden = true; $("search").setAttribute("aria-expanded", "false"); goWorld(s.world, { open: () => showStar(s.id) }); } },
-      el("span", { class: "when" }, `${META[s.world].name} · ${shortDate(s.date)}`), el("span", { class: "text" }, s.excerpt)))));
-    $("hits-n").textContent = q ? (hits.length ? plural(hits.length, "memory", "memories") : "Nothing matches that.") : "Search the words of every evening.";
-  }
-  $("q").addEventListener("input", runSearch);
-
-  // ----- menu -----
-  function closeMenu() { $("menu-pop").hidden = true; $("menu").setAttribute("aria-expanded", "false"); $("menu").focus(); }
-  $("menu").addEventListener("click", () => {
-    const open = $("menu-pop").hidden;
-    $("menu-pop").hidden = !open; $("menu").setAttribute("aria-expanded", String(open));
-    if (open) $("menu-pop").querySelector("a,button")?.focus();
-  });
-  $("replay").addEventListener("click", () => { try { localStorage.removeItem("dw-home-seen"); } catch {} location.reload(); });
-
-  // ----- Galaxy / Text / Sound -----
+  // ----- display: text view, sound, entrance -----
   function setMode(m) {
     state.mode = m;
     document.body.dataset.mode = m;
-    $("m-galaxy").setAttribute("aria-checked", String(m === "galaxy"));
-    $("m-text").setAttribute("aria-checked", String(m === "text"));
     $("text").hidden = m !== "text";
-    if (m === "text") { renderText(); $("text").querySelector("h2")?.focus(); }
-    else { if (ctx) ctx.focusWorld(state.view === "home" ? null : state.view); renderHome(); }
+    $("y-text").setAttribute("aria-pressed", String(m === "text"));
+    if (m === "text") { renderText(); $("text-h").focus(); }
+    else if (ctx) ctx.focusWorld(state.place === "world" ? state.world : null);
     try { localStorage.setItem("dw-home-mode", m); } catch {}
   }
-  $("m-galaxy").addEventListener("click", () => setMode("galaxy"));
-  $("m-text").addEventListener("click", () => setMode("text"));
-  const soundBtns = [$("sound"), $("sound-m")];
-  const toggleSound = () => {
+  $("y-text").addEventListener("click", () => setMode(state.mode === "text" ? "galaxy" : "text"));
+  $("text-close").addEventListener("click", () => { setMode("galaxy"); goHome(); });
+  $("y-sound").addEventListener("click", () => {
     if (sound.on) sound.stop(); else sound.start();
-    for (const b of soundBtns) { b.setAttribute("aria-pressed", String(sound.on)); b.textContent = sound.on ? "Sound on" : "Sound off"; }
-  };
-  soundBtns.forEach((b) => b.addEventListener("click", toggleSound));
-
-  // Text view: the whole universe as one plain, complete document.
+    $("y-sound").setAttribute("aria-pressed", String(sound.on)); $("y-sound").textContent = sound.on ? "Sound on" : "Sound off";
+  });
+  $("y-replay").addEventListener("click", () => { try { localStorage.removeItem("dw-home-seen"); } catch {} location.reload(); });
   function renderText() {
-    const box = $("text-body");
-    box.replaceChildren(
-      el("p", { class: "sub" }, "Everything the galaxy shows, in reading order. Nothing here is a picture of words."),
-      el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => { setMode("galaxy"); openCapture("mind"); } }, "Add a memory")),
+    $("text-body").replaceChildren(
+      el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => { setMode("galaxy"); openEditor(state.lastWorld); } }, "Begin reflection")),
       ...ORDER.map((w) => el("section", { "aria-labelledby": `tx-${w}` },
-        el("h3", { id: `tx-${w}` }, el("span", { class: `tchip tchip-${w}`, html: svg(ICON[w], 16) }), ` ${META[w].name}`),
-        el("p", { class: "sub" }, META[w].line),
-        w === "future" && data.goal ? el("p", { class: "why" }, `Destination: ${data.goal.title}. ${data.goal.milestones.filter((m) => m.evidence).length} of ${data.goal.milestones.length} milestones reached, each from your words.`) : null,
-        worldThemes(w).length
-          ? el("div", { class: "cards" }, worldThemes(w).map((t) => el("div", {}, insightCard(t), el("ul", { class: "quotes" }, t.starIds.map(quoteOf)))))
-          : el("p", { class: "why" }, "I don't have enough evidence to conclude anything here yet."),
-        el("h4", {}, `Memories in ${META[w].name}`),
-        el("ul", { class: "memories" }, [...worldStars(w)].reverse().map((s) => el("li", { class: "memory" }, el("span", { class: "when" }, longDate(s.date)), el("span", { class: "text" }, s.excerpt)))))));
+        el("h3", { id: `tx-${w}` }, META[w].name),
+        el("p", { class: "quiet" }, META[w].kicker),
+        worldThemes(w).length ? el("div", { class: "cards" }, worldThemes(w).map((t) => el("div", { class: "card" }, el("p", { class: "statement" }, t.corrected ?? t.statement), el("p", { class: "why" }, t.why)))) : el("p", { class: "quiet" }, "I don't have enough evidence to conclude anything here yet."),
+        worldStars(w).length ? el("ul", { class: "memories" }, [...worldStars(w)].reverse().map((s) => el("li", { class: "memory" }, el("span", { class: "when" }, longDate(s.date)), el("span", { class: "text" }, s.excerpt)))) : el("p", { class: "quiet" }, "No memories here yet."))));
   }
-
-  // ----- the entrance: a point of light opens into the galaxy -----
   function entrance() {
     let seen = false;
     try { seen = localStorage.getItem("dw-home-seen") === "1"; } catch {}
@@ -768,88 +814,89 @@ function main(data, failed) {
     ov.hidden = false;
     const done = () => {
       if (ov.classList.contains("out")) return;
-      ov.classList.add("out"); ctx.skipIntro();
-      document.body.classList.add("arrived");
+      ov.classList.add("out"); ctx.skipIntro(); document.body.classList.add("arrived");
       setTimeout(() => (ov.hidden = true), 600);
       try { localStorage.setItem("dw-home-seen", "1"); } catch {}
     };
-    $("skip").addEventListener("click", () => { done(); $("brand").focus(); }, { once: true });
+    $("skip").addEventListener("click", () => { done(); $("begin").focus(); }, { once: true });
     setTimeout(done, 3000);
   }
 
-  // ----- layout and the frame loop -----
+  // ----- layout: fit the worlds into the free space; keep the editor above the keyboard -----
   function layout() {
-    document.documentElement.style.setProperty("--dock-h", `${Math.round($("home-ui").getBoundingClientRect().height)}px`);
     if (!ctx) return;
     ctx.resize(innerWidth, innerHeight);
-    // Fit the four worlds into the space the panels leave free.
     const W = innerWidth, H = innerHeight, wide = W >= 1000;
+    // Too little room for four labelled planets: show four world buttons instead.
+    document.body.classList.toggle("compact", !wide && (H < 700 || W < 340));
     const r = (id) => $(id).getBoundingClientRect();
-    const frame = wide
-      ? { left: r("home-ui").right + 10, right: r("rail").left - 10, top: r("brand").bottom - 10, bottom: r("dock").top - 70 }
-: { left: 0, right: W, top: Math.max(r("brand").bottom, $("notice").hidden ? 0 : r("notice").bottom) + 26, bottom: r("home-ui").top - 34 };
-    ctx.setFrame(frame, wide ? 0.82 : 0.74);
+    fit.frame = wide
+      ? { left: r("home-ui").right + 16, right: r("tabs").left - 16, top: r("brand").bottom + 8, bottom: H - 24 }
+      : { left: 0, right: W, top: Math.max(r("brand").bottom, $("notice").hidden ? 0 : r("notice").bottom) + 8, bottom: r("home-ui").top - 8 };
+    fit.scale = wide ? 0.8 : 0.74;
+    fit.tries = 0;
+    ctx.setFrame(fit.frame, fit.scale);
   }
+  const fit = { frame: null, scale: 0.8, tries: 0 };
   addEventListener("resize", layout);
+  window.visualViewport?.addEventListener("resize", () => {
+    const a = document.activeElement;
+    if (a && a.tagName === "TEXTAREA") a.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
+  });
 
-  const frames = (window.__dwFrames = []);
-  let last = performance.now();
   function place() {
     const W = innerWidth, H = innerHeight;
+    let top = Infinity, bottom = -Infinity;
     for (const w of ORDER) {
       const p = ctx.project(w, W, H), a = arcs.get(w), b = labels.get(w);
-      const r = Math.max(20, p.r);
-      const ra = r + 7;                       // the name sits just outside the rim
-      const fs = parseFloat(getComputedStyle(a.svg).getPropertyValue("--words")) || 12;
-      const rb = r + 6 + fs * 0.75;           // the words hang just outside the lower rim
-      const S = Math.ceil(2 * (rb + 26));
-      const c = S / 2;
+      const r = Math.max(18, p.r), ra = r + 7, rb = r + 15;
+      const S = Math.ceil(2 * (rb + 26)), c = S / 2;
       const key = `${Math.round(r)}|${S}`;
       if (key !== a.last) {
         a.last = key;
         a.svg.setAttribute("width", S); a.svg.setAttribute("height", S); a.svg.setAttribute("viewBox", `0 0 ${S} ${S}`);
         a.top.setAttribute("d", `M ${c - ra} ${c} A ${ra} ${ra} 0 0 1 ${c + ra} ${c}`);
         a.bot.setAttribute("d", `M ${c - rb} ${c} A ${rb} ${rb} 0 0 0 ${c + rb} ${c}`);
-        // the words only appear where they fit comfortably along the arc
-        // phones keep just the name and Explore: less to read, nothing crowded
         a.fits = W >= 1000 && a.words.getComputedTextLength() <= a.bot.getTotalLength() * 0.82;
         a.words.style.display = a.fits ? "" : "none";
       }
       a.svg.style.transform = `translate(${Math.round(p.x - c)}px, ${Math.round(p.y - c)}px)`;
-      a.svg.style.visibility = p.visible ? "visible" : "hidden";
-      const below = p.y + (a.fits ? rb + 10 : r + 12);
-      const half = (b.offsetWidth || 120) / 2 + 6;
+      const half = (b.offsetWidth || 120) / 2 + 8;
       const x = Math.min(W - half, Math.max(half, p.x));
-      b.style.transform = `translate(${Math.round(x)}px, ${Math.round(below)}px) translateX(-50%)`;
-      b.style.visibility = p.visible ? "visible" : "hidden";
+      const by = Math.round(p.y + (a.fits ? rb + 10 : r + 12));
+      b.style.transform = `translate(${Math.round(x)}px, ${by}px) translateX(-50%)`;
+      b.classList.toggle("off", !p.visible);
+      a.svg.classList.toggle("off", !p.visible);
+      top = Math.min(top, p.y - ra - 18);
+      bottom = Math.max(bottom, by + 44);
+    }
+    // Labels have a fixed size while the worlds scale: if any label leaves the
+    // free space, step the worlds back a little until everything fits.
+    if (fit.frame && ctx.settled && fit.tries < 30 && (top < fit.frame.top || bottom > fit.frame.bottom)) {
+      fit.tries++; fit.scale *= 1.04;
+      ctx.setFrame(fit.frame, fit.scale);
     }
   }
 
   let mode = "galaxy";
   try { mode = localStorage.getItem("dw-home-mode") === "text" ? "text" : "galaxy"; } catch {}
   if (!ctx) mode = "text";
-  setView("home");
+  showPlace("home");
   renderHome();
   setMode(mode);
   layout();
   if (ctx) {
-    let rendered = 0;
+    const frames = (window.__dwFrames = []);
+    let last = performance.now(), rendered = 0;
     ctx.renderer.setAnimationLoop((now) => {
-      const dt = Math.min((now - last) / 1000, 0.1);
-      const gap = now - last; last = now;
-      if (state.mode === "text") return; // nothing is drawn behind the text view
-      // Inside a world the painting covers the galaxy: stop drawing it (battery).
-      if (document.body.classList.contains("closeup-on")) return;
-      // The governor counts only frames actually drawn: every 120, if the median
-      // runs past 28 ms it drops the glow, the pixel ratio and half the dust.
-      frames.push(gap);
-      if (frames.length > 600) frames.shift();
-      if (++rendered % 120 === 0 && ctx.bloomOn) {
-        const recent = frames.slice(-100).sort((a, b) => a - b);
-        if (recent[50] > 28) { ctx.degrade(); window.__dwDegraded = true; }
-      }
+      const dt = Math.min((now - last) / 1000, 0.1), gap = now - last; last = now;
+      if (state.mode === "text") return;                            // nothing drawn behind the text view
+      if (document.body.classList.contains("closeup-on")) return;   // a world's painting covers it
+      frames.push(gap); if (frames.length > 600) frames.shift();
+      // Every 120 drawn frames: a median over 28 ms drops glow, pixel ratio and half the dust.
+      if (++rendered % 120 === 0 && ctx.bloomOn) { const f = frames.slice(-100).sort((a, b) => a - b); if (f[50] > 28) { ctx.degrade(); window.__dwDegraded = true; } }
       ctx.frame(dt);
-      place();
+      if (state.place === "home") place();
     });
   }
   entrance();
@@ -859,4 +906,4 @@ function main(data, failed) {
 
 loadData()
   .then((d) => main(d, false))
-  .catch(() => main(sampleData(), true));
+  .catch(() => main(localData(), true));
