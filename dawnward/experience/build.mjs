@@ -43,6 +43,7 @@ function singleHome() {
     if (!f.endsWith(".webp") || /-v1\.webp$/.test(f) || /^planet-(mind|body|soul|future)\.webp$/.test(f) || f === "galaxy-core.webp") continue;
     assets[`img/worlds/${f}`] = b64(join("assets/img/worlds", f));
   }
+  for (const f of readdirSync("assets/img/art")) if (f.endsWith(".webp")) assets[`img/art/${f}`] = b64(join("assets/img/art", f));
   const css = readFileSync("fonts.css", "utf8").replace(/url\("(fonts\/[^"]+)"\)/g, (_, p) => `url("${b64(p)}")`);
   const html = readFileSync("home.html", "utf8")
     .replace('<link rel="stylesheet" href="fonts.css">', () => `<style>${css}</style>`)

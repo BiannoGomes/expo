@@ -17,7 +17,7 @@ const $ = (id) => document.getElementById(id);
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const asset = (p) => (window.DW_ASSETS ? window.DW_ASSETS(p) : `assets/${p}`);
 // Worlds and galaxies live in one registry: new places come from data, not new screens.
-import { ORDER, META, GALAXIES, WORLDS, worldRoute } from "./registry.js";
+import { ORDER, META, GALAXIES, WORLDS, worldRoute, ART, artPath } from "./registry.js";
 
 const CONFIDENCE = { hypothesis: "Still forming", probable: "Probably true", established: "Well established" };
 const svg = (paths, size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
@@ -306,7 +306,9 @@ function main(data, failed) {
     const W = 300, H = 124, cx = W / 2, cy = H / 2, n = all.length;
     const svgEl = mk("svg", { viewBox: `0 0 ${W} ${H}`, class: `solar solar-${sys.world}`, role: "img",
       "aria-label": `${sys.title}: ${all.filter((c) => c.done).length} of ${n} ${sys.kind === "expedition" ? "chapters" : "missions"} done.${nextIdx >= 0 ? ` Next: ${all[nextIdx].title}.` : ""}${planned.length ? ` ${planned.length} still being written.` : ""}` });
-    svgEl.append(mk("circle", { cx, cy, r: 13, class: "sun" }));
+    const planet = ART.systems[sys.id];
+    if (planet) svgEl.append(mk("image", { href: asset(artPath(planet)), x: cx - 22, y: cy - 22, width: 44, height: 44, class: "sun-art" }));
+    else svgEl.append(mk("circle", { cx, cy, r: 13, class: "sun" }));
     all.forEach((c, k) => {
       const r = n === 1 ? 62 : 24 + (k * (78 - 24)) / (n - 1), rx = r * 1.85, ry = r * 0.62;
       svgEl.append(mk("ellipse", { cx, cy, rx, ry, class: `orbit${c.done ? " lit" : ""}${c.planned ? " planned" : ""}` }));
@@ -334,7 +336,9 @@ function main(data, failed) {
           onclick: () => explore.play(m.id, fromWorld(w)),
         }, el("span", { class: "mstate", "aria-hidden": "true" }, done(m.id) ? "✦" : ""), el("span", { class: "rtext" }, el("span", { class: "rtitle" }, sys.kind === "expedition" ? m.part : m.title), el("span", { class: "rsub" }, sys.kind === "expedition" ? m.objective : m.part)), el("span", { class: "mmeta" }, done(m.id) ? "Done" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`)))),
           (sys.planned ?? []).map((p, k) => el("li", { class: "planned" }, el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `Chapter ${sys.missionIds.length + k + 1}: ${p.title}`), el("span", { class: "rsub" }, p.line)), el("span", { class: "mmeta" }, "Planned")))))),
-      el("p", { class: "quiet small" }, systems.length ? `Planned next here: ${play.planned.join(", ")}.` : `Planned here: ${play.planned.join(", ")}. Reflection is open now.`));
+      el("p", { class: "quiet small" }, systems.length ? `Planned next here: ${play.planned.join(", ")}.` : `Planned here: ${play.planned.join(", ")}. Reflection is open now.`),
+      play.planned.some((p) => ART.planned[p]) ? el("ul", { class: "planned-row", "aria-label": "Pathways being written" }, play.planned.filter((p) => ART.planned[p]).map((p) =>
+        el("li", {}, el("img", { src: asset(artPath(ART.planned[p])), alt: "" }), el("span", {}, p), el("span", { class: "quiet small" }, "Planned")))) : null);
   }
   // Overview: the one next step in this world, if there is one
   function worldNext(w) {
@@ -890,6 +894,7 @@ function main(data, failed) {
     if (then) then(); else $("w-q").focus({ preventScroll: true });
     highlight();
     if (arriving) {
+      world.scrollTop = 0; // a new world starts at its top, not where the last one was left
       document.body.classList.remove("closeup-on");
       let fallback = 0;
       const reveal = () => { clearTimeout(fallback); if (state.place === "world" && state.world === w) document.body.classList.add("closeup-on"); };
@@ -919,8 +924,9 @@ function main(data, failed) {
   // ----- the Universe Atlas: galaxies you can pan, select, zoom toward and enter -----
   const field = $("a-field"), inner = $("a-inner");
   for (const g of GALAXIES) {
-    const art = g.kind === "earth" ? el("span", { class: "gx-earth" }) : g.kind === "gateway" ? el("span", { class: "gx-gate" })
-      : el("img", { class: "gx-img", alt: "", src: asset("img/worlds/galaxy-core-1024.webp"), style: g.hue ? `filter:hue-rotate(${g.hue}deg) saturate(1.15)` : "" });
+    const orb = ART.galaxies[g.id];
+    const art = orb ? el("img", { class: `gx-img gx-orb${g.kind ? ` gx-${g.kind}-orb` : ""}`, alt: "", src: asset(artPath(orb)) })
+      : el("img", { class: "gx-img", alt: "", src: asset("img/worlds/galaxy-core-1024.webp") });
     inner.append(el("button", { class: `gx g-${g.id}${g.open ? "" : " closed"}`, "data-id": g.id, style: `--lx:${g.x}%;--ly:${g.y}%;--gx:${g.size};--px:${g.p[0]}%;--py:${g.p[1]}%;--pw:${g.p[2]}`, "aria-label": `${g.name}. ${g.tag} ${g.open ? "Open." : "Not open yet."}`, "aria-pressed": "false", onclick: () => selectGalaxy(g) },
       art, el("span", { class: "gx-name" }, g.name), g.open ? null : el("span", { class: "gx-soon" }, g.kind === "gateway" ? "Opens next" : "Preview")));
   }
@@ -972,6 +978,7 @@ function main(data, failed) {
   // ----- Earth Realm: everyday life. Nothing urgent, nothing punished -----
   function openEarth(found = null, { quietFocus = false } = {}) {
     stopSpeech(); quiet(false);
+    $("earth").style.setProperty("--e-art", `url("${asset(artPath(ART.home))}")`);
     showPlace("earth");
     drawEarth(found);
     if (!quietFocus) $("e-title").focus({ preventScroll: true });
@@ -1010,6 +1017,7 @@ function main(data, failed) {
   function compassCard(pick) {
     const { m } = pick, total = m.steps.length;
     return el("article", { class: "compass", "aria-labelledby": "c-title" },
+      el("img", { class: "c-medal", src: asset(artPath(ART.compass)), alt: "" }),
       el("div", { class: "c-top" }, el("p", { class: "kicker" }, "Your daily compass"),
         el("p", { class: "c-meta" }, m.chapter ? `Chapter ${m.chapter} of ${chaptersIn(m)}` : pick.resume ? `Step ${pick.step + 1} of ${total}` : `${META[m.world].name} · ${m.minutes} min`)),
       el("h3", { id: "c-title", class: "c-title" }, m.title),
@@ -1222,7 +1230,7 @@ function main(data, failed) {
   // Explore shares the engine with the server: on this device without an
   // account, through the API with one.
   explore = createExplore(data.local ? localStore(device) : remoteStore(call), {
-    $, el, svg, ICON, META, announce, quiet, longDate, sound, showPlace,
+    $, el, svg, ICON, META, announce, quiet, longDate, sound, showPlace, asset,
     distress: (t) => DISTRESS.test(t), crisisText: CRISIS_TEXT.join("\n"),
     onDiscoveries: (_d, fresh) => { sync(); if (fresh.length && explore.data.gameLayer) sound.chime(1175); },
     goHomeWith: (key) => goHome({ show: key ? `d:${key}` : null }),

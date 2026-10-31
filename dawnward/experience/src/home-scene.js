@@ -20,7 +20,7 @@ const R = 2.6; // distance of each world from the core
 // gold edge always faces the light at the centre.
 const P = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
 export const WORLDS = [
-  { key: "spirit", at: P(-90), size: 1.8, flip: false, disk: [0.5, 0.5, 0.43], rim: "#B9A6FF" },
+  { key: "spirit", at: P(-90), size: 1.8, flip: false, disk: [0.491, 0.49, 0.423], rim: "#B9A6FF" },
   { key: "soul", at: P(-18), size: 1.75, flip: false, disk: [0.497, 0.49, 0.43], rim: "#9B5BFF" },
   { key: "future", at: P(54), size: 2.55, flip: false, disk: [0.515, 0.473, 0.28], rim: "#E6C07B" },
   { key: "body", at: P(126), size: 1.75, flip: true, disk: [0.498, 0.49, 0.43], rim: "#37D5E8" },

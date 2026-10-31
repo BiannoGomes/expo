@@ -19,7 +19,7 @@ export const WORLDS = ORDER.map((id) => ({
   id,
   ...COPY[id],
   description: COPY[id].line,
-  assets: { planet: `img/worlds/planet-${id}-640.webp`, closeup: `img/worlds/closeup-${id}.webp`, placeholder: id === "spirit" },
+  assets: { planet: `img/worlds/planet-${id}-640.webp`, closeup: `img/worlds/closeup-${id}.webp`, placeholder: false },
   theme: { color: `var(--${id})` },
   route: `#/world/${id}`,
   /** What you can do here: the reflection space, plus its solar systems (skill pathways). */
@@ -42,3 +42,25 @@ export const GALAXIES = [
   { id: "gateway", p: [50, 9, 19], name: "Quantum Gateway", tag: "A step toward the person you are becoming.", planned: "Opens next: the Future Self Observatory, with the Mirror, the Crossroads and the First Step. A visual metaphor for imagining possible futures, never a prediction.", kind: "gateway", x: 50, y: 12, size: 13 },
   { id: "earth", p: [50, 90, 24], name: "Earth Realm", tag: "Your everyday life: today, your actions and your words.", open: true, kind: "earth", x: 50, y: 85, size: 13 },
 ];
+
+/** Bianno's ChatGPT art, round 2 (2026-10-31), by brief code (docs/universe/chatgpt-chapter-art-brief.md).
+ *  hero: opens the chapter; exercise: behind its practice; reflect: behind writing; moon: its reward; header: its worksheet on screen.
+ *  A missing piece falls back (Chapter 3's opening is "Entering Mind" until BO3-H is made). */
+export const ART = {
+  missions: {
+    "overthinking-1": { hero: "BO1-H", exercise: "BO1-X", reflect: "BO1-R", moon: "BO1-K", header: "BO1-W" },
+    "overthinking-2": { hero: "BO2-H", exercise: "BO2-X", reflect: "BO2-R", moon: "BO2-K" },
+    "overthinking-3": { hero: "T4", exercise: "BO3-R", reflect: "BO3-R", moon: "BO3-K", header: "BO3-W" },
+    "overthinking-4": { hero: "BO4-H", exercise: "BO4-X", reflect: "BO4-R", moon: "BO4-K" },
+    "labyrinth-1": { hero: "TL1-H", exercise: "TL1-X", reflect: "TL1-R", moon: "TL1-K" },
+    "bridge-1": { hero: "BR1-H", exercise: "BR1-X", reflect: "BR1-X", moon: "BR1-K" },
+    "bridge-2": { hero: "BR2-H", exercise: "BR2-X", reflect: "BR2-X", moon: "BR2-K" },
+    "bridge-3": { hero: "C3", exercise: "BR2-X", reflect: "BR2-X", moon: "T9" },
+  },
+  /** each skill pathway's planet */
+  systems: { "mind-thought-patterns": "D1", "mind-beyond-overthinking": "D2" },
+  planned: { "Emotional Awareness": "D3", "Belief Transformation": "D5", "Learning & Creativity": "D6" },
+  galaxies: { ai: "A3", knowledge: "A4", spiritual: "A5", creative: "A6", earth: "A7", gateway: "A8" },
+  home: "E1", compass: "U11", star: "T10", moon: "T9",
+};
+export const artPath = (code) => (code ? `img/art/${code}.webp` : null);

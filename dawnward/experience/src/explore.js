@@ -2,6 +2,7 @@
 // from @dawnward/core, the same engine the server runs; without an account the
 // state is kept on this device, with an account it goes through the API.
 // Progress is discoveries only (owner decision): no XP, levels or scores.
+import { ART, artPath } from "./registry.js";
 import {
   MISSIONS,
   SYSTEMS,
@@ -144,11 +145,13 @@ export function createExplore(store, h) {
   // ----- the Discovery Galaxy, as a list that works without any 3D -----
   async function open() {
     h.showPlace("explore");
+    setArt(null);
     await refresh();
     draw();
     $("x-title")?.focus();
   }
   function draw() {
+    setArt(null);
     const kids = [...head("Learn", "Expeditions: short guided practices for real life. Understand, practise, try it for real if you want, then reflect.")];
     const going = data.attempts.filter((a) => a.status === "in_progress" || a.status === "paused");
     if (going.length) {
@@ -169,6 +172,7 @@ export function createExplore(store, h) {
     for (const sys of SYSTEMS) {
       const ms = sys.missionIds.map(missionById);
       kids.push(el("section", { class: "group system", "aria-labelledby": `x-${sys.id}` },
+        ART.systems[sys.id] ? el("img", { class: "sys-planet", src: h.asset(artPath(ART.systems[sys.id])), alt: "" }) : null,
         el("p", { class: "kicker" }, `${META[sys.world].name} · ${sys.kind === "expedition" ? `expedition · ${sys.missionIds.length + (sys.planned?.length ?? 0)} chapters` : "solar system"}`),
         el("h3", { id: `x-${sys.id}`, class: "sys-title" }, sys.title),
         el("p", { class: "quiet" }, sys.objective),
@@ -210,7 +214,21 @@ export function createExplore(store, h) {
     draw(); $("x-title")?.focus();
   }
 
+  // The chapter's art: its scene behind the opening and the ending, a softer backdrop behind
+  // practice and writing. Decorative only (alt=""), and never under text without a dark veil.
+  function setArt(m, type) {
+    const a = ART.missions[m?.id] ?? {};
+    const code = !m ? null : ["intro", "lesson", "close"].includes(type) ? a.hero : ["rehearse", "reflect", "plan"].includes(type) ? a.reflect ?? a.exercise : a.exercise ?? a.hero;
+    const box = $("x-art");
+    if (!code) { box.hidden = true; $("explore").dataset.art = ""; return; }
+    const src = h.asset(artPath(code));
+    const img = box.querySelector("img");
+    if (img.getAttribute("src") !== src) img.setAttribute("src", src);
+    box.hidden = false;
+    $("explore").dataset.art = ["intro", "close"].includes(type) ? "scene" : "dim";
+  }
   function frame(m, i, ...kids) {
+    setArt(m, m.steps[i]?.type);
     body().replaceChildren(
       el("div", { class: "qhead" },
         h.crumbs([...(from?.trail ?? [{ label: "Learn", root: true, go: () => { current = null; from = null; h.quiet(false); draw(); } }]), { label: m.title }]),
@@ -469,7 +487,9 @@ export function createExplore(store, h) {
       el("p", { class: "lead" }, closeStep.body),
       el("div", { class: "card" }, el("p", { class: "kicker" }, "You practised"), el("p", {}, m.objective)),
       plan ? el("div", { class: "card" }, el("p", { class: "kicker" }, "Your real action"), el("p", { class: "statement" }, plan.action), el("p", { class: "why" }, plan.when_text)) : null,
-      found && data.gameLayer ? el("div", { class: "card found" }, el("p", { class: "kicker" }, "Discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
+      found && data.gameLayer ? el("div", { class: "card found" },
+        el("img", { class: "reward-moon", src: h.asset(artPath(ART.missions[m.id]?.moon ?? ART.moon)), alt: "" }),
+        el("p", { class: "kicker" }, "Discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
       el("div", { class: "actions" },
         el("button", { class: "primary", onclick: () => { current = null; from = null; h.goEarth(found ?? null); } }, "Return to Earth"),
         (() => { const sys = SYSTEMS.find((x) => x.id === m.systemId); return sys?.kind === "expedition" && !isFollowing(sys.id) ? followButton(sys, () => finishFollowNote(sys)) : null; })(),
@@ -480,8 +500,11 @@ export function createExplore(store, h) {
 
   // ----- worksheets: readable here, printable on paper -----
   function worksheet(m, back) {
+    setArt(null);
     const w = m.worksheet;
+    const head = ART.missions[m.id]?.header;
     const sheet = el("article", { class: "sheet", "aria-labelledby": "ws-title" },
+      head ? el("img", { class: "ws-art no-print", src: h.asset(artPath(head)), alt: "" }) : null,
       el("p", { class: "kicker" }, `Dawnward · ${m.title} · ${m.part}`),
       el("h2", { id: "ws-title", class: "s-title", tabindex: "-1" }, w.title),
       el("p", { class: "lead" }, w.intro),
@@ -507,6 +530,7 @@ export function createExplore(store, h) {
   }
 
   function crisis(text) {
+    setArt(null);
     h.quiet(false);
     if (current?.attempt?.status === "in_progress") store.exit(current.attempt);
     body().replaceChildren(el("h2", { class: "s-title", tabindex: "-1" }, "You matter more than any practice"),
