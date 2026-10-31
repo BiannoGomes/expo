@@ -1,0 +1,130 @@
+{
+  "when": "2026-10-31T23:22:16.713Z",
+  "checks": [
+    {
+      "name": "Learn leads to the Members' Library",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the Learn tab stays current",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "with no packs it says they're being prepared",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the empty library",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "packs are grouped by where they belong",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "each pack shows what's inside and who it's for",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the library",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a members' pack has its own address",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a members' pack shows what's inside, honestly, and nothing more",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: a members' pack, locked",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Escape goes back to the library",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a free pack opens for everyone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a pack shows on its galaxy, under From Bianno",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a pack placed in a world shows in that world's Library",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a member opens the pack by link",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "every item says how it was made",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "an unreviewed draft is labelled",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the film has captions on by default",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the film describes what happens",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the recording has its transcript",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the worksheet opens as a PDF link",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: a members' pack, open",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "the empty library": [],
+    "the library": [],
+    "a members' pack, locked": [],
+    "a members' pack, open": []
+  },
+  "summary": {
+    "total": 23,
+    "failed": 0
+  }
+}

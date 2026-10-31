@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T21:21:39.032Z",
+  "when": "2026-10-31T23:18:15.617Z",
   "checks": [
     {
       "name": "320x568: Atlas galaxies and names never overlap",
@@ -153,7 +153,7 @@
     },
     {
       "name": "phone: an unopened galaxy says so plainly",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -338,7 +338,7 @@
     },
     {
       "name": "desktop: an unopened galaxy says so plainly",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -497,13 +497,13 @@
   "timings": {
     "phone.arrival_fallbacks": 0,
     "phone.webgl_context_lost": 0,
-    "phone.to_first_step_ms": 226,
+    "phone.to_first_step_ms": 216,
     "desktop.arrival_fallbacks": 1,
     "desktop.webgl_context_lost": 0,
-    "desktop.to_first_step_ms": 155
+    "desktop.to_first_step_ms": 93
   },
   "summary": {
     "total": 96,
-    "failed": 0
+    "failed": 2
   }
 }

@@ -174,6 +174,10 @@ export function createExplore(store, h) {
           el("span", { class: "rtext" }, el("span", { class: "rtitle" }, x.action), el("span", { class: "rsub" }, `You planned: ${x.when_text}`)),
           el("span", { class: "rgo", html: svg(ICON.arrow, 16) })))));
     }
+    kids.push(el("section", { class: "group", "aria-labelledby": "x-lib" }, el("h3", { id: "x-lib" }, "Members' Library"),
+      el("button", { class: "row", onclick: () => h.openLibrary?.() },
+        el("span", { class: "rtext" }, el("span", { class: "rtitle" }, "Lessons, films and guided audio from Bianno"), el("span", { class: "rsub" }, "Each one says how it was made.")),
+        el("span", { class: "rgo", html: svg(ICON.arrow, 16) }))));
     for (const sys of SYSTEMS) {
       const ms = sys.missionIds.map(missionById);
       kids.push(el("section", { class: "group system", "aria-labelledby": `x-${sys.id}` },

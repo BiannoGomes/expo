@@ -79,10 +79,10 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     check(`${name}: list view has every destination`, (await page.locator("#a-list .row").count()) === 7);
     await page.locator('#a-views [data-v="map"]').click();
 
-    // a closed galaxy says so, and has no way in
+    // AI Creation opens for its gallery, and says plainly its AI studios aren't built
     await page.locator('#a-inner [data-id="ai"]').click();
     const ai = await page.textContent("#a-panel");
-    check(`${name}: an unopened galaxy says so plainly`, /not open yet/i.test(ai) && /Planned/.test(ai) && !(await page.locator("#a-panel .primary").count()));
+    check(`${name}: what isn't built yet says so plainly`, /AI studios are planned/.test(ai) && /Planned, needing an AI service/.test(ai) && (await page.locator("#a-panel .primary", { hasText: "Enter AI Creation" }).count()) === 1);
     await page.getByRole("button", { name: "Back to the Universe" }).click();
 
     // keyboard: select Personal Growth with Enter, move toward it, enter

@@ -1,0 +1,44 @@
+{
+  "id": "your-pack-id",
+  "title": "The Evening Reset",
+  "summary": "One or two plain sentences on what's inside and who it's for.",
+  "place": "spiritual",
+  "access": "plus",
+  "cover": "cover.webp",
+  "coverAlt": "",
+  "added": "2026-11-01",
+  "rights": "Bianno owns all of this",
+  "rightsConfirmed": true,
+  "items": [
+    {
+      "type": "lesson",
+      "title": "Why evenings matter",
+      "minutes": 4,
+      "source": "opus",
+      "reviewed": { "by": "Bianno", "on": "2026-11-01" },
+      "text": "First paragraph.\n\nSecond paragraph."
+    },
+    {
+      "type": "video",
+      "title": "The door at dusk",
+      "source": "fable",
+      "file": "door.mp4",
+      "poster": "door.webp",
+      "noSpeech": true,
+      "description": "A slow animation: a door in a floating temple opens onto a dusk sky."
+    },
+    {
+      "type": "audio",
+      "title": "Five slow breaths",
+      "source": "bianno",
+      "file": "breaths.mp3",
+      "transcript": "Every word that's spoken, written out."
+    },
+    {
+      "type": "worksheet",
+      "title": "The evening page",
+      "source": "skool",
+      "file": "evening-page.pdf"
+    }
+  ]
+}

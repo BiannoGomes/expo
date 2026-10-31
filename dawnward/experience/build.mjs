@@ -3,8 +3,11 @@
 import { build, context } from "esbuild";
 import { cpSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
 import { join, extname } from "node:path";
+import { buildPacks } from "./tools/packs.mjs";
 
 const watch = process.argv.includes("--watch");
+// members' content packs (content/packs): checked and listed before bundling; a pack with problems keeps the last good list
+{ const r = buildPacks({ quiet: true }); if (r.errors.length) console.warn(`packs: ${r.errors.length} to fix (run node tools/packs.mjs)`); }
 const opts = { entryPoints: ["src/main.js"], bundle: true, format: "iife", minify: !watch, sourcemap: watch, target: ["es2020"], outfile: "dist/app.js", legalComments: "none" };
 mkdirSync("dist", { recursive: true });
 
@@ -21,7 +24,7 @@ function copyStatic() {
   cpSync("fonts", "dist/fonts", { recursive: true });
   cpSync("assets", "dist/assets", { recursive: true });
 }
-const mime = { ".webp": "image/webp", ".mp3": "audio/mpeg", ".woff2": "font/woff2" };
+const mime = { ".webp": "image/webp", ".mp3": "audio/mpeg", ".woff2": "font/woff2", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".m4a": "audio/mp4", ".ogg": "audio/ogg", ".wav": "audio/wav", ".mp4": "video/mp4", ".webm": "video/webm", ".vtt": "text/vtt", ".pdf": "application/pdf" };
 function single() {
   const b64 = (p) => `data:${mime[extname(p)]};base64,${readFileSync(p).toString("base64")}`;
   const assets = {};
@@ -44,6 +47,8 @@ function singleHome() {
     assets[`img/worlds/${f}`] = b64(join("assets/img/worlds", f));
   }
   for (const f of readdirSync("assets/img/art")) if (f.endsWith(".webp")) assets[`img/art/${f}`] = b64(join("assets/img/art", f));
+  // pack files small enough to travel inside the single file (big videos stay as files or hosted links)
+  try { for (const d of readdirSync("assets/packs")) for (const f of readdirSync(join("assets/packs", d))) { const p = join("assets/packs", d, f); if (statSync(p).size < 6 * 1048576) assets[`packs/${d}/${f}`] = b64(p); } } catch { /* no packs yet */ }
   const css = readFileSync("fonts.css", "utf8").replace(/url\("(fonts\/[^"]+)"\)/g, (_, p) => `url("${b64(p)}")`);
   const html = readFileSync("home.html", "utf8")
     .replace('<link rel="stylesheet" href="fonts.css">', () => `<style>${css}</style>`)

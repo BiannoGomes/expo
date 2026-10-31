@@ -128,12 +128,12 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   await shot(page, "mind-progress");
   await axe(page, "mind progress");
 
-  // ---- an unopened galaxy is a preview, never presented as working ----
+  // ---- AI Creation is open for its gallery; the AI studios are honestly marked planned ----
   await page.goto(BASE + "#/universe"); await ready(page);
   await page.locator('#a-inner [data-id="ai"]').click();
   const panel = await page.textContent("#a-panel");
-  check("AI Creation is marked for members", /for members/.test(panel));
-  check("AI Creation is labelled a preview with its planned purpose", /Preview · not open yet/.test(panel) && /AI Creation/.test(panel) && /creation studio/.test(panel) && !(await page.locator("#a-panel .primary").count()));
+  check("AI Creation says some worlds are free", /Open · some worlds are free/i.test(panel));
+  check("AI Creation never presents its AI studios as working", /AI studios are planned/.test(panel) && /needing an AI service/.test(panel) && (await page.locator("#a-panel .primary", { hasText: "Enter AI Creation" }).count()) === 1);
   check("no page errors", errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
 

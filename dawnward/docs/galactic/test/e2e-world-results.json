@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T21:21:10.359Z",
+  "when": "2026-10-31T23:17:47.823Z",
   "checks": [
     {
       "name": "address #/home opens earth",
@@ -208,12 +208,12 @@
     },
     {
       "name": "AI Creation is marked for members",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
       "name": "AI Creation is labelled a preview with its planned purpose",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -234,6 +234,6 @@
   },
   "summary": {
     "total": 45,
-    "failed": 0
+    "failed": 2
   }
 }

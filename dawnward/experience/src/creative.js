@@ -7,6 +7,12 @@
 // What you make is kept on this device, can be saved as a file and deleted.
 // No scores, no streaks. Nothing here calls a paid service.
 import { buildWorld, ARCH, BODIES } from "./creative-scene.js";
+import { PACKS } from "./packs.data.js";
+
+/** Members' packs from content/packs (tools/packs.mjs). A test can supply its own. */
+const packs = () => window.DW_PACKS ?? PACKS;
+const PLACE_NAMES = { library: "Members' Library", creative: "Creative Worlds", spiritual: "Spiritual Exploration", knowledge: "Knowledge", ai: "AI Creation", mind: "Mind", body: "Body", soul: "Soul", spirit: "Spirit", future: "Future" };
+const KIND = { lesson: "Lesson", video: "Film", audio: "Listen", worksheet: "Worksheet", image: "Picture" };
 
 const KEY = "dw-creative-v1";
 const RANK = { free: 0, plus: 1, pro: 2 };
@@ -134,12 +140,13 @@ function hasGL() { try { const c = document.createElement("canvas"); return !!(c
 export function createCreative(h) {
   const { $, el, svg, ICON, asset, sound, announce } = h;
   const root = $("creative"), page = $("cw-page"), door = $("cw-door"), stage = $("cw-stage");
-  let view = "galaxy", realm = "creative", pid = null, scene = null, saved = load(), keyHandler = null, exp = null;
+  let view = "galaxy", realm = "creative", pid = null, scene = null, saved = load(), keyHandler = null, exp = null, pageKind = null, packId = null;
   const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); return true; } catch { return false; } };
   const locked = (r, id) => RANK[planet(r, id)?.access ?? "free"] > RANK[h.explore.plan()];
 
   function route() {
+    if (view === "page") return pageKind === "library" ? "#/library" : pageKind === "pack" ? `#/library/${packId}` : "#/ai/gallery";
     if (view === "galaxy" || view === "gate") return `#/universe/${realm}`;
     if (view === "door") return "#/creative/door";
     return `#/${realm}/${pid}`;
@@ -185,6 +192,7 @@ export function createCreative(h) {
         return el("li", {}, p.status === "planned" ? el("div", { class: "row planned" }, ...body)
           : el("button", { class: "row", onclick: () => (p.id === "door" ? openDoor() : enter(r, p.id)) }, ...body));
       })),
+      packRows(packs().filter((k) => k.place === r), "From Bianno"),
       el("p", { class: "quiet small" }, "Drawn live on your device. What you make is kept on this device, and you can save or delete it in the Creation Gallery. Nothing here is scored."),
       el("div", { class: "actions" }, el("button", { class: "ghost", onclick: h.toUniverse }, "Back to the Universe"))));
     root.scrollTop = 0;
@@ -357,12 +365,17 @@ export function createCreative(h) {
   function leave() { closeWorld(); open(realm); }
   function close() { if (view === "world" || view === "door") { closeWorld(); view = "galaxy"; root.classList.remove("immersive"); } }
   /** Escape steps back one level: world or door to the galaxy page, the page to the Universe. */
-  function escape() { if (view === "world" || view === "door") leave(); else if (view === "gate" || view === "page") open(realm); else h.toUniverse(); }
+  function escape() {
+    if (view === "world" || view === "door") leave();
+    else if (view === "page" && pageKind === "pack") library();
+    else if (view === "page" && pageKind === "library") h.toLearn();
+    else if (view === "gate" || view === "page") open(realm); else h.toUniverse();
+  }
   function follow(r, part) { if (r === "creative" && part === "door") openDoor(); else if (part) enter(r, part); else open(r); }
 
   // ---------------- the Creation Gallery: everything you've made ----------------
   function gallery() {
-    realm = "ai"; pid = "gallery"; show("page");
+    realm = "ai"; pid = "gallery"; pageKind = "gallery"; show("page");
     const sec = (title, ...kids) => el("section", { class: "cw-gsec" }, el("h3", { class: "cw-h" }, title), ...kids);
     const empty = !saved.places.length && !saved.moments.length && !saved.dreams.length && !saved.lit.kingdom.length && !saved.lit.forest.length;
     const confirmBox = el("div", { class: "card", hidden: "" });
@@ -411,7 +424,81 @@ export function createCreative(h) {
     document.body.append(a); a.click(); a.remove(); announce("Saved as a file.");
   }
 
-  return { open, openDoor, enter, follow, close, route, escape, snapshot, hasData, wipe, get view() { return view; }, get progress() { return saved; } };
+  // ---------------- the Members' Library: packs Bianno makes ----------------
+  const packLocked = (k) => RANK[k.access ?? "plus"] > RANK[h.explore.plan()];
+  function packRows(list, heading) {
+    if (!list.length) return null;
+    return el("section", { class: "cw-gsec" }, heading ? el("h3", { class: "cw-h" }, heading) : null,
+      el("ul", { class: "cw-planets" }, list.map((k) => el("li", {}, el("button", { class: "row", onclick: () => pack(k.id) },
+        k.cover ? el("img", { class: "cw-pcover", src: asset(k.cover), alt: "" }) : el("span", { class: "cw-dot cw-pack", "aria-hidden": "true" }),
+        el("span", { class: "rtext" }, el("span", { class: "rtitle" }, k.title), el("span", { class: "rsub" }, k.summary),
+          el("span", { class: "rsub" }, [...new Set(k.items.map((i) => KIND[i.type]))].join(" · "))),
+        el("span", { class: `mmeta${packLocked(k) ? " plus-tag" : ""}` }, packLocked(k) ? "Members" : k.access === "free" ? "Free" : "Open"))))));
+  }
+  function library() {
+    pageKind = "library"; show("page");
+    const all = packs(), groups = Object.keys(PLACE_NAMES).map((pl) => [pl, all.filter((k) => k.place === pl)]).filter(([, l]) => l.length);
+    page.replaceChildren(el("div", { class: "ycol" },
+      h.crumbs([{ label: "Learn", root: true, go: h.toLearn }, { label: "Members' Library" }]),
+      el("p", { class: "kicker" }, "Learn · for members"),
+      el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, "Members' Library"),
+      el("p", { class: "lead" }, "Lessons, films, guided audio and worksheets from Bianno. Each says how it was made."),
+      all.length ? null : el("p", { class: "quiet" }, "Bianno is preparing the first packs. They'll appear here."),
+      ...groups.map(([pl, l]) => packRows(l, PLACE_NAMES[pl])),
+      el("div", { class: "actions" }, el("button", { class: "ghost", onclick: h.toLearn }, "Back to Learn"))));
+    root.scrollTop = 0;
+    $("cw-title").focus({ preventScroll: true });
+    announce("Members' Library.");
+  }
+  async function pack(id) {
+    let k = packs().find((x) => x.id === id);
+    if (!k) return library();
+    if (packLocked(k)) await h.ready?.();
+    pageKind = "pack"; packId = id; show("page");
+    const lock = packLocked(k), crumbs = h.crumbs([{ label: "Learn", root: true, go: h.toLearn }, { label: "Members' Library", go: library }, { label: k.title }]);
+    const head = [crumbs,
+      k.cover ? el("img", { class: "cw-pack-hero", src: asset(k.cover), alt: k.coverAlt ?? "" }) : null,
+      el("p", { class: `kicker${lock ? " plus-kicker" : ""}` }, `${k.access === "free" ? "Free" : "Members"} · ${PLACE_NAMES[k.place]}`),
+      el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, k.title),
+      el("p", { class: "lead" }, k.summary)];
+    const meta = (it) => [KIND[it.type], it.minutes ? `${it.minutes} min` : null, it.credit, it.draft ? "Draft, not yet reviewed" : null].filter(Boolean).join(" · ");
+    let body;
+    if (lock) {
+      body = [el("section", { class: "card plus-card", "aria-labelledby": "cw-plus-h" },
+        el("h3", { id: "cw-plus-h" }, "This is for members"),
+        el("p", {}, "Inside:"), el("ul", { class: "plus-list" }, k.items.map((it) => el("li", {}, `${it.title} (${KIND[it.type].toLowerCase()})`))),
+        el("p", { class: "quiet" }, "Membership isn't open yet. It opens after the beta, with a reminder before any charge and one-tap cancel.")),
+        el("div", { class: "actions" },
+          h.explore.store?.local ? el("button", { class: "primary", onclick: async () => { await h.explore.setPlan("plus"); announce("Member preview on, on this device only."); pack(id); } }, "Preview as a member") : null,
+          el("button", { class: "ghost", onclick: library }, "Back to the library"))];
+    } else {
+      body = k.items.map((it, i) => {
+        const hid = `cw-it-${i}`, src = it.src ? asset(it.src) : it.url;
+        const part = [el("h3", { id: hid, class: "cw-ititle" }, it.title), el("p", { class: "quiet small" }, meta(it))];
+        if (it.type === "lesson") part.push(...it.paragraphs.map((t) => el("p", {}, t)));
+        if (it.type === "video") {
+          const v = el("video", { controls: "", playsinline: "", preload: "metadata", src, poster: it.poster ? asset(it.poster) : null, "aria-labelledby": hid, class: "cw-media" });
+          if (it.captions) v.append(el("track", { kind: "captions", src: asset(it.captions), srclang: "en", label: "English", default: "" }));
+          part.push(v);
+          if (it.description) part.push(el("p", { class: "quiet" }, `What happens: ${it.description}`));
+          if (it.transcript) part.push(el("details", {}, el("summary", {}, "Transcript"), el("p", {}, it.transcript)));
+        }
+        if (it.type === "audio") part.push(el("audio", { controls: "", preload: "none", src, "aria-labelledby": hid, class: "cw-media" }), el("details", {}, el("summary", {}, "Transcript"), el("p", {}, it.transcript)));
+        if (it.type === "worksheet") part.push(el("p", {}, el("a", { href: src, target: "_blank", rel: "noopener", download: "" }, `Open the worksheet (PDF)`)));
+        if (it.type === "image") part.push(el("img", { src, alt: it.alt, class: "cw-media" }));
+        return el("section", { class: `cw-item card${it.draft ? " draft" : ""}`, "aria-labelledby": hid }, ...part);
+      });
+      body.push(el("div", { class: "actions" }, el("button", { class: "ghost", onclick: library }, "Back to the library")));
+    }
+    page.replaceChildren(el("div", { class: "ycol" }, ...head, ...body));
+    root.scrollTop = 0;
+    $("cw-title").focus({ preventScroll: true });
+    announce(`${k.title}.`);
+  }
+  function followLibrary(id) { if (id) pack(id); else library(); }
+
+  return { open, openDoor, enter, follow, close, route, escape, snapshot, hasData, wipe, library, pack, followLibrary, packsFor: (pl) => packs().filter((k) => k.place === pl), packRowsFor: (pl, heading) => packRows(packs().filter((k) => k.place === pl), heading),
+    get inLearn() { return view === "page" && (pageKind === "library" || pageKind === "pack"); }, get view() { return view; }, get progress() { return saved; } };
 }
 
 /** "A meadow island at dawn, with a tower and trees." */

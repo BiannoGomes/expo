@@ -374,6 +374,7 @@ function main(data, failed) {
         ? el("ul", { class: "missions" }, withSheets.map((m) => el("li", {}, el("button", { class: "mission", onclick: () => explore.sheet(m.id, () => { goWorld(w); }) },
             el("span", { class: "mstate", "aria-hidden": "true" }, ""), el("span", { class: "rtext" }, el("span", { class: "rtitle" }, m.worksheet.title), el("span", { class: "rsub" }, `${m.title} · ${m.part}`)), el("span", { class: "mmeta" }, explore?.locked?.(m) && !chapterDone(m.id) ? "Plus" : "Print")))))
         : el("p", { class: "quiet" }, "No worksheets here yet. They arrive with each written chapter."),
+      creative?.packRowsFor(w, "From Bianno"),
       el("h3", {}, "Books and audio"),
       el("p", { class: "quiet" }, "None yet. Books are added only from manuscripts you own, chapter by chapter, after review. Lessons can already be listened to inside each chapter."));
   }
@@ -861,7 +862,7 @@ function main(data, failed) {
   // ----- places and navigation -----
   function markTabs() {
     const p = state.place, inQuiet = document.body.classList.contains("quiet");
-    const cur = { earth: "home", atlas: "universe", home: "universe", creative: "universe", world: inQuiet ? "reflect" : "universe", explore: "learn", memories: "journey" }[p] ?? p;
+    const cur = { earth: "home", atlas: "universe", home: "universe", creative: creative?.inLearn ? "learn" : "universe", world: inQuiet ? "reflect" : "universe", explore: "learn", memories: "journey" }[p] ?? p;
     document.querySelectorAll("#tabs [data-tab]").forEach((b) => { if (b.dataset.tab === cur) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   }
   // ----- routes: every place has an address, so Back works and a link lands where it says -----
@@ -881,6 +882,7 @@ function main(data, failed) {
       if (a === "universe" && b === "growth") goHome();
       else if (a === "universe" && REALMS[b]) creative.open(b);
       else if (REALMS[a]) creative.follow(a, b);
+      else if (a === "library") creative.followLibrary(b);
       else if (a === "universe") openAtlas();
       else if (a === "world" && ORDER.includes(b)) { if (WTABS.includes(c)) state.wtab = { ...(state.wtab ?? {}), [b]: c }; goWorld(b); }
       else if (a === "learn") explore.open();
@@ -1276,11 +1278,12 @@ function main(data, failed) {
     onDiscoveries: (_d, fresh) => { sync(); if (fresh.length && explore.data.gameLayer) sound.chime(1175); },
     goHomeWith: (key) => goHome({ show: key ? `d:${key}` : null }),
     goEarth: (found) => { if (found) state.selStar = `d:${found.key}`; openEarth(found); },
+    openLibrary: () => creative?.library(),
     crumbs,
   });
   const exploreReady = explore.refresh().then(() => { sync(); renderHome(); });
   creative = createCreative({ $, el, svg, ICON, asset, sound, announce, showPlace, crumbs, explore,
-    toUniverse: () => openAtlas(), textMode: () => state.mode === "text",
+    toUniverse: () => openAtlas(), toLearn: () => explore.open(), textMode: () => state.mode === "text",
     distress: (t) => DISTRESS.test(t), crisisText: CRISIS_TEXT.join("\n"), ready: () => exploreReady });
   let firstVisit = false;
   try { firstVisit = localStorage.getItem("dw-home-seen") !== "1"; } catch {}

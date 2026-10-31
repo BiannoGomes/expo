@@ -157,6 +157,13 @@ These are targets to test, not industry facts.
   - Writing worlds stay free, and anything made stays readable, saveable and deletable on any plan.
   - The AI studios wait: each needs a paid AI service, so they need approval and a cost model (Pro, section 4) first.
 
+- **The Members' Library** (Learn › Members' Library, and "From Bianno" on each galaxy and world) shows content packs Bianno makes on their own computer:
+  - writing with their Claude Opus subscription, reviewed by them;
+  - animation with Fable;
+  - their own Skool lessons and worksheets.
+  - Packs are `plus` by default, `free` for a taster. Every item says how it was made.
+  - How to make one: `content/packs/README.md`. The checker is `experience/tools/packs.mjs`.
+
 **Adding something members-only later:** give it `access: "plus"` in the catalog (or the registry for a galaxy). Nothing else is needed.
 
 ## 10. Decisions for Bianno
