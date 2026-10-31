@@ -1190,7 +1190,8 @@ function main(data, failed) {
     fit.frame = wide
       ? { left: r("home-ui").right + 16, right: r("tabs").left - 16, top: r("brand").bottom + 8, bottom: H - 24 }
       : { left: 0, right: W, top: Math.max(r("brand").bottom, $("notice").hidden ? 0 : r("notice").bottom) + 8, bottom: r("home-ui").top - 8 };
-    fit.scale = wide ? 0.8 : 0.74;
+    // compact screens show no names around the planets (the world buttons replace them), so the worlds can come closer still
+    fit.scale = wide ? 0.62 : document.body.classList.contains("compact") ? 0.36 : 0.56;
     fit.tries = 0;
     ctx.setFrame(fit.frame, fit.scale);
   }
@@ -1230,7 +1231,9 @@ function main(data, failed) {
     // Labels have a fixed size while the worlds scale: if any label leaves the
     // free space, step the worlds back a little until everything fits.
     if (fit.frame && ctx.settled && fit.tries < 30 && (top < fit.frame.top || bottom > fit.frame.bottom)) {
-      fit.tries++; fit.scale *= 1.04;
+      // step back by as much as the overflow needs, not 4% a frame, so it settles at once instead of creeping
+      const need = (bottom - top) / Math.max(80, fit.frame.bottom - fit.frame.top);
+      fit.tries++; fit.scale *= Math.max(1.04, Math.min(1.6, need * 1.03));
       ctx.setFrame(fit.frame, fit.scale);
     }
   }

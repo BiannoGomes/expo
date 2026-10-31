@@ -20,11 +20,11 @@ const R = 2.6; // distance of each world from the core
 // gold edge always faces the light at the centre.
 const P = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
 export const WORLDS = [
-  { key: "spirit", at: P(-90), size: 1.8, flip: false, disk: [0.491, 0.49, 0.423], rim: "#B9A6FF" },
-  { key: "soul", at: P(-18), size: 1.75, flip: false, disk: [0.497, 0.49, 0.43], rim: "#9B5BFF" },
-  { key: "future", at: P(54), size: 2.55, flip: false, disk: [0.515, 0.473, 0.28], rim: "#E6C07B" },
-  { key: "body", at: P(126), size: 1.75, flip: true, disk: [0.498, 0.49, 0.43], rim: "#37D5E8" },
-  { key: "mind", at: P(198), size: 1.85, flip: true, disk: [0.499, 0.493, 0.41], rim: "#5B8CFF" },
+  { key: "spirit", at: P(-90), size: 2.07, flip: false, disk: [0.491, 0.49, 0.423], rim: "#B9A6FF" },
+  { key: "soul", at: P(-18), size: 2.01, flip: false, disk: [0.497, 0.49, 0.43], rim: "#9B5BFF" },
+  { key: "future", at: P(54), size: 2.93, flip: false, disk: [0.515, 0.473, 0.28], rim: "#E6C07B" },
+  { key: "body", at: P(126), size: 2.01, flip: true, disk: [0.498, 0.49, 0.43], rim: "#37D5E8" },
+  { key: "mind", at: P(198), size: 2.13, flip: true, disk: [0.499, 0.493, 0.41], rim: "#5B8CFF" },
 ].map((w) => ({ ...w, x: w.at[0] * R, z: w.at[1] * R }));
 const TILT = 0.55;
 
@@ -62,16 +62,6 @@ const GLOW_FRAG = /* glsl */ `
     gl_FragColor = vec4(t.rgb * e * uAlpha, 0.0);
     #include <colorspace_fragment>
   }`;
-const BEAM_FRAG = /* glsl */ `
-  uniform float uTime, uReduced, uAlpha; varying vec2 vUv;
-  void main() {
-    float across = exp(-pow((vUv.x - 0.5) * 9.0, 2.0));
-    float along = smoothstep(0.0, 0.25, vUv.y) * smoothstep(1.0, 0.75, vUv.y);
-    float pulse = uReduced > 0.5 ? 0.0 : 0.35 * pow(0.5 + 0.5 * sin(vUv.y * 18.0 - uTime * 1.6), 6.0);
-    vec3 gold = vec3(1.0, 0.78, 0.45);
-    gl_FragColor = vec4(gold * across * along * (0.55 + pulse) * uAlpha, 0.0);
-  }`;
-
 // Additive light on a transparent canvas: colour adds, coverage stays as it was,
 // so the painted sky behind shows through everywhere the light is dim.
 const addLight = { transparent: true, depthWrite: false, blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor };
@@ -108,7 +98,7 @@ export function buildHome({ stage, reduced, hash }) {
     uniforms: { uMap: { value: tex("img/worlds/galaxy-core-1024.webp") }, uAlpha: { value: 1 } },
     vertexShader: SPRITE_VERT, fragmentShader: GLOW_FRAG, ...addLight,
   });
-  const core = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 4.4), coreMat);
+  const core = new THREE.Mesh(new THREE.PlaneGeometry(5.3, 5.3), coreMat);
   core.rotation.x = -Math.PI / 2;
   spin.add(core);
 
@@ -144,11 +134,7 @@ export function buildHome({ stage, reduced, hash }) {
   }, "12.0", "0.5");
   spin.add(dust);
 
-  // ---- the beam joining Mind, the core and Future, and the orbit through all four ----
-  const beamMat = new THREE.ShaderMaterial({ uniforms: { uTime: uniforms.uTime, uReduced: uniforms.uReduced, uAlpha: { value: 1 } }, vertexShader: SPRITE_VERT, fragmentShader: BEAM_FRAG, ...addLight, side: THREE.DoubleSide });
-  const beam = new THREE.Mesh(new THREE.PlaneGeometry(0.16, R * 2), beamMat);
-  beam.rotation.x = -Math.PI / 2;
-  sys.add(beam);
+  // ---- the orbit through all five (the old beam from the four-world layout is gone: Bianno, 2026-10-31) ----
   const orbitMat = new THREE.MeshBasicMaterial({ color: new THREE.Color("#E6C07B"), transparent: true, opacity: 0.28, blending: THREE.AdditiveBlending, depthWrite: false });
   const orbit = new THREE.Mesh(new THREE.TorusGeometry(R * 0.99, 0.006, 6, 360), orbitMat);
   orbit.rotation.x = Math.PI / 2;
@@ -349,7 +335,7 @@ export function buildHome({ stage, reduced, hash }) {
     setFrame({ left, right, top, bottom }, scale = 1) {
       const W = size.w, H = size.h;
       off = { x: Math.round(W / 2 - (left + right) / 2), y: Math.round(H / 2 - (top + bottom) / 2) };
-      fit = Math.max(1, Math.max(H / Math.max(80, bottom - top), W / Math.max(80, right - left)) * scale);
+      fit = Math.max(0.5, Math.max(H / Math.max(80, bottom - top), W / Math.max(80, right - left)) * scale);
       applyCamera();
     },
     resize(w, h) {

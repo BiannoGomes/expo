@@ -30,3 +30,12 @@ Still to come: the entrance scene (prompt 8).
 ## Spirit (2026-10-31)
 
 Spirit became a fifth world (owner decision). Its first stand-ins were made from the crystal image. Bianno then asked for Spirit without crystals, and made S1 (planet) and S2 (the Observatory of Being) with ChatGPT; they replaced both files the same day. Details in `../art/SOURCE.md`.
+
+## Galaxy core, v2 (2026-10-31)
+
+Bianno supplied a new spiral galaxy (ChatGPT, JPEG 784 × 1168) for the centre of Personal Growth. Processing (ImageMagick):
+- crop a 780 × 780 square around the spiral (offset +2+155);
+- resize to 1024;
+- multiply by a radial mask, so the edges, the starfield and the small background galaxies fade to black.
+
+The result is `galaxy-core-1024.webp` and `galaxy-core.webp`. The previous core is kept as `galaxy-core-1024-v1.webp` and `galaxy-core-v1.webp` for rollback. In the scene, the core plane grew from 4.4 to 5.3 units.
