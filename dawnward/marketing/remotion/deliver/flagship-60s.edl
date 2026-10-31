@@ -1,0 +1,63 @@
+TITLE: DAWNWARD FLAGSHIP 60S
+FCM: NON-DROP FRAME
+
+001  GENERATE V     C        00:00:00:00 00:00:03:24 00:00:00:00 00:00:03:24
+* SHOT A: Hook: the confession types itself on black
+* SOURCE: type | original typography
+
+002  GENERATE V     C        00:00:00:00 00:00:02:12 00:00:03:24 00:00:06:06
+* SHOT B: The words fly into the real evening debrief
+* SOURCE: phone | app screen (debrief), corrected in code
+
+003  t1-first V     C        00:00:01:12 00:00:03:06 00:00:06:06 00:00:08:00
+* SHOT C: Into the screen's light: the first light of the universe
+* SOURCE: shots/t1-first-light.mp4 | Higgsfield Kling 4.0 i2v, keyframe gpt-image-2.5
+
+004  s-four-w V     C        00:00:00:18 00:00:04:08 00:00:08:00 00:00:11:20
+* SHOT D: Universe reveal: four worlds with depth
+* SOURCE: shots/s-four-worlds.mp4 | Higgsfield Kling 4.0, keyframe from the app's planet art
+
+005  s-mind-r V     C        00:00:02:12 00:00:03:16 00:00:11:20 00:00:12:23
+* SHOT E1: “Mind”: through the ring
+* SOURCE: shots/s-mind-ring.mp4 | Higgsfield Kling 4.0
+
+006  s-body.m V     C        00:00:01:15 00:00:02:12 00:00:12:23 00:00:13:20
+* SHOT E2: “Body”
+* SOURCE: shots/s-body.mp4 | Higgsfield Kling 4.0
+
+007  s-soul.m V     C        00:00:01:06 00:00:02:08 00:00:13:20 00:00:14:23
+* SHOT E3: “Soul”
+* SOURCE: shots/s-soul.mp4 | Higgsfield Kling 4.0
+
+008  t3-dawn- V     C        00:00:02:00 00:00:02:11 00:00:14:23 00:00:15:04
+* SHOT E4: “and future”: the dawn limb
+* SOURCE: shots/t3-dawn-horizon.mp4 | Higgsfield Kling 4.0
+
+009  GENERATE V     C        00:00:00:00 00:00:06:08 00:00:15:04 00:00:21:12
+* SHOT F: Real app: debrief slides to Today; “sister” travels into the step
+* SOURCE: phone | app screens (debrief, today), corrected in code
+
+010  GENERATE V     C        00:00:00:00 00:00:04:09 00:00:21:12 00:00:25:21
+* SHOT G: No streaks. No scores. No guilt.
+* SOURCE: cards | original typography
+
+011  s-soul.m V     C        00:00:00:00 00:00:04:27 00:00:25:21 00:00:30:18
+* SHOT H: Soul: the people who matter
+* SOURCE: shots/s-soul.mp4 | Higgsfield Kling 4.0
+
+012  GENERATE V     C        00:00:00:00 00:00:13:09 00:00:30:18 00:00:43:27
+* SHOT I: The Personal Model returns on the climax; push to the insight; “That's not right” sets it aside
+* SOURCE: insight | app screen (Personal Model), corrected in code
+
+013  t3-dawn- V     C        00:00:00:00 00:00:04:21 00:00:43:27 00:00:48:18
+* SHOT K: Transformation: dawn on the limb
+* SOURCE: shots/t3-dawn-horizon.mp4 | Higgsfield Kling 4.0
+
+014  s-sunris V     C        00:00:00:00 00:00:05:28 00:00:48:18 00:00:54:16
+* SHOT L: The sun breaks the horizon
+* SOURCE: shots/s-sunrise.mp4 | Higgsfield Kling 4.0
+
+015  GENERATE V     C        00:00:00:00 00:00:05:14 00:00:54:16 00:01:00:00
+* SHOT M: Lockup and the one verified next step
+* SOURCE: end | original typography
+

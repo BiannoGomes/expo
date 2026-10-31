@@ -197,7 +197,7 @@ export const Proof: React.FC = () => {
       </div>
 
       {/* sound: the score's opening, keys, the slide, the landing, the voice */}
-      <Audio src={staticFile("audio/score-open.wav")} volume={(f) =>
+      <Audio src={staticFile("audio/score.mp3")} volume={(f) =>
         interpolate(f, [0, 24], [0, 0.9], { extrapolateRight: "clamp" }) *
         interpolate(f, [F.vo - 6, F.vo + 6, PROOF_FRAMES - 12, PROOF_FRAMES], [1, 0.5, 0.5, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />
       {T1.concat(T2).map((f, i) => (L1 + L2)[i] === " " ? null : (
