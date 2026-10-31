@@ -146,7 +146,7 @@ export function registerAccountRoutes(app: FastifyInstance) {
     const [user] = await query(
       `select id, email, timezone, consent, challenge_opt_in,
               available_minutes_daily, touchpoints, preferred_name,
-              personalization, created_at
+              personalization, game_layer, created_at
          from users where id = $1`,
       [userId],
     );
@@ -183,6 +183,10 @@ export function registerAccountRoutes(app: FastifyInstance) {
       "select record_id, created_at from record_exclusions where user_id = $1 order by created_at",
       [userId],
     );
+    const missionAttempts = await query("select * from mission_attempts where user_id = $1 order by started_at", [userId]);
+    const experiments = await query("select * from experiments where user_id = $1 order by created_at", [userId]);
+    const progressEvents = await query("select kind, ref, created_at from progress_events where user_id = $1 order by created_at", [userId]);
+    const discoveries = await query("select key, cause_kind, cause_ref, discovered_at from discoveries where user_id = $1 order by discovered_at", [userId]);
     return {
       exportedAt: new Date().toISOString(),
       format: "dawnward-export-v1",
@@ -198,6 +202,10 @@ export function registerAccountRoutes(app: FastifyInstance) {
       modelEvents,
       safetyEvents,
       people,
+      missionAttempts,
+      experiments,
+      progressEvents,
+      discoveries,
     };
   });
 

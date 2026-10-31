@@ -878,3 +878,162 @@ describe("a stored plan and a left-out evening", () => {
     assert.equal(build2.text, build.text, "the step itself stays");
   });
 });
+
+describe("expeditions (Soul · Communication, first slice)", () => {
+  // Plays every step of a mission through the API with plain answers.
+  async function playMission(s: Session, missionId: string) {
+    const begin = await inject(s, { method: "POST", url: "/attempts", payload: { missionId } });
+    assert.equal(begin.statusCode, 200);
+    const attempt = begin.json();
+    const mission = (await inject(s, { method: "GET", url: `/expeditions/missions/${missionId}` })).json();
+    for (const [i, step] of mission.steps.entries()) {
+      if (step.type === "plan" && !step.required && missionId === "bridge-3") continue;
+      const answer =
+        step.type === "choice" ? { choice: step.options[2].id }
+        : step.type === "plan" ? { action: "Ask Sam for ten minutes", when: "Thursday evening" }
+        : step.type === "rehearse" || step.type === "reflect" ? { text: `My words for ${step.id}.` }
+        : { ack: true };
+      const stepIndex = missionId === "bridge-3" && i > 3 ? i : i;
+      const res = await inject(s, { method: "POST", url: `/attempts/${attempt.id}/answer`, payload: { stepIndex, answer } });
+      if (res.statusCode !== 200) {
+        // bridge-3's optional plan: move past it by answering the next step once the pointer allows
+        assert.fail(`${missionId} step ${step.id}: ${res.statusCode} ${res.body}`);
+      }
+    }
+    return attempt.id as string;
+  }
+
+  it("beginning twice resumes the same attempt", async () => {
+    const s = await createSession();
+    const a = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "bridge-1" } })).json();
+    const b = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "bridge-1" } })).json();
+    assert.equal(a.id, b.id);
+    const unknown = await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "nope" } });
+    assert.equal(unknown.statusCode, 404);
+  });
+
+  it("refuses skipping ahead, refuses completing early, and stale writes are 409", async () => {
+    const s = await createSession();
+    const a = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "bridge-1" } })).json();
+    const skip = await inject(s, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: 2, answer: { text: "hi" } } });
+    assert.equal(skip.statusCode, 409);
+    const early = await inject(s, { method: "POST", url: `/attempts/${a.id}/complete` });
+    assert.equal(early.statusCode, 409);
+    const bad = await inject(s, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: 0, answer: { choice: "x" } } });
+    assert.equal(bad.statusCode, 422);
+  });
+
+  it("a full mission completes once, keeps the words as records, plans an experiment and finds a star", async () => {
+    const s = await createSession();
+    const id = await playMission(s, "bridge-1");
+    // a retry of an earlier answer changes nothing
+    const retry = await inject(s, { method: "POST", url: `/attempts/${id}/answer`, payload: { stepIndex: 1, answer: { choice: "invite" } } });
+    assert.equal(retry.statusCode, 200);
+    const done = await inject(s, { method: "POST", url: `/attempts/${id}/complete` });
+    assert.equal(done.statusCode, 200);
+    const body = done.json();
+    assert.equal(body.attempt.status, "completed");
+    assert.deepEqual(body.discoveries.map((d: { key: string }) => d.key), ["star:bridge-1"]);
+    assert.equal(body.experiment.action, "Ask Sam for ten minutes");
+    const twice = (await inject(s, { method: "POST", url: `/attempts/${id}/complete` })).json();
+    assert.deepEqual(twice.discoveries, []);
+    const [{ n }] = await query<{ n: number }>("select count(*)::int as n from discoveries where user_id = $1", [s.userId]);
+    assert.equal(n, 1);
+    const words = await query<{ n: number }>("select count(*)::int as n from records where user_id = $1 and kind = 'mission_response'", [s.userId]);
+    assert.ok(words[0]!.n >= 3, "rehearse, plan and reflect are kept as records");
+  });
+
+  it("reviewing the experiment (any outcome) adds a landmark, once", async () => {
+    const s = await createSession();
+    const id = await playMission(s, "bridge-1");
+    const done = (await inject(s, { method: "POST", url: `/attempts/${id}/complete` })).json();
+    const ex = done.experiment.id;
+    const r = await inject(s, { method: "POST", url: `/experiments/${ex}/review`, payload: { outcome: "didnt", text: "I lost my nerve, but I know what to say now." } });
+    assert.equal(r.statusCode, 200);
+    assert.deepEqual(r.json().discoveries.map((d: { key: string }) => d.key), ["landmark:soul:1"]);
+    const again = (await inject(s, { method: "POST", url: `/experiments/${ex}/review`, payload: { outcome: "did", text: "again" } })).json();
+    assert.deepEqual(again.discoveries, []);
+  });
+
+  it("finishing all three missions reveals the moon", async () => {
+    const s = await createSession();
+    for (const m of ["bridge-1", "bridge-2"]) {
+      const id = await playMission(s, m);
+      assert.equal((await inject(s, { method: "POST", url: `/attempts/${id}/complete` })).statusCode, 200);
+    }
+    // bridge-3 has an optional plan step: answer up to it, then past it
+    const a = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "bridge-3" } })).json();
+    const m3 = (await inject(s, { method: "GET", url: "/expeditions/missions/bridge-3" })).json();
+    for (const [i, step] of m3.steps.entries()) {
+      const answer = step.type === "choice" ? { choice: "own" } : step.type === "plan" ? { action: "Call Mum", when: "Sunday" } : step.type === "rehearse" || step.type === "reflect" ? { text: "Words." } : { ack: true };
+      assert.equal((await inject(s, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: i, answer } })).statusCode, 200);
+    }
+    const done = (await inject(s, { method: "POST", url: `/attempts/${a.id}/complete` })).json();
+    assert.ok(done.discoveries.some((d: { key: string }) => d.key === "moon:soul-communication"));
+  });
+
+  it("crisis words stop the mission, keep nothing as evidence and show support", async () => {
+    const s = await createSession();
+    const a = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "bridge-1" } })).json();
+    await inject(s, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: 0, answer: { ack: true } } });
+    await inject(s, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: 1, answer: { choice: "invite" } } });
+    const res = await inject(s, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: 2, answer: { text: "[crisis] I can't go on" } } });
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.json().crisis, true);
+    const [row] = await query<{ status: string }>("select status from mission_attempts where id = $1", [a.id]);
+    assert.equal(row!.status, "paused");
+    const kept = await query("select 1 from records where user_id = $1 and kind = 'mission_response' and payload->>'stepId' = 'first-sentence'", [s.userId]);
+    assert.equal(kept.length, 0);
+  });
+
+  it("an unsafe real-world action is refused gently", async () => {
+    const s = await createSession();
+    const a = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "bridge-1" } })).json();
+    for (const [i, answer] of [{ ack: true }, { choice: "invite" }, { text: "Can we talk?" }].entries()) await inject(s, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: i, answer } });
+    const res = await inject(s, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: 3, answer: { action: "get back at him", when: "tonight" } } });
+    assert.equal(res.statusCode, 422);
+    assert.match(res.json().error, /smaller and safer/);
+  });
+
+  it("is scoped to its owner: another person sees 404", async () => {
+    const owner = await createSession();
+    const other = await createSession();
+    const a = (await inject(owner, { method: "POST", url: "/attempts", payload: { missionId: "bridge-2" } })).json();
+    const peek = await inject(other, { method: "POST", url: `/attempts/${a.id}/answer`, payload: { stepIndex: 0, answer: { ack: true } } });
+    assert.equal(peek.statusCode, 404);
+    const theirs = (await inject(other, { method: "GET", url: "/expeditions" })).json();
+    assert.equal(theirs.attempts.length, 0);
+  });
+
+  it("needs consent, like reflections", async () => {
+    const s = await createSession(false);
+    const res = await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "bridge-1" } });
+    assert.equal(res.statusCode, 403);
+  });
+
+  it("first light appears with the first reflection", async () => {
+    const s = await createSession();
+    await inject(s, { method: "POST", url: "/debrief", payload: { date: "2026-10-31", transcript: "A quiet evening, the walk helped." } });
+    const ex = (await inject(s, { method: "GET", url: "/expeditions" })).json();
+    assert.ok(ex.discoveries.some((d: { key: string }) => d.key === "first-light"));
+  });
+
+  it("export includes everything, the game layer can be turned off, and deleting removes it all", async () => {
+    const s = await createSession();
+    const id = await playMission(s, "bridge-1");
+    await inject(s, { method: "POST", url: `/attempts/${id}/complete` });
+    const off = await app.inject({ method: "PUT", url: "/preferences/game-layer", headers: { authorization: `Bearer ${s.token}` }, payload: { on: false } });
+    assert.equal(off.json().gameLayer, false);
+    const exp = (await inject(s, { method: "GET", url: "/export" })).json();
+    assert.equal(exp.missionAttempts.length, 1);
+    assert.equal(exp.experiments.length, 1);
+    assert.ok(exp.progressEvents.length >= 2);
+    assert.ok(exp.discoveries.length >= 1);
+    assert.equal(exp.user.game_layer, false);
+    assert.equal((await inject(s, { method: "DELETE", url: "/account" })).statusCode, 200);
+    for (const t of ["mission_attempts", "experiments", "progress_events", "discoveries"]) {
+      const [{ n }] = await query<{ n: number }>(`select count(*)::int as n from ${t} where user_id = $1`, [s.userId]);
+      assert.equal(n, 0, t);
+    }
+  });
+});

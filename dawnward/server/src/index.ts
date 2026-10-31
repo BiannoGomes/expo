@@ -17,6 +17,7 @@ import { modelCallLimit, requireConsent } from "./guard.js";
 import { ZodError } from "zod";
 import { registerEveningRoutes } from "./routes/evenings.js";
 import { registerGalaxyRoutes } from "./routes/galaxy.js";
+import { noteReflectionSaved, registerExpeditionRoutes } from "./routes/expeditions.js";
 import { notExcluded } from "./model/exclusions.js";
 import { attachSources, type ClaimedPlan, type RecentWords } from "./model/provenance.js";
 
@@ -61,6 +62,7 @@ export function buildApp() {
   registerConstellationRoutes(app);
   registerEveningRoutes(app);
   registerGalaxyRoutes(app);
+  registerExpeditionRoutes(app);
 
   app.get("/health", async () => ({ ok: true }));
 
@@ -344,6 +346,8 @@ app.post("/debrief", { onRequest: requireAuth, preHandler: [requireConsent, mode
     return { crisis: false, reply: "Already kept, word for word." };
   }
   if (!record) return reply.code(500).send({ error: "capture failed" });
+  // The ledger notes that a reflection was kept (first light, once). Never blocks the reply.
+  await noteReflectionSaved(userId, record.id).catch((err) => request.log.error({ err }, "progress note failed"));
 
   // Paused: keep the words, send nothing further to the model.
   if (record.paused) {
