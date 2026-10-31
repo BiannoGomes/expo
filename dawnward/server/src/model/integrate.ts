@@ -91,19 +91,25 @@ export async function createHypothesis(
   ];
   if (!domainIds.length) return null; // invalid facets → skip, never guess
 
+  // One statement: a belief never exists without its first piece of evidence.
   const [row] = await query<{ id: string }>(
-    `insert into assertions
-       (user_id, kind, statement, domain_ids, facet_ids, source, method,
-        confidence, confidence_basis, taxonomy_version)
-     values ($1, $2, $3, $4, $5, $6, $7,
-             'hypothesis', 'single source', $8)
-     returning id`,
+    `with a as (
+       insert into assertions
+         (user_id, kind, statement, domain_ids, facet_ids, source, method,
+          confidence, confidence_basis, taxonomy_version)
+       values ($1, $2, $3, $4, $5, $6, $7,
+               'hypothesis', 'single source', $8)
+       returning id
+     ), e as (
+       insert into assertion_evidence (assertion_id, record_id)
+       select a.id, $9::uuid from a returning assertion_id
+     )
+     select id from a`,
     [
       userId, candidate.kind, candidate.statement, domainIds,
-      candidate.facetIds, source, method, TAXONOMY_VERSION,
+      candidate.facetIds, source, method, TAXONOMY_VERSION, sourceRecordId,
     ],
   );
-  if (row) await linkEvidence(row.id, sourceRecordId);
   return row?.id ?? null;
 }
 
@@ -139,7 +145,7 @@ export async function confirmAssertion(
        from assertions a
        join assertion_evidence e on e.assertion_id = a.id
        join records r on r.id = e.record_id
-      where a.id = $1
+      where a.id = $1 and ${notExcluded("e.record_id")}
       group by a.source, a.status, a.confidence, a.statement`,
     [assertionId],
   );

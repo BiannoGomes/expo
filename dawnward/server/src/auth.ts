@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { query } from "./db.js";
+import { deviceSignupLimit } from "./guard.js";
 
 /**
  * Device auth (roadmap B1). An account begins as an anonymous device token —
@@ -44,7 +45,7 @@ export async function requireAuth(
 }
 
 export function registerAuthRoutes(app: FastifyInstance) {
-  app.post("/auth/device", async (request) => {
+  app.post("/auth/device", { onRequest: deviceSignupLimit }, async (request) => {
     const body = z
       .object({ deviceName: z.string().max(120).optional() })
       .parse(request.body ?? {});

@@ -23,6 +23,7 @@ import {
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky, skyModeForNow } from "@/lib/sky";
 import { syncPresence } from "@/lib/presence";
+import { announce } from "@/lib/a11y";
 
 /**
  * Settings (roadmap B3): presence controls, the challenge switch, and real
@@ -38,9 +39,11 @@ function normalizeTime(raw: string): string | null {
 
 function TimeField({
   value,
+  label,
   onCommit,
 }: {
   value: string;
+  label: string;
   onCommit: (v: string) => void;
 }) {
   const [draft, setDraft] = useState(value);
@@ -53,9 +56,13 @@ function TimeField({
       onEndEditing={() => {
         const normal = normalizeTime(draft);
         if (normal) onCommit(normal);
-        else setDraft(value);
+        else {
+          setDraft(value);
+          announce(`That time wasn't recognised, so it stays at ${value}. Use hours and minutes, like 21:30.`, { android: true });
+        }
       }}
       keyboardType="numbers-and-punctuation"
+      accessibilityLabel={`${label} time, hours and minutes`}
     />
   );
 }
@@ -82,6 +89,7 @@ function NameField({
       placeholderTextColor={theme.colors.faint}
       autoCapitalize="words"
       autoComplete="name"
+      accessibilityLabel="What should I call you"
     />
   );
 }
@@ -98,6 +106,7 @@ export default function SettingsScreen() {
   }, []);
 
   async function save(patch: Parameters<typeof updateMe>[0], next: Partial<Me>) {
+    const before = me;
     setMe((m) => (m ? { ...m, ...next } : m));
     try {
       await updateMe(patch);
@@ -109,7 +118,9 @@ export default function SettingsScreen() {
         }).catch(() => {});
       }
     } catch {
-      setStatus("That change didn't reach the server. It will catch up next time.");
+      // Nothing retries it later, so show the setting as it really is.
+      if (before) setMe((m) => (m ? { ...m, ...Object.fromEntries(Object.keys(next).map((k) => [k, before[k as keyof Me]])) } : m));
+      setStatus("That change didn't reach the server, so nothing changed. Try again when you're connected.");
     }
   }
 
@@ -183,6 +194,7 @@ export default function SettingsScreen() {
               <Text style={theme.type.body}>Morning plan</Text>
               <TimeField
                 value={me?.touchpoints.morning ?? "07:30"}
+                label="Morning plan"
                 onCommit={(morning) =>
                   me &&
                   save(
@@ -196,6 +208,7 @@ export default function SettingsScreen() {
               <Text style={theme.type.body}>Evening debrief</Text>
               <TimeField
                 value={me?.touchpoints.evening ?? "21:00"}
+                label="Evening debrief"
                 onCommit={(evening) =>
                   me &&
                   save(
@@ -209,6 +222,7 @@ export default function SettingsScreen() {
               <Text style={theme.type.body}>Weekly digest when away</Text>
               <Switch
                 value={me?.touchpoints.weeklyDigest ?? false}
+                accessibilityLabel="Weekly digest when away"
                 onValueChange={(weeklyDigest) => {
                   if (!me) return;
                   save(
@@ -233,6 +247,7 @@ export default function SettingsScreen() {
               </View>
               <Switch
                 value={me?.challengeOptIn ?? false}
+                accessibilityLabel="Name my contradictions"
                 onValueChange={(challengeOptIn) =>
                   save({ challengeOptIn }, { challengeOptIn })
                 }
@@ -268,11 +283,11 @@ export default function SettingsScreen() {
             <Text style={[theme.type.dim, styles.cardNote]}>
               Everything Dawnward knows is yours to take or to erase.
             </Text>
-            <Pressable onPress={onExport} hitSlop={8}>
+            <Pressable onPress={onExport} hitSlop={8} accessibilityRole="button">
               <Text style={styles.action}>Download everything</Text>
             </Pressable>
             {!confirmingDelete ? (
-              <Pressable onPress={() => setConfirmingDelete(true)} hitSlop={8}>
+              <Pressable onPress={() => setConfirmingDelete(true)} hitSlop={8} accessibilityRole="button">
                 <Text style={styles.danger}>Erase my account</Text>
               </Pressable>
             ) : (
@@ -282,10 +297,10 @@ export default function SettingsScreen() {
                   your campaigns. There is no undo.
                 </Text>
                 <View style={styles.confirmRow}>
-                  <Pressable onPress={() => setConfirmingDelete(false)} hitSlop={8}>
+                  <Pressable onPress={() => setConfirmingDelete(false)} hitSlop={8} accessibilityRole="button">
                     <Text style={styles.keep}>Keep my account</Text>
                   </Pressable>
-                  <Pressable onPress={onDelete} hitSlop={8}>
+                  <Pressable onPress={onDelete} hitSlop={8} accessibilityRole="button">
                     <Text style={styles.danger}>Erase everything</Text>
                   </Pressable>
                 </View>
@@ -324,8 +339,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: theme.colors.ink,
     backgroundColor: theme.colors.raised,
-    borderColor: theme.colors.line,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.faint,
+    borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: theme.spacing(1.5),
     paddingVertical: theme.spacing(1),
@@ -336,8 +351,8 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     color: theme.colors.ink,
     backgroundColor: theme.colors.raised,
-    borderColor: theme.colors.line,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.faint,
+    borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: theme.spacing(1.5),
     paddingVertical: theme.spacing(0.75),

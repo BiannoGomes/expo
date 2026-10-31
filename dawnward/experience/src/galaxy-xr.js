@@ -44,14 +44,27 @@ function sampleGalaxy() {
   return { world: "all", stars, themes, links };
 }
 
+function trustedApi(raw) {
+  if (!raw) return location.origin;
+  try {
+    const u = new URL(raw);
+    const local = ["localhost", "127.0.0.1"].includes(u.hostname);
+    if (u.origin === location.origin || (local && ["http:", "https:"].includes(u.protocol))) return u.origin;
+  } catch {}
+  return null;
+}
+
 async function loadGalaxy() {
   // A token in the fragment never reaches a server log; it is read once and
   // removed from the address bar straight away.
   const params = new URLSearchParams(location.hash.slice(1));
   const token = params.get("token");
-  const api = new URLSearchParams(location.search).get("api") ?? "http://localhost:3000";
   if (!token) return { galaxy: sampleGalaxy(), sample: true };
   history.replaceState(null, "", location.pathname + location.search);
+  // The token only ever goes to this page's own origin, or to a local
+  // development server. A link cannot point it anywhere else.
+  const api = trustedApi(new URLSearchParams(location.search).get("api"));
+  if (!api) throw new Error("untrusted api origin");
   const res = await fetch(`${api}/galaxy?world=all`, { headers: { authorization: `Bearer ${token}` } });
   if (!res.ok) throw new Error(`galaxy ${res.status}`);
   return { galaxy: await res.json(), sample: false };
@@ -170,7 +183,7 @@ function main({ galaxy, sample }) {
       panel.append(when, q);
       for (const t of s.themeIds.map((id) => themesById.get(id))) {
         const b = document.createElement("button"); b.textContent = `Supports: ${t.statement}`;
-        b.addEventListener("click", () => select({ kind: "theme", id: t.id }));
+        b.addEventListener("click", () => { select({ kind: "theme", id: t.id }); panel.querySelector(".statement")?.focus(); });
         panel.append(b);
       }
       if (!s.themeIds.length) { const p = document.createElement("p"); p.className = "why"; p.textContent = "Not linked to anything yet. That takes more than one evening."; panel.append(p); }
@@ -182,6 +195,7 @@ function main({ galaxy, sample }) {
       panel.innerHTML = "";
       const when = document.createElement("p"); when.className = "when"; when.textContent = t.forming ? "Still forming" : CONFIDENCE[t.confidence];
       const st = document.createElement("p"); st.className = "statement"; st.textContent = t.statement;
+      st.tabIndex = -1; // focus lands here when the button that opened it disappears
       const why = document.createElement("p"); why.className = "why"; why.textContent = `${t.why} To correct it, use That's not right in the app.`;
       panel.append(when, st, why);
       ctx?.drawCard([t.forming ? "Still forming" : CONFIDENCE[t.confidence], t.statement]);
@@ -259,7 +273,8 @@ function main({ galaxy, sample }) {
     dragging = e.clientX;
   });
   renderer.domElement.tabIndex = 0;
-  renderer.domElement.setAttribute("aria-label", "Galaxy view. Arrow keys turn it gently; the list beside it has the same content.");
+  renderer.domElement.setAttribute("role", "img");
+  renderer.domElement.setAttribute("aria-label", "Three-dimensional view of your evenings. Arrow keys turn it gently. The list beside it has the same content.");
   renderer.domElement.addEventListener("keydown", (e) => {
     if (e.key === "ArrowLeft") yaw = Math.max(-MAX_YAW, yaw - 0.08);
     if (e.key === "ArrowRight") yaw = Math.min(MAX_YAW, yaw + 0.08);
@@ -278,7 +293,6 @@ function main({ galaxy, sample }) {
     scene.add(controller);
   }
 
-  $("stage").append(Object.assign(document.createElement("div"), { id: "vr" }));
   $("vr").append(VRButton.createButton(renderer));
 
   function resize() {
@@ -306,7 +320,7 @@ function main({ galaxy, sample }) {
 loadGalaxy()
   .then(main)
   .catch(() => {
-    $("source").textContent = "I couldn't load your galaxy, so this is the sample. These are invented evenings, not anyone's.";
     main({ galaxy: sampleGalaxy(), sample: true });
-    $("source").className = "sample";
+    // After main(), which would otherwise replace this with the plain label.
+    $("source").textContent = "I couldn't load your galaxy, so this is the sample. These are invented evenings, not anyone's.";
   });

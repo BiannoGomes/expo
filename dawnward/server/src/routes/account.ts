@@ -13,7 +13,7 @@ import { requireAuth } from "../auth.js";
 export const CONSENT_POLICY_VERSION = "2026-08-18";
 
 export function registerAccountRoutes(app: FastifyInstance) {
-  app.get("/me", { preHandler: requireAuth }, async (request) => {
+  app.get("/me", { onRequest: requireAuth }, async (request) => {
     const [user] = await query<{
       consent: Record<string, unknown>;
       challenge_opt_in: boolean;
@@ -42,7 +42,7 @@ export function registerAccountRoutes(app: FastifyInstance) {
     };
   });
 
-  app.patch("/me", { preHandler: requireAuth }, async (request) => {
+  app.patch("/me", { onRequest: requireAuth }, async (request) => {
     const body = z
       .object({
         challengeOptIn: z.boolean().optional(),
@@ -93,7 +93,7 @@ export function registerAccountRoutes(app: FastifyInstance) {
   });
 
   /** Unbundled Article-9 consent (spec 04 §3): recorded with time + version. */
-  app.post("/consent", { preHandler: requireAuth }, async (request) => {
+  app.post("/consent", { onRequest: requireAuth }, async (request) => {
     const body = z
       .object({
         reflections: z.boolean(),
@@ -124,7 +124,7 @@ export function registerAccountRoutes(app: FastifyInstance) {
    * The Future Self, re-readable. Onboarding synthesis writes this once and
    * people deserve to return to it — especially on the days it feels far.
    */
-  app.get("/future-self", { preHandler: requireAuth }, async (request, reply) => {
+  app.get("/future-self", { onRequest: requireAuth }, async (request, reply) => {
     const [row] = await query<{
       horizon_year: number;
       narrative: { domains?: Record<string, string> };
@@ -141,11 +141,12 @@ export function registerAccountRoutes(app: FastifyInstance) {
   });
 
   /** Complete, self-serve export (spec 04 §5): everything, with provenance. */
-  app.get("/export", { preHandler: requireAuth }, async (request) => {
+  app.get("/export", { onRequest: requireAuth }, async (request) => {
     const userId = request.userId;
     const [user] = await query(
       `select id, email, timezone, consent, challenge_opt_in,
-              available_minutes_daily, touchpoints, created_at
+              available_minutes_daily, touchpoints, preferred_name,
+              personalization, created_at
          from users where id = $1`,
       [userId],
     );
@@ -172,6 +173,12 @@ export function registerAccountRoutes(app: FastifyInstance) {
       "select plan_date, plan from daily_plans where user_id = $1 order by plan_date",
       [userId],
     );
+    // Everything held about the person, as the export promises.
+    const onboarding = await query("select * from onboarding_state where user_id = $1", [userId]);
+    const modelSummary = await query("select content, updated_at from model_summaries where user_id = $1", [userId]);
+    const modelEvents = await query("select kind, payload, seen_at, created_at from model_events where user_id = $1 order by created_at", [userId]);
+    const safetyEvents = await query("select level, created_at from safety_events where user_id = $1 order by created_at", [userId]);
+    const people = await query("select label from person_refs where user_id = $1 order by label", [userId]);
     const leftOut = await query(
       "select record_id, created_at from record_exclusions where user_id = $1 order by created_at",
       [userId],
@@ -186,12 +193,17 @@ export function registerAccountRoutes(app: FastifyInstance) {
       futureSelves,
       dailyPlans: plans,
       leftOutEvenings: leftOut,
+      onboarding,
+      modelSummary,
+      modelEvents,
+      safetyEvents,
+      people,
     };
   });
 
   /** Total deletion (spec 02 §7): one statement; the schema's cascades erase
    * records, assertions, evidence, campaigns, plans, events, and tokens. */
-  app.delete("/account", { preHandler: requireAuth }, async (request) => {
+  app.delete("/account", { onRequest: requireAuth }, async (request) => {
     await query("delete from users where id = $1", [request.userId]);
     return { ok: true, gone: true };
   });

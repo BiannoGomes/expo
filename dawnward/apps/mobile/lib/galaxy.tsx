@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Animated, Easing, Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Svg, { Circle, Line } from "react-native-svg";
 import { router } from "expo-router";
 import {
@@ -12,6 +12,7 @@ import {
 import { fonts, theme } from "./theme";
 import { Press, useReducedMotion } from "./motion";
 import { eveningDate } from "./quote";
+import { announce } from "./a11y";
 
 /**
  * The Memory Galaxy (prototype B). A presentation of /galaxy, nothing more:
@@ -24,6 +25,9 @@ import { eveningDate } from "./quote";
 const HEIGHT = 240;
 const PAD = 22;
 const HIT = 44;
+/** Stars never sit closer than this; a crowded sky scrolls sideways
+ * instead, so every star keeps a tap area of its own (WCAG 2.5.8). */
+const MIN_SPACING = 32;
 
 const CONFIDENCE_WORDS: Record<GalaxyTheme["confidence"], string> = {
   hypothesis: "A guess",
@@ -63,8 +67,11 @@ export function MemoryGalaxy({
   const [selected, setSelected] = useState<Selection>(null);
   const [notice, setNotice] = useState<Notice>(null);
   const birth = useRef(new Animated.Value(1)).current;
+  const [confirmDispute, setConfirmDispute] = useState(false);
+  useEffect(() => announce(notice?.text), [notice]);
 
-  useEffect(() => {
+  // Before paint, so the new star never flashes at full size for a frame.
+  useLayoutEffect(() => {
     if (!newStarId) return;
     setSelected({ kind: "star", id: newStarId });
     if (reduced) {
@@ -81,9 +88,13 @@ export function MemoryGalaxy({
   }, [newStarId, reduced, birth]);
 
   const themes = useMemo(() => new Map(galaxy.themes.map((t) => [t.id, t])), [galaxy]);
+  const n = galaxy.stars.length;
+  const skyWidth = Math.max(width, PAD * 2 + Math.max(n - 1, 0) * MIN_SPACING);
+  const spacing = n > 1 ? (skyWidth - PAD * 2) / (n - 1) : HIT;
+  // Never wider than the gap to the next star, so targets cannot overlap.
+  const hit = Math.min(HIT, Math.floor(spacing));
   const placed = useMemo(() => {
-    const n = galaxy.stars.length;
-    const usable = Math.max(width - PAD * 2, 1);
+    const usable = Math.max(skyWidth - PAD * 2, 1);
     return new Map(
       galaxy.stars.map((s, i) => [
         s.id,
@@ -93,7 +104,7 @@ export function MemoryGalaxy({
         },
       ]),
     );
-  }, [galaxy, width]);
+  }, [galaxy, skyWidth, n]);
 
   const selectedTheme = selected?.kind === "theme" ? themes.get(selected.id) : undefined;
   const selectedStar =
@@ -145,7 +156,7 @@ export function MemoryGalaxy({
           <Press
             onPress={() => setMode(mode === "sky" ? "list" : "sky")}
             hitSlop={10}
-            accessibilityLabel={mode === "sky" ? "Show your evenings as a list" : "Show your evenings as a sky"}
+            accessibilityLabel={mode === "sky" ? "Show as a list" : "Show as a sky"}
           >
             <Text style={styles.link}>{mode === "sky" ? "Show as a list" : "Show as a sky"}</Text>
           </Press>
@@ -166,8 +177,14 @@ export function MemoryGalaxy({
             style={styles.sky}
             onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
           >
+            <ScrollView
+              horizontal
+              scrollEnabled={skyWidth > width}
+              showsHorizontalScrollIndicator={skyWidth > width}
+              contentContainerStyle={{ width: skyWidth, height: HEIGHT }}
+            >
             {width > 0 && (
-              <Svg width={width} height={HEIGHT} accessible={false}>
+              <Svg width={skyWidth} height={HEIGHT} accessible={false}>
                 {galaxy.links.map((l) => {
                   const a = placed.get(l.from);
                   const b = placed.get(l.to);
@@ -181,7 +198,8 @@ export function MemoryGalaxy({
                       x2={b.x}
                       y2={b.y}
                       stroke={lit ? theme.colors.gold : theme.colors.dim}
-                      strokeOpacity={lit ? 0.9 : 0.35}
+                      // 0.75 keeps an unlit line at 3:1 or better (WCAG 1.4.11).
+                      strokeOpacity={lit ? 0.9 : 0.75}
                       strokeWidth={lit ? 1.5 : 1}
                     />
                   );
@@ -214,12 +232,13 @@ export function MemoryGalaxy({
                   <Pressable
                     key={`hit-${s.id}`}
                     onPress={() => setSelected({ kind: "star", id: s.id })}
-                    style={[styles.hit, { left: p.x - HIT / 2, top: p.y - HIT / 2 }]}
+                    style={[styles.hit, { left: p.x - hit / 2, top: p.y - HIT / 2, width: hit }]}
                     accessibilityRole="button"
                     accessibilityLabel={`Your evening of ${eveningDate(s.date)}: ${s.excerpt}`}
                   />
                 );
               })}
+            </ScrollView>
           </View>
         </>
       ) : (
@@ -293,10 +312,10 @@ export function MemoryGalaxy({
             <Text style={styles.dim}>Not linked to anything yet. That takes more than one evening.</Text>
           )}
           <View style={styles.actions}>
-            <Press onPress={() => router.push("/evenings")} accessibilityLabel="Read all your evenings">
+            <Press onPress={() => router.push("/evenings")} accessibilityLabel="Read in full">
               <Text style={styles.link}>Read in full</Text>
             </Press>
-            <Press onPress={() => leaveOut(selectedStar)} accessibilityLabel="Leave this evening out">
+            <Press onPress={() => leaveOut(selectedStar)} accessibilityLabel="Leave this out">
               <Text style={styles.link}>Leave this out</Text>
             </Press>
           </View>
@@ -319,9 +338,30 @@ export function MemoryGalaxy({
               </Text>
             ) : null;
           })}
-          <Press onPress={() => dispute(selectedTheme)} accessibilityLabel="That's not right">
-            <Text style={styles.dispute}>That's not right</Text>
-          </Press>
+          {confirmDispute ? (
+            // A dispute cannot be undone, so it is asked once (WCAG 3.3.4).
+            <View style={{ gap: 6 }}>
+              <Text style={styles.dim}>Set this aside? I'll stop acting on it.</Text>
+              <View style={styles.actions}>
+                <Press
+                  onPress={() => {
+                    setConfirmDispute(false);
+                    dispute(selectedTheme);
+                  }}
+                  accessibilityLabel="Set it aside"
+                >
+                  <Text style={styles.dispute}>Set it aside</Text>
+                </Press>
+                <Press onPress={() => setConfirmDispute(false)} accessibilityLabel="Keep it as it is">
+                  <Text style={styles.link}>Keep it as it is</Text>
+                </Press>
+              </View>
+            </View>
+          ) : (
+            <Press onPress={() => setConfirmDispute(true)} accessibilityLabel="That's not right">
+              <Text style={styles.dispute}>That's not right</Text>
+            </Press>
+          )}
         </View>
       )}
     </View>
@@ -367,7 +407,7 @@ const styles = StyleSheet.create({
   themeLink: { fontFamily: fonts.body, fontSize: 15, lineHeight: 22, color: theme.colors.gold, paddingVertical: 6 },
   evidence: { fontFamily: fonts.body, fontSize: 14, lineHeight: 21, color: theme.colors.ink },
   actions: { flexDirection: "row", gap: theme.spacing(3) },
-  dispute: { fontFamily: fonts.body, fontSize: 14, color: "#C47A73", paddingVertical: 8 },
+  dispute: { fontFamily: fonts.body, fontSize: 14, color: theme.colors.danger, paddingVertical: 8 },
   notice: {
     padding: theme.spacing(1.5),
     borderRadius: theme.radius.card,

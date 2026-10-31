@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
   Easing,
@@ -18,6 +18,7 @@ import {
   fetchFutureSelf,
   fetchGalaxy,
   fetchPlan,
+  newClientKey,
   submitDebrief,
   today,
   type AssertionView,
@@ -29,6 +30,7 @@ import { fonts, theme } from "@/lib/theme";
 import { Press, useReducedMotion } from "@/lib/motion";
 import { NEBULA_SKY, worldFor } from "@/lib/universe";
 import { MemoryGalaxy } from "@/lib/galaxy";
+import { announce } from "@/lib/a11y";
 
 /**
  * A world, scale 2: one domain of life, readable. What matters, what has
@@ -67,12 +69,15 @@ export default function WorldScreen() {
   const [futureSelf, setFutureSelf] = useState<FutureSelfView | null>(null);
   const [plan, setPlan] = useState<DailyPlan | null>(null);
   const [disputed, setDisputed] = useState(false);
+  const [confirmDispute, setConfirmDispute] = useState(false);
   const [galaxy, setGalaxy] = useState<Galaxy | null>(null);
   const [newStarId, setNewStarId] = useState<string | null>(null);
   const [thought, setThought] = useState("");
   const [keeping, setKeeping] = useState(false);
   const [captureNote, setCaptureNote] = useState<string | null>(null);
   const worldKey = (["mind", "body", "soul", "future"] as const).find((k) => k === key);
+  const thoughtKey = useRef(newClientKey());
+  useEffect(() => announce(captureNote), [captureNote]);
 
   const loadGalaxy = useCallback(async (): Promise<Galaxy | null> => {
     if (!worldKey) return null;
@@ -91,17 +96,20 @@ export default function WorldScreen() {
     if (!text || keeping || !worldKey) return;
     setKeeping(true);
     setCaptureNote(null);
-    const before = new Set(galaxy?.stars.map((s) => s.id) ?? []);
+    // Without a galaxy loaded there is nothing to compare against, so no
+    // star is announced as new rather than the wrong one.
+    const before = galaxy ? new Set(galaxy.stars.map((s) => s.id)) : null;
     try {
-      const result = await submitDebrief(today(), text, worldKey);
+      const result = await submitDebrief(today(), text, worldKey, thoughtKey.current);
       if (result.crisis) {
         // Nothing is stored in a crisis; the words stay and the reply leads.
         setCaptureNote(result.reply);
         return;
       }
-      setThought("");
+      setThought((t) => (t.trim() === text ? "" : t));
+      thoughtKey.current = newClientKey();
       const g = await loadGalaxy();
-      const born = g?.stars.find((s) => !before.has(s.id));
+      const born = before ? g?.stars.find((s) => !before.has(s.id)) : undefined;
       setNewStarId(born?.id ?? null);
       setCaptureNote(born ? "Kept. It's a star now." : "Kept. It's in Your evenings.");
     } catch {
@@ -186,7 +194,7 @@ export default function WorldScreen() {
             <Text style={styles.panelLabel}>
               {world.name.toUpperCase()} · {world.meta.toUpperCase()}
             </Text>
-            <Text style={styles.title}>{copy.title}</Text>
+            <Text style={styles.title} accessibilityRole="header">{copy.title}</Text>
             <Text style={styles.body}>{copy.text}</Text>
 
             <View style={styles.capture}>
@@ -203,7 +211,7 @@ export default function WorldScreen() {
                 style={[styles.keep, (!thought.trim() || keeping) && { opacity: 0.45 }]}
                 onPress={keepThought}
                 disabled={!thought.trim() || keeping}
-                accessibilityLabel={`Keep this thought in ${world.name}`}
+                accessibilityLabel="Keep it"
               >
                 <Text style={styles.keepText}>{keeping ? "Keeping…" : "Keep it"}</Text>
               </Press>
@@ -252,14 +260,28 @@ export default function WorldScreen() {
                   <Text style={styles.beliefWhy}>
                     Thank you. I'll hold this loosely until your days say otherwise.
                   </Text>
+                ) : confirmDispute ? (
+                  // A dispute cannot be undone, so it is asked once (WCAG 3.3.4).
+                  <View style={{ gap: 8 }}>
+                    <Text style={styles.beliefWhy}>Set this aside? I'll stop acting on it.</Text>
+                    <View style={{ flexDirection: "row", gap: 24 }}>
+                      <Press
+                        onPress={() => {
+                          setConfirmDispute(false);
+                          setDisputed(true);
+                          disputeAssertion(belief.id).catch(() => setDisputed(false));
+                        }}
+                        accessibilityLabel="Set it aside"
+                      >
+                        <Text style={styles.dispute}>Set it aside</Text>
+                      </Press>
+                      <Press onPress={() => setConfirmDispute(false)} accessibilityLabel="Keep it as it is">
+                        <Text style={styles.beliefWhy}>Keep it as it is</Text>
+                      </Press>
+                    </View>
+                  </View>
                 ) : (
-                  <Press
-                    onPress={() => {
-                      setDisputed(true);
-                      disputeAssertion(belief.id).catch(() => setDisputed(false));
-                    }}
-                    accessibilityLabel="That's not right"
-                  >
+                  <Press onPress={() => setConfirmDispute(true)} accessibilityLabel="That's not right">
                     <Text style={styles.dispute}>That's not right</Text>
                   </Press>
                 )}

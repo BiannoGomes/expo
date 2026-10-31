@@ -31,10 +31,12 @@ const token = fs.readFileSync(S + '/demo-token.txt', 'utf8').trim();
   result.searchCards = await page.getByText(/^Leave this out$|^Bring it back$/).count();
   await page.screenshot({ path: S + '/shots/03-search.png', fullPage: true });
 
-  await page.getByRole('button', { name: /^Leave out your evening/ }).first().click();
+  await page.getByRole('button', { name: /^Leave this out: your evening/ }).first().click();
   await page.getByText(/^Left out\. I won't use/).waitFor();
   result.leftOutStatusShown = await page.getByText(/Nothing from this evening shapes/).count();
   await page.screenshot({ path: S + '/shots/04-left-out.png', fullPage: true });
+  await page.waitForTimeout(7000);
+  result.undoStillThereAfter7s = await page.getByRole('button', { name: 'Undo' }).count();
   await page.getByRole('button', { name: 'Undo' }).click();
   await page.getByText('Leave this out').first().waitFor();
   result.afterUndoBringBack = await page.getByText(/^Bring it back$/).count();

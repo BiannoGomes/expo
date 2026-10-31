@@ -10,6 +10,18 @@ export function notExcluded(column: string): string {
 }
 
 /**
+ * The confidence a belief has on the evenings still in. An inferred belief
+ * resting on fewer than two of them reads as a guess, whatever was stored,
+ * so leaving evenings out lowers it and bringing them back restores it.
+ */
+export function effectiveConfidence(a: string): string {
+  return `(case when ${a}.source in ('observed','inferred')
+                 and (select count(*) from assertion_evidence ce
+                       where ce.assertion_id = ${a}.id and ${notExcluded("ce.record_id")}) < 2
+            then 'hypothesis' else ${a}.confidence end)`;
+}
+
+/**
  * True when the assertion aliased `a` still rests on at least one evening
  * the person has not left out. Stated and corrected beliefs are the
  * person's own words about themselves and always stay.

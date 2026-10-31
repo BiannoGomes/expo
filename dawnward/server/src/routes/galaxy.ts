@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { query } from "../db.js";
-import { notExcluded, stillSupported } from "../model/exclusions.js";
+import { effectiveConfidence, notExcluded, stillSupported } from "../model/exclusions.js";
 import { requireAuth } from "../auth.js";
 
 /**
@@ -41,7 +41,7 @@ export function seenIn(evenings: number, days: number): string {
 }
 
 export function registerGalaxyRoutes(app: FastifyInstance) {
-  app.get("/galaxy", { preHandler: requireAuth }, async (request) => {
+  app.get("/galaxy", { onRequest: requireAuth }, async (request) => {
     const { world } = z
       .object({ world: z.enum(["all", "mind", "body", "soul", "future"]).default("all") })
       .parse(request.query);
@@ -58,7 +58,7 @@ export function registerGalaxyRoutes(app: FastifyInstance) {
       evidence: string;
       record_ids: string[];
     }>(
-      `select a.id, a.statement, a.kind, a.confidence, a.confidence_basis, a.domain_ids,
+      `select a.id, a.statement, a.kind, ${effectiveConfidence("a")} as confidence, a.confidence_basis, a.domain_ids,
               count(e.record_id) as evidence,
               array_agg(e.record_id::text order by r.occurred_at) as record_ids
          from assertions a
@@ -68,7 +68,7 @@ export function registerGalaxyRoutes(app: FastifyInstance) {
           and ${stillSupported("a")}
           and ${notExcluded("e.record_id")}
           and ($2::text[] is null or a.domain_ids && $2::text[])
-        group by a.id`,
+        group by a.id, a.source, a.confidence`,
       [userId, domains],
     );
 
@@ -82,6 +82,7 @@ export function registerGalaxyRoutes(app: FastifyInstance) {
               (select x.payload->'facetTags' from records x
                 where x.user_id = r.user_id and x.kind = 'action_event'
                   and x.payload->>'extractionOf' = r.id::text
+                order by x.occurred_at desc
                 limit 1) as facet_tags
          from records r
         where r.user_id = $1 and r.kind = 'reflection' and ${notExcluded("r.id")}

@@ -759,3 +759,122 @@ describe("one thought, said inside a world", () => {
     assert.equal(body.stars.length, 0);
   });
 });
+
+describe("review fixes", () => {
+  it("a retried reflection with the same key is kept once", async () => {
+    const k = await createSession();
+    const payload = { date: "2026-10-01", transcript: "Sent twice by a shaky network.", clientKey: "key-0123456789" };
+    const a = await inject(k, { method: "POST", url: "/debrief", payload });
+    const b = await inject(k, { method: "POST", url: "/debrief", payload });
+    assert.equal(a.statusCode, 200);
+    assert.equal(b.json().reply, "Already kept, word for word.");
+    assert.equal((await inject(k, { method: "GET", url: "/evenings" })).json().length, 1);
+  });
+
+  it("a debrief without consent is refused and nothing is stored", async () => {
+    const n = await createSession(false);
+    const res = await inject(n, { method: "POST", url: "/debrief", payload: { date: "2026-10-01", transcript: "No consent yet." } });
+    assert.equal(res.statusCode, 403);
+    const rows = await query("select 1 from records where user_id = $1", [n.userId]);
+    assert.equal(rows.length, 0);
+  });
+
+  it("bad input gets a plain 400, never a stack or a database message", async () => {
+    const res = await inject(s1, { method: "GET", url: "/plan/2026-02-31" });
+    assert.equal(res.statusCode, 400);
+    assert.deepEqual(res.json(), { error: "That request isn't quite right." });
+    const bad = await inject(s1, { method: "POST", url: "/debrief", payload: { date: "nope" } });
+    assert.equal(bad.statusCode, 400);
+    assert.ok(!JSON.stringify(bad.json()).includes("Zod"));
+  });
+
+  it("a request body over 1 MB is refused before it reaches a route", async () => {
+    const res = await inject(s1, { method: "POST", url: "/debrief", payload: { date: "2026-10-01", transcript: "x".repeat(1_200_000) } });
+    assert.equal(res.statusCode, 413);
+  });
+
+  it("left-out evenings stop counting toward a belief's confidence, and count again on return", async () => {
+    const c = await createSession();
+    const ids: string[] = [];
+    for (const d of ["2026-10-02", "2026-10-03", "2026-10-04"]) {
+      await inject(c, { method: "POST", url: "/debrief", payload: { date: d, transcript: `I wrote it down on ${d} and did it.` } });
+      await runNightly();
+    }
+    for (const e of (await inject(c, { method: "GET", url: "/evenings" })).json()) ids.push(e.id);
+    const belief = () => (inject(c, { method: "GET", url: "/assertions" }) as Promise<{ json(): { confidence: string }[] }>).then((r) => r.json()[0]);
+    // Test data lands on one real day, so promote by hand to make the
+    // check meaningful: stored "probable", three evenings behind it.
+    await query("update assertions set confidence = 'probable' where user_id = $1", [c.userId]);
+    const stored = (await belief())!.confidence;
+    assert.equal(stored, "probable");
+    await inject(c, { method: "POST", url: `/evenings/${ids[0]}/exclude` });
+    await inject(c, { method: "POST", url: `/evenings/${ids[1]}/exclude` });
+    assert.equal((await belief())!.confidence, "hypothesis", "one evening left: a guess");
+    await inject(c, { method: "DELETE", url: `/evenings/${ids[0]}/exclude` });
+    await inject(c, { method: "DELETE", url: `/evenings/${ids[1]}/exclude` });
+    assert.equal((await belief())!.confidence, stored, "all back: as before");
+  });
+
+  it("the export includes everything held about the person", async () => {
+    const res = (await inject(s1, { method: "GET", url: "/export" })).json();
+    for (const key of ["onboarding", "modelSummary", "modelEvents", "safetyEvents", "people", "leftOutEvenings"]) {
+      assert.ok(key in res, key);
+    }
+    assert.ok("personalization" in res.user && "preferred_name" in res.user);
+  });
+
+  it("rate limits new devices per address", async () => {
+    const { rateLimit } = await import("../../src/guard.js");
+    const limiter = rateLimit({ name: "t", limit: 2, windowMs: 60_000, key: () => "same" });
+    const codes: number[] = [];
+    for (let i = 0; i < 3; i++) {
+      let code = 200;
+      const reply = { code(c: number) { code = c; return reply; }, header() { return reply; }, send() { return reply; } };
+      await limiter({} as never, reply as never);
+      codes.push(code);
+    }
+    assert.deepEqual(codes, [200, 200, 429]);
+  });
+});
+
+describe("paging your evenings", () => {
+  it("never skips evenings saved in the same instant", async () => {
+    const pg = await createSession();
+    // Five evenings with one identical timestamp, inserted directly.
+    for (let i = 0; i < 5; i++) {
+      await query(
+        `insert into records (user_id, kind, payload, occurred_at)
+         values ($1, 'reflection', $2, '2026-10-05T20:00:00.123456Z')`,
+        [pg.userId, JSON.stringify({ date: "2026-10-05", transcript: `Same instant ${i}` })],
+      );
+    }
+    const seen: string[] = [];
+    let cursor: string | undefined;
+    for (let page = 0; page < 5; page++) {
+      const url = `/evenings?limit=2${cursor ? `&before=${encodeURIComponent(cursor)}` : ""}`;
+      const rows = (await inject(pg, { method: "GET", url })).json() as { id: string; cursor: string }[];
+      if (!rows.length) break;
+      seen.push(...rows.map((r) => r.id));
+      cursor = rows[rows.length - 1]!.cursor;
+    }
+    assert.equal(seen.length, 5);
+    assert.equal(new Set(seen).size, 5);
+  });
+});
+
+describe("a stored plan and a left-out evening", () => {
+  it("stops quoting an evening left out after the plan was made", async () => {
+    const q = await createSession();
+    await inject(q, { method: "POST", url: "/debrief", payload: { date: "2026-10-06", transcript: "An earlier evening about the garden. Long and quiet." } });
+    await inject(q, { method: "POST", url: "/debrief", payload: { date: "2026-10-07", transcript: "The newest evening, about the sea. Cold and bright." } });
+    const first = (await inject(q, { method: "GET", url: "/plan/2026-10-08" })).json();
+    const build = first.slots.find((s: { slot: string }) => s.slot === "build");
+    assert.ok(build.source, "quoted when made");
+    await inject(q, { method: "POST", url: `/evenings/${build.source.recordId}/exclude` });
+    const again = (await inject(q, { method: "GET", url: "/plan/2026-10-08" })).json();
+    const build2 = again.slots.find((s: { slot: string }) => s.slot === "build");
+    assert.equal(build2.source, undefined);
+    assert.equal(again.questionSource, undefined);
+    assert.equal(build2.text, build.text, "the step itself stays");
+  });
+});

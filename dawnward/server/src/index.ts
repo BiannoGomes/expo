@@ -13,6 +13,8 @@ import { registerAccountRoutes } from "./routes/account.js";
 import { registerConstellationRoutes } from "./routes/constellation.js";
 import { registerAuthRoutes, requireAuth } from "./auth.js";
 import { transcription } from "./intelligence/transcription.js";
+import { modelCallLimit, requireConsent } from "./guard.js";
+import { ZodError } from "zod";
 import { registerEveningRoutes } from "./routes/evenings.js";
 import { registerGalaxyRoutes } from "./routes/galaxy.js";
 import { notExcluded } from "./model/exclusions.js";
@@ -21,14 +23,32 @@ import { attachSources, type ClaimedPlan, type RecentWords } from "./model/prove
 export function buildApp() {
   const app = Fastify({
     logger: process.env.NODE_ENV !== "test",
-    bodyLimit: 26_214_400, // voice notes arrive as base64 JSON
+    // Small by default; only /transcribe accepts voice notes (base64 JSON).
+    bodyLimit: 1_048_576,
+  });
+
+  // Clients get a plain sentence, never a stack, a Postgres message or a
+  // model provider's error text. Details stay in the server log.
+  app.setErrorHandler((error, request, reply) => {
+    const pgCode = (error as { code?: string }).code;
+    if (error instanceof ZodError || pgCode === "22007" || pgCode === "22008" || pgCode === "22P02") {
+      return reply.code(400).send({ error: "That request isn't quite right." });
+    }
+    const status = (error as { statusCode?: number }).statusCode;
+    if (status && status >= 400 && status < 500) {
+      return reply.code(status).send({ error: "That request isn't quite right." });
+    }
+    request.log.error({ err: error }, "unhandled error");
+    return reply.code(500).send({ error: "Something went wrong on our side." });
   });
 
   // Browser clients (Expo web) call cross-origin in development.
   // @fastify/cors allows only GET, HEAD and POST unless told otherwise, which
   // silently broke every PATCH and DELETE from the web build.
+  // In production only the listed origins may call from a browser.
+  const origins = process.env.CORS_ORIGINS?.split(",").map((o) => o.trim()).filter(Boolean);
   app.register(cors, {
-    origin: true,
+    origin: process.env.NODE_ENV === "production" ? (origins ?? false) : true,
     methods: ["GET", "HEAD", "POST", "PATCH", "DELETE"],
   });
 
@@ -85,7 +105,7 @@ async function recentExtractions(
 }
 
 /** Morning plan: stored plan, or generate with load guard + re-entry (spec 03 §1, §4). */
-app.get("/plan/:date", { preHandler: requireAuth }, async (request, reply) => {
+app.get("/plan/:date", { onRequest: requireAuth, preHandler: modelCallLimit }, async (request, reply) => {
   const userId = request.userId;
   const { date } = z
     .object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) })
@@ -95,7 +115,30 @@ app.get("/plan/:date", { preHandler: requireAuth }, async (request, reply) => {
     "select plan from daily_plans where user_id = $1 and plan_date = $2",
     [userId, date],
   );
-  if (existing[0]) return existing[0].plan;
+  if (existing[0]) {
+    // A plan made before an evening was left out must stop quoting it.
+    const plan = existing[0].plan;
+    const cited = [plan.questionSource?.recordId, ...plan.slots.map((s) => s.source?.recordId)]
+      .filter((id): id is string => Boolean(id));
+    if (!cited.length) return plan;
+    const out = new Set(
+      (
+        await query<{ record_id: string }>(
+          "select record_id::text from record_exclusions where user_id = $1 and record_id = any($2::uuid[])",
+          [userId, cited],
+        )
+      ).map((r) => r.record_id),
+    );
+    if (!out.size) return plan;
+    const { questionSource, ...rest } = plan;
+    return {
+      ...rest,
+      ...(questionSource && !out.has(questionSource.recordId) ? { questionSource } : {}),
+      slots: plan.slots.map(({ source, ...slot }) =>
+        source && !out.has(source.recordId) ? { ...slot, source } : slot,
+      ),
+    };
+  }
 
   const [user] = await query<{
     available_minutes_daily: number;
@@ -181,7 +224,14 @@ app.get("/plan/:date", { preHandler: requireAuth }, async (request, reply) => {
 });
 
 /** Voice becomes words; the audio itself is never stored (spec 04 §5). */
-app.post("/transcribe", { preHandler: requireAuth }, async (request, reply) => {
+app.post(
+  "/transcribe",
+  {
+    onRequest: requireAuth,
+    preHandler: [requireConsent, modelCallLimit],
+    bodyLimit: 26_214_400, // voice notes arrive as base64 JSON
+  },
+  async (request, reply) => {
   const body = z
     .object({
       audio: z.string().min(1),
@@ -200,10 +250,11 @@ app.post("/transcribe", { preHandler: requireAuth }, async (request, reply) => {
       .code(503)
       .send({ error: "I couldn't hear that just now. Typing still works." });
   }
-});
+  },
+);
 
 /** Marking a slot done survives restarts; the plan document carries it. */
-app.patch("/plan/:date/slot", { preHandler: requireAuth }, async (request, reply) => {
+app.patch("/plan/:date/slot", { onRequest: requireAuth }, async (request, reply) => {
   const userId = request.userId;
   const { date } = z
     .object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) })
@@ -228,7 +279,7 @@ app.patch("/plan/:date/slot", { preHandler: requireAuth }, async (request, reply
 });
 
 /** Evening debrief: safety triage FIRST, then extraction (spec 04 §2, 03 §3). */
-app.post("/debrief", { preHandler: requireAuth }, async (request, reply) => {
+app.post("/debrief", { onRequest: requireAuth, preHandler: [requireConsent, modelCallLimit] }, async (request, reply) => {
   const userId = request.userId;
   const body = z
     .object({
@@ -236,6 +287,8 @@ app.post("/debrief", { preHandler: requireAuth }, async (request, reply) => {
       transcript: z.string().min(1).max(20000),
       // Said from inside a world: the star is born there, by the person's choice.
       world: z.enum(["mind", "body", "soul", "future"]).optional(),
+      // One per composed reflection, so a retry never makes a second evening.
+      clientKey: z.string().min(8).max(64).optional(),
     })
     .parse(request.body);
 
@@ -260,33 +313,44 @@ app.post("/debrief", { preHandler: requireAuth }, async (request, reply) => {
     // softens (reduced load, no confront slot).
   }
 
-  // 2. Capture the record verbatim.
-  const [record] = await query<{ id: string }>(
-    `insert into records (user_id, kind, payload, occurred_at)
-     values ($1, 'reflection', $2, now()) returning id`,
+  // 2. Capture the record verbatim. With personalization paused it is left
+  // out in the same statement, so no crash can leave it learnable.
+  const [record] = await query<{ id: string; paused: boolean }>(
+    `with r as (
+       insert into records (user_id, kind, payload, occurred_at)
+       values ($1, 'reflection', $2, now())
+       on conflict (user_id, (payload->>'clientKey'))
+         where kind = 'reflection' and payload ? 'clientKey' do nothing
+       returning id, user_id
+     ), x as (
+       insert into record_exclusions (record_id, user_id)
+       select r.id, r.user_id from r join users u on u.id = r.user_id
+        where not u.personalization
+       returning record_id
+     )
+     select r.id, exists (select 1 from x) as paused from r`,
     [
       userId,
       JSON.stringify({
         date: body.date,
         transcript: body.transcript,
         ...(body.world ? { world: body.world } : {}),
+        ...(body.clientKey ? { clientKey: body.clientKey } : {}),
       }),
     ],
   );
+  // Nothing inserted with a key: this exact reflection already landed.
+  if (!record && body.clientKey) {
+    return { crisis: false, reply: "Already kept, word for word." };
+  }
   if (!record) return reply.code(500).send({ error: "capture failed" });
 
-  // Paused personalization: keep the words, learn nothing from them. The
-  // evening is left out like any other and can be brought back by hand.
-  const [prefs] = await query<{ personalization: boolean }>(
-    "select personalization from users where id = $1",
-    [userId],
-  );
-  if (prefs && !prefs.personalization) {
-    await query(
-      `insert into record_exclusions (record_id, user_id) values ($1, $2)
-       on conflict (record_id) do nothing`,
-      [record.id, userId],
-    );
+  // Paused: keep the words, send nothing further to the model.
+  if (record.paused) {
+    return {
+      crisis: false,
+      reply: "Kept, word for word. Learning is paused, so I won't draw on this evening.",
+    };
   }
 
   // 3. Extraction. On failure the record parks as unprocessed — never dropped.

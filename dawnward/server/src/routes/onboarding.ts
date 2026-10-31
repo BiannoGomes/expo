@@ -12,6 +12,7 @@ import { intelligence } from "../intelligence/index.js";
 import { crisisResponse } from "../safety/crisis.js";
 import { createHypothesis, linkEvidence } from "../model/integrate.js";
 import { requireAuth } from "../auth.js";
+import { modelCallLimit } from "../guard.js";
 import { rebuildModelSummary } from "../model/summary.js";
 
 interface OnboardingStateRow {
@@ -43,7 +44,7 @@ async function recentDistress(userId: string, hours: number): Promise<boolean> {
 }
 
 export function registerOnboardingRoutes(app: FastifyInstance) {
-  app.get("/onboarding", { preHandler: requireAuth }, async (request) => {
+  app.get("/onboarding", { onRequest: requireAuth }, async (request) => {
     const userId = request.userId;
     const state = await loadState(userId);
     const chapter = chapterByIndex(state.chapter_index);
@@ -57,7 +58,7 @@ export function registerOnboardingRoutes(app: FastifyInstance) {
     };
   });
 
-  app.post("/onboarding/message", { preHandler: requireAuth }, async (request, reply) => {
+  app.post("/onboarding/message", { onRequest: requireAuth, preHandler: modelCallLimit }, async (request, reply) => {
     const userId = request.userId;
     const body = z.object({ text: z.string().min(1).max(8000) }).parse(request.body);
 

@@ -23,7 +23,9 @@ export const theme = {
     dim: "#9AA0A9",
     faint: "#79818F",
     gold: "#C9A96A",
-    danger: "#B4655F",
+    // D3 (master-plan 05): #B4655F was 4.29:1 on surface, under AA. This is
+    // 5.51:1. Applied after the accessibility review; owner may revert.
+    danger: "#C47A73",
     // Living-sky gradient stops ONLY — never used on components.
     dawn: "#E8A87C",
     duskAmber: "#2A1F14",

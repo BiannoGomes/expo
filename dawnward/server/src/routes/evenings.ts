@@ -10,11 +10,12 @@ import { requireAuth } from "../auth.js";
  * brought back. Own records only; another person's id is a 404.
  */
 export function registerEveningRoutes(app: FastifyInstance) {
-  app.get("/evenings", { preHandler: requireAuth }, async (request) => {
+  app.get("/evenings", { onRequest: requireAuth }, async (request) => {
     const { q, before, limit } = z
       .object({
         q: z.string().trim().max(200).optional(),
-        before: z.string().datetime({ offset: true }).optional(),
+        // Opaque cursor from the previous page: "<occurred_at>|<id>".
+        before: z.string().regex(/^[^|]{10,40}\|[0-9a-f-]{36}$/).optional(),
         limit: z.coerce.number().int().min(1).max(100).default(30),
       })
       .parse(request.query);
@@ -27,26 +28,30 @@ export function registerEveningRoutes(app: FastifyInstance) {
       filter += ` and r.payload->>'transcript' ilike $${params.length}`;
     }
     if (before) {
-      params.push(before);
-      filter += ` and r.occurred_at < $${params.length}`;
+      // (time, id) so two evenings saved in the same microsecond never
+      // fall between pages.
+      const [at, id] = before.split("|");
+      params.push(at, id);
+      filter += ` and (r.occurred_at, r.id) < ($${params.length - 1}::timestamptz, $${params.length}::uuid)`;
     }
     params.push(limit);
 
     const rows = await query<{
       id: string;
       occurred_at: Date;
+      at_text: string;
       payload: { date?: string; transcript?: string };
       excluded: boolean;
       beliefs: string;
     }>(
-      `select r.id, r.occurred_at, r.payload,
+      `select r.id, r.occurred_at, r.occurred_at::text as at_text, r.payload,
               exists (select 1 from record_exclusions x where x.record_id = r.id) as excluded,
               (select count(*) from assertion_evidence e
                  join assertions a on a.id = e.assertion_id
                 where e.record_id = r.id and a.status = 'active') as beliefs
          from records r
         where r.user_id = $1 and r.kind = 'reflection'${filter}
-        order by r.occurred_at desc
+        order by r.occurred_at desc, r.id desc
         limit $${params.length}`,
       params,
     );
@@ -54,13 +59,14 @@ export function registerEveningRoutes(app: FastifyInstance) {
       id: r.id,
       date: r.payload.date ?? r.occurred_at.toISOString().slice(0, 10),
       occurredAt: r.occurred_at.toISOString(),
+      cursor: `${r.at_text}|${r.id}`,
       text: r.payload.transcript ?? "",
       excluded: r.excluded,
       beliefCount: Number(r.beliefs),
     }));
   });
 
-  app.post("/evenings/:id/exclude", { preHandler: requireAuth }, async (request, reply) => {
+  app.post("/evenings/:id/exclude", { onRequest: requireAuth }, async (request, reply) => {
     const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
     const own = await query(
       "select 1 from records where id = $1 and user_id = $2 and kind = 'reflection'",
@@ -76,7 +82,7 @@ export function registerEveningRoutes(app: FastifyInstance) {
     return { id, excluded: true };
   });
 
-  app.delete("/evenings/:id/exclude", { preHandler: requireAuth }, async (request, reply) => {
+  app.delete("/evenings/:id/exclude", { onRequest: requireAuth }, async (request, reply) => {
     const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
     const removed = await query(
       "delete from record_exclusions where record_id = $1 and user_id = $2 returning record_id",

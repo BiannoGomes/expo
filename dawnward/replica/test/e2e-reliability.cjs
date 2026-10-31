@@ -24,14 +24,14 @@ async function open(page, tokenFile) {
   // 1. Send fails: honest error, no goodnight, words stay.
   await box.fill('Tonight I fixed the bike and called my brother.');
   await page.route('**/debrief', route => route.abort());
-  await page.getByRole('button', { name: "Send tonight's reflection" }).click();
+  await page.getByRole('button', { name: "Reflect: send tonight's reflection" }).click();
   await page.getByText(/tonight isn't saved yet/).waitFor();
   r.sendFail_errorShown = true;
   r.sendFail_goodnightShown = await page.getByText(/Sleep well/).count();
   r.sendFail_wordsKept = (await box.inputValue()).includes('fixed the bike');
   await page.screenshot({ path: S + '/shots/10-debrief-send-failed.png' });
   await page.unroute('**/debrief');
-  await page.getByRole('button', { name: "Send tonight's reflection" }).click();
+  await page.getByRole('button', { name: "Reflect: send tonight's reflection" }).click();
   await page.getByText(/Sleep well/).waitFor();
   r.retry_goodnightShown = true;
   r.retry_errorGone = (await page.getByText(/tonight isn't saved yet/).count()) === 0;
@@ -39,26 +39,26 @@ async function open(page, tokenFile) {
   // 2. Transcription fails: the recording is kept and can be written down later.
   let voice = 'unsupported';
   try {
-    await page.getByRole('button', { name: 'Speak your debrief instead of typing' }).click();
-    await page.getByRole('button', { name: 'Finish speaking' }).waitFor({ timeout: 8000 });
+    await page.getByRole('button', { name: 'Speak it instead' }).click();
+    await page.getByRole('button', { name: "Listening. Tap when you're done" }).waitFor({ timeout: 8000 });
     await page.waitForTimeout(1200);
     await page.route('**/transcribe', route => route.fulfill({ status: 503, body: '{}' }));
-    await page.getByRole('button', { name: 'Finish speaking' }).click();
+    await page.getByRole('button', { name: "Listening. Tap when you're done" }).click();
     await page.getByText(/Your recording is kept/).waitFor({ timeout: 15000 });
     r.voiceFail_keptNote = true;
-    r.voiceFail_speakHidden = await page.getByRole('button', { name: 'Speak your debrief instead of typing' }).count();
+    r.voiceFail_speakHidden = await page.getByRole('button', { name: 'Speak it instead' }).count();
     await page.screenshot({ path: S + '/shots/11-recording-kept.png' });
     await page.unroute('**/transcribe');
     await page.route('**/transcribe', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'I walked by the river.' }) }));
-    await page.getByRole('button', { name: 'Try writing your recording down again' }).click();
+    await page.getByRole('button', { name: 'Write my recording down' }).click();
     await page.waitForFunction(() => [...document.querySelectorAll('textarea')].some(t => t.value.includes('walked by the river')), null, { timeout: 15000 });
     r.voiceRetry_wordsArrived = true;
-    r.voiceRetry_buttonGone = (await page.getByRole('button', { name: 'Try writing your recording down again' }).count()) === 0;
+    r.voiceRetry_buttonGone = (await page.getByRole('button', { name: 'Write my recording down' }).count()) === 0;
 
     // 3. Leaving the tab while recording stops the mic and keeps the words.
     await page.route('**/transcribe', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'Then I made tea.' }) }));
-    await page.getByRole('button', { name: 'Speak your debrief instead of typing' }).click();
-    await page.getByRole('button', { name: 'Finish speaking' }).waitFor({ timeout: 8000 });
+    await page.getByRole('button', { name: 'Speak it instead' }).click();
+    await page.getByRole('button', { name: "Listening. Tap when you're done" }).waitFor({ timeout: 8000 });
     await page.waitForTimeout(1200);
     await page.getByText(/^Today$/).first().click();
     await page.waitForTimeout(2500);
@@ -66,7 +66,7 @@ async function open(page, tokenFile) {
     await page.waitForFunction(() => [...document.querySelectorAll('textarea')].some(t => t.value.includes('made tea')), null, { timeout: 15000 });
     r.blur_wordsKept = true;
     r.blur_noteShown = await page.getByText(/I stopped listening when you left/).count();
-    r.blur_stillRecording = await page.getByRole('button', { name: 'Finish speaking' }).count();
+    r.blur_stillRecording = await page.getByRole('button', { name: "Listening. Tap when you're done" }).count();
     voice = 'tested';
   } catch (e) {
     voice = 'failed: ' + String(e).split('\n')[0].slice(0, 160);
@@ -89,6 +89,13 @@ async function open(page, tokenFile) {
   await page.waitForTimeout(1200);
   r.tick_savedWhenOnline = (await card.getAttribute('aria-checked')) === 'true';
   r.tick_noteCleared = (await page.getByText(/That didn't save/).count()) === 0;
+  // Two quick taps while offline: both fail, the step must end as it began.
+  const startState = await card.getAttribute('aria-checked');
+  await page.route('**/plan/*/slot', route => route.abort());
+  await card.click(); await card.click();
+  await page.waitForTimeout(1500);
+  r.tick_doubleTapOffline_unchanged = (await card.getAttribute('aria-checked')) === startState;
+  await page.unroute('**/plan/*/slot');
   await page.screenshot({ path: S + '/shots/12-tick-failed-then-saved.png', fullPage: true });
 
   // 5. Onboarding: a message that fails comes back to the box.

@@ -29,6 +29,7 @@ import { Press, useReducedMotion } from "@/lib/motion";
 import { Constellation } from "@/lib/constellation";
 import { syncPresence } from "@/lib/presence";
 import { EveningQuote, eveningDate } from "@/lib/quote";
+import { announce } from "@/lib/a11y";
 
 const SLOT_LABELS: Record<PlanSlot["slot"], string> = {
   build: "One thing to build",
@@ -189,8 +190,11 @@ function WeeklyReveal({
         ? "I was partly wrong about what was holding you back. Here is the truer version."
         : "I was wrong about what was holding you back. That is good news.";
   return (
-    <View style={styles.revealRoot}>
+    // A modal moment: screen readers stay inside it, and it scrolls so
+    // Continue is reachable at the largest text sizes.
+    <View style={styles.revealRoot} accessibilityViewIsModal importantForAccessibility="yes">
       <Constellation />
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems: "center", padding: 24 }}>
       <Animated.View style={{ opacity: words, gap: 16, maxWidth: 320 }}>
         <Text style={theme.type.label}>
           {event.payload.day14 ? "Day 14 · the revision" : "Weekly review"}
@@ -203,10 +207,11 @@ function WeeklyReveal({
             {line}
           </Text>
         ))}
-        <Press onPress={onDone} hitSlop={12} style={styles.revealButton}>
+        <Press onPress={onDone} hitSlop={12} style={styles.revealButton} accessibilityLabel="Continue">
           <Text style={styles.revealButtonText}>Continue</Text>
         </Press>
       </Animated.View>
+      </ScrollView>
     </View>
   );
 }
@@ -238,6 +243,7 @@ export default function TodayScreen() {
   const [plan, setPlan] = useState<DailyPlan | null>(null);
   const [planFailed, setPlanFailed] = useState(false);
   const [tickNote, setTickNote] = useState<string | null>(null);
+  useEffect(() => announce(tickNote), [tickNote]);
   const [refreshing, setRefreshing] = useState(false);
   const [events, setEvents] = useState<ModelEvent[]>([]);
   const reduced = useReducedMotion();
@@ -303,8 +309,11 @@ export default function TodayScreen() {
       try {
         await markSlot(plan.date, slot, next);
       } catch {
-        // Nothing replays a lost tick later, so don't pretend it saved.
-        setPlan((p) => (p ? { ...p, done: { ...p.done, [slot]: !next } } : p));
+        // Nothing replays a lost tick later, so don't pretend it saved. Only
+        // undo this tap if no later tap has already changed the slot again.
+        setPlan((p) =>
+          p && Boolean(p.done?.[slot]) === next ? { ...p, done: { ...p.done, [slot]: !next } } : p,
+        );
         setTickNote("That didn't save. Tap it again when you're connected.");
       }
     }
@@ -320,7 +329,11 @@ export default function TodayScreen() {
   return (
     <View style={styles.root}>
       <LivingSky mode={skyModeForNow()} />
-      <SafeAreaView style={styles.screen} edges={["top"]}>
+      <SafeAreaView
+        style={styles.screen}
+        edges={["top"]}
+        importantForAccessibility={weeklyReview && !notOnboarded ? "no-hide-descendants" : "auto"}
+      >
         <ScrollView
           contentContainerStyle={styles.content}
           refreshControl={
@@ -341,7 +354,7 @@ export default function TodayScreen() {
                     <Text style={theme.type.label}>{greeting}</Text>
                     <Text style={styles.dateLabel}>{dateLine()}</Text>
                   </View>
-                  <Text style={[theme.type.title, styles.title]}>
+                  <Text style={[theme.type.title, styles.title]} accessibilityRole="header">
                     Your evolution today
                   </Text>
                 </>
@@ -377,7 +390,7 @@ export default function TodayScreen() {
                   <Text style={theme.type.dim}>
                     Why I think this: {promotion.payload.basis}
                   </Text>
-                  <Pressable onPress={() => dismissEvent(promotion)} hitSlop={8}>
+                  <Pressable onPress={() => dismissEvent(promotion)} hitSlop={8} accessibilityRole="button">
                     <Text style={styles.promotionDismiss}>Noted</Text>
                   </Pressable>
                 </View>
@@ -459,8 +472,9 @@ const styles = StyleSheet.create({
     padding: theme.spacing(2.5),
     marginBottom: theme.spacing(1.5),
   },
+  // Done is shown by the gold edge and announced as checked; no fading, which
+  // dropped dim text to 2.6:1 (WCAG 1.4.3).
   cardDone: {
-    opacity: 0.5,
     borderLeftColor: theme.colors.gold,
     borderLeftWidth: 2,
   },

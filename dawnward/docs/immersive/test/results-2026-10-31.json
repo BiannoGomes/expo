@@ -1,8 +1,8 @@
 {
   "A": {
-    "enterMind_ms": 1899,
-    "keep_to_star_ms": 492,
-    "starButton": 2,
+    "enterMind_ms": 1874,
+    "keep_to_star_ms": 458,
+    "starButton": 4,
     "inspectShowsNew": 1,
     "boxCleared": true,
     "routeBack": true,
@@ -16,12 +16,16 @@
   },
   "B": {
     "svgLines": 6,
-    "starButtons": 11,
+    "starButtons": 17,
+    "hitTargetsOverlapping": 0,
+    "smallestTarget": 32,
     "starShowsTheme": true,
     "themeShowsEvidence": 7,
     "disputeOffered": true,
+    "disputeAsksFirst": true,
+    "disputeCancelled": true,
     "formingLabel": 1,
-    "listRows": 12,
+    "listRows": 18,
     "leaveOut_removedOne": true,
     "undo_restored": true,
     "pageErrors": [
@@ -33,12 +37,12 @@
     "sampleStars": 8,
     "vrButton": "VR NOT SUPPORTED",
     "sample_frame_median_ms": 16.7,
-    "sample_frame_p95_ms": 16.7,
+    "sample_frame_p95_ms": 16.8,
     "tokenClearedFromUrl": true,
     "yourGalaxyLabel": true,
     "parity_stars": {
-      "list": 11,
-      "api": 11
+      "list": 17,
+      "api": 17
     },
     "parity_themes": {
       "list": 1,

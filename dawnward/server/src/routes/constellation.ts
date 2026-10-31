@@ -17,7 +17,7 @@ const CONFIDENCE_WEIGHT: Record<string, number> = {
 };
 
 export function registerConstellationRoutes(app: FastifyInstance) {
-  app.get("/constellation", { preHandler: requireAuth }, async (request) => {
+  app.get("/constellation", { onRequest: requireAuth }, async (request) => {
     const rows = await query<{
       id: string;
       kind: string;

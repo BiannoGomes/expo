@@ -23,6 +23,7 @@ import {
 } from "@/lib/api";
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky, skyModeForNow } from "@/lib/sky";
+import { announce } from "@/lib/a11y";
 
 interface Bubble {
   role: "user" | "assistant";
@@ -156,6 +157,7 @@ export default function OnboardingScreen() {
       const additions: Bubble[] = [{ role: "assistant", text: result.reply }];
       if (result.crisis) {
         setBubbles((b) => [...b, ...additions]);
+        announce(result.reply, { android: true });
         return;
       }
       if (result.chapterComplete && result.nextOpening) {
@@ -175,10 +177,12 @@ export default function OnboardingScreen() {
         setFinished(true);
       }
       setBubbles((b) => [...b, ...additions]);
+      announce(additions.map((x) => x.text).join(". "), { android: true });
     } catch {
       // Keep the promise literally: the words go back in the box, and the
       // bubble that pretended they were sent comes out.
-      setInput((current) => (current.trim() ? current : text));
+      // Both the failed words and anything typed since go back in the box.
+      setInput((current) => (current.trim() ? `${text} ${current.trim()}` : text));
       setBubbles((b) => {
         const i = b.map((x) => x.role === "user" && x.text === text).lastIndexOf(true);
         const kept = i === -1 ? b : [...b.slice(0, i), ...b.slice(i + 1)];
@@ -190,6 +194,7 @@ export default function OnboardingScreen() {
           },
         ];
       });
+      announce("That didn't reach me. Your words are back in the box.", { android: true });
     } finally {
       setSending(false);
     }
@@ -266,7 +271,7 @@ export default function OnboardingScreen() {
         </ScrollView>
 
         {finished ? (
-          <Pressable style={styles.button} onPress={() => router.replace("/")}>
+          <Pressable style={styles.button} onPress={() => router.replace("/")} accessibilityRole="button">
             <Text style={styles.buttonText}>Begin your evolution</Text>
           </Pressable>
         ) : (
@@ -336,8 +341,8 @@ const styles = StyleSheet.create({
     flex: 1,
     maxHeight: 120,
     backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.line,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.faint,
+    borderWidth: 1,
     borderRadius: theme.radius.card,
     padding: theme.spacing(1.5),
     color: theme.colors.text,
@@ -375,8 +380,8 @@ const consentStyles = StyleSheet.create({
     fontSize: 16,
     color: theme.colors.ink,
     backgroundColor: theme.colors.raised,
-    borderColor: theme.colors.line,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.faint,
+    borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: theme.spacing(1.5),
     paddingVertical: theme.spacing(1.25),

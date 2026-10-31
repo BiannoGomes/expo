@@ -7,6 +7,7 @@ import { fonts, theme } from "@/lib/theme";
 import { LivingSky, skyModeForNow } from "@/lib/sky";
 import { Press } from "@/lib/motion";
 import { eveningDate } from "@/lib/quote";
+import { announce } from "@/lib/a11y";
 
 /**
  * Your evenings: everything the person has said at night, word for word,
@@ -15,8 +16,6 @@ import { eveningDate } from "@/lib/quote";
  */
 const PAGE = 30;
 const LONG = 280;
-const UNDO_MS = 6000;
-
 type Notice = { text: string; undo?: () => void } | null;
 
 function EveningCard({
@@ -62,8 +61,8 @@ function EveningCard({
         onPress={() => onToggle(evening)}
         accessibilityLabel={
           evening.excluded
-            ? `Bring back your evening of ${eveningDate(evening.date)}`
-            : `Leave out your evening of ${eveningDate(evening.date)}`
+            ? `Bring it back: your evening of ${eveningDate(evening.date)}`
+            : `Leave this out: your evening of ${eveningDate(evening.date)}`
         }
       >
         <Text style={styles.actionText}>
@@ -109,10 +108,11 @@ export default function EveningsScreen() {
     [],
   );
 
+  // No timeout on Undo (WCAG 2.2.1): it stays until the next action.
   function show(next: Notice) {
     if (noticeTimer.current) clearTimeout(noticeTimer.current);
     setNotice(next);
-    if (next?.undo) noticeTimer.current = setTimeout(() => setNotice(null), UNDO_MS);
+    announce(next?.text);
   }
 
   function patch(id: string, excluded: boolean) {
@@ -142,9 +142,15 @@ export default function EveningsScreen() {
   async function older() {
     const last = evenings?.[evenings.length - 1];
     if (!last) return;
+    const seq = searchSeq.current;
     try {
-      const page = await fetchEvenings(query, last.occurredAt);
-      setEvenings([...(evenings ?? []), ...page]);
+      const page = await fetchEvenings(query, last.cursor);
+      if (seq !== searchSeq.current) return; // a newer search replaced this list
+      // Append to whatever the list is now, keeping any leave-out made meanwhile.
+      setEvenings((list) => {
+        const have = new Set((list ?? []).map((e) => e.id));
+        return [...(list ?? []), ...page.filter((e) => !have.has(e.id))];
+      });
       setMore(page.length === PAGE);
     } catch {
       show({ text: "Couldn't reach your older evenings. Try again in a moment." });
@@ -164,7 +170,7 @@ export default function EveningsScreen() {
               <Text style={styles.link}>Close</Text>
             </Press>
           </View>
-          <Text style={[theme.type.title, styles.title]}>In your own words</Text>
+          <Text style={[theme.type.title, styles.title]} accessibilityRole="header">In your own words</Text>
           <Text style={theme.type.dim}>
             Every evening you've given me, exactly as you said it. Leave any one
             out and I stop using it. You can bring it back whenever you like.

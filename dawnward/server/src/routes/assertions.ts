@@ -5,7 +5,7 @@ import { query } from "../db.js";
 import { rebuildModelSummary } from "../model/summary.js";
 import { humanizeBasis } from "../model/voice.js";
 import { requireAuth } from "../auth.js";
-import { notExcluded, stillSupported } from "../model/exclusions.js";
+import { effectiveConfidence, notExcluded, stillSupported } from "../model/exclusions.js";
 
 /**
  * The correction loop (spec 02 §6): inspect, dispute, correct.
@@ -13,7 +13,7 @@ import { notExcluded, stillSupported } from "../model/exclusions.js";
  * a correction outranks all inference and is never silently reverted.
  */
 export function registerAssertionRoutes(app: FastifyInstance) {
-  app.get("/assertions", { preHandler: requireAuth }, async (request) => {
+  app.get("/assertions", { onRequest: requireAuth }, async (request) => {
     const userId = request.userId;
     const rows = await query<{
       id: string;
@@ -28,14 +28,14 @@ export function registerAssertionRoutes(app: FastifyInstance) {
       last_confirmed_at: string;
     }>(
       `select a.id, a.kind, a.statement, a.domain_ids, a.source,
-              a.confidence, a.confidence_basis, a.status, a.last_confirmed_at,
+              ${effectiveConfidence("a")} as confidence, a.confidence_basis, a.status, a.last_confirmed_at,
               count(e.record_id) filter (where ${notExcluded("e.record_id")}) as evidence_count
          from assertions a
          left join assertion_evidence e on e.assertion_id = a.id
         where a.user_id = $1 and a.status in ('active','disputed')
           and ${stillSupported("a")}
         group by a.id
-        order by a.confidence desc, a.last_confirmed_at desc`,
+        order by 6 desc, a.last_confirmed_at desc`,
       [userId],
     );
     return rows.map((r) => ({
@@ -52,7 +52,7 @@ export function registerAssertionRoutes(app: FastifyInstance) {
     }));
   });
 
-  app.post("/assertions/:assertionId/dispute", { preHandler: requireAuth }, async (request, reply) => {
+  app.post("/assertions/:assertionId/dispute", { onRequest: requireAuth }, async (request, reply) => {
     const params = {
       userId: request.userId,
       ...z.object({ assertionId: z.string().uuid() }).parse(request.params),

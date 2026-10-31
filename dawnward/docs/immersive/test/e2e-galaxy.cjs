@@ -33,7 +33,7 @@ async function app(ctx) {
     const thought = 'An idea for the studio: smaller batches, more often.';
     await box.fill(thought);
     const t1 = Date.now();
-    await page.getByRole('button', { name: 'Keep this thought in Mind' }).click();
+    await page.getByRole('button', { name: 'Keep it' }).click();
     await page.getByText("Kept. It's a star now.").waitFor({ timeout: 20000 });
     r.A.keep_to_star_ms = Date.now() - t1;
     r.A.starButton = await page.getByRole('button', { name: new RegExp('smaller batches') }).count();
@@ -56,7 +56,7 @@ async function app(ctx) {
     const box = page.getByRole('textbox', { name: 'One thought for Mind' });
     await box.waitFor({ timeout: 15000 });
     await box.fill('A quieter thought, with motion reduced.');
-    await page.getByRole('button', { name: 'Keep this thought in Mind' }).click();
+    await page.getByRole('button', { name: 'Keep it' }).click();
     await page.getByText("Kept. It's a star now.").waitFor({ timeout: 20000 });
     r.A.reducedMotion_ok = true;
     r.A.reducedMotion_errors = errors;
@@ -73,6 +73,17 @@ async function app(ctx) {
     r.B.svgLines = await page.locator('svg line').count();
     const stars = page.getByRole('button', { name: /^Your evening of / });
     r.B.starButtons = await stars.count();
+    r.B.hitTargetsOverlapping = await page.evaluate(() => {
+      const boxes = [...document.querySelectorAll('[aria-label^="Your evening of "]')]
+        .map(e => e.getBoundingClientRect()).filter(b => b.width > 0 && b.height > 0 && b.width <= 60);
+      let overlaps = 0;
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i], b = boxes[j];
+        if (a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5) overlaps++;
+      }
+      return overlaps;
+    });
+    r.B.smallestTarget = await page.evaluate(() => Math.min(...[...document.querySelectorAll('[aria-label^="Your evening of "]')].map(e => e.getBoundingClientRect()).filter(b => b.width > 0 && b.width <= 60).map(b => Math.min(b.width, b.height))));
     await stars.first().click();
     await page.getByText('This evening supports:').waitFor();
     r.B.starShowsTheme = true;
@@ -80,15 +91,19 @@ async function app(ctx) {
     await page.getByText('The evenings behind this:').waitFor();
     r.B.themeShowsEvidence = await page.getByText(/^[A-Z][a-z]+day, .*: “/).count();
     r.B.disputeOffered = await page.getByRole('button', { name: "That's not right" }).count() > 0;
+    await page.getByRole('button', { name: "That's not right" }).last().click();
+    r.B.disputeAsksFirst = (await page.getByRole('button', { name: 'Set it aside' }).count()) > 0;
+    await page.getByRole('button', { name: 'Keep it as it is' }).last().click();
+    r.B.disputeCancelled = (await page.getByRole('button', { name: 'Set it aside' }).count()) === 0;
     r.B.formingLabel = await page.getByText('Still forming').count();
     await page.screenshot({ path: S + '/shots/21-soul-theme-explained.png', fullPage: true });
-    await page.getByRole('button', { name: 'Show your evenings as a list' }).click();
+    await page.getByRole('button', { name: 'Show as a list' }).click();
     r.B.listRows = await page.getByRole('button', { name: /^Your evening of |^(Still forming|A guess|Probably true|Well established): / }).count();
     await page.screenshot({ path: S + '/shots/22-soul-list-mode.png', fullPage: true });
     // leave out from the galaxy, then undo
     await page.getByRole('button', { name: /^Your evening of / }).first().click();
     const before = await page.getByRole('button', { name: /^Your evening of / }).count();
-    await page.getByRole('button', { name: 'Leave this evening out' }).click();
+    await page.getByRole('button', { name: 'Leave this out', exact: true }).click();
     await page.getByText(/^Left out\. This evening no longer shapes/).waitFor();
     await page.waitForTimeout(800);
     r.B.leaveOut_removedOne = (await page.getByRole('button', { name: /^Your evening of / }).count()) === before - 1;

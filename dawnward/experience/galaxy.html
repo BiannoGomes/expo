@@ -25,8 +25,10 @@
   #vr { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); }
   aside { border-left: 1px solid var(--line); overflow: auto; padding: 16px 18px 40px; display: flex; flex-direction: column; gap: 14px; }
   .toggle { color: var(--gold); font-size: 15px; padding: 6px 0; text-align: left; }
-  #panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: none; }
-  #panel.on { display: block; }
+  /* Always rendered so the live region is in place before the first change. */
+  #panel:not(.on) { padding: 0; border: 0; }
+  #panel.on { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+  #vr button:focus-visible, #vr a:focus-visible { outline: 2px solid var(--gold) !important; outline-offset: 3px; }
   #panel .when { color: var(--faint); font-size: 13px; }
   #panel q, #panel .statement { display: block; font-family: var(--display); font-size: 19px; line-height: 1.35; margin: 8px 0; }
   #panel .why { color: var(--dim); font-size: 14px; line-height: 1.45; }
@@ -50,7 +52,7 @@
   <p class="note">Each star is an evening. A line joins two evenings that support the same belief.</p>
 </header>
 <main>
-  <div id="stage" aria-label="Three-dimensional view of your evenings. The list beside it has the same content." role="img"></div>
+  <div id="stage"><div id="vr"></div></div>
   <aside>
     <div id="panel" aria-live="polite"></div>
     <h2 id="themes-h">What the evenings support</h2>

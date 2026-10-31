@@ -41,11 +41,19 @@ async function ensureSession(): Promise<string> {
     sessionToken = stored;
     return stored;
   }
-  const res = await fetch(`${BASE_URL}/auth/device`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ deviceName: Platform.OS }),
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20_000);
+  let res: Response;
+  try {
+    res = await fetch(`${BASE_URL}/auth/device`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ deviceName: Platform.OS }),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
   if (!res.ok) throw new Error(`device auth failed: ${res.status}`);
   const { token } = (await res.json()) as { token: string };
   sessionToken = token;
@@ -192,10 +200,20 @@ export async function submitDebrief(
   date: string,
   transcript: string,
   world?: "mind" | "body" | "soul" | "future",
+  /** One per composed reflection: a retry after a timeout never doubles it. */
+  clientKey?: string,
 ): Promise<{ crisis: boolean; reply: string }> {
   const res = await api(
     "/debrief",
-    { method: "POST", body: JSON.stringify({ date, transcript, ...(world ? { world } : {}) }) },
+    {
+      method: "POST",
+      body: JSON.stringify({
+        date,
+        transcript,
+        ...(world ? { world } : {}),
+        ...(clientKey ? { clientKey } : {}),
+      }),
+    },
     TIMEOUT_MS.model,
   );
   if (!res.ok) throw new Error(`debrief failed: ${res.status}`);
@@ -364,6 +382,8 @@ export interface EveningView {
   id: string;
   date: string; // YYYY-MM-DD
   occurredAt: string;
+  /** Pass to fetchEvenings to get the page after this evening. */
+  cursor: string;
   text: string;
   /** Left out of what Dawnward understands. Still listed, still theirs. */
   excluded: boolean;
@@ -419,4 +439,9 @@ export async function fetchGalaxy(world: "all" | "mind" | "body" | "soul" | "fut
   const res = await api(`/galaxy?world=${world}`);
   if (!res.ok) throw new Error(`galaxy fetch failed: ${res.status}`);
   return res.json();
+}
+
+/** A fresh key for one composed reflection. Not secret, just unique. */
+export function newClientKey(): string {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
 }

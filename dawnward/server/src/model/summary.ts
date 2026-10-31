@@ -1,7 +1,7 @@
 import { DOMAIN_IDS, TAXONOMY, type AssertionConfidence } from "@dawnward/core";
 import { query } from "../db.js";
 import { hedgePrefix } from "./promotion.js";
-import { stillSupported } from "./exclusions.js";
+import { effectiveConfidence, stillSupported } from "./exclusions.js";
 
 /**
  * The maintained model summary artifact (spec 02 §5.1). Deterministic
@@ -16,10 +16,10 @@ export async function rebuildModelSummary(userId: string): Promise<string> {
     domain_ids: string[];
     confidence: AssertionConfidence;
   }>(
-    `select kind, statement, domain_ids, confidence
+    `select kind, statement, domain_ids, ${effectiveConfidence("a")} as confidence
        from assertions a
       where user_id = $1 and status = 'active'
-        and confidence in ('probable','established')
+        and ${effectiveConfidence("a")} in ('probable','established')
         and ${stillSupported("a")}
       order by kind, created_at`,
     [userId],

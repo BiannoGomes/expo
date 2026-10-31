@@ -8,7 +8,7 @@ import { requireAuth } from "../auth.js";
  * surface. Shown once; marking seen is permanent — nothing nags twice.
  */
 export function registerEventRoutes(app: FastifyInstance) {
-  app.get("/events", { preHandler: requireAuth }, async (request) => {
+  app.get("/events", { onRequest: requireAuth }, async (request) => {
     const userId = request.userId;
     const rows = await query<{
       id: string;
@@ -29,7 +29,7 @@ export function registerEventRoutes(app: FastifyInstance) {
     }));
   });
 
-  app.post("/events/:eventId/seen", { preHandler: requireAuth }, async (request, reply) => {
+  app.post("/events/:eventId/seen", { onRequest: requireAuth }, async (request, reply) => {
     const params = {
       userId: request.userId,
       ...z.object({ eventId: z.string().uuid() }).parse(request.params),

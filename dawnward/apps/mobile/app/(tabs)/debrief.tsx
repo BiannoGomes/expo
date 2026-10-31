@@ -21,7 +21,8 @@ import {
 } from "expo-audio";
 import { File } from "expo-file-system";
 import { useFocusEffect } from "expo-router";
-import { fetchMe, fetchPlan, submitDebrief, today, transcribe } from "@/lib/api";
+import { fetchMe, fetchPlan, newClientKey, submitDebrief, today, transcribe } from "@/lib/api";
+import { announce } from "@/lib/a11y";
 import { clearDraft, loadDraft, saveDraft } from "@/lib/draft";
 import { fonts, theme } from "@/lib/theme";
 import { LivingSky } from "@/lib/sky";
@@ -94,6 +95,8 @@ export default function DebriefScreen() {
   // A failed send is not a witnessed day: it gets its own honest line, and
   // the words stay in the box.
   const [sendError, setSendError] = useState<string | null>(null);
+  // Same key for every retry of the same words; a new one once they land.
+  const clientKey = useRef(newClientKey());
   const [sending, setSending] = useState(false);
   const [focused, setFocused] = useState(false);
 
@@ -137,11 +140,17 @@ export default function DebriefScreen() {
     if (!text.trim() || sending) return;
     setSending(true);
     setSendError(null);
+    const sent = text.trim();
     try {
-      const result = await submitDebrief(today(), text.trim());
+      const result = await submitDebrief(today(), sent, undefined, clientKey.current);
       setReply(result.reply);
-      setText("");
-      clearDraft();
+      clientKey.current = newClientKey();
+      // Clear only what was sent: words typed or transcribed meanwhile stay.
+      setText((t) => {
+        const rest = t.trim() === sent ? "" : t.trim().startsWith(sent) ? t.trim().slice(sent.length).trim() : t;
+        saveDraft(rest);
+        return rest;
+      });
     } catch {
       setSendError(
         "That didn't reach me, so tonight isn't saved yet. Your words are still here. Tap Reflect to try again.",
@@ -214,6 +223,10 @@ export default function DebriefScreen() {
     if (note) setVoiceNote((current) => current ?? note);
   }
 
+  useEffect(() => announce(reply, { android: true }), [reply]);
+  useEffect(() => announce(sendError), [sendError]);
+  useEffect(() => announce(voiceNote, { android: true }), [voiceNote]);
+
   // Leaving the screen stops the microphone. What was said so far is kept
   // and written down, never thrown away and never left recording.
   useFocusEffect(
@@ -238,7 +251,7 @@ export default function DebriefScreen() {
       >
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={theme.type.label}>Evening debrief</Text>
-          <Text style={[theme.type.title, styles.title]}>What happened?</Text>
+          <Text style={[theme.type.title, styles.title]} accessibilityRole="header">What happened?</Text>
           <Text style={theme.type.dim}>
             {question ?? "Say it how it was. Skipping tonight is fine too."}
           </Text>
@@ -262,7 +275,7 @@ export default function DebriefScreen() {
                 onPress={startListening}
                 hitSlop={8}
                 accessibilityRole="button"
-                accessibilityLabel="Speak your debrief instead of typing"
+                accessibilityLabel="Speak it instead"
               >
                 <Text style={styles.voiceAction}>Speak it instead</Text>
               </Pressable>
@@ -272,7 +285,7 @@ export default function DebriefScreen() {
                 onPress={writeDownPending}
                 hitSlop={8}
                 accessibilityRole="button"
-                accessibilityLabel="Try writing your recording down again"
+                accessibilityLabel="Write my recording down"
               >
                 <Text style={styles.voiceAction}>Write my recording down</Text>
               </Pressable>
@@ -283,7 +296,7 @@ export default function DebriefScreen() {
                 hitSlop={8}
                 style={styles.listeningRow}
                 accessibilityRole="button"
-                accessibilityLabel="Finish speaking"
+                accessibilityLabel="Listening. Tap when you're done"
               >
                 <ListeningDot />
                 <Text style={styles.voiceListening}>
@@ -303,10 +316,12 @@ export default function DebriefScreen() {
           )}
 
           <Press
-            style={[styles.button, !text.trim() && styles.buttonDisabled]}
+            style={[styles.button, (!text.trim() || voiceState !== "idle") && styles.buttonDisabled]}
             onPress={send}
-            disabled={!text.trim() || sending}
-            accessibilityLabel="Send tonight's reflection"
+            // Not while a recording is still being written down: its words
+            // would land after the send and be cleared with the rest.
+            disabled={!text.trim() || sending || voiceState !== "idle"}
+            accessibilityLabel="Reflect: send tonight's reflection"
           >
             {sending ? (
               <ActivityIndicator color={theme.colors.background} />
@@ -352,8 +367,8 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing(3),
     minHeight: 160,
     backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.line,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.faint,
+    borderWidth: 1,
     borderRadius: theme.radius.card,
     padding: theme.spacing(2),
     color: theme.colors.text,

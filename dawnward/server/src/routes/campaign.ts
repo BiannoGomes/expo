@@ -10,7 +10,7 @@ import { requireAuth } from "../auth.js";
  * action with an invited (never required) exit reflection.
  */
 export function registerCampaignRoutes(app: FastifyInstance) {
-  app.get("/campaign", { preHandler: requireAuth }, async (request, reply) => {
+  app.get("/campaign", { onRequest: requireAuth }, async (request, reply) => {
     const userId = request.userId;
     const [campaign] = await query<{
       id: string;
@@ -46,7 +46,7 @@ export function registerCampaignRoutes(app: FastifyInstance) {
     };
   });
 
-  app.post("/campaign/:campaignId/abandon", { preHandler: requireAuth }, async (request, reply) => {
+  app.post("/campaign/:campaignId/abandon", { onRequest: requireAuth }, async (request, reply) => {
     const params = {
       userId: request.userId,
       ...z.object({ campaignId: z.string().uuid() }).parse(request.params),
