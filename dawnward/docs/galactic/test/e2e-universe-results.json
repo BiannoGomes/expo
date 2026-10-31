@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T14:24:24.784Z",
+  "when": "2026-10-31T14:55:27.225Z",
   "checks": [
     {
       "name": "320x568: Atlas galaxies and names never overlap",
@@ -227,7 +227,7 @@
       "detail": ""
     },
     {
-      "name": "phone: the Compass moves on to the next expedition",
+      "name": "phone: the Compass moves on to an expedition not yet done",
       "ok": true,
       "detail": ""
     },
@@ -402,7 +402,7 @@
       "detail": ""
     },
     {
-      "name": "desktop: the Compass moves on to the next expedition",
+      "name": "desktop: the Compass moves on to an expedition not yet done",
       "ok": true,
       "detail": ""
     },
@@ -470,8 +470,8 @@
     "desktop earth": []
   },
   "timings": {
-    "phone.to_first_step_ms": 126,
-    "desktop.to_first_step_ms": 119
+    "phone.to_first_step_ms": 129,
+    "desktop.to_first_step_ms": 153
   },
   "summary": {
     "total": 91,

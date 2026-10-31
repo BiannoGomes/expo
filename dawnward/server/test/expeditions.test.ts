@@ -34,8 +34,8 @@ function play(mission = bridge1): Attempt {
 describe("expedition catalog", () => {
   it("is sound: every mission has a completion state, valid options and a close step", () => {
     assert.deepEqual(checkCatalog(), []);
-    assert.equal(MISSIONS.length, 4);
-    assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-thought-patterns", 1], ["soul-communication", 3]]);
+    assert.equal(MISSIONS.length, 6);
+    assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-beyond-overthinking", 2], ["mind-thought-patterns", 1], ["soul-communication", 3]]);
   });
   it("contains no scoring or forbidden words", () => {
     const text = JSON.stringify(MISSIONS).toLowerCase();
@@ -119,6 +119,41 @@ describe("the Mind lens step", () => {
     const done = completeAttempt(lab, a);
     assert.ok("attempt" in done);
     assert.deepEqual(discoveriesFrom(done.events).map((d) => d.key), ["star:labyrinth-1", "moon:mind-thought-patterns"]);
+  });
+});
+
+describe("Beyond Overthinking: lesson and sort steps (drafts)", () => {
+  const c1 = missionById("overthinking-1")!, c2 = missionById("overthinking-2")!;
+  const sort1 = c1.steps.find((x) => x.type === "sort")!;
+  const all = (st: typeof sort1, bin?: string) => Object.fromEntries(st.items!.map((x) => [x.id, bin ?? x.bin]));
+  it("both chapters are marked draft and carry a worksheet", () => {
+    for (const m of [c1, c2]) { assert.equal(m.status, "draft"); assert.ok(m.worksheet && m.worksheet.sections.length >= 2); assert.ok(m.safetyNote); }
+  });
+  it("a sort needs every item in a known bin, and nothing extra", () => {
+    assert.match(validateAnswer(sort1, { sorted: { deadline: "forward" } })!, /Sort each/);
+    assert.match(validateAnswer(sort1, { sorted: { ...all(sort1), deadline: "sideways" } })!, /Sort each/);
+    assert.match(validateAnswer(sort1, { sorted: { ...all(sort1), extra: "round" } })!, /Sort each/);
+    assert.equal(validateAnswer(sort1, { sorted: all(sort1) }), null);
+  });
+  it("a sort that differs from the suggested reading is still accepted: nothing is scored", () => {
+    assert.equal(validateAnswer(sort1, { sorted: all(sort1, "round") }), null);
+  });
+  it("a lesson is acknowledged like an intro", () => {
+    const lesson = c1.steps.find((x) => x.type === "lesson")!;
+    assert.equal(validateAnswer(lesson, { ack: true }), null);
+    assert.match(validateAnswer(lesson, { text: "hi" })!, /Nothing to answer/);
+  });
+  it("finishing both written chapters gives two stars and no moon while chapters remain planned", () => {
+    const events = [];
+    for (const m of [c1, c2]) {
+      let a = beginAttempt(m, `a-${m.id}`);
+      for (const [i, s] of m.steps.entries()) {
+        const ans = s.type === "sort" ? { sorted: all(s) } : s.type === "plan" ? { skip: true as const } : s.type === "rehearse" || s.type === "reflect" ? { text: "Words." } : { ack: true as const };
+        const r = answerStep(m, a, i, ans); assert.ok("attempt" in r, s.id); a = r.attempt;
+      }
+      const done = completeAttempt(m, a); assert.ok("attempt" in done); events.push(...done.events);
+    }
+    assert.deepEqual(discoveriesFrom(events).map((d) => d.key), ["star:overthinking-1", "star:overthinking-2"]);
   });
 });
 

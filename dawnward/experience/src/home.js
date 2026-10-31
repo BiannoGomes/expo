@@ -48,6 +48,7 @@ const ICON = {
   atlas: '<circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="9" ry="3.5"/><circle cx="12" cy="12" r="1.6"/>',
   earth: '<circle cx="12" cy="12" r="9"/><path d="M3.5 9h17M3.5 15h17M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z"/>',
   back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+  listen: '<path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
   mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
   spirit: '<circle cx="12" cy="12" r="2.2"/><circle cx="12" cy="12" r="5.5"/><path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21"/>',
   link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
@@ -910,14 +911,16 @@ function main(data, failed) {
     return null;
   }
   const fromHome = { label: "Home", go: () => openEarth(), trail: [{ label: "Home", go: () => openEarth(), root: true }] };
+  const chaptersIn = (m) => { const sys = SYSTEMS.find((x) => x.id === m.systemId); return sys ? sys.missionIds.length + (sys.planned?.length ?? 0) : 1; };
   function compassCard(pick) {
     const { m } = pick, total = m.steps.length;
     return el("article", { class: "compass", "aria-labelledby": "c-title" },
       el("div", { class: "c-top" }, el("p", { class: "kicker" }, "Your daily compass"),
-        el("p", { class: "c-meta" }, pick.resume ? `Step ${pick.step + 1} of ${total}` : `${META[m.world].name} · ${m.minutes} min`)),
+        el("p", { class: "c-meta" }, m.chapter ? `Chapter ${m.chapter} of ${chaptersIn(m)}` : pick.resume ? `Step ${pick.step + 1} of ${total}` : `${META[m.world].name} · ${m.minutes} min`)),
       el("h3", { id: "c-title", class: "c-title" }, m.title),
-      el("p", { class: "c-part" }, `${META[m.world].name} · ${m.part}`),
+      el("p", { class: "c-part" }, `${META[m.world].name} · ${m.part}${m.status === "draft" ? " · draft" : ""}`),
       el("p", { class: "c-mission" }, `Today's mission: ${m.objective}`),
+      pick.resume ? el("p", { class: "c-part" }, `Step ${pick.step + 1} of ${total}`) : null,
       el("div", { class: "c-bar", role: "progressbar", "aria-label": "Your progress through this expedition", "aria-valuemin": "0", "aria-valuemax": String(total), "aria-valuenow": String(pick.step), "aria-valuetext": pick.step ? `Step ${pick.step + 1} of ${total}` : "Not started" },
         el("span", { style: `width:${Math.round((100 * pick.step) / total)}%` })),
       el("button", { class: "primary wide", onclick: () => explore.play(m.id, { from: fromHome }) }, `${pick.resume ? "Continue" : "Begin"} expedition · ${m.minutes} min`),
@@ -941,7 +944,7 @@ function main(data, failed) {
         ? el("div", { class: "compass slim" }, el("p", { class: "quiet" }, "No suggestion today, as you asked."),
             el("button", { class: "text-btn", onclick: () => { try { localStorage.removeItem(COMPASS_HIDE); } catch {} drawEarth(); } }, "Show it"))
         : compassCard(pick);
-    const other = MISSIONS.find((m) => m !== pick?.m && !missionDone(m.id));
+    const other = MISSIONS.find((m) => m.systemId !== pick?.m.systemId && !missionDone(m.id));
     const next = [
       other
         ? { icon: ICON.explore, t: "Practise", s: `${other.title} · ${other.minutes} min`, go: () => explore.play(other.id, { from: fromHome }) }

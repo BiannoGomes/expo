@@ -1,0 +1,309 @@
+{
+  "when": "2026-10-31T14:55:13.888Z",
+  "checks": [
+    {
+      "name": "phone: the Compass starts with Beyond Overthinking, Chapter 1 of 7",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: \"Practise\" offers a different expedition, not Chapter 2",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the chapter says it's a draft",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the safety note is there",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: worksheet opens with its table",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: worksheet can be printed or saved",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone worksheet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: the lesson reads in five short paragraphs",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: Listen is offered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: no horizontal scroll while reading",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone lesson",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: six thoughts to sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: Continue waits until all are sorted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: a reading of each, with reasons",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: a different sorting is treated as fair, never wrong",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: a star for the chapter, and the worksheet offered again",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: no moon while chapters are still planned",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the Compass now offers Chapter 2 of 7",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: and says it's the next part of what you began",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch2: lesson",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch2: six thoughts to sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch2: Continue waits until all are sorted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch2: a reading of each, with reasons",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch2: the real action is kept",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: Learn lists Beyond Overthinking as 7 chapters",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: chapters 3 to 7 are marked Planned and can't be opened",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone learn",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: no page errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: the Compass starts with Beyond Overthinking, Chapter 1 of 7",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: \"Practise\" offers a different expedition, not Chapter 2",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: the chapter says it's a draft",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: the safety note is there",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: worksheet opens with its table",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: worksheet can be printed or saved",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: small worksheet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: the lesson reads in five short paragraphs",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: Listen is offered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: no horizontal scroll while reading",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: small lesson",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: six thoughts to sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: Continue waits until all are sorted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: a reading of each, with reasons",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: a different sorting is treated as fair, never wrong",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: small sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: a star for the chapter, and the worksheet offered again",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: no moon while chapters are still planned",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: the Compass now offers Chapter 2 of 7",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: and says it's the next part of what you began",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch2: lesson",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch2: six thoughts to sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch2: Continue waits until all are sorted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch2: a reading of each, with reasons",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch2: the real action is kept",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: Learn lists Beyond Overthinking as 7 chapters",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: chapters 3 to 7 are marked Planned and can't be opened",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: small learn",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small: no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "phone worksheet": [],
+    "phone lesson": [],
+    "phone sort": [],
+    "phone learn": [],
+    "small worksheet": [],
+    "small lesson": [],
+    "small sort": [],
+    "small learn": []
+  },
+  "summary": {
+    "total": 58,
+    "failed": 0
+  }
+}

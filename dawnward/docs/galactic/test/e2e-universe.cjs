@@ -58,7 +58,7 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     await page.waitForTimeout(500);
     check(`${name}: Dawnward opens on Home`, (await place(page)) === "earth" && (await page.locator('#tabs [data-tab="home"][aria-current="page"]').count()) === 1);
     const comp = await page.textContent("#earth .compass");
-    check(`${name}: the Compass offers a first expedition`, /Your daily compass/i.test(comp) && /The Thought Labyrinth/.test(comp) && /Begin expedition · 6 min/.test(comp));
+    check(`${name}: the Compass offers a first expedition`, /Your daily compass/i.test(comp) && /Beyond Overthinking/.test(comp) && /Begin expedition · 8 min/.test(comp));
     await page.locator("#earth .c-why summary").click();
     check(`${name}: the Compass says why`, /short first expedition/.test(await page.textContent("#earth .c-why")) && /Nothing is read from your reflections/.test(await page.textContent("#earth .c-why")));
     check(`${name}: the first action is visible without scrolling`, await page.evaluate(() => { const b = document.querySelector("#earth .compass .primary").getBoundingClientRect(); return b.bottom <= innerHeight - 64 || innerWidth >= 1000; }));
@@ -139,7 +139,7 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     check(`${name}: Return to Earth lands on Home`, (await place(page)) === "earth");
     const earth = await page.textContent("#earth");
     check(`${name}: Home shows what was just discovered`, /Just discovered/.test(earth) && /The Thought Labyrinth/.test(earth));
-    check(`${name}: the Compass moves on to the next expedition`, /The Bridge/.test(await page.textContent("#earth .compass")));
+    check(`${name}: the Compass moves on to an expedition not yet done`, /Beyond Overthinking/.test(await page.textContent("#earth .compass")));
     check(`${name}: Home has no urgency, streaks or scores`, !/streak|score|\bxp\b|hurry|don't miss|last chance/i.test(earth));
     await page.screenshot({ path: `${OUT}/u-${name}-earth.png`, timeout: 90000 });
     await axe(page, `${name} earth`);

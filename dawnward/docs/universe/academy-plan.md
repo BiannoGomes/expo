@@ -1,6 +1,6 @@
 # The Transformation Academy: audit and proposed plan
 
-**Status:** a proposal, nothing built. It answers "Begin with a read-only audit and proposed implementation plan" in the Transformation Academy directive. It also covers Learn, the Personal Knowledge Library and the AI Expedition Director from the 10/10 directive.
+**Status:** proposal accepted in part. Decisions A1 and A2 made by Bianno on 2026-10-31 (below), and chapters 1 and 2 of Beyond Overthinking are drafted. It answers "Begin with a read-only audit and proposed implementation plan" in the Transformation Academy directive. It also covers Learn, the Personal Knowledge Library and the AI Expedition Director from the 10/10 directive.
 
 ## 1. What exists today, and what's missing
 
@@ -82,8 +82,8 @@ I haven't read any of these manuscripts, so nothing here describes their content
 
 | # | Decision | Options | My recommendation |
 |---|---|---|---|
-| A1 | XP | Keep discoveries only (brand brief: "no points, levels…"), or add XP | Discoveries, plus a visible "chapters completed" count. It shows progress honestly without points. If you want XP, it'll be deterministic and awarded only for completing activities, never for what you disclose or how you feel. |
-| A2 | First expedition | The Clarity Protocol (Mind) or Beyond Overthinking (Mind, 7 chapters) | Beyond Overthinking first: seven chapters can be finished and reviewed sooner. Then the Clarity Protocol. |
+| A1 | XP (**decided: keep discoveries**) | Keep discoveries only (brand brief: "no points, levels…"), or add XP | Discoveries, plus a visible "chapters completed" count. It shows progress honestly without points. If you want XP, it'll be deterministic and awarded only for completing activities, never for what you disclose or how you feel. |
+| A2 | First expedition (**decided: Beyond Overthinking**) | The Clarity Protocol (Mind) or Beyond Overthinking (Mind, 7 chapters) | Beyond Overthinking first: seven chapters can be finished and reviewed sooner. Then the Clarity Protocol. |
 | A3 | Who reviews lessons | Bianno, or Bianno plus a qualified reviewer for anything touching mental health | Bianno for tone; a qualified reviewer before any lesson on anxiety or overthinking is published. |
 | A4 | Which book first | One of the three | The one whose manuscript is final and fully yours. |
 | A5 | Live AI | Approve a small test budget for the bounded Expedition Director | After A2 content exists: AI adapts reviewed content, it doesn't originate it. |
@@ -91,8 +91,8 @@ I haven't read any of these manuscripts, so nothing here describes their content
 ## 6. Order of work (each phase ends in tests plus Bianno's approval)
 
 1. **Done this pass:** the portrait fix, the Home and Universe split, the Daily Compass, Journey milestones.
-2. The `lesson` step, enrollment, chapter statuses, and "Planned" chapters in Learn.
-3. Chapters 1 and 2 (drafted, Bianno edits), with worksheets and print layout.
+2. **Done:** the `lesson` and `sort` steps, chapter statuses (draft or reviewed), and "Planned" chapters in Learn. Enrollment is still to come.
+3. **Drafted:** Beyond Overthinking chapters 1 and 2, with worksheets and print layout. Review copy: [`../academy/beyond-overthinking.md`](../academy/beyond-overthinking.md). Waiting for Bianno's edit and a qualified reviewer.
 4. The Compass uses enrollment: "Chapter 2 of 7", plus a "Why this?" that names the expedition you chose.
 5. Library: resources, bookmarks, the book-mapping workflow (A4).
 6. Bounded AI practice: scenario variations validated server-side against the reviewed chapter.

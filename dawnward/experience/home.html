@@ -89,6 +89,30 @@
   .planet-mind { color:var(--mind); } .planet-spirit { color:var(--spirit); } .planet-body { color:var(--body); } .planet-soul { color:var(--soul); } .planet-future { color:var(--future); }
   .planet:hover, .planet:focus-visible { background:rgba(230,192,123,.14); }
   .planet.off, .arc.off { visibility:hidden; }
+  /* ----- chapters: lessons, sorting, drafts, worksheets ----- */
+  .lesson { display:flex; flex-direction:column; gap:var(--s4); max-width:62ch; }
+  .lesson p { font-size:18px; line-height:1.6; color:var(--ink); }
+  .draft-tag { align-self:flex-start; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-ink); border:1px solid rgba(230,192,123,.45); border-radius:var(--r-pill); padding:var(--s1) var(--s3); }
+  .readings { display:flex; flex-direction:column; gap:var(--s3); padding:0; list-style:none; }
+  .readings li { line-height:1.45; }
+  .readings .rb { display:inline-block; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-ink); margin-right:var(--s1); }
+  .missions li.planned { display:flex; align-items:center; gap:var(--s3); padding:var(--s3) var(--s4); opacity:.62; }
+  .sheet { display:flex; flex-direction:column; gap:var(--s5); padding:var(--s6) var(--s5); border-radius:var(--s5); border:1px solid var(--edge); background:rgba(23,32,58,.6); }
+  .ws-sec { display:flex; flex-direction:column; gap:var(--s2); }
+  .ws-sec h3 { text-transform:none; letter-spacing:0; font-size:15px; color:var(--ink); }
+  .ws-table { width:100%; border-collapse:collapse; table-layout:fixed; font-size:13px; }
+  .ws-table th:first-child { width:30%; }
+  .ws-table th { hyphens:auto; -webkit-hyphens:auto; overflow-wrap:break-word; font-size:12px; line-height:1.3; text-align:left; vertical-align:bottom; padding:var(--s2) var(--s1); border-bottom:1px solid var(--edge-strong); font-weight:600; color:var(--dim); }
+  .ws-table td { height:56px; border-bottom:1px solid var(--edge); border-right:1px solid var(--edge); }
+  .ws-table td:last-child { border-right:0; }
+  .ws-lines { display:flex; flex-direction:column; }
+  .ws-lines span { height:36px; border-bottom:1px solid var(--edge-strong); }
+  @media print {
+    body * { visibility:hidden !important; }
+    .sheet, .sheet * { visibility:visible !important; color:#000 !important; background:none !important; border-color:#999 !important; text-shadow:none !important; }
+    .sheet { position:absolute; left:0; top:0; width:100%; border:0; padding:0; }
+    .no-print { display:none !important; }
+  }
   /* ----- Home: the Daily Compass ----- */
   .e-kick { margin-top:var(--s2); }
   #earth .ycol { gap:var(--s6); }

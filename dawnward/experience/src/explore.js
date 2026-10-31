@@ -154,17 +154,19 @@ export function createExplore(store, h) {
     for (const sys of SYSTEMS) {
       const ms = sys.missionIds.map(missionById);
       kids.push(el("section", { class: "group system", "aria-labelledby": `x-${sys.id}` },
-        el("p", { class: "kicker" }, `${META[sys.world].name} · solar system`),
+        el("p", { class: "kicker" }, `${META[sys.world].name} · ${sys.kind === "expedition" ? `expedition · ${sys.missionIds.length + (sys.planned?.length ?? 0)} chapters` : "solar system"}`),
         el("h3", { id: `x-${sys.id}`, class: "sys-title" }, sys.title),
         el("p", { class: "quiet" }, sys.objective),
         el("ul", { class: "missions" }, ms.map((m) => {
           const a = attemptFor(m.id), done = a?.status === "completed" || data.attempts.some((x) => x.missionId === m.id && x.status === "completed");
-          const state = done ? "Done" : a ? "In progress" : `${m.minutes} min`;
+          const state = done ? "Done" : a ? "In progress" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`;
           return el("li", {}, el("button", { class: `mission${done ? " done" : ""}`, onclick: () => play(m.id), "aria-label": `${m.title}, ${m.part}. ${m.objective} ${state}.` },
             el("span", { class: "mstate", "aria-hidden": "true" }, done ? "✦" : ""),
             el("span", { class: "rtext" }, el("span", { class: "rtitle" }, m.part), el("span", { class: "rsub" }, m.objective)),
             el("span", { class: "mmeta" }, state)));
-        }))));
+        }), (sys.planned ?? []).map((p, k) => el("li", { class: "planned" },
+          el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `Chapter ${sys.missionIds.length + k + 1}: ${p.title}`), el("span", { class: "rsub" }, p.line)),
+          el("span", { class: "mmeta" }, "Planned"))))));
     }
     kids.push(el("p", { class: "quiet" }, "More solar systems will arrive in each world, one at a time and carefully written."));
     body().replaceChildren(...kids);
@@ -224,10 +226,53 @@ export function createExplore(store, h) {
     const title = el("h2", { class: "s-title", tabindex: "-1" }, step.title);
     if (step.type === "intro") {
       h.quiet(false);
-      frame(m, i, title, el("p", { class: "lead" }, step.body),
+      frame(m, i, title, m.status === "draft" ? el("p", { class: "draft-tag" }, "Draft: not yet reviewed") : null, el("p", { class: "lead" }, step.body),
         el("p", { class: "quiet" }, `What you'll practise: ${m.objective} About ${m.minutes} minutes. You can leave at any step and keep your place.`),
+        m.worksheet ? el("p", { class: "quiet" }, "Includes a worksheet to print or keep: ", el("button", { class: "text-btn", onclick: () => worksheet(m, () => show(i)) }, m.worksheet.title)) : null,
         m.safetyNote ? el("p", { class: "quiet safety" }, m.safetyNote) : null,
         err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => next({ ack: true }) }, "Begin")));
+      return;
+    }
+    if (step.type === "lesson") {
+      h.quiet(false);
+      const canSpeak = "speechSynthesis" in window && typeof SpeechSynthesisUtterance === "function";
+      let speaking = false;
+      const listen = canSpeak ? el("button", { class: "ghost", "aria-pressed": "false", onclick: () => {
+        speaking = !speaking; listen.setAttribute("aria-pressed", String(speaking)); listen.lastChild.textContent = speaking ? "Stop" : "Listen";
+        speechSynthesis.cancel();
+        if (speaking) { const u = new SpeechSynthesisUtterance([step.title, ...step.paragraphs].join(". ")); u.onend = () => { speaking = false; listen.setAttribute("aria-pressed", "false"); listen.lastChild.textContent = "Listen"; }; speechSynthesis.speak(u); }
+      } }, el("span", { html: svg(ICON.listen, 16) }), el("span", {}, "Listen")) : null;
+      const words = step.paragraphs.join(" ").split(/\s+/).length; // read at an unhurried 180 words a minute
+      frame(m, i, title, el("p", { class: "quiet" }, `Lesson · about ${Math.max(1, Math.ceil(words / 180))} min to read`),
+        el("div", { class: "lesson" }, step.paragraphs.map((t) => el("p", {}, t))),
+        err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => { if (canSpeak) speechSynthesis.cancel(); next({ ack: true }); } }, "Continue"), listen));
+      return;
+    }
+    if (step.type === "sort") {
+      h.quiet(false);
+      const sorted = { ...(prev && "sorted" in prev ? prev.sorted : {}) };
+      const label = (id) => step.bins.find((b) => b.id === id)?.label ?? "";
+      const feedback = el("div", { class: "explain", "aria-live": "polite" });
+      const go = el("button", { class: "primary", disabled: true, onclick: () => next({ sorted }) }, "Continue");
+      const update = () => {
+        const all = step.items.every((x) => sorted[x.id]);
+        go.disabled = !all;
+        feedback.replaceChildren(...(all ? [el("p", { class: "outcome" }, "One way to read them"),
+          el("ul", { class: "readings" }, step.items.map((x) => el("li", {}, el("b", {}, `${x.text} `), el("span", { class: "rb" }, label(x.bin)), el("span", { class: "quiet" }, ` ${x.why}`), sorted[x.id] !== x.bin ? el("span", { class: "quiet small" }, ` You put it in ${label(sorted[x.id])}, and that's a fair reading too if you see it that way.`) : null))),
+          el("p", { class: "quiet" }, step.feedback)] : []));
+      };
+      const rows = step.items.map((x) => {
+        const group = el("div", { class: "seg sort-scale", role: "radiogroup", "aria-label": x.text },
+          step.bins.map((b) => el("button", { role: "radio", "aria-checked": String(sorted[x.id] === b.id), onclick: (e) => {
+            sorted[x.id] = b.id;
+            group.querySelectorAll("button").forEach((n) => n.setAttribute("aria-checked", String(n === e.currentTarget)));
+            update();
+          } }, b.label)));
+        return el("div", { class: "lens" }, el("p", { class: "lens-text" }, x.text), group);
+      });
+      frame(m, i, title, step.body ? el("div", { class: "card event" }, el("p", { class: "lead" }, step.body)) : null,
+        el("p", { class: "lead" }, step.prompt), ...rows, feedback, err, el("div", { class: "actions" }, go));
+      update();
       return;
     }
     if (step.type === "choice") {
@@ -326,8 +371,31 @@ export function createExplore(store, h) {
       found && data.gameLayer ? el("div", { class: "card found" }, el("p", { class: "kicker" }, "Discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
       el("div", { class: "actions" },
         el("button", { class: "primary", onclick: () => { current = null; from = null; h.goEarth(found ?? null); } }, "Return to Earth"),
+        m.worksheet ? el("button", { class: "ghost", onclick: () => worksheet(m, () => { current = null; draw(); $("x-title")?.focus(); }) }, `Worksheet: ${m.worksheet.title}`) : null,
         el("button", { class: "ghost", onclick: () => { current = null; draw(); $("x-title")?.focus(); } }, "Back to Learn")));
     h.announce(found ? `Done. ${found.title} appeared.` : "Done.");
+  }
+
+  // ----- worksheets: readable here, printable on paper -----
+  function worksheet(m, back) {
+    const w = m.worksheet;
+    const sheet = el("article", { class: "sheet", "aria-labelledby": "ws-title" },
+      el("p", { class: "kicker" }, `Dawnward · ${m.title} · ${m.part}`),
+      el("h2", { id: "ws-title", class: "s-title", tabindex: "-1" }, w.title),
+      el("p", { class: "lead" }, w.intro),
+      ...w.sections.map((sec) => el("section", { class: "ws-sec" }, el("h3", {}, sec.heading),
+        sec.columns
+          ? el("table", { class: "ws-table" }, el("thead", {}, el("tr", {}, sec.columns.map((c) => el("th", { scope: "col" }, c)))),
+              el("tbody", {}, Array.from({ length: sec.rows ?? 3 }, () => el("tr", {}, sec.columns.map(() => el("td", {}, ""))))))
+          : el("div", { class: "ws-lines", "aria-hidden": "true" }, Array.from({ length: sec.lines ?? 2 }, () => el("span", {}))))),
+      m.status === "draft" ? el("p", { class: "quiet small" }, "Draft: not yet reviewed.") : null);
+    body().replaceChildren(
+      el("div", { class: "actions no-print" },
+        el("button", { class: "text-btn back", onclick: back }, el("span", { html: svg(ICON.back, 16) }), " Back"),
+        typeof window.print === "function" ? el("button", { class: "ghost", onclick: () => { try { window.print(); } catch { h.announce("Printing isn't available here."); } } }, "Print or save as PDF") : null),
+      sheet);
+    $("ws-title").focus();
+    $("explore").scrollTop = 0;
   }
 
   function crisis(text) {

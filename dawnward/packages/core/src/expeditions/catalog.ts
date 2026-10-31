@@ -2,7 +2,7 @@
 // The server validates it at startup; the web preview bundles the same file.
 
 export type WorldId = "mind" | "body" | "soul" | "spirit" | "future";
-export type StepType = "intro" | "choice" | "lens" | "rehearse" | "plan" | "reflect" | "close";
+export type StepType = "intro" | "lesson" | "choice" | "lens" | "sort" | "rehearse" | "plan" | "reflect" | "close";
 
 export interface ChoiceOption {
   id: string;
@@ -18,6 +18,26 @@ export interface Lens {
   text: string;
 }
 
+/** A sort step: each item goes into one bin. Not scored: afterwards the player shows one reading of each, with its reason. */
+export interface SortBin {
+  id: string;
+  label: string;
+}
+export interface SortItem {
+  id: string;
+  text: string;
+  /** The bin this item is usually read as. Offered as a view, never marked right or wrong. */
+  bin: string;
+  why: string;
+}
+
+/** A printable worksheet: useful on paper, without the app. */
+export interface Worksheet {
+  title: string;
+  intro: string;
+  sections: { heading: string; lines?: number; columns?: string[]; rows?: number }[];
+}
+
 export interface Step {
   id: string;
   type: StepType;
@@ -26,7 +46,11 @@ export interface Step {
   prompt?: string;
   options?: ChoiceOption[];
   lenses?: Lens[];
-  /** Shown once every lens is rated. */
+  /** A lesson: short paragraphs, read or listened to. */
+  paragraphs?: string[];
+  bins?: SortBin[];
+  items?: SortItem[];
+  /** Shown once every lens is rated or every item sorted. */
   feedback?: string;
   /** Example wording, offered as a starting point, never prefilled. */
   examples?: string[];
@@ -43,6 +67,11 @@ export interface Mission {
   objective: string;
   minutes: number;
   safetyNote?: string;
+  /** Chapters of an expedition carry their number. */
+  chapter?: number;
+  /** "draft" until Bianno (and, for anything touching mental health, a qualified reviewer) has approved it. */
+  status?: "draft" | "reviewed";
+  worksheet?: Worksheet;
   steps: Step[];
 }
 
@@ -52,12 +81,212 @@ export interface SolarSystem {
   title: string;
   objective: string;
   missionIds: string[];
+  /** An expedition: chapters in order. Chapters not yet written are listed as planned, never as available. */
+  kind?: "expedition";
+  planned?: { title: string; line: string }[];
 }
+
+const MIND_SAFETY =
+  "If overthinking comes with low mood or anxiety that's affecting your sleep, work or relationships, please talk to a doctor or a mental health professional. findahelpline.com lists free, confidential support lines for your country.";
 
 const SOUL_SAFETY =
   "If a relationship feels unsafe, this isn't the right practice. findahelpline.com lists free, confidential support lines for your country.";
 
 export const MISSIONS: Mission[] = [
+  // ----- Beyond Overthinking (Mind). DRAFT: chapters 1 and 2, written 2026-10-31 for Bianno's review. -----
+  {
+    id: "overthinking-1",
+    version: 1,
+    systemId: "mind-beyond-overthinking",
+    world: "mind",
+    title: "Beyond Overthinking",
+    part: "Chapter 1: Understand the loop",
+    chapter: 1,
+    status: "draft",
+    objective: "Tell the difference between thinking something through and going round in a loop.",
+    minutes: 8,
+    safetyNote: MIND_SAFETY,
+    worksheet: {
+      title: "The Loop Check",
+      intro: "For any thought that keeps coming back. Write it down, then ask it three questions.",
+      sections: [
+        { heading: "Thoughts that keep coming back", columns: ["The thought", "New information?", "A next step?", "Would more thinking change my decision?"], rows: 4 },
+        { heading: "If all three answers are no: name it (\"loop\"), and choose a time to come back to it", lines: 2 },
+        { heading: "The next step I found, and when I'll take it", lines: 2 },
+      ],
+    },
+    steps: [
+      {
+        id: "intro",
+        type: "intro",
+        title: "Understand the loop",
+        body: "Overthinking isn't a flaw in you. It's your mind trying to make something uncertain feel certain before you act. In this chapter you'll learn to spot the moment useful thinking turns into a loop, sort some thoughts, and look at one of your own. Nothing here is scored.",
+        required: false,
+      },
+      {
+        id: "lesson",
+        type: "lesson",
+        title: "The loop",
+        paragraphs: [
+          "Some thinking moves you forward. You find a fact, weigh two options, notice what matters to you, and a next step appears. Other thinking goes round. The same question comes back, nothing new is added, and you end up more tired than when you started.",
+          "The loop usually begins with a question that has no answer yet. What if I choose wrong? What will they think? Your mind replays the situation and rehearses what might happen, looking for certainty. For a moment that feels like progress. Then the doubt returns, and the circle starts again.",
+          "Researchers who study repetitive thinking describe two styles. One is concrete and asks how: what exactly happened, and what could I do next? The other is abstract and asks why: why am I like this, why does this always happen? The first tends to help people solve problems. The second tends to keep them stuck.",
+          "Some uncertainty can't be removed by thinking. You can't know how a choice will turn out before you make it. When thinking stops adding anything, more of it won't bring the certainty you're looking for. That's the moment to notice the loop and step out of it.",
+          "Three questions help you tell which kind of thinking you're in. Is there new information here? Is there a next step I can take? Would thinking about this longer change what I decide? If all three answers are no, you're probably in the loop.",
+        ],
+        required: false,
+      },
+      {
+        id: "sort",
+        type: "sort",
+        title: "Forward or round?",
+        body: "Six thoughts someone had while deciding whether to apply for a new job.",
+        prompt: "Sort each one: does it move them forward, or go round?",
+        bins: [
+          { id: "forward", label: "Moves forward" },
+          { id: "round", label: "Goes round" },
+        ],
+        items: [
+          { id: "deadline", text: "When does the application close?", bin: "forward", why: "A question with an answer. Once it's found, it's done." },
+          { id: "good-enough", text: "What if they think I'm not good enough?", bin: "round", why: "Nobody can answer this before applying, so thinking about it longer won't settle it." },
+          { id: "enjoy", text: "Which parts of the role would I actually enjoy?", bin: "forward", why: "It asks about you, and you can answer it. It adds information." },
+          { id: "always", text: "Why do I always do this to myself?", bin: "round", why: "An abstract why. It tends to bring a judgement, not a next step." },
+          { id: "ask", text: "Who could I ask what the team is like?", bin: "forward", why: "It leads to an action that brings in something new." },
+          { id: "wrong", text: "But what if it all goes wrong anyway?", bin: "round", why: "The loop's favourite question. It comes back however often it's answered." },
+        ],
+        feedback: "The thoughts that move forward can be answered or acted on. The ones that go round ask for a certainty nobody has yet. Your sorting doesn't need to match this. What matters is noticing the difference.",
+        required: true,
+      },
+      {
+        id: "your-loop",
+        type: "rehearse",
+        title: "Your loop",
+        prompt: "What's a question your mind keeps coming back to at the moment? Write it the way it sounds in your head.",
+        examples: ["What if I've already left it too late to change careers?"],
+        required: true,
+      },
+      {
+        id: "three-questions",
+        type: "reflect",
+        title: "The three questions",
+        prompt: "Look at what you wrote. Is there new information in it, a next step, or anything more thinking would change? Write what you notice.",
+        examples: ["No new information. The one step I can take is to look at two courses this week."],
+        required: true,
+      },
+      {
+        id: "apply",
+        type: "plan",
+        title: "Try it for real",
+        prompt: "If you want: the next time the loop starts, name it quietly (\"loop\") and ask the three questions. What will you do, and when?",
+        examples: ["Tonight, if I start replaying the meeting: say \"loop\" and ask the three questions."],
+        required: false,
+      },
+      {
+        id: "close",
+        type: "close",
+        title: "Return to Earth",
+        body: "You've learned to notice the loop. Next in Beyond Overthinking: separating facts from assumptions. Your worksheet, The Loop Check, stays in this chapter whenever you want it.",
+        required: false,
+      },
+    ],
+  },
+  {
+    id: "overthinking-2",
+    version: 1,
+    systemId: "mind-beyond-overthinking",
+    world: "mind",
+    title: "Beyond Overthinking",
+    part: "Chapter 2: Separate facts from assumptions",
+    chapter: 2,
+    status: "draft",
+    objective: "Separate what you know from what you're guessing before you decide.",
+    minutes: 8,
+    safetyNote: MIND_SAFETY,
+    worksheet: {
+      title: "Facts and Assumptions",
+      intro: "For a decision that's been going round. Split what you know from what you're guessing.",
+      sections: [
+        { heading: "The decision", lines: 1 },
+        { heading: "Split it", columns: ["Facts: what I know, or could check", "Assumptions: what I'm guessing"], rows: 6 },
+        { heading: "The guess carrying the most weight", lines: 1 },
+        { heading: "One small way to check it, and when", lines: 2 },
+        { heading: "The real trade-off that no amount of thinking will remove", lines: 2 },
+      ],
+    },
+    steps: [
+      {
+        id: "intro",
+        type: "intro",
+        title: "Separate facts from assumptions",
+        body: "Decisions feel heavier than they need to when guesses pass for facts. In this chapter you'll learn a simple split, practise it on someone else's decision, then use it on one of yours. Nothing here is scored.",
+        required: false,
+      },
+      {
+        id: "lesson",
+        type: "lesson",
+        title: "What you know, and what you're guessing",
+        paragraphs: [
+          "When a decision has been going round for a while, facts and guesses blur together. \"The job pays more\" and \"I'd hate it there\" start to feel equally true, though only one of them can be checked.",
+          "A fact is something you could check, or that someone else would agree happened: a date, a number, something that was said. An assumption is a prediction, a guess at what someone else thinks, or a story about what something means. Assumptions aren't bad. You need them to decide anything. They just aren't known yet.",
+          "Splitting the two doesn't make the decision for you. It shows you which assumptions you could test, even a little, and which part of the decision is a real trade-off that no amount of thinking will remove.",
+          "Often one assumption carries most of the weight. \"My manager would see it as disloyal.\" \"I won't make friends there.\" Finding that one, and asking how you could check it, is usually worth more than another night of turning the whole thing over.",
+        ],
+        required: false,
+      },
+      {
+        id: "sort",
+        type: "sort",
+        title: "Fact or assumption?",
+        body: "Maya is deciding whether to move to another city for a job. This is what's on her mind.",
+        prompt: "Sort each one: something she knows, or something she's guessing?",
+        bins: [
+          { id: "fact", label: "Fact" },
+          { id: "assumption", label: "Assumption" },
+        ],
+        items: [
+          { id: "pay", text: "The new job pays 15% more.", bin: "fact", why: "She has the offer in writing. It can be checked." },
+          { id: "lonely", text: "I'd be lonely there.", bin: "assumption", why: "A prediction. It might be true, but it isn't known yet. She could find out who she already knows in that city." },
+          { id: "lease", text: "My lease ends in March.", bin: "fact", why: "A date in a contract." },
+          { id: "family", text: "My family would feel I'd abandoned them.", bin: "assumption", why: "A guess at what other people feel. She could ask them." },
+          { id: "walk", text: "The office is a 20-minute walk from the flat I viewed.", bin: "fact", why: "Measurable, and she's measured it." },
+          { id: "ability", text: "I won't be good at the new work.", bin: "assumption", why: "A prediction about herself. She could look at what the role involves, or talk to someone who does it." },
+        ],
+        feedback: "Half of what's on her mind can be checked, and it's mostly settled. The other half, the part that feels heaviest, is guesses about loneliness, family and ability. That doesn't make the guesses wrong. It means they're where she could find out more.",
+        required: true,
+      },
+      {
+        id: "decision",
+        type: "rehearse",
+        title: "Your decision",
+        prompt: "Name a decision you've been turning over. Then write the facts: only what you know, or could check.",
+        examples: ["Whether to take the team-lead role. Facts: it starts in May, it's a 10% raise, I'd manage four people."],
+        required: true,
+      },
+      {
+        id: "heaviest",
+        type: "reflect",
+        title: "The heaviest guess",
+        prompt: "Now the assumptions. Which guess is carrying most of the weight, and how could you check it, even a little?",
+        examples: ["That I'd be bad at managing people. I could ask Sam, who led the team last year, what it's really like."],
+        required: true,
+      },
+      {
+        id: "test",
+        type: "plan",
+        title: "Test one assumption",
+        prompt: "If you want, choose one small way to check that guess, and when you'll do it.",
+        examples: ["Ask Sam for twenty minutes on Thursday."],
+        required: false,
+      },
+      {
+        id: "close",
+        type: "close",
+        title: "Return to Earth",
+        body: "You've separated what you know from what you're guessing. Chapter 3, Practise a pause, is still being written. Your worksheet, Facts and Assumptions, stays in this chapter whenever you want it.",
+        required: false,
+      },
+    ],
+  },
   {
     id: "labyrinth-1",
     version: 1,
@@ -354,6 +583,22 @@ export const MISSIONS: Mission[] = [
 
 export const SYSTEMS: SolarSystem[] = [
   {
+    id: "mind-beyond-overthinking",
+    world: "mind",
+    title: "Beyond Overthinking",
+    objective: "Stop going round in circles on important decisions, and find a clearer next step.",
+    kind: "expedition",
+    missionIds: ["overthinking-1", "overthinking-2"],
+    // Titles from Bianno's outline (2026-10-31). Shown as planned until written and reviewed.
+    planned: [
+      { title: "Practise a pause", line: "A short attention exercise for when the loop speeds up." },
+      { title: "Enter the Decision Lab", line: "Explore alternative choices and their trade-offs." },
+      { title: "Choose one small action", line: "Test a realistic decision-making strategy." },
+      { title: "Reflect on the outcome", line: "Record what happened without judging success or failure." },
+      { title: "Build your personal toolkit", line: "Save a printable worksheet and a reusable decision framework." },
+    ],
+  },
+  {
     id: "mind-thought-patterns",
     world: "mind",
     title: "Thought Patterns",
@@ -395,6 +640,15 @@ export function checkCatalog(): string[] {
         const ls = s.lenses ?? [];
         if (ls.length < 2 || ls.length > 4) problems.push(`${m.id}/${s.id}: 2 to 4 lenses`);
         if (new Set(ls.map((l) => l.id)).size !== ls.length) problems.push(`${m.id}/${s.id}: duplicate lens ids`);
+        if (!s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);
+      }
+      if (s.type === "lesson" && !(s.paragraphs ?? []).length) problems.push(`${m.id}/${s.id}: a lesson needs paragraphs`);
+      if (s.type === "sort") {
+        const bins = new Set((s.bins ?? []).map((b) => b.id)), items = s.items ?? [];
+        if (bins.size < 2 || bins.size > 3) problems.push(`${m.id}/${s.id}: 2 or 3 bins`);
+        if (items.length < 3 || items.length > 8) problems.push(`${m.id}/${s.id}: 3 to 8 items`);
+        if (new Set(items.map((x) => x.id)).size !== items.length) problems.push(`${m.id}/${s.id}: duplicate item ids`);
+        for (const x of items) if (!bins.has(x.bin)) problems.push(`${m.id}/${s.id}: ${x.id} has an unknown bin`);
         if (!s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);
       }
       if ((s.type === "rehearse" || s.type === "reflect" || s.type === "plan") && !s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);

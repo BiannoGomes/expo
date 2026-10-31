@@ -13,7 +13,8 @@ export type Answer =
   | { choice: string }
   | { text: string }
   | { action: string; when: string }
-  | { ratings: Record<string, number> };
+  | { ratings: Record<string, number> }
+  | { sorted: Record<string, string> };
 
 export interface Attempt {
   id: string;
@@ -53,6 +54,7 @@ export function validateAnswer(step: Step, answer: unknown): string | null {
   if (a.skip === true) return step.required ? "This step needs an answer." : null;
   switch (step.type) {
     case "intro":
+    case "lesson":
     case "close":
       return a.ack === true ? null : "Nothing to answer here.";
     case "choice":
@@ -62,6 +64,14 @@ export function validateAnswer(step: Step, answer: unknown): string | null {
       if (!r || typeof r !== "object") return "Rate each reading first.";
       for (const l of step.lenses ?? []) if (![1, 2, 3].includes(r[l.id] as number)) return "Rate each reading first.";
       if (Object.keys(r).some((k) => !(step.lenses ?? []).some((l) => l.id === k))) return "Rate each reading first.";
+      return null;
+    }
+    case "sort": {
+      const r = a.sorted as Record<string, unknown> | undefined;
+      const bins = new Set((step.bins ?? []).map((b) => b.id));
+      if (!r || typeof r !== "object") return "Sort each one first.";
+      for (const x of step.items ?? []) if (!bins.has(r[x.id] as string)) return "Sort each one first.";
+      if (Object.keys(r).some((k) => !(step.items ?? []).some((x) => x.id === k))) return "Sort each one first.";
       return null;
     }
     case "rehearse":
@@ -106,6 +116,7 @@ export function answerStep(mission: Mission, attempt: Attempt, stepIndex: number
 function normalise(step: Step, answer: Answer): Answer {
   if ("skip" in answer) return { skip: true };
   if ("ratings" in answer) return { ratings: { ...answer.ratings } };
+  if ("sorted" in answer) return { sorted: { ...answer.sorted } };
   if ("text" in answer) return { text: answer.text.trim() };
   if ("action" in answer) return { action: answer.action.trim(), when: answer.when.trim() };
   if ("choice" in answer) return { choice: answer.choice };
@@ -155,7 +166,7 @@ export function discoveriesFrom(events: ProgressEvent[]): Discovery[] {
       if (!missionById(id) || done.has(id)) continue;
       done.add(id);
       add({ key: `star:${id}`, causeKind: e.kind, causeRef: e.ref });
-      for (const sys of SYSTEMS) if (sys.missionIds.includes(id) && sys.missionIds.every((m) => done.has(m))) add({ key: `moon:${sys.id}`, causeKind: e.kind, causeRef: e.ref });
+      for (const sys of SYSTEMS) if (sys.missionIds.includes(id) && !sys.planned?.length && sys.missionIds.every((m) => done.has(m))) add({ key: `moon:${sys.id}`, causeKind: e.kind, causeRef: e.ref });
     }
     if (e.kind === "experiment_reviewed") {
       const world = e.ref.split(":")[1] as WorldId;

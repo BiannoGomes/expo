@@ -903,6 +903,31 @@ describe("expeditions (Soul · Communication, first slice)", () => {
     return attempt.id as string;
   }
 
+  it("Beyond Overthinking, chapter 1: a lesson and a sort go through the API, and finishing gives a star but no moon", async () => {
+    const s = await createSession();
+    const attempt = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "overthinking-1" } })).json();
+    const mission = (await inject(s, { method: "GET", url: "/expeditions/missions/overthinking-1" })).json();
+    const sortIdx = mission.steps.findIndex((x: { type: string }) => x.type === "sort");
+    for (const [i, step] of mission.steps.entries()) {
+      if (i === sortIdx) {
+        const partial = await inject(s, { method: "POST", url: `/attempts/${attempt.id}/answer`, payload: { stepIndex: i, answer: { sorted: { deadline: "forward" } } } });
+        assert.equal(partial.statusCode, 422, "a partial sort is refused");
+      }
+      const answer =
+        step.type === "sort" ? { sorted: Object.fromEntries(step.items.map((x: { id: string }) => [x.id, "round"])) }
+        : step.type === "plan" ? { skip: true }
+        : step.type === "rehearse" || step.type === "reflect" ? { text: `My words for ${step.id}.` }
+        : { ack: true };
+      const res = await inject(s, { method: "POST", url: `/attempts/${attempt.id}/answer`, payload: { stepIndex: i, answer } });
+      assert.equal(res.statusCode, 200, `${step.id}: ${res.body}`);
+    }
+    const done = await inject(s, { method: "POST", url: `/attempts/${attempt.id}/complete` });
+    assert.equal(done.statusCode, 200, done.body);
+    const keys = done.json().discoveries.map((d: { key: string }) => d.key);
+    assert.ok(keys.includes("star:overthinking-1"));
+    assert.ok(!keys.some((k: string) => k.startsWith("moon:")), "no moon while chapters remain planned");
+  });
+
   it("beginning twice resumes the same attempt", async () => {
     const s = await createSession();
     const a = (await inject(s, { method: "POST", url: "/attempts", payload: { missionId: "bridge-1" } })).json();
