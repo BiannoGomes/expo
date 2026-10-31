@@ -1,0 +1,15 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab B · World transition</title>
+<link rel="stylesheet" href="lab.css"><style>
+.actions { position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%); z-index: 5; }
+#title { position: fixed; left: 7vw; top: 50%; margin-top: -120px; z-index: 5; opacity: 0; width: min(440px, 36vw); }
+@media (max-width: 760px) { #title { top: auto; margin-top: 0; bottom: 110px; left: 22px; right: 22px; width: auto; } }
+#title p { font: 600 14px var(--label); color: var(--dim); } #title h2 { font: 400 clamp(36px, 5vw, 64px)/1.05 var(--display); margin-top: 8px; }
+#title span { display: block; font: 400 18px/1.5 var(--label); color: var(--dim); margin-top: 12px; }
+#fade { position: fixed; inset: 0; background: var(--void); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 4; } #fade.on { opacity: 1; }
+</style></head><body>
+<header class="bar"><div><p>Lab prototype B</p><h1>Your worlds</h1></div></header>
+<main><div id="stage" aria-hidden="true"></div>
+<div class="actions"><button id="enter" class="pill" type="button">Enter Mind</button><button id="back" class="pill" type="button" hidden>&larr; Back to your sky</button></div>
+<section id="title" aria-label="Mind"><p>Mind · The current exploration</p><h2>The world of clarity.</h2><span>Connections appear here between what you read, what you write and what you believe.</span></section>
+<div id="fade"></div><p id="live" class="sr" aria-live="polite"></p></main>
+<script type="module" src="dist/b-transition.js"></script></body></html>

@@ -1,0 +1,147 @@
+{
+  "conditions": "390x844, CPU 4x throttle, SwiftShader software WebGL in a container; upper bounds, not device numbers",
+  "runs": [
+    {
+      "name": "Shipped experience (hub)",
+      "reduced": false,
+      "loadMs": 3118,
+      "frameMedianMs": 83,
+      "frameP95Ms": 217,
+      "interactionMs": 64,
+      "heapMB": 5.7,
+      "gpu": null,
+      "axe": [],
+      "staticAtRest": null,
+      "errors": []
+    },
+    {
+      "name": "Shipped experience (hub)",
+      "reduced": true,
+      "loadMs": 1791,
+      "frameMedianMs": 67,
+      "frameP95Ms": 383,
+      "interactionMs": 135,
+      "heapMB": 5.4,
+      "gpu": null,
+      "axe": [],
+      "staticAtRest": true,
+      "errors": []
+    },
+    {
+      "name": "A · Holographic interface",
+      "reduced": false,
+      "loadMs": 359,
+      "frameMedianMs": 17,
+      "frameP95Ms": 17,
+      "interactionMs": 24,
+      "heapMB": 4.4,
+      "gpu": {
+        "calls": 5,
+        "triangles": 8,
+        "points": 1800
+      },
+      "axe": [],
+      "staticAtRest": null,
+      "errors": []
+    },
+    {
+      "name": "A · Holographic interface",
+      "reduced": true,
+      "loadMs": 346,
+      "frameMedianMs": 17,
+      "frameP95Ms": 33,
+      "interactionMs": 20,
+      "heapMB": 4.4,
+      "gpu": {
+        "calls": 5,
+        "triangles": 8,
+        "points": 1800
+      },
+      "axe": [],
+      "staticAtRest": true,
+      "errors": []
+    },
+    {
+      "name": "B · World transition (in travel)",
+      "reduced": false,
+      "loadMs": 380,
+      "frameMedianMs": 17,
+      "frameP95Ms": 200,
+      "interactionMs": 35,
+      "heapMB": 4,
+      "gpu": {
+        "calls": 5,
+        "triangles": 8,
+        "points": 2600
+      },
+      "axe": [],
+      "staticAtRest": null,
+      "errors": []
+    },
+    {
+      "name": "B · World transition (in travel)",
+      "reduced": true,
+      "loadMs": 402,
+      "frameMedianMs": 17,
+      "frameP95Ms": 167,
+      "interactionMs": 45,
+      "heapMB": 4.4,
+      "gpu": {
+        "calls": 5,
+        "triangles": 8,
+        "points": 2600
+      },
+      "axe": [],
+      "staticAtRest": true,
+      "errors": []
+    },
+    {
+      "name": "C · Living constellation",
+      "reduced": false,
+      "loadMs": 258,
+      "frameMedianMs": 17,
+      "frameP95Ms": 17,
+      "interactionMs": 24,
+      "heapMB": 4,
+      "gpu": {
+        "calls": 2,
+        "triangles": 90,
+        "points": 13
+      },
+      "axe": [],
+      "staticAtRest": null,
+      "errors": []
+    },
+    {
+      "name": "C · Living constellation",
+      "reduced": true,
+      "loadMs": 233,
+      "frameMedianMs": 17,
+      "frameP95Ms": 17,
+      "interactionMs": 37,
+      "heapMB": 5.3,
+      "gpu": {
+        "calls": 2,
+        "triangles": 90,
+        "points": 13
+      },
+      "axe": [],
+      "staticAtRest": true,
+      "errors": []
+    }
+  ],
+  "bundle": {
+    "a-holo": {
+      "minKB": 9.8,
+      "gzipKB": 4.5
+    },
+    "b-transition": {
+      "minKB": 9.9,
+      "gzipKB": 4.7
+    },
+    "c-constellation": {
+      "minKB": 12.8,
+      "gzipKB": 5.9
+    }
+  }
+}

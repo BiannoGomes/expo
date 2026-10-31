@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab A · Holographic interface</title>
+<link rel="stylesheet" href="lab.css"><style>
+#cards { position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%); display: flex; gap: 8px; z-index: 5; list-style: none; }
+#cards button { font: 600 14px var(--label); color: var(--dim); padding: 10px 14px; border-radius: 999px; border: 1px solid transparent; }
+#cards button[aria-current="true"] { color: var(--ink); border-color: var(--glass-line); background: rgba(11,14,18,.72); }
+@media (max-width: 760px) { #cards button span { font-size: 12px; } }
+</style></head><body>
+<header class="bar"><div><p>Lab prototype A · demonstration content</p><h1>This morning</h1></div></header>
+<main><div id="stage" aria-hidden="true"></div>
+<nav aria-label="This morning's three steps"><div id="cards"></div></nav>
+<p id="live" class="sr" aria-live="polite"></p></main>
+<script type="module" src="dist/a-holo.js"></script></body></html>

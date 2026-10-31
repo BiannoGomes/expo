@@ -1,0 +1,26 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab C · Living constellation</title>
+<link rel="stylesheet" href="lab.css"><style>
+#side { position: fixed; right: 22px; top: 86px; bottom: 22px; width: min(380px, 92vw); display: flex; flex-direction: column; gap: 12px; z-index: 5; }
+#compose { display: flex; flex-direction: column; gap: 8px; background: var(--glass); border: 1px solid var(--glass-line); border-radius: 18px; padding: 14px; }
+#compose label { font: 600 13px var(--label); color: var(--dim); }
+#text { font: 400 17px/1.4 var(--display); color: var(--ink); background: rgba(4,6,10,.6); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; resize: none; height: 72px; }
+#compose .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font: 600 13px var(--label); color: var(--dim); }
+#card { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 18px; padding: 16px; overflow-y: auto; }
+#card .meta { font: 600 13px var(--label); color: var(--faint); } #card .txt { font: 400 21px/1.3 var(--display); margin-top: 6px; }
+#card .why { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 14.5px; } #card .with { color: var(--dim); font-size: 13.5px; margin-top: 4px; }
+#card .reject { color: #C98A84; font-weight: 600; padding: 8px 0 0; } #card .remove { color: var(--dim); font-weight: 600; margin-top: 14px; padding: 6px 0; } #card .none { color: var(--faint); font-size: 14px; margin-top: 10px; }
+#listwrap { flex: 1; min-height: 0; overflow-y: auto; } #listwrap summary { font: 600 13px var(--label); color: var(--dim); cursor: pointer; padding: 6px 0; }
+#list { list-style: none; } #list button { text-align: left; width: 100%; padding: 8px 2px; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--dim); }
+#list button[aria-current="true"] { color: var(--gold); }
+@media (max-width: 760px) { #side { left: 12px; right: 12px; top: auto; bottom: 12px; width: auto; max-height: 56vh; } }
+</style></head><body>
+<header class="bar"><div><p>Lab prototype C · sample moments, not your data</p><h1>Your moments</h1></div></header>
+<main><div id="stage" aria-hidden="true"></div>
+<aside id="side" aria-label="Moments">
+  <form id="compose"><label for="text">Write a moment (stays in this page)</label><textarea id="text" placeholder="Today I..."></textarea>
+    <div class="row"><label><input id="links" type="checkbox" checked> Show connections</label><button class="pill" type="submit">Keep it</button></div></form>
+  <div id="card" hidden aria-live="polite"></div>
+  <details id="listwrap"><summary>All moments, oldest first</summary><ol id="list"></ol></details>
+</aside>
+<p id="toast" class="toast" role="status"></p><p id="live" class="sr" aria-live="polite"></p></main>
+<script type="module" src="dist/c-constellation.js"></script></body></html>
