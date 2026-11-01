@@ -120,7 +120,7 @@ async function atlasList(p) {
 
   // ----- making something opens AI Creation -----
   list = await atlasList(page);
-  check("AI Creation: make something, 0 of 1", /Make something in Creative Worlds[\s\S]*?Locked · 0 of 1/.test(list));
+  check("AI Creation: make something, 0 of 1", /Make something in Creative Worlds and keep it[\s\S]*?Locked · 0 of 1/.test(list));
   await go(page, "creative/garden");
   await page.waitForFunction(() => window.__dwCreative && document.querySelector("#cw-stage canvas"), null, { timeout: 15000 });
   if (await page.locator("#cw-panel").isHidden()) await page.getByRole("button", { name: "Write" }).click();

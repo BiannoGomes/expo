@@ -17,20 +17,25 @@ export const PATH = [
   { id: "creative", need: "Finish three practices, in at least two worlds.", next: "learn",
     count: (f) => [Math.min(f.done.length, 3), 3], ok: (f) => f.done.length >= 3 && f.worlds >= 2,
     extra: (f) => (f.done.length >= 3 && f.worlds < 2 ? "Try one in another world." : null) },
-  { id: "ai", need: "Make something in Creative Worlds: design a place, keep a moment, or light every lantern.", next: "creative",
+  { id: "ai", need: "Make something in Creative Worlds and keep it: design a place in the Dream Architect, or plant a moment in the Time Garden.", next: "creative",
     count: (f) => [Math.min(f.made, 1), 1] },
   { id: "gateway", need: "Finish a practice in Future, and set your direction on Home.", next: "future",
     count: (f) => [(f.future ? 1 : 0) + (f.direction ? 1 : 0), 2] },
 ];
+/** Steps where you do something, as opposed to reading (lesson), watching (portal) or opening and closing. */
+const DOING = new Set(["choice", "lens", "sort", "lab", "rehearse", "reflect", "plan", "pause"]);
+export const isPractice = (m) => !!m && m.steps.some((s) => s.required && DOING.has(s.type));
 export const step = (id) => PATH.find((p) => p.id === id);
 const passes = (s, f) => (s.ok ? s.ok(f) : (([have, of]) => have >= of)(s.count(f)));
 
 /** Facts from what's kept. `attempts` from the expedition store, `made` from the creative store. */
 export function facts({ attempts = [], creative = null, direction = null }) {
-  const done = [...new Set(attempts.filter((a) => a.status === "completed").map((a) => a.missionId))].filter((id) => missionById(id));
+  // a practice is a finished guided exercise: a mission with at least one required step you do, not only read
+  const done = [...new Set(attempts.filter((a) => a.status === "completed").map((a) => a.missionId))].filter((id) => isPractice(missionById(id)));
   const worlds = new Set(done.map((id) => missionById(id).world)).size;
   const c = creative ?? {};
-  const made = (c.places?.length ?? 0) + (c.moments?.length ?? 0) + ((c.lit?.kingdom?.length ?? 0) >= 5 ? 1 : 0) + ((c.lit?.forest?.length ?? 0) >= 5 ? 1 : 0);
+  // a creation is a saved artifact: a place you designed or a moment you planted. Lighting lanterns is play, not a creation.
+  const made = (c.places?.length ?? 0) + (c.moments?.length ?? 0);
   // the Gateway is itself a Future practice, so it doesn't count toward opening itself
   const future = done.some((id) => id !== "gateway-1" && missionById(id).world === "future");
   return { done, worlds, made, future, direction: !!direction?.text };
