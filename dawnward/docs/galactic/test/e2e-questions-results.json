@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T11:07:36.958Z",
+  "when": "2026-11-01T11:21:18.687Z",
   "checks": [
     {
       "name": "Body offers its guided question, one tap away",
@@ -129,7 +129,7 @@
     {
       "name": "the question is kept with the words, on this device",
       "ok": true,
-      "detail": "{\"id\":\"m-mvxq7ppr-h6oz\",\"world\":\"mind\",\"date\":\"2026-11-01\",\"excerpt\":\"That I'm bad at starting things.\",\"prompt\":\"What if the thoughts you believe most strongly are the ones you need to question?\"}"
+      "detail": "{\"id\":\"m-mvxqpcd9-8mx9\",\"world\":\"mind\",\"date\":\"2026-11-01\",\"excerpt\":\"That I'm bad at starting things.\",\"prompt\":\"What if the thoughts you believe most strongly are the ones you need to question?\"}"
     },
     {
       "name": "Journey shows the question with the reflection",
@@ -144,7 +144,7 @@
     {
       "name": "saving straight after typing doesn't leak into the next reflection (kept in Soul, no old question)",
       "ok": true,
-      "detail": "{\"id\":\"m-mvxq7rq0-3vnf\",\"world\":\"soul\",\"date\":\"2026-11-01\",\"excerpt\":\"Lunch with Dad.\"}"
+      "detail": "{\"id\":\"m-mvxqpe11-2bqt\",\"world\":\"soul\",\"date\":\"2026-11-01\",\"excerpt\":\"Lunch with Dad.\"}"
     },
     {
       "name": "and no stale draft is left behind",
