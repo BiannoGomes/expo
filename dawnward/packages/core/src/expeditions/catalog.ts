@@ -829,8 +829,8 @@ export const MISSIONS: Mission[] = [
       {
         id: "intention",
         type: "rehearse",
-        title: "Your intention",
-        prompt: "What would you like to move toward? One sentence is enough.",
+        title: "Your direction",
+        prompt: "What do you want to change?",
         examples: ["Feeling at ease speaking up in meetings.", "Starting the course I keep putting off."],
         required: true,
       },

@@ -23,6 +23,7 @@ import { ORDER, META, GALAXIES, WORLDS, worldRoute, ART, artPath } from "./regis
 const CONFIDENCE = { hypothesis: "Still forming", probable: "Probably true", established: "Well established" };
 const svg = (paths, size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 const ICON = {
+  lock: `<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>`,
   explore: `<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>`,
   pen: `<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>`,
   mind: '<path d="M12 4c-3.3 0-6 2.5-6 5.6 0 1.8.9 3.4 2.3 4.4V17h7.4v-3c1.4-1 2.3-2.6 2.3-4.4C18 6.5 15.3 4 12 4Z"/><path d="M9.5 20h5M12 8v6M9.5 10.5 12 12l2.5-1.5"/>',
@@ -421,42 +422,55 @@ function main(data, failed) {
     world.scrollTop = 0;
     wbody.querySelector(".s-title").focus({ preventScroll: true });
   }
-  function quiet(on) { document.body.classList.toggle("quiet", on); sound.duck(on); markTabs(); }
+  function quiet(on) {
+    document.body.classList.toggle("quiet", on); sound.duck(on); markTabs();
+    $("w-back").setAttribute("aria-label", on ? "Close" : "Back to your galaxy");
+  }
 
-  // ----- reflecting: one question, a spacious editor, voice with clear states -----
+  // ----- reflecting: one question, a compact input that grows, voice as a quiet option -----
+  // Privacy is one small control, not a sentence on every screen; its words stay attached
+  // to the input for screen readers.
   let recog = null, autosave = null, saving = false, clientKey = null;
   function openEditor(w, { speak = false } = {}) {
     if (state.place !== "world" || state.world !== w) { goWorld(w, { then: () => openEditor(w, { speak }) }); return; }
     const draft = device.read(DRAFT, null);
     state.draftWorld = draft?.world && ORDER.includes(draft.world) && draft.text ? draft.world : w;
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const ta = el("textarea", { id: "words", rows: "7", maxlength: "20000", "aria-labelledby": "ed-q", "aria-describedby": "ed-status" });
+    const ta = el("textarea", { id: "words", class: "grow", rows: "3", maxlength: "20000", "aria-labelledby": "ed-q", "aria-describedby": "ed-private ed-status" });
     if (draft?.text) ta.value = draft.text;
-    const status = el("p", { id: "ed-status", class: "quiet", "aria-live": "polite" }, draft?.text ? "Your unsent words are back, just as you left them." : data.local ? "Only you can see this. It stays on this device." : "Only you can see this.");
+    const fit = () => { ta.style.height = "auto"; ta.style.height = `${Math.min(ta.scrollHeight + 2, Math.round(innerHeight * 0.5))}px`; };
+    const status = el("p", { id: "ed-status", class: "quiet small", "aria-live": "polite" }, draft?.text ? "Your unsent words are back." : "");
     const err = el("p", { class: "error", role: "alert" });
-    const where = el("p", { class: "quiet where" });
+    const privacy = el("p", { id: "ed-private", class: "quiet small ed-private", hidden: "" }, data.local ? "Only you can see this. It stays on this device." : "Only you can see this.");
     const chips = el("div", { class: "seg", role: "radiogroup", "aria-label": "Which world it belongs to", hidden: true });
-    const drawWhere = () => { where.replaceChildren(`Kept in ${META[state.draftWorld].name}. `, el("button", { class: "text-btn", "aria-expanded": String(!chips.hidden), onclick: () => { chips.hidden = !chips.hidden; drawWhere(); } }, chips.hidden ? "Change" : "Done")); };
+    const worldBtn = el("button", { class: "ed-chip", "aria-expanded": "false", "aria-label": `World: ${META[state.draftWorld].name}. Change`, onclick: () => { chips.hidden = !chips.hidden; worldBtn.setAttribute("aria-expanded", String(!chips.hidden)); if (!chips.hidden) chips.querySelector('[aria-checked="true"]')?.focus(); } });
+    const drawWorld = () => { worldBtn.replaceChildren(el("span", { class: `ed-dot dot-${state.draftWorld}`, "aria-hidden": "true" }), META[state.draftWorld].name, el("span", { class: "ed-caret", "aria-hidden": "true" }, "▾")); worldBtn.setAttribute("aria-label", `World: ${META[state.draftWorld].name}. Change`); };
+    const privBtn = el("button", { class: "ed-chip", "aria-expanded": "false", "aria-controls": "ed-private", onclick: () => { privacy.hidden = !privacy.hidden; privBtn.setAttribute("aria-expanded", String(!privacy.hidden)); } },
+      el("span", { html: svg(ICON.lock, 14) }), "Private");
     for (const k of ORDER) chips.append(el("button", { role: "radio", "aria-checked": String(k === state.draftWorld), onclick: () => {
-      state.draftWorld = k; chips.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.textContent === META[k].name))); drawWhere(); saveDraft(ta.value);
+      state.draftWorld = k; chips.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.textContent === META[k].name))); drawWorld(); saveDraft(ta.value, status);
+      chips.hidden = true; worldBtn.setAttribute("aria-expanded", "false"); worldBtn.focus();
     } }, META[k].name));
-    drawWhere();
+    drawWorld();
     const vstate = el("span", { class: "vstate" }, "Speak");
-    const micBtn = SR ? el("button", { class: "mic", "aria-pressed": "false", onclick: () => toggleSpeech(micBtn, vstate, ta, status) }, el("span", { class: "mic-orb", html: svg(ICON.mic, 22) }), vstate) : null;
-    ta.addEventListener("input", () => { clearTimeout(autosave); autosave = setTimeout(() => saveDraft(ta.value, status), 400); });
-    sheet(META[state.draftWorld].q, `${META[w].name} · a private reflection`,
-      ta, status, where, chips, err,
-      el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => save(ta, err, status) }, "Keep it"), micBtn),
-      SR ? null : el("p", { class: "quiet" }, "Speaking isn't available in this browser. Typing works everywhere."));
+    const micBtn = SR ? el("button", { class: "mic quietmic", "aria-pressed": "false", onclick: () => toggleSpeech(micBtn, vstate, ta, status) }, el("span", { class: "mic-orb", html: svg(ICON.mic, 18) }), vstate) : null;
+    ta.addEventListener("input", () => { fit(); clearTimeout(autosave); autosave = setTimeout(() => saveDraft(ta.value, status), 400); });
+    sheet(META[state.draftWorld].q, null,
+      el("div", { class: "ed-meta" }, worldBtn, privBtn), chips, privacy,
+      ta, status, err,
+      el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => save(ta, err, status) }, "Save reflection"), micBtn));
+    wbody.querySelector(".text-btn.back")?.remove(); // the top bar's back closes the editor: one way back, not two
     wbody.querySelector(".s-title").id = "ed-q";
     quiet(true);
+    fit();
     ta.focus({ preventScroll: true });
     if (speak && micBtn) toggleSpeech(micBtn, vstate, ta, status);
   }
+  function closeEditor() { stopSpeech(); quiet(false); worldIntro(state.world); $("w-q").focus(); }
   function saveDraft(text, status) {
     if (!text.trim()) { device.remove(DRAFT); return; }
     const ok = device.write(DRAFT, { world: state.draftWorld, text });
-    if (status) status.textContent = ok ? "Draft kept on this device." : "This browser won't keep a draft, so keep this page open until you save.";
+    if (status) status.textContent = ok ? "" : "This browser won't keep a draft, so keep this page open until you save.";
   }
   function stopSpeech() { try { recog?.stop(); } catch {} recog = null; }
   // Speaking. The page first asks for the microphone, so a blocked one is said
@@ -515,7 +529,7 @@ function main(data, failed) {
     if (saving) return;
     stopSpeech();
     saving = true; err.textContent = "";
-    status.textContent = "Keeping it…";
+    status.textContent = "Saving…";
     const w = state.draftWorld;
     try {
       if (data.local && DISTRESS.test(words)) { showCrisis(CRISIS_TEXT.join("\n")); return; }
@@ -681,7 +695,7 @@ function main(data, failed) {
   function drawMemories() {
     const vis = visibleStars();
     $("m-count").textContent = data.stars.length
-      ? (vis.length === data.stars.length ? plural(data.stars.length, "memory", "memories") : `${vis.length} of ${plural(data.stars.length, "memory", "memories")}`)
+      ? (vis.length === data.stars.length ? plural(data.stars.length, "reflection", "reflections") : `Showing ${vis.length} of ${plural(data.stars.length, "reflection", "reflections")}`)
       : "No memories yet";
     document.querySelectorAll("#m-filters button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.f === state.filter)));
     document.querySelectorAll("#m-views button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === state.view)));
@@ -815,7 +829,7 @@ function main(data, failed) {
     $("y-data-line").textContent = data.local
       ? `${plural(data.stars.length, "memory", "memories")} kept on this device, and nowhere else.`
       : `${plural(data.stars.length, "memory", "memories")} in your Dawnward.`;
-    const anything = data.stars.length || creative?.hasData();
+    const anything = data.stars.length || creative?.hasData() || device.read(DIRECTION, null);
     $("y-export").hidden = !data.local || !anything; $("y-delete").hidden = !data.local || !anything;
     const found = explore?.data.discoveries ?? [];
     $("y-journey").replaceChildren(found.length
@@ -834,7 +848,7 @@ function main(data, failed) {
   let downloads = null;
   window.claude?.use?.("downloads").then((d) => (downloads = d), () => {});
   $("y-export").addEventListener("click", async () => {
-    const json = JSON.stringify({ exported: new Date().toISOString(), memories: data.stars.map(({ id, world, date, excerpt }) => ({ id, world, date, words: excerpt })), patterns: data.themes.map(({ id, world, statement, starIds, corrected, rejected }) => ({ id, world, statement, memories: starIds, corrected, rejected })), expeditions: explore?.store.snapshot?.() ?? null, worlds: creative?.snapshot() ?? null }, null, 2);
+    const json = JSON.stringify({ exported: new Date().toISOString(), memories: data.stars.map(({ id, world, date, excerpt }) => ({ id, world, date, words: excerpt })), patterns: data.themes.map(({ id, world, statement, starIds, corrected, rejected }) => ({ id, world, statement, memories: starIds, corrected, rejected })), expeditions: explore?.store.snapshot?.() ?? null, worlds: creative?.snapshot() ?? null, direction: device.read(DIRECTION, null) }, null, 2);
     const filename = `dawnward-${today()}.json`;
     if (downloads) {
       try { await downloads.save({ filename, data: json }); announce("Saved."); }
@@ -851,8 +865,8 @@ function main(data, failed) {
     box.replaceChildren(el("p", { tabindex: "-1", id: "y-del-ask" }, data.stars.length ? `Delete all ${plural(data.stars.length, "memory", "memories")}${creative?.hasData() ? ", and everything you made in the worlds," : ""} from this device? This can't be undone.` : "Delete everything you made in the worlds from this device? This can't be undone."),
       el("div", { class: "actions" },
         el("button", { class: "danger", onclick: () => {
-          const okA = device.remove(STORE), okB = device.remove(DRAFT), okC = explore ? explore.store.wipe() : true, okD = creative ? creative.wipe() : true;
-          if (!okA || !okB || !okC || !okD) { box.append(el("p", { class: "error", role: "alert" }, "I couldn't delete everything. Try again.")); return; }
+          const okA = device.remove(STORE), okB = device.remove(DRAFT), okC = explore ? explore.store.wipe() : true, okD = creative ? creative.wipe() : true, okE = device.remove(DIRECTION);
+          if (!okA || !okB || !okC || !okD || !okE) { box.append(el("p", { class: "error", role: "alert" }, "I couldn't delete everything. Try again.")); return; }
           data.stars = []; data.themes = []; finish(data); explore?.refresh().then(() => { sync(); drawYou(); }); sync(); renderHome(); drawYou(); box.hidden = true; announce("Everything on this device was deleted."); $("y-title").focus();
         } }, "Delete everything"),
         el("button", { class: "ghost", onclick: () => { box.hidden = true; $("y-delete").focus(); } }, "Cancel")));
@@ -941,7 +955,7 @@ function main(data, failed) {
     announce(show ? "Back on Earth. Your new discovery is the brightest gold star." : "Your galaxy.");
     (from ? labels.get(from) : $("begin"))?.focus({ preventScroll: true });
   }
-  $("w-back").addEventListener("click", () => goHome());
+  $("w-back").addEventListener("click", () => (document.body.classList.contains("quiet") ? closeEditor() : goHome()));
   $("begin").addEventListener("click", () => openEditor(state.lastWorld));
   $("notice").addEventListener("click", () => openYou());
   $("to-you").addEventListener("click", () => openYou());
@@ -1042,25 +1056,55 @@ function main(data, failed) {
   }
   const fromHome = { label: "Home", go: () => openEarth(), trail: [{ label: "Home", go: () => openEarth(), root: true }] };
   const chaptersIn = (m) => { const sys = SYSTEMS.find((x) => x.id === m.systemId); return sys ? sys.missionIds.length + (sys.planned?.length ?? 0) : 1; };
-  function compassCard(pick) {
+  // ----- Home: one primary action, the next step, and an optional direction -----
+  const DIRECTION = "dw-direction-v1";
+  const direction = () => device.read(DIRECTION, null);
+  function nextCard(pick) {
     const { m } = pick, total = m.steps.length;
-    return el("article", { class: "compass", "aria-labelledby": "c-title" },
-      el("img", { class: "c-medal", src: asset(artPath(ART.compass)), alt: "" }),
-      el("div", { class: "c-top" }, el("p", { class: "kicker" }, "Your daily compass"),
-        el("p", { class: "c-meta" }, m.chapter ? `Chapter ${m.chapter} of ${chaptersIn(m)}` : pick.resume ? `Step ${pick.step + 1} of ${total}` : `${META[m.world].name} · ${m.minutes} min`)),
+    const meta = pick.resume ? `${pick.step + 1} of ${total}` : m.chapter ? `Chapter ${m.chapter} of ${chaptersIn(m)} · ${m.minutes} min` : `${m.minutes} min`;
+    return el("article", { class: "nextcard", "aria-labelledby": "c-title" },
+      el("p", { class: "kicker" }, "Your next step"),
       el("h3", { id: "c-title", class: "c-title" }, m.title),
-      el("p", { class: "c-part" }, `${META[m.world].name} · ${m.part}${m.status === "draft" ? " · draft" : ""}`),
-      el("p", { class: "c-mission" }, `Today's mission: ${m.objective}`),
-      pick.following ? el("p", { class: "c-part" }, `You're following ${pick.following.title} · ${pick.following.missionIds.filter(missionDone).length} of ${chaptersIn(m)} chapters done`) : null,
-      pick.resume ? el("p", { class: "c-part" }, `Step ${pick.step + 1} of ${total}`) : null,
-      el("div", { class: "c-bar", role: "progressbar", "aria-label": "Your progress through this expedition", "aria-valuemin": "0", "aria-valuemax": String(total), "aria-valuenow": String(pick.step), "aria-valuetext": pick.step ? `Step ${pick.step + 1} of ${total}` : "Not started" },
+      el("p", { class: "c-part" }, `${META[m.world].name} · ${m.part.replace(/^Chapter \d+: /, "")}${m.status === "draft" ? " · draft" : ""}`),
+      el("div", { class: "c-bar", role: "progressbar", "aria-label": "Your progress through this expedition", "aria-valuemin": "0", "aria-valuemax": String(total), "aria-valuenow": String(pick.step), "aria-valuetext": pick.step ? `${pick.step + 1} of ${total}` : "Not started" },
         el("span", { style: `width:${Math.round((100 * pick.step) / total)}%` })),
-      el("button", { class: "primary wide", onclick: () => explore.play(m.id, { from: fromHome }) }, `${pick.resume ? "Continue" : "Begin"} expedition · ${m.minutes} min`),
+      el("div", { class: "c-row" },
+        el("button", { class: "ghost", onclick: () => explore.play(m.id, { from: fromHome }) }, pick.resume ? "Continue" : "Begin"),
+        el("span", { class: "c-meta" }, meta)),
       el("details", { class: "c-why" }, el("summary", {}, "Why this?"),
-        el("p", {}, `${pick.why} Suggestions come only from what you've done in Dawnward${data.local ? ", on this device" : ""}. Nothing is read from your reflections.`)),
-      el("div", { class: "c-more" },
-        el("button", { class: "text-btn", onclick: () => explore.open() }, "Choose another"),
-        el("button", { class: "text-btn", onclick: () => { try { localStorage.setItem(COMPASS_HIDE, localDay()); } catch {} drawEarth(); $("e-title").focus(); announce("No suggestion today."); } }, "Not today")));
+        el("p", {}, `${pick.why} Suggestions come only from what you've done in Dawnward${data.local ? ", on this device" : ""}. Nothing is read from your reflections.`),
+        el("div", { class: "c-more" },
+          el("button", { class: "text-btn", onclick: () => explore.open() }, "Choose another"),
+          el("button", { class: "text-btn", onclick: () => { try { localStorage.setItem(COMPASS_HIDE, localDay()); } catch {} drawEarth(); $("e-title").focus(); announce("No suggestion today."); } }, "Not today"))));
+  }
+  /** Your direction: one line you choose, kept on this device, in a small sheet. */
+  function directionSheet() {
+    const dlg = el("dialog", { class: "sheetdlg", "aria-labelledby": "dir-h" });
+    const ta = el("textarea", { id: "dir-text", class: "grow", rows: "2", maxlength: "200", "aria-labelledby": "dir-q" });
+    ta.value = direction()?.text ?? "";
+    const err = el("p", { class: "error", role: "alert" });
+    const close = () => { dlg.close(); dlg.remove(); $("e-dir-btn")?.focus(); };
+    const keep = () => {
+      const t = ta.value.trim();
+      // support first, right here; nothing is saved as a direction
+      if (t && DISTRESS.test(t)) {
+        dlg.replaceChildren(el("h2", { id: "dir-h", class: "s-title", tabindex: "-1" }, "You matter more than any plan or goal"),
+          ...CRISIS_TEXT.map((l) => el("p", { class: "crisis" }, l)),
+          el("div", { class: "actions" }, el("button", { class: "ghost", onclick: close }, "Close")));
+        $("dir-h").focus(); return;
+      }
+      const ok = t ? device.write(DIRECTION, { text: t, at: new Date().toISOString() }) : device.remove(DIRECTION);
+      if (!ok) { err.textContent = "I couldn't keep that on this device."; return; }
+      close(); drawEarth(); announce(t ? "Direction saved." : "Direction cleared.");
+    };
+    dlg.append(el("h2", { id: "dir-h", class: "s-title" }, "Your direction"),
+      el("label", { id: "dir-q", for: "dir-text" }, "What do you want to change?"), ta, err,
+      el("div", { class: "actions" }, el("button", { class: "primary", onclick: keep }, "Save"), el("button", { class: "ghost", onclick: close }, "Cancel")),
+      el("p", { class: "quiet small" }, data.local ? "Kept on this device." : "Kept in your Dawnward."));
+    dlg.addEventListener("close", () => dlg.remove());
+    document.body.append(dlg);
+    dlg.showModal();
+    ta.focus();
   }
   function drawEarth(found) {
     const ex = explore?.data ?? { experiments: [], discoveries: [], attempts: [] };
@@ -1068,39 +1112,31 @@ function main(data, failed) {
     const pick = compassPick();
     let hidden = false;
     try { hidden = localStorage.getItem(COMPASS_HIDE) === localDay(); } catch {}
-    $("e-title").textContent = data.stars.length || ex.attempts.length ? "Welcome back" : "Welcome";
+    $("e-title").textContent = "Where will you grow today?";
     $("e-crumbs").replaceChildren();
-    const compass = !pick
-      ? el("article", { class: "compass" }, el("p", { class: "kicker" }, "Your daily compass"), el("h3", { class: "c-title" }, "Every open expedition is done"), el("p", { class: "c-mission" }, "More are being written. Reflecting is always here."))
+    const dir = direction();
+    const next = !pick
+      ? el("article", { class: "nextcard" }, el("p", { class: "kicker" }, "Your next step"), el("h3", { class: "c-title" }, "Every open expedition is done"), el("p", { class: "c-part" }, "More are being written. Reflecting is always here."))
       : hidden
-        ? el("div", { class: "compass slim" }, el("p", { class: "quiet" }, "No suggestion today, as you asked."),
+        ? el("div", { class: "nextcard slim" }, el("p", { class: "quiet" }, "No suggestion today."),
             el("button", { class: "text-btn", onclick: () => { try { localStorage.removeItem(COMPASS_HIDE); } catch {} drawEarth(); } }, "Show it"))
-        : compassCard(pick);
-    const other = MISSIONS.find((m) => m.systemId !== pick?.m.systemId && !missionDone(m.id) && canOpen(m));
-    const next = [
-      other
-        ? { icon: ICON.explore, t: "Practise", s: `${other.title} · ${other.minutes} min`, go: () => explore.play(other.id, { from: fromHome }) }
-        : { icon: ICON.explore, t: "Practise", s: "See every expedition", go: () => explore.open() },
-      active[0]
-        ? { icon: ICON.earth, t: "Your action", s: active[0].action, go: () => explore.review(active[0].id) }
-        : { icon: ICON.earth, t: "Real actions", s: "None waiting", go: () => explore.open() },
-      { icon: ICON.atlas, t: "Your journey", s: ex.discoveries.length || data.stars.length ? `${plural(ex.discoveries.length, "discovery", "discoveries")} · ${plural(data.stars.length, "memory", "memories")}` : "Begins with your first reflection", go: () => openMemories() },
-    ];
-    $("e-body").replaceChildren(
+        : nextCard(pick);
+    $("e-body").replaceChildren(...[
       found ? el("div", { class: "card found", role: "status" }, el("p", { class: "kicker" }, "Just discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : "",
-      compass,
+      el("div", { class: "e-actions" },
+        el("button", { class: "primary wide", onclick: () => goHome() }, "Explore your worlds"),
+        dir ? el("p", { class: "e-dir" }, el("span", { class: "kicker" }, "Your direction"), el("span", { class: "e-dir-text" }, dir.text),
+              el("button", { class: "text-btn", id: "e-dir-btn", onclick: directionSheet, "aria-label": "Edit your direction" }, "Edit"))
+            : el("button", { class: "text-btn e-dir-set", id: "e-dir-btn", onclick: directionSheet }, "Set your direction")),
+      next,
+      active[0] ? el("button", { class: "row e-wait", onclick: () => explore.review(active[0].id) },
+        el("span", { class: "rtext" }, el("span", { class: "rsub" }, "How did it go?"), el("span", { class: "rtitle" }, active[0].action)), el("span", { class: "rgo", html: svg(ICON.arrow, 16) })) : null,
       el("section", { "aria-labelledby": "e-worlds" },
-        el("div", { class: "sec-head" }, el("h3", { id: "e-worlds" }, "Explore your worlds"), el("button", { class: "text-btn", onclick: () => goHome() }, "View galaxy")),
+        el("h3", { id: "e-worlds", class: "e-h" }, "Your worlds"),
         el("div", { class: "wplanets" }, ORDER.map((w) => el("button", { class: `planet-${w}`, onclick: () => goWorld(w), "aria-label": `${META[w].name}: ${META[w].kicker.toLowerCase()}` },
           el("img", { src: asset(`img/worlds/planet-${w}-640.webp`), alt: "", loading: "lazy" }), el("span", {}, META[w].name))))),
-      el("section", { "aria-labelledby": "e-next" },
-        el("div", { class: "sec-head" }, el("h3", { id: "e-next" }, "Your next steps")),
-        el("div", { class: "nextrow" }, next.map((n) => el("button", { onclick: n.go }, el("span", { class: "ni", html: svg(n.icon, 20) }), el("b", {}, n.t), el("span", { class: "ns" }, n.s))))),
-      el("section", { class: "moment", "aria-labelledby": "e-moment" },
-        el("p", { class: "kicker" }, "A moment for yourself"),
-        el("h3", { id: "e-moment" }, "What's worth remembering today?"),
-        el("p", { class: "quiet" }, "Your private reflection space is always one tap away."),
-        el("button", { class: "ghost", onclick: () => openEditor(state.lastWorld) }, el("span", { html: svg(ICON.pen, 18) }), "Begin reflection")));
+      el("button", { class: "row e-reflect", onclick: () => openEditor(state.lastWorld) },
+        el("span", { class: "ni", html: svg(ICON.pen, 18) }), el("span", { class: "rtitle" }, "What's on your mind?"), el("span", { class: "rgo", html: svg(ICON.arrow, 16) }))].filter(Boolean));
   }
   // ----- Journey: milestones, discoveries and the actions you chose -----
   function drawMiles(box) {
@@ -1110,9 +1146,9 @@ function main(data, failed) {
     const counts = [[data.stars.length, "Reflections"], [chapters, "Chapters"], [ex.experiments.length, "Actions"], [ex.discoveries.length, "Discoveries"]];
     box.replaceChildren(
       // Your evolution: counts of what was done and kept, nothing estimated
-      el("section", { class: "group", "aria-labelledby": "mm-evo" }, el("h3", { id: "mm-evo" }, "Your evolution"),
+      el("section", { class: "group", "aria-labelledby": "mm-evo" }, el("h3", { id: "mm-evo" }, "Your Progress"),
         el("ul", { class: "evo" }, counts.map(([n, label]) => el("li", {}, el("span", { class: "evo-n" }, String(n)), el("span", { class: "evo-l" }, label))))),
-      el("section", { class: "group", "aria-labelledby": "mm-disc" }, el("h3", { id: "mm-disc" }, "Milestones and discoveries"),
+      el("section", { class: "group", "aria-labelledby": "mm-disc" }, el("h3", { id: "mm-disc" }, "Milestones"),
         disc.length ? el("ol", { class: "journey" }, disc.map((d) => el("li", {}, el("span", { class: "when" }, d.discoveredAt ? longDate(d.discoveredAt.slice(0, 10)) : ""), el("span", { class: "mt" }, d.title), el("span", { class: "quiet" }, d.why))))
           : el("p", { class: "quiet" }, "Nothing yet. They appear when you reflect, practise, or come back to say how something went.")),
       el("section", { class: "group", "aria-labelledby": "mm-ex" }, el("h3", { id: "mm-ex" }, "Real actions you chose"),

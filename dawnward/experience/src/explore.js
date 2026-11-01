@@ -157,13 +157,13 @@ export function createExplore(store, h) {
   }
   function draw() {
     setArt(null);
-    const kids = [...head("Learn", "Expeditions: short guided practices for real life. Understand, practise, try it for real if you want, then reflect.")];
+    const kids = [...head("Learn", "Explore. Practise. Grow.")];
     const going = data.attempts.filter((a) => a.status === "in_progress" || a.status === "paused");
     if (going.length) {
-      kids.push(el("section", { class: "group", "aria-labelledby": "x-cont" }, el("h3", { id: "x-cont" }, "Continue"),
+      kids.push(el("section", { class: "group", "aria-labelledby": "x-cont" }, el("h3", { id: "x-cont" }, "Pick up where you left off"),
         ...going.map((a) => { const m = missionById(a.missionId); return el("button", { class: "row", onclick: () => play(m.id) },
           el("span", { class: "ricon", html: svg(ICON[m.world], 22) }),
-          el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `${m.title}, ${m.part}`), el("span", { class: "rsub" }, `Step ${Math.min(a.step + 1, m.steps.length)} of ${m.steps.length}`)),
+          el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `${m.title}, ${m.part}`), el("span", { class: "rsub" }, `${Math.min(a.step + 1, m.steps.length)} of ${m.steps.length}`)),
           el("span", { class: "rgo", html: svg(ICON.arrow, 16) })); })));
     }
     const waiting = data.experiments.filter((x) => x.status === "planned");
@@ -174,9 +174,9 @@ export function createExplore(store, h) {
           el("span", { class: "rtext" }, el("span", { class: "rtitle" }, x.action), el("span", { class: "rsub" }, `You planned: ${x.when_text}`)),
           el("span", { class: "rgo", html: svg(ICON.arrow, 16) })))));
     }
-    kids.push(el("section", { class: "group", "aria-labelledby": "x-lib" }, el("h3", { id: "x-lib" }, "Members' Library"),
+    kids.push(el("section", { class: "group", "aria-labelledby": "x-lib" }, el("h3", { id: "x-lib" }, "Library"),
       el("button", { class: "row", onclick: () => h.openLibrary?.() },
-        el("span", { class: "rtext" }, el("span", { class: "rtitle" }, "Lessons, films and guided audio from Bianno"), el("span", { class: "rsub" }, "Each one says how it was made.")),
+        el("span", { class: "rtext" }, el("span", { class: "rtitle" }, "Lessons, audio & films"), el("span", { class: "rsub" }, "From Bianno")),
         el("span", { class: "rgo", html: svg(ICON.arrow, 16) }))));
     for (const sys of SYSTEMS) {
       const ms = sys.missionIds.map(missionById);
@@ -548,7 +548,7 @@ export function createExplore(store, h) {
       frame(m, i, title, el("p", { class: "lead", id: "q-prompt" }, step.prompt), ta,
         step.examples?.length ? el("p", { class: "quiet" }, `For example: “${step.examples[0]}”`) : null,
         el("p", { class: "quiet" }, store.local ? "Kept on this device, in your words." : "Kept in your Dawnward, in your words."),
-        err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => next({ text: ta.value }) }, "Save and continue")));
+        err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => next({ text: ta.value }) }, "Continue")));
       ta.focus({ preventScroll: true });
       return;
     }
@@ -563,7 +563,7 @@ export function createExplore(store, h) {
         step.examples?.length ? el("p", { class: "quiet" }, `For example: “${step.examples[0]}”`) : null,
         el("p", { class: "quiet" }, "Small, safe and in your control. Whatever happens when you try it, coming back to say how it went counts."),
         err, el("div", { class: "actions" },
-          el("button", { class: "primary", onclick: () => next({ action: action.value, when: when.value }) }, "Save and continue"),
+          el("button", { class: "primary", onclick: () => next({ action: action.value, when: when.value }) }, "Continue"),
           step.required ? null : el("button", { class: "ghost", onclick: () => next({ skip: true }) }, "Not this time")));
       action.focus({ preventScroll: true });
       return;

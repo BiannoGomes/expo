@@ -42,8 +42,8 @@ const TEST_PACKS = () => {
     const c = await browser.newContext(MOBILE); const p = await c.newPage();
     p.on("pageerror", (e) => errors.push(String(e)));
     await go(p, "learn");
-    await p.getByRole("button", { name: /Lessons, films and guided audio from Bianno/ }).click();
-    check("Learn leads to the Members' Library", JSON.stringify(await where(p)) === JSON.stringify(["creative", "#/library"]));
+    await p.getByRole("button", { name: /Lessons, audio & films/ }).click();
+    check("Learn leads to the Library", JSON.stringify(await where(p)) === JSON.stringify(["creative", "#/library"]));
     check("the Learn tab stays current", (await p.getAttribute('#tabs [data-tab="learn"]', "aria-current")) === "page");
     check("with no packs it says they're being prepared", /preparing the first packs/.test(await p.locator("#cw-page").innerText()));
     await axe(p, "the empty library");

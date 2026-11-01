@@ -58,23 +58,23 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     await page.getByRole("button", { name: "Continue" }).click();
 
     // rehearse: empty refused, then saved
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     check(`${name}: empty words refused`, /few words/.test(await page.textContent(".error")));
     await page.fill("#q-words", "When you cancelled on Friday I felt let down. Can we talk?");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
 
     // plan: unsafe refused gently, then a real action
     await page.fill("#q-action", "get back at Sam");
     await page.fill("#q-when", "tonight");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     check(`${name}: unsafe action refused gently`, /smaller and safer/.test(await page.textContent(".error")));
     await page.fill("#q-action", "Ask Sam for ten minutes");
     await page.fill("#q-when", "Thursday evening");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
 
     // reflect, then Return to Earth
     await page.fill("#q-words", "Saying it without sounding angry.");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.waitForSelector("text=Return to Earth");
     const close = await page.textContent("#x-body");
     check(`${name}: close shows what was practised, the action and the discovery`, /Begin a difficult conversation/.test(close) && /Ask Sam for ten minutes/.test(close) && /Discovered/.test(close));
@@ -119,13 +119,13 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     await page.reload();
     await page.waitForFunction(() => window.__dwHomeReady, null, { timeout: 30000 });
     await page.locator('#tabs [data-tab="learn"]').click();
-    check(`${name}: Continue offers the open mission at step 3`, /Step 3 of 5/.test(await page.textContent("#x-body")));
+    check(`${name}: Continue offers the open mission at step 3`, /3 of 5/.test(await page.textContent("#x-body")));
     await page.getByRole("button", { name: /Part 2: Listening back.*Step 3/ }).click();
     check(`${name}: the unsaved draft comes back`, (await page.inputValue("#q-words")) === "a draft I haven't saved");
 
     // crisis words stop the mission and keep nothing
     await page.fill("#q-words", "I want to end my life");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     check(`${name}: crisis words show support and pause the mission`, /You matter more than any practice/.test(await page.textContent("#x-body")) && (await store(page)).attempts["bridge-2"].status === "paused");
 
     // text view lists the practices
@@ -138,7 +138,7 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     await page.locator('#tabs [data-tab="reflect"]').click();
     await page.waitForSelector("#words");
     await page.fill("#words", "A quiet evening.");
-    await page.getByRole("button", { name: "Keep it" }).click();
+    await page.getByRole("button", { name: "Save reflection" }).click();
     await page.locator('#tabs [data-tab="home"]').click(); await page.locator("#to-you").click();
     check(`${name}: first light appears with the first reflection`, /First light/.test(await page.textContent("#y-journey")));
     await page.click("#y-delete");

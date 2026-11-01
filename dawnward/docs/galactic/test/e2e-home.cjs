@@ -84,7 +84,7 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     await page.waitForTimeout(1200);
     const body = await page.textContent("body");
     check(`${name}: no sample or invented data`, !/sample|invented/i.test(body) && (await stars(page)) === 0);
-    check(`${name}: empty state invites the first reflection`, (await page.textContent("#earth")).includes("Begins with your first reflection"));
+    check(`${name}: empty state invites the first reflection`, (await page.locator("#earth .e-reflect").count()) === 1 && (await page.textContent("#earth")).includes("What's on your mind?"));
     await page.screenshot({ path: `${OUT}/${name}-1-home-empty.png`, timeout: 90000 });
     await axe(page, `${name} home`);
     await toGalaxy(page);
@@ -102,14 +102,14 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     await axe(page, `${name} mind`);
 
     // reflect: empty refused; a draft survives leaving and coming back
-    await page.getByRole("button", { name: "Begin reflection" }).click();
+    await page.getByRole("button", { name: /What's on your mind/ }).click();
     check(`${name}: editor is quiet and focused`, await page.evaluate(() => document.body.classList.contains("quiet") && document.activeElement?.id === "words"));
     check(`${name}: no stray "null" text`, !(await page.textContent("#w-body")).includes("null"));
-    await page.getByRole("button", { name: "Keep it" }).click();
+    await page.getByRole("button", { name: "Save reflection" }).click();
     check(`${name}: empty save refused with a message`, (await page.textContent(".error")).includes("Write or say something first"));
     await page.fill("#words", "A long walk before work and my head was clear all morning.");
     await page.waitForTimeout(700);
-    check(`${name}: draft kept on this device`, (await page.textContent("#ed-status")).includes("Draft kept"));
+    check(`${name}: draft kept on this device, quietly`, await page.evaluate(() => /A long walk/.test(JSON.parse(localStorage.getItem("dw-draft-v1") || "{}").text ?? "")));
     await page.locator('#tabs [data-tab="home"]').click();
     await page.waitForTimeout(400);
     await page.locator('#tabs [data-tab="reflect"]').click();
@@ -127,7 +127,7 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     }
 
     // keep it: verified, survives a reload
-    await page.getByRole("button", { name: "Keep it" }).click();
+    await page.getByRole("button", { name: "Save reflection" }).click();
     await page.waitForTimeout(500);
     check(`${name}: one star, kept on this device`, (await stars(page)) === 1 && (await kept(page)) === 1);
     check(`${name}: the new star shows the exact words`, (await page.textContent("blockquote.said")).includes("A long walk before work"));
@@ -141,9 +141,9 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     await toGalaxy(page);
     await page.locator('#planets .planet-body').evaluate((b) => b.click());
     await arrive(page);
-    await page.getByRole("button", { name: "Begin reflection" }).click();
+    await page.getByRole("button", { name: /What's on your mind/ }).click();
     await page.fill("#words", "Took the walk at lunch and the afternoon felt lighter.");
-    await page.getByRole("button", { name: "Keep it" }).click();
+    await page.getByRole("button", { name: "Save reflection" }).click();
     await page.waitForTimeout(500);
     const sheetText = await page.textContent("#w-body");
     check(`${name}: possible connection offered, as a plain fact`, sheetText.includes("Possible connection") && sheetText.includes("“walk”"));

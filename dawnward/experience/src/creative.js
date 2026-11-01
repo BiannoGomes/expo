@@ -12,7 +12,7 @@ import { KINDS, SEFIROT, PATHS, TREE_LESSON, PRINCIPLES, HALL_INTRO, FLOWER, SOL
 
 /** Members' packs from content/packs (tools/packs.mjs). A test can supply its own. */
 const packs = () => window.DW_PACKS ?? PACKS;
-const PLACE_NAMES = { library: "Members' Library", creative: "Creative Worlds", spiritual: "Spiritual Exploration", knowledge: "Knowledge", ai: "AI Creation", mind: "Mind", body: "Body", soul: "Soul", spirit: "Spirit", future: "Future" };
+const PLACE_NAMES = { library: "Library", creative: "Creative Worlds", spiritual: "Spiritual Exploration", knowledge: "Knowledge", ai: "AI Creation", mind: "Mind", body: "Body", soul: "Soul", spirit: "Spirit", future: "Future" };
 const KIND = { lesson: "Lesson", video: "Film", audio: "Listen", worksheet: "Worksheet", image: "Picture" };
 
 const KEY = "dw-creative-v1";
@@ -522,23 +522,23 @@ export function createCreative(h) {
     pageKind = "library"; show("page");
     const all = packs(), groups = Object.keys(PLACE_NAMES).map((pl) => [pl, all.filter((k) => k.place === pl)]).filter(([, l]) => l.length);
     page.replaceChildren(el("div", { class: "ycol" },
-      h.crumbs([{ label: "Learn", root: true, go: h.toLearn }, { label: "Members' Library" }]),
+      h.crumbs([{ label: "Learn", root: true, go: h.toLearn }, { label: "Library" }]),
       el("p", { class: "kicker" }, "Learn · for members"),
-      el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, "Members' Library"),
-      el("p", { class: "lead" }, "Lessons, films, guided audio and worksheets from Bianno. Each says how it was made."),
+      el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, "Library"),
+      el("p", { class: "lead" }, "Lessons, audio, films and worksheets from Bianno."),
       all.length ? null : el("p", { class: "quiet" }, "Bianno is preparing the first packs. They'll appear here."),
       ...groups.map(([pl, l]) => packRows(l, PLACE_NAMES[pl])),
       el("div", { class: "actions" }, el("button", { class: "ghost", onclick: h.toLearn }, "Back to Learn"))));
     root.scrollTop = 0;
     $("cw-title").focus({ preventScroll: true });
-    announce("Members' Library.");
+    announce("Library.");
   }
   async function pack(id) {
     let k = packs().find((x) => x.id === id);
     if (!k) return library();
     if (packLocked(k)) await h.ready?.();
     pageKind = "pack"; packId = id; show("page");
-    const lock = packLocked(k), crumbs = h.crumbs([{ label: "Learn", root: true, go: h.toLearn }, { label: "Members' Library", go: library }, { label: k.title }]);
+    const lock = packLocked(k), crumbs = h.crumbs([{ label: "Learn", root: true, go: h.toLearn }, { label: "Library", go: library }, { label: k.title }]);
     const head = [crumbs,
       k.cover ? el("img", { class: "cw-pack-hero", src: asset(k.cover), alt: k.coverAlt ?? "" }) : null,
       el("p", { class: `kicker${lock ? " plus-kicker" : ""}` }, `${k.access === "free" ? "Free" : "Members"} · ${PLACE_NAMES[k.place]}`),

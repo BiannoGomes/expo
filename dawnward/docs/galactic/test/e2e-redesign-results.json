@@ -1,0 +1,239 @@
+{
+  "when": "2026-11-01T09:47:39.236Z",
+  "checks": [
+    {
+      "name": "320×568: Home has no sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "320×568: \"Explore your worlds\" is visible without scrolling",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "320×568: Reflect has no sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "320×568: Save reflection is visible without scrolling",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "360×800: Home has no sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "360×800: \"Explore your worlds\" is visible without scrolling",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "360×800: Reflect has no sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "360×800: Save reflection is visible without scrolling",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "390×844: Home has no sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "390×844: \"Explore your worlds\" is visible without scrolling",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "390×844: Reflect has no sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "390×844: Save reflection is visible without scrolling",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "430×932: Home has no sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "430×932: \"Explore your worlds\" is visible without scrolling",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "430×932: Reflect has no sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "430×932: Save reflection is visible without scrolling",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Home asks one question",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Home has exactly one primary action",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the next step is compact: title, one line, one button",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Why this? still explains the suggestion, on request",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no stray null on Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Explore your worlds opens your five worlds",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the direction opens in a modal sheet, focus inside",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it asks the audit's question",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the direction sheet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Escape closes it and focus returns",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the direction shows on Home, with Edit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the direction is kept on this device",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "crisis words in a direction bring support first",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "support stays in the sheet, with focus on it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "and aren't saved as a direction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Reflect asks one question",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no 'a private reflection' label, no 'Kept in'",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "one way back: no second back link, no breadcrumbs",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "privacy isn't repeated on screen, but screen readers hear it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the Private chip shows the privacy note",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the input starts compact and grows as you write",
+      "ok": true,
+      "detail": "120px to 236px"
+    },
+    {
+      "name": "the world chip changes the world",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Reflect",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Save reflection keeps it in Body",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Close leaves the editor, not the app",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "with the keyboard open, the question and the input both fit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "You › Export includes your direction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "Home": [],
+    "the direction sheet": [],
+    "Reflect": []
+  },
+  "summary": {
+    "total": 45,
+    "failed": 0
+  }
+}

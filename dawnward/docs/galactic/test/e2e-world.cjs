@@ -81,9 +81,9 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   for (let k = 0; k < 6; k++) await sorts.nth(k).getByRole("radio").first().click();
   await page.getByRole("button", { name: "Continue" }).click();
   await page.fill("#q-words", "What if I've left it too late?");
-  await page.getByRole("button", { name: "Save and continue" }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.fill("#q-words", "No new information there.");
-  await page.getByRole("button", { name: "Save and continue" }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.getByRole("button", { name: "Not this time" }).click();
   await page.locator("#x-body .found").waitFor();
   await page.goto(BASE + "#/world/mind/expeditions"); await ready(page); await page.waitForTimeout(800);
@@ -96,7 +96,7 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   // ---- membership: a free visitor sees members' chapters marked, and an honest gate ----
   check("in Mind's Expeditions, Chapter 2 is marked Plus", /Chapter 2: Separate facts from assumptions[\s\S]*Plus/.test(await page.textContent("#w-panel")));
   await page.goto(BASE + "#/home"); await ready(page);
-  check("the Compass never offers a members' chapter to a free visitor", !/Chapter 2 of 7/.test(await page.textContent("#earth .compass")));
+  check("the Compass never offers a members' chapter to a free visitor", !/Chapter 2 of 7/.test(await page.textContent("#earth .nextcard")));
   await page.goto(BASE + "#/learn"); await ready(page);
   await page.getByRole("button", { name: /Chapter 2: Separate facts from assumptions/ }).click();
   await page.waitForSelector(".plus-card");

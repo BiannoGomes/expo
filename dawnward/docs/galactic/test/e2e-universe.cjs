@@ -57,15 +57,16 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     await page.evaluate(() => document.getElementById("skip").click());
     await page.waitForTimeout(500);
     check(`${name}: Dawnward opens on Home`, (await place(page)) === "earth" && (await page.locator('#tabs [data-tab="home"][aria-current="page"]').count()) === 1);
-    const comp = await page.textContent("#earth .compass");
-    check(`${name}: the Compass offers a first expedition`, /Your daily compass/i.test(comp) && /Beyond Overthinking/.test(comp) && /Begin expedition · 8 min/.test(comp));
+    const comp = await page.textContent("#earth .nextcard");
+    check(`${name}: the Compass offers a first expedition`, /Your next step/i.test(comp) && /Beyond Overthinking/.test(comp) && /Begin/.test(comp) && /8 min/.test(comp));
     await page.locator("#earth .c-why summary").click();
     check(`${name}: the Compass says why`, /short first expedition/.test(await page.textContent("#earth .c-why")) && /Nothing is read from your reflections/.test(await page.textContent("#earth .c-why")));
-    check(`${name}: the first action is visible without scrolling`, await page.evaluate(() => { const b = document.querySelector("#earth .compass .primary").getBoundingClientRect(); return b.bottom <= innerHeight - 64 || innerWidth >= 1000; }));
+    check(`${name}: one primary action on Home`, (await page.locator("#earth .primary").count()) === 1);
+    check(`${name}: the first action is visible without scrolling`, await page.evaluate(() => { const b = document.querySelector("#earth .nextcard .c-row .ghost").getBoundingClientRect(); return b.bottom <= innerHeight - 64 || innerWidth >= 1000; }));
     await page.getByRole("button", { name: "Not today" }).click();
     check(`${name}: "Not today" sets the suggestion aside`, /No suggestion today/.test(await page.textContent("#earth")));
     await page.getByRole("button", { name: "Show it" }).click();
-    check(`${name}: and it comes back on request`, (await page.locator("#earth .compass .primary").count()) === 1);
+    check(`${name}: and it comes back on request`, (await page.locator("#earth .nextcard .c-row .ghost").count()) === 1);
     check(`${name}: five worlds on Home, each a button`, (await page.locator("#earth .wplanets button").count()) === 5);
     await axe(page, `${name} home`);
     await page.screenshot({ path: `${OUT}/u-${name}-home.png`, timeout: 90000 });
@@ -132,9 +133,9 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     await axe(page, `${name} lens step`);
     await page.getByRole("button", { name: "Continue" }).click();
     await page.fill("#q-words", "My manager moved our one-to-one without saying why.");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.fill("#q-words", "Maybe something came up for her, nothing to do with me.");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.getByRole("button", { name: "Not this time" }).click();
     await page.waitForSelector("text=Discovered");
     const close = await page.textContent("#x-body");
@@ -146,7 +147,7 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     check(`${name}: Return to Earth lands on Home`, (await place(page)) === "earth");
     const earth = await page.textContent("#earth");
     check(`${name}: Home shows what was just discovered`, /Just discovered/.test(earth) && /The Thought Labyrinth/.test(earth));
-    check(`${name}: the Compass moves on to an expedition not yet done`, /Beyond Overthinking/.test(await page.textContent("#earth .compass")));
+    check(`${name}: the Compass moves on to an expedition not yet done`, /Beyond Overthinking/.test(await page.textContent("#earth .nextcard")));
     check(`${name}: Home has no urgency, streaks or scores`, !/streak|score|\bxp\b|hurry|don't miss|last chance/i.test(earth));
     await page.screenshot({ path: `${OUT}/u-${name}-earth.png`, timeout: 90000 });
     await axe(page, `${name} earth`);
@@ -155,7 +156,7 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     const miles = await page.textContent("#m-miles");
     check(`${name}: Journey lists the star and the moon`, /The Thought Labyrinth/.test(miles) && /moon over Thought Patterns/i.test(miles));
     await page.locator('#tabs [data-tab="home"]').click();
-    await page.locator("#earth").getByRole("button", { name: "Begin reflection" }).click();
+    await page.locator("#earth").getByRole("button", { name: /What's on your mind/ }).click();
     check(`${name}: reflecting is one tap from Earth`, await page.waitForSelector("#words", { timeout: 10000 }).then(() => true, () => false));
 
     // breadcrumbs go back up

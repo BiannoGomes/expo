@@ -32,7 +32,7 @@ async function toPortal(page, name) {
   check(`${name}: says plainly it's not a prediction`, /not a prediction/.test(await page.textContent("#x-body")));
   await page.getByRole("button", { name: "Begin" }).click();
   await page.fill("#q-words", "Feeling at ease speaking up in meetings.");
-  await page.getByRole("button", { name: "Save and continue" }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.getByRole("button", { name: "Open the gateway" }).waitFor();
 }
 
@@ -64,10 +64,10 @@ async function toPortal(page, name) {
     await shot(page, `${name}-future-self`);
     await axe(page, `${name} future self`);
     await page.fill("#q-words", "Start smaller than you think.");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     check(`${name}: the Mirror`, /The Mirror/.test(await page.textContent("#x-body .s-title")));
     await page.fill("#q-words", "I speak up in small groups, not with my manager there.");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     check(`${name}: the Crossroads is the Decision Lab`, /The Crossroads/.test(await page.textContent("#x-body .s-title")) && (await page.locator("#lab-o1").count()) === 1);
     await page.fill("#lab-o1", "Present at the next team meeting");
     await page.fill("#lab-o2", "Share one idea in the weekly call");
@@ -80,7 +80,7 @@ async function toPortal(page, name) {
     check(`${name}: the First Step`, /The First Step/.test(await page.textContent("#x-body .s-title")));
     await page.fill("#q-action", "Write one idea before Thursday's call and say it");
     await page.fill("#q-when", "Thursday");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.locator("#x-body .found").waitFor();
     const close = await page.textContent("#x-body");
     check(`${name}: Return to Earth keeps the real step and finds a star`, /Write one idea before Thursday/.test(close) && /A star: The Quantum Gateway/.test(close));

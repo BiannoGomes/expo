@@ -45,10 +45,10 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.evaluate(() => document.getElementById("skip")?.click());
     await page.waitForTimeout(400);
 
-    const comp = await page.textContent("#earth .compass");
+    const comp = await page.textContent("#earth .nextcard");
     check(`${name}: the Compass starts with Beyond Overthinking, Chapter 1 of 7`, /Beyond Overthinking/.test(comp) && /Chapter 1 of 7/.test(comp) && /draft/.test(comp));
-    check(`${name}: "Practise" offers a different expedition, not Chapter 2`, !/Chapter 2/.test(await page.textContent("#earth .nextrow")));
-    await page.locator("#earth .compass .primary").click();
+    check(`${name}: Home never offers Chapter 2 before Chapter 1`, !/Chapter 2/.test(await page.textContent("#earth")));
+    await page.locator("#earth .nextcard .c-row .ghost").click();
     await page.waitForSelector("#x-body .draft-tag");
     check(`${name}: the chapter says it's a draft`, /Draft: not yet reviewed/.test(await page.textContent("#x-body")));
     check(`${name}: the safety note is there`, /findahelpline\.com/.test(await page.textContent("#x-body")));
@@ -75,9 +75,9 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await axe(page, `${name} sort`);
     await page.getByRole("button", { name: "Continue" }).click();
     await page.fill("#q-words", "What if I've already left it too late to change careers?");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.fill("#q-words", "No new information. One step: look at two courses this week.");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.getByRole("button", { name: "Not this time" }).click();
     await page.locator("#x-body .found").waitFor();
     check(`${name} ch1: a star for the chapter, and the worksheet offered again`, /A star: Beyond Overthinking/.test(await page.textContent("#x-body")) && (await page.getByRole("button", { name: "Worksheet: The Loop Check" }).count()) === 1);
@@ -86,22 +86,22 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.waitForTimeout(300);
 
     // the Compass moves on, and says why
-    const comp2 = await page.textContent("#earth .compass");
+    const comp2 = await page.textContent("#earth .nextcard");
     check(`${name}: the Compass now offers Chapter 2 of 7`, /Separate facts from assumptions/.test(comp2) && /Chapter 2 of 7/.test(comp2));
     await page.locator("#earth .c-why summary").click();
     check(`${name}: and says it's the next part of what you began`, /next part of Beyond Overthinking/.test(await page.textContent("#earth .c-why")));
 
     // Chapter 2
-    await page.locator("#earth .compass .primary").click();
+    await page.locator("#earth .nextcard .c-row .ghost").click();
     await page.getByRole("button", { name: "Begin" }).click();
     check(`${name} ch2: lesson`, (await page.locator(".lesson p").count()) === 4);
     await page.getByRole("button", { name: "Continue" }).click();
     await playChapter(page, name, 2);
     await page.getByRole("button", { name: "Continue" }).click();
     await page.fill("#q-words", "Whether to take the team-lead role. Facts: starts in May, 10% raise.");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.fill("#q-words", "That I'd be bad at managing. I could ask Sam.");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.fill("#q-action", "Ask Sam for twenty minutes");
     await page.fill("#q-when", "Thursday after lunch");
     await page.getByRole("button", { name: /Save/ }).last().click();
@@ -113,13 +113,13 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     check(`${name}: following is confirmed in plain words`, /You're following Beyond Overthinking/.test(await page.textContent("#x-body")));
     await page.getByRole("button", { name: "Return to Earth" }).first().click();
     await page.waitForTimeout(300);
-    const comp3 = await page.textContent("#earth .compass");
+    const comp3 = await page.textContent("#earth .nextcard");
     check(`${name}: the Compass offers Chapter 3 of 7, as the expedition you follow`, /Practise a pause/.test(comp3) && /Chapter 3 of 7/.test(comp3) && /You're following Beyond Overthinking · 2 of 7 chapters done/.test(comp3));
     await page.locator("#earth .c-why summary").click();
     check(`${name}: and says why: you chose to follow it`, /You chose to follow Beyond Overthinking/.test(await page.textContent("#earth .c-why")));
 
     // Chapter 3: the pause
-    await page.locator("#earth .compass .primary").click();
+    await page.locator("#earth .nextcard .c-row .ghost").click();
     await page.getByRole("button", { name: "Begin" }).click();
     check(`${name} ch3: lesson`, (await page.locator(".lesson p").count()) === 4);
     await page.getByRole("button", { name: "Continue" }).click();
@@ -138,7 +138,7 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     check(`${name} ch3: the choice says what tends to happen, never right or wrong`, /tends to loosen its grip/.test(await page.textContent(".explain")) && !/wrong answer|correct/i.test(await page.textContent(".explain")));
     await page.getByRole("button", { name: "Continue" }).click();
     await page.fill("#q-words", "Quieter for a minute, then less urgent.");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.getByRole("button", { name: "Not this time" }).click();
     await page.locator("#x-body .found").waitFor();
     check(`${name} ch3: the pocket card is offered`, (await page.getByRole("button", { name: "Worksheet: The One-Minute Pause" }).count()) === 1);
@@ -182,7 +182,7 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await axe(page, `${name} lab`);
     await page.getByRole("button", { name: "Continue" }).click();
     await page.fill("#q-words", "The trial helps with both. The cost is waiting a little.");
-    await page.getByRole("button", { name: "Save and continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.getByRole("button", { name: "Not this time" }).click();
     await page.locator("#x-body .found").waitFor();
     check(`${name} ch4: the worksheet is offered`, (await page.getByRole("button", { name: "Worksheet: The Decision Lab" }).count()) === 1);
