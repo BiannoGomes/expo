@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T13:29:24.768Z",
+  "when": "2026-11-01T15:55:40.139Z",
   "checks": [
     {
       "name": "#/universe/creative opens Creative Worlds",
@@ -99,7 +99,7 @@
     {
       "name": "the kingdom draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":209,\"median\":26}"
+      "detail": "{\"n\":225,\"median\":25}"
     },
     {
       "name": "Things here lists all five lanterns",
@@ -149,7 +149,7 @@
     {
       "name": "the forest draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":90,\"median\":32}"
+      "detail": "{\"n\":89,\"median\":32}"
     },
     {
       "name": "waking a plant is kept",
@@ -211,11 +211,11 @@
   },
   "frames": {
     "kingdom": {
-      "n": 209,
-      "median": 26
+      "n": 225,
+      "median": 25
     },
     "forest": {
-      "n": 90,
+      "n": 89,
       "median": 32
     }
   },

@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T15:47:20.738Z",
+  "when": "2026-11-01T15:57:39.335Z",
   "url": "http://localhost:8771/home.html",
   "checks": [
     {
@@ -525,20 +525,20 @@
     "desktop text": []
   },
   "timings": {
-    "phone.ready_ms": 308,
-    "phone.mind_arrival_ms": 731,
+    "phone.ready_ms": 272,
+    "phone.mind_arrival_ms": 775,
     "phone.frames_swiftshader": {
-      "n": 48,
-      "median": 66.60000000000036,
-      "p95": 116.70000000000073,
+      "n": 47,
+      "median": 66.59999999999854,
+      "p95": 133.29999999999927,
       "degraded": false
     },
-    "desktop.ready_ms": 319,
-    "desktop.mind_arrival_ms": 744,
+    "desktop.ready_ms": 365,
+    "desktop.mind_arrival_ms": 877,
     "desktop.frames_swiftshader": {
       "n": 16,
-      "median": 199.90000000000146,
-      "p95": 483.2999999999993,
+      "median": 183.40000000000146,
+      "p95": 616.5999999999985,
       "degraded": false
     },
     "reduced.soul_arrival_ms": 11
