@@ -1,6 +1,6 @@
 # Questions: the five gateway questions and Reflect's question bank
 
-**Status:** 2026-11-01. Built and tested (`docs/galactic/test/e2e-questions.cjs`, 34 checks). Nothing deployed.
+**Status:** 2026-11-01. Built and tested (`docs/galactic/test/e2e-questions.cjs`, 32 checks). Nothing deployed.
 Bianno's gateway questions and missions are used word for word. Everything else here (the follow-up
 questions, the bank, the examples) is a **draft for Bianno's review**; the guided missions show "draft" until he approves them.
 

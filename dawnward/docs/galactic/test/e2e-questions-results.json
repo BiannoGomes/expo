@@ -1,0 +1,174 @@
+{
+  "when": "2026-11-01T11:07:36.958Z",
+  "checks": [
+    {
+      "name": "Body offers its guided question, one tap away",
+      "ok": true,
+      "detail": "The Temple of Vitality\nGuided question · 5 min"
+    },
+    {
+      "name": "Discover: the gateway question is the heading",
+      "ok": true,
+      "detail": "If your body could tell you what it needs, what have you been ignoring?"
+    },
+    {
+      "name": "the step shows the world's own painting",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Discover step",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Reflect follows",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "after a reload, Body offers to pick up where you left off",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it resumes at Reflect, not the beginning",
+      "ok": true,
+      "detail": "What gets in the way?"
+    },
+    {
+      "name": "Choose: one small practice for seven days",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Done: shows the action you chose",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "one primary action on the ending",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no sideways scroll on the ending",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the ending",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Home asks how the action went",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the review is kept",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "once reviewed, Home stops asking",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Journey shows the finished question and the reviewed action",
+      "ok": true,
+      "detail": "YOUR PROGRESS / 0 / Reflections / 1 / Chapters / 1 / Actions / 3 / Discoveries / MILESTONES / Sunday, November 1 / A trail marker in Body / You came back and said how a real action went (number 1). / Sunday, November 1 / A moon "
+    },
+    {
+      "name": "after a reload it's all still there",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Learn lists all five guided questions",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Reflect opens on the everyday question",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Another question shows Mind's gateway question",
+      "ok": true,
+      "detail": "What if the thoughts you believe most strongly are the ones you need to question?"
+    },
+    {
+      "name": "the input keeps focus after changing the question",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Another question is a full-size target",
+      "ok": true,
+      "detail": "{\"x\":20,\"y\":543.078125,\"width\":129.71875,\"height\":44}"
+    },
+    {
+      "name": "axe: Reflect with another question",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "an unsent draft comes back with its question",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the new star shows the question it answered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the question is kept with the words, on this device",
+      "ok": true,
+      "detail": "{\"id\":\"m-mvxq7ppr-h6oz\",\"world\":\"mind\",\"date\":\"2026-11-01\",\"excerpt\":\"That I'm bad at starting things.\",\"prompt\":\"What if the thoughts you believe most strongly are the ones you need to question?\"}"
+    },
+    {
+      "name": "Journey shows the question with the reflection",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "an everyday reflection carries no extra label",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "saving straight after typing doesn't leak into the next reflection (kept in Soul, no old question)",
+      "ok": true,
+      "detail": "{\"id\":\"m-mvxq7rq0-3vnf\",\"world\":\"soul\",\"date\":\"2026-11-01\",\"excerpt\":\"Lunch with Dad.\"}"
+    },
+    {
+      "name": "and no stale draft is left behind",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "at 320 px the longest gateway question fits without sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "Discover step": [],
+    "the ending": [],
+    "Reflect with another question": []
+  },
+  "summary": {
+    "total": 32,
+    "failed": 0
+  }
+}
