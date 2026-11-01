@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T10:15:05.318Z",
+  "when": "2026-11-01T10:55:36.366Z",
   "checks": [
     {
       "name": "320x568: Atlas galaxies and names never overlap",
@@ -103,7 +103,7 @@
     },
     {
       "name": "phone: the Compass says why",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
@@ -207,12 +207,17 @@
       "detail": ""
     },
     {
-      "name": "phone: three readings to weigh",
+      "name": "phone: one reading at a time, 1 of 3",
       "ok": true,
       "detail": ""
     },
     {
       "name": "phone: Continue waits until every reading is rated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: rating one brings the next, and keeps the first visible",
       "ok": true,
       "detail": ""
     },
@@ -238,7 +243,7 @@
     },
     {
       "name": "phone: Home shows what was just discovered",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
@@ -298,7 +303,7 @@
     },
     {
       "name": "desktop: the Compass says why",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
@@ -402,12 +407,17 @@
       "detail": ""
     },
     {
-      "name": "desktop: three readings to weigh",
+      "name": "desktop: one reading at a time, 1 of 3",
       "ok": true,
       "detail": ""
     },
     {
       "name": "desktop: Continue waits until every reading is rated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: rating one brings the next, and keeps the first visible",
       "ok": true,
       "detail": ""
     },
@@ -433,7 +443,7 @@
     },
     {
       "name": "desktop: Home shows what was just discovered",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
@@ -517,13 +527,13 @@
   "timings": {
     "phone.arrival_fallbacks": 0,
     "phone.webgl_context_lost": 0,
-    "phone.to_first_step_ms": 161,
+    "phone.to_first_step_ms": 129,
     "desktop.arrival_fallbacks": 1,
     "desktop.webgl_context_lost": 0,
-    "desktop.to_first_step_ms": 196
+    "desktop.to_first_step_ms": 116
   },
   "summary": {
-    "total": 100,
-    "failed": 4
+    "total": 102,
+    "failed": 0
   }
 }
