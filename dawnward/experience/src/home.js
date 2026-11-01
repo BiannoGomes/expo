@@ -1050,7 +1050,7 @@ function main(data, failed) {
     if (!unlockShowing) { unlockShowing = id; progress.celebrated(id); }
     const go = () => { if (id === "gateway") explore.play("gateway-1", { from: { label: "Home", go: () => openEarth(), trail: [] } }); else if (REALMS[id]) creative.open(id); else openAtlas(); };
     return el("section", { class: "card unlocked", role: "status", "aria-labelledby": "un-h" },
-      el("div", { class: "unlock-ring", "aria-hidden": "true" }),
+      el("img", { class: "unlock-ring art", src: asset(artPath(ART.ring)), alt: "" }),
       el("h3", { class: "un-title", id: "un-h" }, `${PATH_NAME[id] ?? "A galaxy"} is open`),
       el("p", { class: "why" }, "What you've done opened it. It stays open."),
       el("div", { class: "actions" }, el("button", { class: "ghost", onclick: go }, "Go there")));
@@ -1067,6 +1067,7 @@ function main(data, failed) {
   }
   // the List view is the path: galaxies in the order they open, each with where you stand
   function drawPath() {
+    $("atlas").style.setProperty("--path-art", `url("${asset(artPath(ART.path))}")`);
     for (const g of GALAXIES) {
       const lk = pathLock(g.id), b = inner.querySelector(`[data-id="${g.id}"]`);
       if (!b) continue;
@@ -1117,6 +1118,7 @@ function main(data, failed) {
       panel.hidden = false; $("a-name").focus({ preventScroll: true }); return;
     }
     panel.replaceChildren(
+      ART.thresholds[g.id] ? el("img", { class: "a-threshold", src: asset(artPath(ART.thresholds[g.id])), alt: "" }) : null,
       el("p", { class: "kicker" }, g.open ? (g.id === "gateway" ? "Open · free once, then for members" : REALMS[g.id] ? "Open · some worlds are free" : "Open") : g.access === "plus" ? "Preview · not open yet · for members" : "Preview · not open yet"),
       el("h2", { class: "s-title", id: "a-name", tabindex: "-1" }, g.name),
       el("p", { class: "lead" }, g.tag),

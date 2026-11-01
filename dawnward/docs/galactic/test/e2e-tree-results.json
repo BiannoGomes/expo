@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T14:37:29.721Z",
+  "when": "2026-11-01T15:10:18.693Z",
   "checks": [
     {
       "name": "the galaxy is one tree with seven branches, each a button",
@@ -149,7 +149,7 @@
     {
       "name": "flower draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":198,\"median\":17}"
+      "detail": "{\"n\":181,\"median\":17}"
     },
     {
       "name": "an inner knowing note is kept on this device",
@@ -179,7 +179,7 @@
     {
       "name": "knowing draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":113,\"median\":42}"
+      "detail": "{\"n\":103,\"median\":45}"
     },
     {
       "name": "the note appears in the Creation Gallery",
@@ -234,7 +234,7 @@
     {
       "name": "hall draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":231,\"median\":24}"
+      "detail": "{\"n\":229,\"median\":22}"
     },
     {
       "name": "tapping the star in 3D explains it, belief kept apart from geometry",
@@ -259,7 +259,7 @@
     {
       "name": "solids draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":160,\"median\":32}"
+      "detail": "{\"n\":151,\"median\":33}"
     },
     {
       "name": "no page or shader errors",
@@ -278,20 +278,20 @@
   },
   "frames": {
     "flower": {
-      "n": 198,
+      "n": 181,
       "median": 17
     },
     "knowing": {
-      "n": 113,
-      "median": 42
+      "n": 103,
+      "median": 45
     },
     "hall": {
-      "n": 231,
-      "median": 24
+      "n": 229,
+      "median": 22
     },
     "solids": {
-      "n": 160,
-      "median": 32
+      "n": 151,
+      "median": 33
     }
   },
   "summary": {

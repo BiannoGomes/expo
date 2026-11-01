@@ -617,6 +617,12 @@
   .alist .row.locked .rtitle { color:var(--dim); }
   .card.unlocked { position:relative; overflow:hidden; display:grid; gap:var(--s2); border-color:var(--edge-strong); }
   .un-title { font-family:var(--display); font-size:24px; font-weight:500; margin:0; color:var(--ink); }
+  .unlock-ring.art { border:0; box-shadow:none; border-radius:0; width:170px; height:170px; right:-78px; top:-70px; opacity:.8; }
+  #atlas:has(#a-list:not([hidden])) { background:linear-gradient(90deg, rgba(5,7,13,.92) 0, rgba(5,7,13,.78) 55%, rgba(5,7,13,.35)), var(--path-art) 70% 30% / cover no-repeat fixed, #05070D; }
+  .a-threshold { width:100%; max-height:200px; object-fit:cover; object-position:50% 30%; border-radius:var(--r-card); margin-bottom:var(--s2); }
+  .cw-btree.art .cw-limb { stroke:rgba(240,214,162,.35); }
+  .cw-btree.art .cw-flow { opacity:.55; }
+  .cw-btree.art .cw-borb.img { width:clamp(52px, 15vw, 76px); filter:drop-shadow(0 0 14px color-mix(in srgb, var(--tint) 60%, transparent)); }
   .unlock-ring { position:absolute; right:-40px; top:-40px; width:160px; height:160px; border-radius:50%; border:2px solid rgba(230,192,123,.55); box-shadow:0 0 30px rgba(230,192,123,.25) inset; animation:unlock-ring 1.6s cubic-bezier(.2,.7,.2,1) both; pointer-events:none; }
   @keyframes unlock-ring { from { transform:scale(.2); opacity:0; } 40% { opacity:1; } to { transform:scale(1); opacity:.7; } }
   @media (prefers-reduced-motion: reduce) { .unlock-ring { animation:none; opacity:.7; } }

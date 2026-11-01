@@ -108,3 +108,11 @@ Made by Bianno Gomes with ChatGPT image generation, 2026-10-31, from `dawnward/d
 S3, D4, D7, BO2-W, BO3-H, BO3-X, BO4-W, BO6-X, BO6-R, BO6-K, BO6-W. Until they arrive: Chapter 3 opens on T4 (Entering Mind) and practises over BO3-R; Bridge 3 uses C3 and the generic moon T9.
 
 Then everything after BR2-K: BR3-H/X/K, BR-R, and the 36 "chapters to come" images.
+
+## Tree, path and levelling-up art (2026-11-01)
+Made by Bianno with ChatGPT from `docs/universe/chatgpt-tree-and-path-prompts.txt` and `chatgpt-levelling-up-prompts.txt`; owned by Dawnward.
+Processed for the app (resized, webp): the spheres TN-UNI, TN-MND, TN-ANC, TN-PRN, TN-GEO and TN-KNW had a checkerboard painted into them,
+so each is cut out along its glass edge; PR-3 and PR-6 had black backgrounds, turned into transparency.
+TR-BG, TR-PATH, TN-UNI, TN-MND, TN-LIF, TN-ANC, TN-PRN, TN-GEO, TN-KNW, PATH-BG, UNL-RING, PR-1, PR-2, PR-3, PR-4, PR-6, LV-0.
+In use: TR-BG and the TN spheres (the Knowledge tree), UNL-RING (a galaxy opening), PATH-BG (the path list), LV-0 (Personal Growth in the Universe).
+Kept for later: TR-PATH, and PR-1 to PR-6 (waiting for PR-5 and PR-7 so the Hall's set is complete).
