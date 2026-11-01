@@ -1,0 +1,118 @@
+phone home over=0 small=6 tiny=1 prim=1 words=78 axe=0
+phone reflect over=0 small=5 tiny=1 prim=1 words=23 axe=0
+phone saved over=0 small=5 tiny=1 prim=1 words=61 axe=0
+phone direction-sheet over=0 small=6 tiny=1 prim=2 words=92 axe=0
+phone universe over=0 small=5 tiny=1 prim=0 words=38 axe=0
+phone growth over=0 small=6 tiny=1 prim=0 words=46 axe=0
+phone world-mind over=0 small=8 tiny=3 prim=1 words=106 axe=0
+phone world-soul over=0 small=7 tiny=3 prim=1 words=94 axe=0
+phone learn over=0 small=12 tiny=1 prim=0 words=239 axe=0
+phone expedition FAILED TimeoutError: locator.click: Timeout 8000ms exceeded.
+Call log:
+[2m  - waiting for locator('#x-body
+phone journey over=0 small=5 tiny=1 prim=0 words=25 axe=0
+phone journey-list over=0 small=6 tiny=1 prim=0 words=41 axe=0
+phone creative over=0 small=10 tiny=1 prim=1 words=144 axe=0
+phone door over=0 small=6 tiny=1 prim=0 words=46 axe=0
+phone kingdom over=0 small=6 tiny=1 prim=0 words=64 axe=0
+phone knowledge over=0 small=24 tiny=1 prim=0 words=276 axe=0
+phone principles over=0 small=8 tiny=1 prim=1 words=158 axe=0
+phone flower over=0 small=6 tiny=1 prim=1 words=141 axe=0
+phone knowing over=0 small=6 tiny=1 prim=1 words=92 axe=0
+phone calendar over=0 small=6 tiny=1 prim=0 words=205 axe=0
+phone stillness over=0 small=8 tiny=1 prim=1 words=86 axe=0
+phone library over=0 small=6 tiny=2 prim=0 words=36 axe=0
+phone ai over=0 small=9 tiny=1 prim=0 words=138 axe=0
+phone wisdom over=0 small=5 tiny=1 prim=0 words=471 axe=0
+phone you over=0 small=5 tiny=1 prim=0 words=253 axe=0
+small home over=0 small=6 tiny=1 prim=1 words=78 axe=0
+small reflect over=0 small=5 tiny=1 prim=1 words=23 axe=0
+small saved over=0 small=5 tiny=1 prim=1 words=61 axe=0
+small direction-sheet over=0 small=6 tiny=1 prim=2 words=92 axe=0
+small universe over=0 small=5 tiny=1 prim=0 words=28 axe=0
+small growth over=0 small=11 tiny=1 prim=0 words=40 axe=0
+small world-mind over=0 small=12 tiny=3 prim=1 words=106 axe=0
+small world-soul over=0 small=11 tiny=3 prim=1 words=94 axe=0
+small learn over=0 small=9 tiny=1 prim=0 words=134 axe=0
+small expedition FAILED TimeoutError: locator.click: Timeout 8000ms exceeded.
+Call log:
+[2m  - waiting for locator('#x-body
+small journey over=0 small=5 tiny=1 prim=0 words=25 axe=0
+small journey-list over=0 small=6 tiny=1 prim=0 words=41 axe=0
+small creative over=0 small=10 tiny=1 prim=1 words=144 axe=0
+small door over=0 small=6 tiny=1 prim=0 words=46 axe=0
+small kingdom over=0 small=6 tiny=1 prim=0 words=64 axe=0
+small knowledge over=0 small=21 tiny=1 prim=0 words=193 axe=0
+small principles over=0 small=8 tiny=1 prim=1 words=158 axe=0
+small flower over=0 small=6 tiny=1 prim=1 words=141 axe=0
+small knowing over=0 small=6 tiny=1 prim=1 words=92 axe=0
+small calendar over=0 small=6 tiny=1 prim=0 words=190 axe=0
+small stillness over=0 small=8 tiny=1 prim=1 words=86 axe=0
+small library over=0 small=6 tiny=2 prim=0 words=36 axe=0
+small ai over=0 small=9 tiny=1 prim=0 words=138 axe=0
+small wisdom over=0 small=5 tiny=1 prim=0 words=296 axe=0
+small you over=0 small=5 tiny=1 prim=0 words=248 axe=0
+tablet home over=0 small=6 tiny=1 prim=1 words=78 axe=0
+tablet reflect over=0 small=5 tiny=1 prim=1 words=23 axe=0
+tablet saved over=0 small=5 tiny=1 prim=1 words=61 axe=0
+tablet direction-sheet over=0 small=6 tiny=1 prim=2 words=92 axe=0
+tablet universe over=0 small=5 tiny=1 prim=0 words=38 axe=0
+tablet growth FAILED TimeoutError: page.goto: Timeout 30000ms exceeded.
+Call log:
+[2m  - navigating to "about:blank", wa
+tablet world-mind FAILED Error: page.goto: Navigation to "about:blank" is interrupted by another navigation to "about:blank"
+
+tablet world-soul FAILED Error: page.goto: Navigation to "about:blank" is interrupted by another navigation to "about:blank"
+
+tablet learn FAILED Error: page.goto: Navigation to "about:blank" is interrupted by another navigation to "about:blank"
+
+tablet expedition FAILED Error: page.goto: Navigation to "about:blank" is interrupted by another navigation to "about:blank"
+
+tablet journey FAILED Error: page.goto: Navigation to "about:blank" is interrupted by another navigation to "about:blank"
+
+tablet journey-list FAILED Error: page.goto: Navigation to "about:blank" is interrupted by another navigation to "about:blank"
+
+tablet creative over=0 small=10 tiny=1 prim=1 words=144 axe=0
+tablet door over=0 small=6 tiny=1 prim=0 words=103 axe=0
+tablet kingdom over=0 small=6 tiny=1 prim=0 words=64 axe=0
+tablet knowledge over=0 small=25 tiny=1 prim=0 words=380 axe=0
+tablet principles over=0 small=8 tiny=1 prim=1 words=158 axe=0
+tablet flower over=0 small=6 tiny=1 prim=1 words=141 axe=0
+tablet knowing over=0 small=6 tiny=1 prim=1 words=92 axe=0
+tablet calendar over=0 small=6 tiny=1 prim=0 words=205 axe=0
+tablet stillness over=0 small=8 tiny=1 prim=1 words=86 axe=0
+tablet library over=0 small=6 tiny=2 prim=0 words=36 axe=0
+tablet ai over=0 small=9 tiny=1 prim=0 words=138 axe=0
+tablet wisdom over=0 small=5 tiny=1 prim=0 words=713 axe=0
+tablet you over=0 small=5 tiny=1 prim=0 words=253 axe=0
+desktop home over=0 small=6 tiny=1 prim=1 words=78 axe=0
+desktop reflect over=0 small=5 tiny=1 prim=1 words=23 axe=0
+desktop saved over=0 small=5 tiny=1 prim=1 words=61 axe=0
+desktop direction-sheet over=0 small=6 tiny=1 prim=2 words=92 axe=0
+desktop universe over=0 small=5 tiny=1 prim=0 words=38 axe=0
+desktop growth FAILED TimeoutError: page.goto: Timeout 30000ms exceeded.
+Call log:
+[2m  - navigating to "about:blank", wa
+desktop world-mind FAILED TimeoutError: page.goto: Timeout 30000ms exceeded.
+Call log:
+[2m  - navigating to "about:blank", wa
+desktop world-soul over=0 small=7 tiny=3 prim=1 words=94 axe=0
+desktop learn over=0 small=15 tiny=1 prim=0 words=331 axe=0
+desktop expedition FAILED TimeoutError: locator.click: Timeout 8000ms exceeded.
+Call log:
+[2m  - waiting for locator('#x-body
+desktop journey over=0 small=5 tiny=1 prim=0 words=25 axe=0
+desktop journey-list over=0 small=6 tiny=1 prim=0 words=41 axe=0
+desktop creative over=0 small=10 tiny=1 prim=1 words=144 axe=0
+desktop door over=0 small=6 tiny=1 prim=0 words=103 axe=0
+desktop kingdom over=0 small=6 tiny=1 prim=0 words=64 axe=0
+desktop knowledge over=0 small=25 tiny=1 prim=0 words=337 axe=0
+desktop principles over=0 small=8 tiny=1 prim=1 words=158 axe=0
+desktop flower over=0 small=6 tiny=1 prim=1 words=141 axe=0
+desktop knowing over=0 small=6 tiny=1 prim=1 words=92 axe=0
+desktop calendar over=0 small=6 tiny=1 prim=0 words=205 axe=0
+desktop stillness over=0 small=8 tiny=1 prim=1 words=86 axe=0
+desktop library over=0 small=6 tiny=2 prim=0 words=36 axe=0
+desktop ai over=0 small=9 tiny=1 prim=0 words=138 axe=0
+desktop wisdom over=0 small=5 tiny=1 prim=0 words=649 axe=0
+desktop you over=0 small=5 tiny=1 prim=0 words=253 axe=0
