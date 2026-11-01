@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T10:55:06.439Z",
+  "when": "2026-11-01T11:11:52.496Z",
   "checks": [
     {
       "name": "address #/home opens earth",
@@ -199,7 +199,7 @@
     {
       "name": "Progress counts only saved work: 1 of 7, one discovery",
       "ok": true,
-      "detail": "Your progress in MindBeyond Overthinking1 of 7Thought Patterns0 of 1Memories0Discoveries1Real actions chosen0A star: Beyond Overthinking, Chapter 1: Understand the loopYou finished Beyond Overthinking"
+      "detail": "Your progress in MindBeyond Overthinking1 of 7Thought Patterns0 of 1The Mirror of Thought0 of 1Memories0Discoveries1Real actions chosen0A star: Beyond Overthinking, Chapter 1: Understand the loopYou f"
     },
     {
       "name": "axe: mind progress",
