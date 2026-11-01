@@ -1,0 +1,76 @@
+DAWNWARD: TREE OF LIFE + THE PATH. ChatGPT prompts in order (2026-11-01)
+==========================================================================
+How: one new ChatGPT chat. Attach the Dawnward reference board (the tree / galaxies / path image) and
+two of your earlier Dawnward images. Paste STEP 0 first, then one prompt at a time.
+If an image is wrong, reply "Again, same prompt". Download each one named by its CODE (for example TR-BG.png)
+and send them back together. Only the ones marked ESSENTIAL are needed for the build; the rest are polish.
+
+----------------------------------------------------------------------------------------------------------
+STEP 0 (paste first)
+----------------------------------------------------------------------------------------------------------
+You are the art director for Dawnward, an app where a person's inner life is a living universe: five worlds (Mind, Body, Soul, Spirit, Future), other galaxies, a Quantum Gateway to imagine a possible future self, and Earth, where it all comes back into real life. Match the attached images.
+
+Style: surreal, dreamlike cinematic realism, like a matte painting from an epic film crossed with a lucid dream. Layered depth: something close, something in the middle, something very far, with soft volumetric light and drifting particles between the layers. Deep space #05070D to #0A1426. Light only where it really falls: warm gold #E6C07B, orbital blue #5B8CFF, cyan #37D5E8, violet #9B5BFF, lilac #C9B8FF, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons.
+Light: one warm golden source from the upper left, a soft rim light on far edges.
+People: only seen from behind, or as soft silhouettes of light. Never a detailed face. Never a real or recognisable person. No religious symbols of any specific faith (no chakras, no deities, no scripture).
+Never put any text, letters, numbers, logos, UI, icons, locks or watermarks in an image unless I ask for a blank interface element.
+"Pure black" means everything outside the subject is exactly #000000. "Transparent" means a PNG with a transparent background and nothing else in it.
+Reply "Ready" and wait.
+
+----------------------------------------------------------------------------------------------------------
+1. TR-BG  (ESSENTIAL) The Tree of Life, the map's backdrop. Portrait 1080 x 1920.
+----------------------------------------------------------------------------------------------------------
+A vast golden tree of light rising from still, reflective water at the bottom of the frame, its trunk exactly on the vertical centre line. Behind its crown, a faint ring of interlocking circles of fine golden light (the Flower of Life pattern), very subtle, like a halo drawn in starlight. Branches spread wide and symmetrical, left and right, reaching toward the edges, with soft gold leaves and drifting motes. Distant marble arches and waterfalls at the far left and right edges, deep in haze. Deep night sky with violet and blue nebula. A small hooded figure stands at the foot of the trunk, seen from behind, tiny.
+Important: NO glowing orbs, spheres, gems or coloured lights on the trunk or branches; the app draws its own glowing spheres on top. Keep the branch tips and the area around them calm and slightly darker so spheres placed there read clearly. The bottom 25% is calm dark water.
+
+----------------------------------------------------------------------------------------------------------
+2. TR-PATH  (ESSENTIAL) Living light for the paths between spheres. Landscape 2048 x 128, transparent.
+----------------------------------------------------------------------------------------------------------
+A single horizontal ribbon of flowing golden light running from the left edge to the right edge, centred vertically: a bright thin core, a soft warm glow around it, and tiny sparks drifting along it. It must tile seamlessly left to right (the right edge continues exactly into the left edge). Everything else transparent.
+
+----------------------------------------------------------------------------------------------------------
+3 to 9. The seven branch spheres  (ESSENTIAL) Square 1024 x 1024, transparent, one per prompt.
+Paste this line first, once:
+----------------------------------------------------------------------------------------------------------
+For the next seven images: a glass sphere of light, centred, filling 80% of the square, with a soft golden rim and an inner glow. Inside it floats one simple emblem made of golden light, clearly readable when the image is shown as small as 64 pixels. Same sphere, same lighting, same size every time; only the emblem and its inner tint change. Transparent background, no shadow on the ground, no text.
+
+3. TN-UNI  The Universe: a small spiral galaxy with a ringed planet in front of it. Inner tint deep blue.
+4. TN-MND  The Mind: a softly glowing human brain made of fine light threads. Inner tint violet.
+5. TN-LIF  Life: a DNA double helix twisting upward, with a tiny leaf at its top. Inner tint teal.
+6. TN-ANC  Ancient Wisdom: a small pyramid under a single star, with an open book at its base. Inner tint amber.
+7. TN-PRN  The Seven Principles: seven tiny points of light arranged in a circle around one brighter point. Inner tint gold.
+8. TN-GEO  Sacred Geometry: an upright tetrahedron (a triangular pyramid) drawn in lines of light, inside a faint circle. Inner tint lilac.
+9. TN-KNW  Inner Knowing: a single small flame of soft light above a still pool, with gentle ripples. Inner tint cyan.
+
+----------------------------------------------------------------------------------------------------------
+10. PATH-BG  (ESSENTIAL) The Path, the progression screen. Portrait 1080 x 1920.
+----------------------------------------------------------------------------------------------------------
+A winding path of warm golden light climbing up through dark mountains and clouds, from the bottom of the frame to a softly glowing citadel of light at the very top. The path makes five gentle switchbacks, each with a small flat landing (a resting place) clearly visible, evenly spaced from bottom to top. A small hooded figure stands at the first landing near the bottom, seen from behind. Night sky, violet and blue nebula, mist between the peaks. Keep the right 40% of the frame darker and quieter (text sits there). No locks, no icons, no text.
+
+----------------------------------------------------------------------------------------------------------
+11. UNL-RING  (ESSENTIAL) The moment a galaxy opens. Square 1024 x 1024, transparent.
+----------------------------------------------------------------------------------------------------------
+A ring of golden light expanding outward like a slow ripple on water, thin and elegant, with a soft inner glow and a scatter of tiny sparks along its edge. Centre of the ring empty and transparent. No rays, no lens flare, no text.
+
+----------------------------------------------------------------------------------------------------------
+12. GAL-SEALED  (polish) A sealed galaxy veil. Square 1024 x 1024, transparent.
+----------------------------------------------------------------------------------------------------------
+A thin, misty veil of dark violet nebula with a faint golden lattice of fine lines across it, like frost on glass made of starlight, roughly circular and fading out at the edges. It will sit over a galaxy that isn't open yet, so the galaxy behind must still be partly visible through it. Everything outside the veil transparent. No lock symbol, no text.
+
+----------------------------------------------------------------------------------------------------------
+13 to 19. The seven principles  (polish) Square 512 x 512, transparent, one per prompt.
+Paste this line first, once:
+----------------------------------------------------------------------------------------------------------
+For the next seven images: one simple emblem made of thin golden light lines on a transparent background, centred, the same line weight and glow every time, readable at 48 pixels. No circle around it, no text.
+
+13. PR-1  Mentalism: a spiral.
+14. PR-2  Correspondence: two overlapping circles, one above the other, as in "as above, so below".
+15. PR-3  Vibration: a single smooth wave line.
+16. PR-4  Polarity: a short line with a small dot at each end, one bright and one dim.
+17. PR-5  Rhythm: a pendulum mid-swing, with a faint arc showing its path.
+18. PR-6  Cause and Effect: two linked rings.
+19. PR-7  Gender: two interlocking curved shapes, one filled with light and one outlined, forming a circle (no yin-yang dots).
+
+----------------------------------------------------------------------------------------------------------
+Send back: TR-BG, TR-PATH, TN-UNI, TN-MND, TN-LIF, TN-ANC, TN-PRN, TN-GEO, TN-KNW, PATH-BG, UNL-RING
+(essential), and GAL-SEALED, PR-1 to PR-7 if you made them.

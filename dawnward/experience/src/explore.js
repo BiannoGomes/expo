@@ -188,9 +188,9 @@ export function createExplore(store, h) {
         sys.kind === "expedition" ? el("div", { class: "actions" }, followButton(sys, () => { draw(); body().querySelector(`[aria-labelledby="x-${sys.id}"] .follow`)?.focus(); })) : null,
         el("ul", { class: "missions" }, ms.map((m) => {
           const a = attemptFor(m.id), done = a?.status === "completed" || data.attempts.some((x) => x.missionId === m.id && x.status === "completed");
-          const lock = !done && !a && locked(m);
-          const state = done ? "Done" : a ? "In progress" : lock ? "Plus" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`;
-          return el("li", {}, el("button", { class: `mission${done ? " done" : ""}${lock ? " locked" : ""}`, onclick: () => play(m.id), "aria-label": `${m.title}, ${m.part}. ${m.objective} ${lock ? "Part of Dawnward Plus." : `${state}.`}` },
+          const pl = !done && h.missionLock?.(m), lock = !done && !a && !pl && locked(m);
+          const state = done ? "Done" : pl ? "Opens later" : a ? "In progress" : lock ? "Plus" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`;
+          return el("li", {}, el("button", { class: `mission${done ? " done" : ""}${lock || pl ? " locked" : ""}`, onclick: () => play(m.id), "aria-label": `${m.title}, ${m.part}. ${m.objective} ${pl ? `Opens when you: ${pl.need}` : lock ? "Part of Dawnward Plus." : `${state}.`}` },
             el("span", { class: "mstate", "aria-hidden": "true" }, done ? "✦" : ""),
             el("span", { class: "rtext" }, el("span", { class: "rtitle" }, m.part), el("span", { class: "rsub" }, m.objective)),
             el("span", { class: "mmeta" }, state)));
@@ -212,6 +212,13 @@ export function createExplore(store, h) {
     h.showPlace("explore");
     body().replaceChildren(el("p", { class: "quiet", role: "status" }, "Opening…"));
     await refresh();
+    const pl = h.missionLock?.(m);
+    if (pl) { // the path comes first: it opens by doing, never by paying
+      body().replaceChildren(...head(m.title, null, back), el("p", { class: "lead" }, m.objective), h.lockCard(pl),
+        el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => { from = null; h.goNext(pl.next); } }, h.nextLabel(pl.next)), el("button", { class: "ghost", onclick: back }, "Back")));
+      body().querySelector(".s-title")?.focus();
+      return;
+    }
     if (locked(m)) { gate(m); return; }
     const r = await store.begin(m.id);
     if (r.status === 402) { await refresh(); gate(m); return; }

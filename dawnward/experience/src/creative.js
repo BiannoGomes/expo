@@ -150,7 +150,7 @@ export function createCreative(h) {
   const root = $("creative"), page = $("cw-page"), door = $("cw-door"), stage = $("cw-stage");
   let view = "galaxy", realm = "creative", pid = null, scene = null, saved = load(), keyHandler = null, exp = null, pageKind = null, packId = null;
   const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); return true; } catch { return false; } };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch { return false; } h.changed?.(); return true; };
   const locked = (r, id) => RANK[planet(r, id)?.access ?? "free"] > RANK[h.explore.plan()];
 
   function route() {
@@ -169,8 +169,31 @@ export function createCreative(h) {
   const back = (label, go) => el("button", { class: "text-btn back", onclick: go }, el("span", { html: svg(ICON.back, 16) }), ` ${label}`);
 
   // ---------------- a galaxy's page ----------------
+  /** The path: a galaxy not yet earned shows what opens it, never its worlds. Waits for progress on a deep link. */
+  function pathCheck(r, then) {
+    if (h.pathReady && !h.pathReady()) { h.ready?.().then(then); return true; }
+    const lk = h.pathLock?.(r);
+    if (lk) { lockedGalaxy(r, lk); return true; }
+    return false;
+  }
+  function lockedGalaxy(r, lk) {
+    realm = r; show("gate");
+    const R = REALMS[r];
+    page.replaceChildren(el("div", { class: "ycol" },
+      h.crumbs([{ label: "Universe", go: h.toUniverse }, { label: R.name }]),
+      R.art ? el("div", { class: "cw-hero locked", "aria-hidden": "true" }, el("img", { src: asset(`img/art/${R.art}.webp`), alt: "" })) : null,
+      el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, R.name),
+      el("p", { class: "lead" }, R.lead),
+      h.lockCard(lk),
+      el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => h.goNext(lk.next) }, h.nextLabel(lk.next)),
+        el("button", { class: "ghost", onclick: () => h.toUniverse() }, "Back to the Universe"))));
+    root.scrollTop = 0;
+    $("cw-title").focus({ preventScroll: true });
+    announce(`${R.name} isn't open yet.`);
+  }
   function open(r = realm) {
     if (!REALMS[r]) r = "creative";
+    if (pathCheck(r, () => open(r))) return;
     realm = r; show("galaxy");
     const R = REALMS[r], open_ = R.planets.filter((p) => p.status === "open"), freeN = open_.filter((p) => p.access === "free").length;
     const metaOf = (p) => {
@@ -240,6 +263,7 @@ export function createCreative(h) {
   // Skip finishes it at once. Reduced motion shows the temple still.
   let anims = [];
   function openDoor() {
+    if (pathCheck("creative", () => openDoor())) return;
     realm = "creative"; show("door");
     const still = reduced();
     const dests = ["kingdom", "forest", "architect", "garden"].map((k) => meta("creative", k));
@@ -291,6 +315,7 @@ export function createCreative(h) {
   async function enter(r, id, args = {}) {
     const p = planet(r, id);
     if (!p || p.status !== "open") return open(r);
+    if (pathCheck(r, () => enter(r, id, args))) return;
     if (p.page) return p.page === "gallery" ? gallery() : p.page === "tree" ? treePage() : p.page === "wisdom" ? wisdomPage() : calendarPage();
     if (locked(r, id)) { await h.ready?.(); if (locked(r, id)) return gate(r, id); }
     realm = r; pid = id; show("world");

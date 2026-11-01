@@ -24,6 +24,8 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
 
 (async () => {
   const browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+  // a returning explorer: every galaxy already open (the path itself is tested in e2e-path.cjs)
+  { const nc = browser.newContext.bind(browser); browser.newContext = async (o) => { const c = await nc(o); await c.addInitScript(() => { try { if (!localStorage.getItem("dw-progress-v1")) localStorage.setItem("dw-progress-v1", JSON.stringify({ unlocked: { knowledge: "seed", spiritual: "seed", creative: "seed", ai: "seed", gateway: "seed" }, celebrated: { knowledge: true, spiritual: true, creative: true, ai: true, gateway: true } })); } catch {} }); return c; }; }
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
   const errors = []; page.on("pageerror", (e) => errors.push(String(e)));

@@ -13,6 +13,7 @@ import { buildHome } from "./home-scene.js";
 import { createExplore, localStore, remoteStore } from "./explore.js";
 import { createCreative, REALMS } from "./creative.js";
 import { QUESTIONS } from "./questions.js";
+import { createProgress, facts as pathFacts, PATH, KEY as PATH_KEY } from "./progress.js";
 import { MISSIONS, SYSTEMS, WORLD_PLAY, missionById } from "../../packages/core/src/expeditions/index.ts";
 
 const $ = (id) => document.getElementById(id);
@@ -311,7 +312,7 @@ function main(data, failed) {
   function worldNextMission(w) {
     const open = (explore?.data.attempts ?? []).find((a) => (a.status === "in_progress" || a.status === "paused") && missionById(a.missionId)?.world === w);
     if (open) return missionById(open.missionId);
-    for (const sys of SYSTEMS.filter((x) => x.world === w)) { const id = sys.missionIds.find((x) => !chapterDone(x)); const m = id && missionById(id); if (m && !explore?.locked?.(m)) return m; }
+    for (const sys of SYSTEMS.filter((x) => x.world === w)) { const id = sys.missionIds.find((x) => !chapterDone(x)); const m = id && missionById(id); if (m && !explore?.locked?.(m) && !(m.id === "gateway-1" && pathLock("gateway"))) return m; }
     return null;
   }
   const fromWorld = (w) => ({ from: { label: META[w].name, go: () => goWorld(w), trail: [growthCrumb, { label: META[w].name, go: () => goWorld(w) }] } });
@@ -440,6 +441,7 @@ function main(data, failed) {
   // Privacy is one small control, not a sentence on every screen; its words stay attached
   // to the input for screen readers.
   let recog = null, autosave = null, saving = false, clientKey = null, edPrompt = null;
+  let progress = createProgress(device), pathInit = false, unlockShowing = null; // the galaxy path (progress.js)
   function openEditor(w, { speak = false, prompt = null } = {}) {
     if (state.place !== "world" || state.world !== w) { goWorld(w, { then: () => openEditor(w, { speak, prompt }) }); return; }
     const draft = device.read(DRAFT, null);
@@ -877,7 +879,7 @@ function main(data, failed) {
   let downloads = null;
   window.claude?.use?.("downloads").then((d) => (downloads = d), () => {});
   $("y-export").addEventListener("click", async () => {
-    const json = JSON.stringify({ exported: new Date().toISOString(), memories: data.stars.map(({ id, world, date, excerpt }) => ({ id, world, date, words: excerpt })), patterns: data.themes.map(({ id, world, statement, starIds, corrected, rejected }) => ({ id, world, statement, memories: starIds, corrected, rejected })), expeditions: explore?.store.snapshot?.() ?? null, worlds: creative?.snapshot() ?? null, direction: device.read(DIRECTION, null) }, null, 2);
+    const json = JSON.stringify({ exported: new Date().toISOString(), memories: data.stars.map(({ id, world, date, excerpt, prompt }) => ({ id, world, date, ...(prompt ? { question: prompt } : {}), words: excerpt })), patterns: data.themes.map(({ id, world, statement, starIds, corrected, rejected }) => ({ id, world, statement, memories: starIds, corrected, rejected })), expeditions: explore?.store.snapshot?.() ?? null, worlds: creative?.snapshot() ?? null, direction: device.read(DIRECTION, null), path: progress?.snapshot() ?? null }, null, 2);
     const filename = `dawnward-${today()}.json`;
     if (downloads) {
       try { await downloads.save({ filename, data: json }); announce("Saved."); }
@@ -891,10 +893,10 @@ function main(data, failed) {
   $("y-delete").addEventListener("click", () => {
     const box = $("y-delete-confirm");
     box.hidden = false;
-    box.replaceChildren(el("p", { tabindex: "-1", id: "y-del-ask" }, data.stars.length ? `Delete all ${plural(data.stars.length, "memory", "memories")}${creative?.hasData() ? ", and everything you made in the worlds," : ""} from this device? This can't be undone.` : "Delete everything you made in the worlds from this device? This can't be undone."),
+    box.replaceChildren(el("p", { tabindex: "-1", id: "y-del-ask" }, `Delete everything Dawnward keeps on this device${data.stars.length ? `, including ${plural(data.stars.length, "memory", "memories")}` : ""}: your practices, direction, creations and the galaxies you've opened? This can't be undone.`),
       el("div", { class: "actions" },
         el("button", { class: "danger", onclick: () => {
-          const okA = device.remove(STORE), okB = device.remove(DRAFT), okC = explore ? explore.store.wipe() : true, okD = creative ? creative.wipe() : true, okE = device.remove(DIRECTION);
+          const okA = device.remove(STORE), okB = device.remove(DRAFT), okC = explore ? explore.store.wipe() : true, okD = creative ? creative.wipe() : true, okE = device.remove(DIRECTION) && (progress ? progress.wipe() : device.remove(PATH_KEY));
           if (!okA || !okB || !okC || !okD || !okE) { box.append(el("p", { class: "error", role: "alert" }, "I couldn't delete everything. Try again.")); return; }
           data.stars = []; data.themes = []; finish(data); explore?.refresh().then(() => { sync(); drawYou(); }); sync(); renderHome(); drawYou(); box.hidden = true; announce("Everything on this device was deleted."); $("y-title").focus();
         } }, "Delete everything"),
@@ -935,6 +937,7 @@ function main(data, failed) {
     } finally { routing = false; }
   }
   function showPlace(p) {
+    if (p !== "earth") unlockShowing = null;
     state.place = p;
     document.body.dataset.place = p;
     for (const id of ["memories", "you", "explore", "atlas", "earth", "creative"]) $(id).hidden = p !== id;
@@ -989,6 +992,51 @@ function main(data, failed) {
   $("notice").addEventListener("click", () => openYou());
   $("to-you").addEventListener("click", () => openYou());
 
+  // ----- the path: galaxies open by doing real things (progress.js) -----
+  const pathF = () => pathFacts({ attempts: explore?.data.attempts ?? [], creative: creative?.progress ?? null, direction: direction() });
+  function pathLock(id) { progress ??= createProgress(device); const s = progress.standing(id, pathF()); return s.open ? null : s; }
+  function initPath() {
+    const first = !device.read(PATH_KEY, null);
+    progress ??= createProgress(device);
+    const c = creative?.progress ?? {}, used = [];
+    if (c.principles?.length || c.knowing?.length) used.push("knowledge");
+    if (c.dreams?.length) used.push("spiritual");
+    if (c.places?.length || c.moments?.length || c.lit?.kingdom?.length || c.lit?.forest?.length) used.push("creative");
+    if (c.places?.length || c.moments?.length) used.push("ai");
+    const hadData = !!(data.stars.length || explore?.data.attempts?.length || creative?.hasData() || direction());
+    progress.migrate({ hadData, used });
+    const fresh = progress.update(pathF());
+    if (first && hadData) for (const id of fresh) progress.celebrated(id); // someone who was already here: open quietly
+    pathInit = true;
+    drawPath();
+    if (state.place === "world" && state.world && /\/overview$/.test(location.hash) && !document.body.classList.contains("quiet")) worldIntro(state.world);
+  }
+  /** After anything that might open a galaxy. The celebration waits for a calm moment (Home or the Universe). */
+  function checkPath() { if (!progress) return; if (progress.update(pathF()).length) drawPath(); }
+  function lockCard(lk) {
+    return el("div", { class: "card lockcard", role: "group", "aria-label": "How to open it" },
+      el("p", { class: "rtitle" }, el("span", { html: svg(ICON.lock, 14) }), " Opens when you:"),
+      el("p", {}, lk.need),
+      el("div", { class: "lockbar", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(lk.of), "aria-valuenow": String(lk.have), "aria-label": `${lk.have} of ${lk.of} done` },
+        el("span", { style: `width:${Math.round((lk.have / lk.of) * 100)}%` })),
+      el("p", { class: "quiet small" }, `${lk.have} of ${lk.of} done${lk.extra ? `. ${lk.extra}` : "."}`));
+  }
+  const nextLabel = (n) => (n === "creative" ? "Go to Creative Worlds" : n === "future" ? "Go to Future" : "Find a practice");
+  function goNext(n) { if (n === "creative") creative.open("creative"); else if (n === "future") goWorld("future"); else explore.open(); }
+  const PATH_NAME = Object.fromEntries(GALAXIES.map((g) => [g.id, g.name]));
+  /** One quiet moment when a galaxy opens: a card on Home with a ring of light (still with reduced motion). Shown once. */
+  function celebrateCard() {
+    const id = unlockShowing ?? progress?.toCelebrate();
+    if (!id) return null;
+    if (!unlockShowing) { unlockShowing = id; progress.celebrated(id); }
+    const go = () => { if (id === "gateway") explore.play("gateway-1", { from: { label: "Home", go: () => openEarth(), trail: [] } }); else if (REALMS[id]) creative.open(id); else openAtlas(); };
+    return el("section", { class: "card unlocked", role: "status", "aria-labelledby": "un-h" },
+      el("div", { class: "unlock-ring", "aria-hidden": "true" }),
+      el("h3", { class: "un-title", id: "un-h" }, `${PATH_NAME[id] ?? "A galaxy"} is open`),
+      el("p", { class: "why" }, "What you've done opened it. It stays open."),
+      el("div", { class: "actions" }, el("button", { class: "ghost", onclick: go }, "Go there")));
+  }
+
   // ----- the Universe Atlas: galaxies you can pan, select, zoom toward and enter -----
   const field = $("a-field"), inner = $("a-inner");
   for (const g of GALAXIES) {
@@ -998,9 +1046,22 @@ function main(data, failed) {
     inner.append(el("button", { class: `gx g-${g.id}${g.open ? "" : " closed"}`, "data-id": g.id, style: `--lx:${g.x}%;--ly:${g.y}%;--gx:${g.size};--px:${g.p[0]}%;--py:${g.p[1]}%;--pw:${g.p[2]}`, "aria-label": `${g.name}. ${g.tag} ${g.open ? "Open." : "Not open yet."}`, "aria-pressed": "false", onclick: () => selectGalaxy(g) },
       art, el("span", { class: "gx-name" }, g.name), g.open ? null : el("span", { class: "gx-soon" }, g.access === "plus" ? "Members · preview" : "Preview")));
   }
-  $("a-list").append(...GALAXIES.map((g) => el("li", {}, el("button", { class: "row", onclick: () => selectGalaxy(g) },
-    el("span", { class: "rtext" }, el("span", { class: "rtitle" }, g.name), el("span", { class: "rsub" }, g.tag)),
-    el("span", { class: "mmeta" }, g.open ? "Open" : g.kind === "gateway" ? "Opens next" : "Not open yet")))));
+  // the List view is the path: galaxies in the order they open, each with where you stand
+  function drawPath() {
+    for (const g of GALAXIES) {
+      const lk = pathLock(g.id), b = inner.querySelector(`[data-id="${g.id}"]`);
+      if (!b) continue;
+      b.classList.toggle("locked", !!lk);
+      b.setAttribute("aria-label", `${g.name}. ${lk ? `Locked. ${lk.need} ${lk.have} of ${lk.of} done.` : `${g.tag} Open.`}`);
+      b.querySelector(".gx-lock")?.remove();
+      if (lk) b.append(el("span", { class: "gx-lock" }, el("span", { html: svg(ICON.lock, 12) }), `${lk.have} of ${lk.of}`));
+    }
+    const order = [...PATH.map((p) => GALAXIES.find((g) => g.id === p.id)).filter(Boolean), ...GALAXIES.filter((g) => !PATH.some((p) => p.id === g.id))];
+    $("a-list").replaceChildren(...order.map((g) => { const lk = pathLock(g.id);
+      return el("li", {}, el("button", { class: `row${lk ? " locked" : ""}`, onclick: () => selectGalaxy(g) },
+        el("span", { class: "rtext" }, el("span", { class: "rtitle" }, g.name), el("span", { class: "rsub" }, lk ? lk.need : g.tag)),
+        el("span", { class: "mmeta" }, lk ? `Locked · ${lk.have} of ${lk.of}` : "Open"))); }));
+  }
   document.querySelectorAll("#a-views button").forEach((b) => b.addEventListener("click", () => {
     const list = b.dataset.v === "list";
     $("a-list").hidden = !list; field.hidden = list;
@@ -1014,17 +1075,28 @@ function main(data, failed) {
   function openAtlas() {
     stopSpeech(); quiet(false);
     showPlace("atlas");
+    drawPath();
     $("a-crumbs").replaceChildren(crumbs([{ label: "Universe" }]));
     $("a-title").focus({ preventScroll: true });
     announce("The Universe.");
   }
   function selectGalaxy(g) {
+    const lk = pathLock(g.id);
     inner.querySelectorAll(".gx").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === g.id)));
     // move toward it: the selected galaxy slides to the centre and grows
     // measured from where it really sits, so portrait and landscape both work
     const b = inner.querySelector(`[data-id="${g.id}"]`);
     if (!field.hidden && b) inner.style.transform = `translate(${Math.round(inner.clientWidth / 2 - b.offsetLeft)}px, ${Math.round(inner.clientHeight * 0.42 - b.offsetTop)}px) scale(1.3)`;
     const panel = $("a-panel");
+    if (lk) {
+      panel.replaceChildren(
+        el("h2", { class: "s-title", id: "a-name", tabindex: "-1" }, g.name),
+        el("p", { class: "lead" }, g.tag),
+        lockCard(lk),
+        el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => goNext(lk.next) }, nextLabel(lk.next)),
+          el("button", { class: "ghost", onclick: () => { resetAtlas(); inner.querySelector(`[data-id="${g.id}"]`)?.focus(); } }, "Back to the Universe")));
+      panel.hidden = false; $("a-name").focus({ preventScroll: true }); return;
+    }
     panel.replaceChildren(
       el("p", { class: "kicker" }, g.open ? (g.id === "gateway" ? "Open · free once, then for members" : REALMS[g.id] ? "Open · some worlds are free" : "Open") : g.access === "plus" ? "Preview · not open yet · for members" : "Preview · not open yet"),
       el("h2", { class: "s-title", id: "a-name", tabindex: "-1" }, g.name),
@@ -1121,7 +1193,7 @@ function main(data, failed) {
       }
       const ok = t ? device.write(DIRECTION, { text: t, at: new Date().toISOString() }) : device.remove(DIRECTION);
       if (!ok) { err.textContent = "Couldn't save it on this device. Copy it somewhere safe and try again."; return; }
-      close(); drawEarth(); announce(t ? "Direction saved." : "Direction cleared.");
+      close(); checkPath(); drawEarth(); announce(t ? "Direction saved." : "Direction cleared.");
     };
     dlg.append(el("h2", { id: "dir-h", class: "s-title" }, "Your direction"),
       el("label", { id: "dir-q", for: "dir-text" }, "What do you want to change?"), ta, err,
@@ -1155,6 +1227,7 @@ function main(data, failed) {
       ? el("button", { class: "e-dir-line", id: "e-dir-btn", onclick: directionSheet, "aria-label": `Your direction: ${dir.text}. Edit` }, el("span", { class: "e-dir-to" }, "Toward"), ` ${dir.text}`)
       : el("button", { class: "text-btn", id: "e-dir-btn", onclick: directionSheet }, "Set a direction"));
     $("e-body").replaceChildren(...[
+      celebrateCard(),
       found ? el("div", { class: "card found", role: "status" }, el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
       next,
       writeFirst,
@@ -1339,16 +1412,19 @@ function main(data, failed) {
   explore = createExplore(data.local ? localStore(device) : remoteStore(call), {
     $, el, svg, ICON, META, announce, quiet, longDate, sound, showPlace, asset,
     distress: (t) => DISTRESS.test(t), crisisText: CRISIS_TEXT.join("\n"),
-    onDiscoveries: (_d, fresh) => { sync(); if (fresh.length && explore.data.gameLayer) sound.chime(1175); },
+    onDiscoveries: (_d, fresh) => { sync(); checkPath(); if (fresh.length && explore.data.gameLayer) sound.chime(1175); },
+    missionLock: (m) => (m.id === "gateway-1" ? pathLock("gateway") : null),
+    goNext: (n) => goNext(n), nextLabel: (n) => nextLabel(n), lockCard: (lk) => lockCard(lk),
     goHomeWith: (key) => goHome({ show: key ? `d:${key}` : null }),
     goEarth: (found) => { if (found) state.selStar = `d:${found.key}`; openEarth(found); },
     openLibrary: () => creative?.library(),
     crumbs,
   });
-  const exploreReady = explore.refresh().then(() => { sync(); renderHome(); });
+  const exploreReady = explore.refresh().then(() => { sync(); initPath(); renderHome(); });
   creative = createCreative({ $, el, svg, ICON, asset, sound, announce, showPlace, crumbs, explore,
     toUniverse: () => openAtlas(), toLearn: () => explore.open(), textMode: () => state.mode === "text",
     reflect: (w, prompt) => openEditor(w, { prompt }),
+    pathLock: (r) => pathLock(r), pathReady: () => pathInit, changed: () => checkPath(), goNext: (n) => goNext(n), nextLabel: (n) => nextLabel(n), lockCard: (lk) => lockCard(lk),
     distress: (t) => DISTRESS.test(t), crisisText: CRISIS_TEXT.join("\n"), ready: () => exploreReady });
   let firstVisit = false;
   try { firstVisit = localStorage.getItem("dw-home-seen") !== "1"; } catch {}
@@ -1361,7 +1437,8 @@ function main(data, failed) {
   if (/^#\/[a-z]/.test(startHash) && mode === "galaxy") followRoute(startHash); else openEarth(null, { quietFocus: true });
   booted = true;
   routeTo(routeOf(state.place), { replace: true });
-  addEventListener("popstate", () => { if (state.mode !== "text") followRoute(location.hash); });
+  // a sheet belongs to the screen it opened on: Back (or any route change) closes it first
+  addEventListener("popstate", () => { document.querySelectorAll("dialog.sheetdlg[open]").forEach((d) => d.close()); if (state.mode !== "text") followRoute(location.hash); });
   layout();
   if (ctx) {
     const frames = (window.__dwFrames = []);

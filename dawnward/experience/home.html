@@ -571,6 +571,19 @@
   #creative.immersive { z-index:40; overflow:hidden; }
   #creative .ycol { gap:var(--s5); }
   .cw-hero { align-self:center; width:min(56vw, 260px); aspect-ratio:1; margin:var(--s2) 0 calc(-1 * var(--s2)); }
+  .cw-hero.locked img { filter:grayscale(.55) brightness(.6); animation:none; }
+  .lockcard { display:grid; gap:var(--s2); }
+  .lockcard .rtitle span { display:inline-flex; vertical-align:-2px; color:var(--gold); }
+  .lockbar { height:8px; border-radius:4px; background:rgba(255,255,255,.08); overflow:hidden; }
+  .lockbar span { display:block; height:100%; background:var(--gold); border-radius:4px; }
+  .gx.locked .gx-img { filter:grayscale(.5) brightness(.6); }
+  .gx-lock { display:inline-flex; align-items:center; gap:4px; font-size:13px; color:var(--dim); white-space:nowrap; background:rgba(5,7,13,.7); padding:2px 8px; border-radius:var(--r-pill); }
+  .alist .row.locked .rtitle { color:var(--dim); }
+  .card.unlocked { position:relative; overflow:hidden; display:grid; gap:var(--s2); border-color:var(--edge-strong); }
+  .un-title { font-family:var(--display); font-size:24px; font-weight:500; margin:0; color:var(--ink); }
+  .unlock-ring { position:absolute; right:-40px; top:-40px; width:160px; height:160px; border-radius:50%; border:2px solid rgba(230,192,123,.55); box-shadow:0 0 30px rgba(230,192,123,.25) inset; animation:unlock-ring 1.6s cubic-bezier(.2,.7,.2,1) both; pointer-events:none; }
+  @keyframes unlock-ring { from { transform:scale(.2); opacity:0; } 40% { opacity:1; } to { transform:scale(1); opacity:.7; } }
+  @media (prefers-reduced-motion: reduce) { .unlock-ring { animation:none; opacity:.7; } }
   .cw-hero img { width:100%; height:100%; object-fit:contain; -webkit-mask-image:radial-gradient(circle, #000 58%, transparent 71%); mask-image:radial-gradient(circle, #000 58%, transparent 71%); filter:drop-shadow(0 0 40px rgba(197,91,255,.35)); animation:cw-breathe 9s ease-in-out infinite; }
   @keyframes cw-breathe { 50% { transform:scale(1.035) rotate(1.5deg); } }
   .cw-h { font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--faint); font-weight:500; margin-top:var(--s3); }

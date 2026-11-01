@@ -1,0 +1,209 @@
+{
+  "when": "2026-11-01T13:14:03.055Z",
+  "checks": [
+    {
+      "name": "the path lists every galaxy, in the order they open",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Personal Growth and Earth are open from the start",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Knowledge says exactly what opens it, and where you stand",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "five galaxies are locked on the map, and say so",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no sideways scroll on the path",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the path list",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a locked galaxy shows its progress, with no Enter button",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: a locked galaxy",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "its button leads somewhere real: Learn",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "#/knowledge/tree shows the locked Knowledge, not its worlds",
+      "ok": true,
+      "detail": "Universe / Knowledge / Knowledge /  / Science and wisdom, from the world you can see to "
+    },
+    {
+      "name": "#/creative/kingdom shows the locked Creative Worlds, not its worlds",
+      "ok": true,
+      "detail": "Universe / Creative Worlds / Creative Worlds /  / Places to wander, play and make things"
+    },
+    {
+      "name": "#/creative/door shows the locked Creative Worlds, not its worlds",
+      "ok": true,
+      "detail": "Universe / Creative Worlds / Creative Worlds /  / Places to wander, play and make things"
+    },
+    {
+      "name": "#/universe/spiritual shows the locked Spiritual Exploration, not its worlds",
+      "ok": true,
+      "detail": "Universe / Spiritual Exploration / Spiritual Exploration /  / Quiet places for attention"
+    },
+    {
+      "name": "#/universe/ai shows the locked AI Creation, not its worlds",
+      "ok": true,
+      "detail": "Universe / AI Creation / AI Creation /  / Everything you've made, in one place. The AI s"
+    },
+    {
+      "name": "Future offers its own practice first, not the locked Gateway",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Learn shows the Gateway as opening later, with why",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "playing it shows what opens it instead",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Home says Knowledge is open, once, quietly",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the unlock card",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the opening is kept, with when",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Go there opens Knowledge itself",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "after a reload it's still open, and the card doesn't repeat",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "idempotent: opening again changes nothing",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Spiritual counts real progress: 1 of 2",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the second practice opens Spiritual Exploration",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the third, in a third world, opens Creative Worlds",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the Gateway needs both: 1 of 2 (Future done, no direction yet)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "setting a direction opens the Quantum Gateway",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "AI Creation: make something, 0 of 1",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a moment kept in the Time Garden opens AI Creation",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "now nothing is locked",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Back with a sheet open closes the sheet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "after Delete everything, Knowledge is locked again",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "an existing explorer keeps Knowledge and Spiritual (they'd used them)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "and isn't greeted with unlock cards for them",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "their galaxy opens normally",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "with reduced motion the ring is still, but the card is there",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "at 320 px the path fits without sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "the path list": [],
+    "a locked galaxy": [],
+    "the unlock card": []
+  },
+  "summary": {
+    "total": 39,
+    "failed": 0
+  }
+}
