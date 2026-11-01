@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T11:08:50.974Z",
+  "when": "2026-11-01T11:22:32.626Z",
   "checks": [
     {
       "name": "the galaxy page shows the Tree of Life map",
@@ -114,7 +114,7 @@
     {
       "name": "flower draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":240,\"median\":17}"
+      "detail": "{\"n\":240,\"median\":18}"
     },
     {
       "name": "an inner knowing note is kept on this device",
@@ -144,7 +144,7 @@
     {
       "name": "knowing draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":98,\"median\":52}"
+      "detail": "{\"n\":100,\"median\":49}"
     },
     {
       "name": "the note appears in the Creation Gallery",
@@ -199,7 +199,7 @@
     {
       "name": "hall draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":220,\"median\":24}"
+      "detail": "{\"n\":207,\"median\":26}"
     },
     {
       "name": "tapping the star in 3D explains it, belief kept apart from geometry",
@@ -224,7 +224,7 @@
     {
       "name": "solids draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":157,\"median\":35}"
+      "detail": "{\"n\":156,\"median\":37}"
     },
     {
       "name": "no page or shader errors",
@@ -244,19 +244,19 @@
   "frames": {
     "flower": {
       "n": 240,
-      "median": 17
+      "median": 18
     },
     "knowing": {
-      "n": 98,
-      "median": 52
+      "n": 100,
+      "median": 49
     },
     "hall": {
-      "n": 220,
-      "median": 24
+      "n": 207,
+      "median": 26
     },
     "solids": {
-      "n": 157,
-      "median": 35
+      "n": 156,
+      "median": 37
     }
   },
   "summary": {
