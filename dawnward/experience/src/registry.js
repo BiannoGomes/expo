@@ -71,6 +71,8 @@ export const ART = {
   /** The Knowledge tree's art (TR-BG and the seven TN- spheres, docs/universe/chatgpt-tree-and-path-prompts.txt). Off until the images are in assets/img/art. */
   tree: true,
   /** Bianno's levelling-up art (docs/universe/chatgpt-levelling-up-prompts.txt): the path, and each threshold as it arrives. */
-  path: "PATH-BG", ring: "UNL-RING", thresholds: { growth: "LV-0" },
+  path: "PATH-BG", ring: "UNL-RING", thresholds: { growth: "LV-0", knowledge: "LV-1", spiritual: "LV-2", creative: "LV-3", ai: "LV-4", gateway: "LV-5", earth: "LV-6" },
+  /** Becoming (Journey): earned only, from galaxies actually opened. Landings (the path list): where you stand on it. */
+  becoming: ["YOU-1", "YOU-2", "YOU-3", "YOU-4"], landings: ["LD-1", "LD-2", "LD-3", "LD-4", "LD-5"],
 };
 export const artPath = (code) => (!code ? null : code.startsWith("worlds/") ? `img/${code}.webp` : `img/art/${code}.webp`);

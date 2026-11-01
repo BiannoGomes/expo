@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T15:11:12.787Z",
+  "when": "2026-11-01T15:45:50.550Z",
   "checks": [
     {
       "name": "the path lists every galaxy, in the order they open",
@@ -23,6 +23,16 @@
     },
     {
       "name": "no sideways scroll on the path",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the path card says where you stand: 0 of 5",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a new person isn't shown a Becoming image they haven't earned",
       "ok": true,
       "detail": ""
     },
@@ -112,6 +122,11 @@
       "detail": ""
     },
     {
+      "name": "after a first practice, Journey shows Kindled",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "idempotent: opening again changes nothing",
       "ok": true,
       "detail": ""
@@ -153,6 +168,16 @@
     },
     {
       "name": "now nothing is locked",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "and the path card says every galaxy is open",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "with every galaxy open, Becoming is Whole",
       "ok": true,
       "detail": ""
     },
@@ -208,7 +233,7 @@
     "the unlock card": []
   },
   "summary": {
-    "total": 40,
+    "total": 45,
     "failed": 0
   }
 }

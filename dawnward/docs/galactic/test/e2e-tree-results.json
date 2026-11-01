@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T15:10:18.693Z",
+  "when": "2026-11-01T15:40:03.864Z",
   "checks": [
     {
       "name": "the galaxy is one tree with seven branches, each a button",
@@ -14,7 +14,7 @@
     {
       "name": "Inner Knowing is at the crown, above every other branch",
       "ok": true,
-      "detail": "{\"knowing\":510.109375,\"universe\":619.9375,\"ancient\":619.9375,\"mind\":740.234375,\"principles\":740.234375,\"life\":860.515625,\"geometry\":860.515625}"
+      "detail": "{\"knowing\":495.5625,\"universe\":579.203125,\"ancient\":579.203125,\"mind\":679.109375,\"principles\":679.109375,\"life\":779,\"geometry\":779}"
     },
     {
       "name": "every branch says what kind of knowledge it is, and that it's new",
@@ -149,7 +149,7 @@
     {
       "name": "flower draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":181,\"median\":17}"
+      "detail": "{\"n\":240,\"median\":17}"
     },
     {
       "name": "an inner knowing note is kept on this device",
@@ -179,7 +179,7 @@
     {
       "name": "knowing draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":103,\"median\":45}"
+      "detail": "{\"n\":110,\"median\":43}"
     },
     {
       "name": "the note appears in the Creation Gallery",
@@ -234,7 +234,7 @@
     {
       "name": "hall draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":229,\"median\":22}"
+      "detail": "{\"n\":233,\"median\":22}"
     },
     {
       "name": "tapping the star in 3D explains it, belief kept apart from geometry",
@@ -259,7 +259,7 @@
     {
       "name": "solids draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":151,\"median\":33}"
+      "detail": "{\"n\":162,\"median\":34}"
     },
     {
       "name": "no page or shader errors",
@@ -278,20 +278,20 @@
   },
   "frames": {
     "flower": {
-      "n": 181,
+      "n": 240,
       "median": 17
     },
     "knowing": {
-      "n": 103,
-      "median": 45
+      "n": 110,
+      "median": 43
     },
     "hall": {
-      "n": 229,
+      "n": 233,
       "median": 22
     },
     "solids": {
-      "n": 151,
-      "median": 33
+      "n": 162,
+      "median": 34
     }
   },
   "summary": {

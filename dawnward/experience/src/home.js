@@ -1028,6 +1028,7 @@ function main(data, failed) {
     if (first && hadData) for (const id of fresh) progress.celebrated(id); // someone who was already here: open quietly
     pathInit = true;
     drawPath();
+    if (state.place === "memories") drawMemories(); // a deep link drew Journey before practices had loaded
     if (state.place === "world" && state.world && /\/overview$/.test(location.hash) && !document.body.classList.contains("quiet")) worldIntro(state.world);
   }
   /** After anything that might open a galaxy. The celebration waits for a calm moment (Home or the Universe). */
@@ -1050,6 +1051,7 @@ function main(data, failed) {
     if (!unlockShowing) { unlockShowing = id; progress.celebrated(id); }
     const go = () => { if (id === "gateway") explore.play("gateway-1", { from: { label: "Home", go: () => openEarth(), trail: [] } }); else if (REALMS[id]) creative.open(id); else openAtlas(); };
     return el("section", { class: "card unlocked", role: "status", "aria-labelledby": "un-h" },
+      ART.thresholds[id] ? el("img", { class: "un-art", src: asset(artPath(ART.thresholds[id])), alt: "" }) : null,
       el("img", { class: "unlock-ring art", src: asset(artPath(ART.ring)), alt: "" }),
       el("h3", { class: "un-title", id: "un-h" }, `${PATH_NAME[id] ?? "A galaxy"} is open`),
       el("p", { class: "why" }, "What you've done opened it. It stays open."),
@@ -1077,6 +1079,9 @@ function main(data, failed) {
       if (lk) b.append(el("span", { class: "gx-lock" }, el("span", { html: svg(ICON.lock, 12) }), `${lk.have} of ${lk.of}`));
     }
     const order = [...PATH.map((p) => GALAXIES.find((g) => g.id === p.id)).filter(Boolean), ...GALAXIES.filter((g) => !PATH.some((p) => p.id === g.id))];
+    const opened = PATH.filter((s) => !s.always && !pathLock(s.id)).length;
+    $("a-landing").replaceChildren(el("img", { src: asset(artPath(ART.landings[Math.min(opened, 4)])), alt: "" }),
+      el("p", {}, el("span", { class: "rtitle" }, opened >= 5 ? "Every galaxy is open" : `${opened} of 5 galaxies opened`), el("span", { class: "rsub" }, opened >= 5 ? "The whole path is yours." : "Each opens by doing something real.")));
     $("a-list").replaceChildren(...order.map((g) => { const lk = pathLock(g.id);
       return el("li", {}, el("button", { class: `row${lk ? " locked" : ""}`, onclick: () => selectGalaxy(g) },
         el("span", { class: "rtext" }, el("span", { class: "rtitle" }, g.name), el("span", { class: "rsub" }, lk ? lk.need : g.tag)),
@@ -1084,7 +1089,7 @@ function main(data, failed) {
   }
   document.querySelectorAll("#a-views button").forEach((b) => b.addEventListener("click", () => {
     const list = b.dataset.v === "list";
-    $("a-list").hidden = !list; field.hidden = list;
+    $("a-list").hidden = !list; $("a-landing").hidden = !list; field.hidden = list;
     document.querySelectorAll("#a-views button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
     resetAtlas();
   }));
@@ -1110,6 +1115,7 @@ function main(data, failed) {
     const panel = $("a-panel");
     if (lk) {
       panel.replaceChildren(
+        ART.thresholds[g.id] ? el("img", { class: "a-threshold locked", src: asset(artPath(ART.thresholds[g.id])), alt: "" }) : null,
         el("h2", { class: "s-title", id: "a-name", tabindex: "-1" }, g.name),
         el("p", { class: "lead" }, g.tag),
         lockCard(lk),
@@ -1266,7 +1272,13 @@ function main(data, failed) {
     const disc = [...ex.discoveries].reverse();
     const chapters = (ex.attempts ?? []).filter((x) => x.status === "completed").length;
     const counts = [[data.stars.length, "Reflections"], [chapters, "Chapters"], [ex.experiments.length, "Actions"], [ex.discoveries.length, "Discoveries"]];
-    box.replaceChildren(
+    // Becoming: shown only once earned. Kindled by your first reflection or practice; brighter as galaxies open.
+    const opened = PATH.filter((st) => !st.always && !pathLock(st.id)).length, began = data.stars.length || chapters;
+    const lvl = !began ? -1 : opened >= 5 ? 3 : opened >= 4 ? 2 : opened >= 2 ? 1 : 0;
+    const NAMES = [["Kindled", "Your first light."], ["Growing", "Two galaxies opened by what you've done."], ["Radiant", "Four galaxies opened."], ["Whole", "Every galaxy is open."]];
+    const becoming = lvl < 0 ? null : el("div", { class: "becoming" }, el("img", { src: asset(artPath(ART.becoming[lvl])), alt: "" }),
+      el("p", {}, el("span", { class: "rtitle" }, NAMES[lvl][0]), el("br"), el("span", { class: "quiet small" }, NAMES[lvl][1])));
+    box.replaceChildren(becoming ?? "",
       // Your evolution: counts of what was done and kept, nothing estimated
       el("section", { class: "group", "aria-labelledby": "mm-evo" }, el("h3", { id: "mm-evo" }, "Your Progress"),
         el("ul", { class: "evo" }, counts.map(([n, label]) => el("li", {}, el("span", { class: "evo-n" }, String(n)), el("span", { class: "evo-l" }, label))))),

@@ -116,3 +116,10 @@ so each is cut out along its glass edge; PR-3 and PR-6 had black backgrounds, tu
 TR-BG, TR-PATH, TN-UNI, TN-MND, TN-LIF, TN-ANC, TN-PRN, TN-GEO, TN-KNW, PATH-BG, UNL-RING, PR-1, PR-2, PR-3, PR-4, PR-6, LV-0.
 In use: TR-BG and the TN spheres (the Knowledge tree), UNL-RING (a galaxy opening), PATH-BG (the path list), LV-0 (Personal Growth in the Universe).
 Kept for later: TR-PATH, and PR-1 to PR-6 (waiting for PR-5 and PR-7 so the Hall's set is complete).
+
+## Round 3 (2026-11-01): the new Tree, PR-5, thresholds, becoming, landings
+TR-BG replaced by Bianno's second tree (3:4, fills the Knowledge tree panel). PR-5 (Rhythm) processed like the other emblems.
+LV-1..LV-6 (each galaxy's threshold: locked preview, its "is open" card, its Universe panel), YOU-1..YOU-4 (Becoming, Journey ›
+Milestones, earned only: Kindled after a first reflection or practice, Growing at 2 galaxies opened, Radiant at 4, Whole at 5),
+YOU-0 (spare: the figure with no light), LD-1..LD-5 (the path card in Universe › List, by galaxies opened). Resized to webp, 720 px wide.
+Still to make: PR-7 (Gender). The Hall's seven emblems go in together once it exists.

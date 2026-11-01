@@ -513,7 +513,8 @@ export function createCreative(h) {
         return el("button", { class: `cw-branch st-${st.toLowerCase()}`, "data-branch": b.id, style: `left:${b.at[0]}%;top:${b.at[1]}%;--tint:${b.tint}`, "aria-pressed": "false",
           "aria-label": `${b.name}: ${b.sub}. ${KINDS[b.kind]}. ${st}.`, onclick: () => show(b) },
           ART ? el("img", { class: "cw-borb img", src: asset(`img/art/${b.art}.webp`), alt: "" }) : el("span", { class: "cw-borb", "aria-hidden": "true" }),
-          el("span", { class: "cw-blabel" }, el("span", { class: "cw-btitle" }, b.name), el("span", { class: "cw-bsub" }, b.sub), el("span", { class: "cw-bstate" }, st))); }));
+          ART ? el("span", { class: "cw-blabel one", "aria-hidden": "true" }, el("span", { class: "cw-btitle" }, b.short), st === "Members" ? el("span", { class: "cw-bmark lock", html: svg(ICON.lock, 12) }) : el("span", { class: `cw-bmark ${st === "Explored" ? "done" : "new"}` }, st === "Explored" ? "✓" : ""))
+            : el("span", { class: "cw-blabel" }, el("span", { class: "cw-btitle" }, b.name), el("span", { class: "cw-bsub" }, b.sub), el("span", { class: "cw-bstate" }, st))); }));
     return el("div", { class: "cw-btree-wrap" }, tree, panel);
   }
 

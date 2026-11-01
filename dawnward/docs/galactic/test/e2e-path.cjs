@@ -53,6 +53,10 @@ async function atlasList(p) {
   check("Knowledge says exactly what opens it, and where you stand", /Finish one expedition in Personal Growth\.[\s\S]*?Locked · 0 of 1/.test(list));
   check("five galaxies are locked on the map, and say so", (await page.locator("#a-inner .gx.locked").count()) === 5 && /Locked\. Finish one expedition/.test(await page.locator('#a-inner [data-id="knowledge"]').getAttribute("aria-label")));
   check("no sideways scroll on the path", await noSideways(page));
+  check("the path card says where you stand: 0 of 5", /0 of 5 galaxies opened/.test(await page.locator("#a-landing").innerText()));
+  await go(page, "journey/milestones");
+  check("a new person isn't shown a Becoming image they haven't earned", (await page.locator("#m-miles .becoming").count()) === 0);
+  await go(page, "universe"); await page.locator('#a-views [data-v="list"]').click();
   await shot(page, "1-list");
   await axe(page, "the path list");
   await page.locator('#a-views [data-v="map"]').click();
@@ -92,6 +96,8 @@ async function atlasList(p) {
   await page.reload(); await ready(page); await page.waitForTimeout(500);
   await go(page, "home");
   check("after a reload it's still open, and the card doesn't repeat", (await page.locator("#e-body .card.unlocked").count()) === 0 && !/Opens when you/.test(await (async () => { await go(page, "knowledge/tree"); return page.locator("#cw-page").innerText(); })()));
+  await go(page, "journey/milestones");
+  check("after a first practice, Journey shows Kindled", /Kindled/.test(await page.locator("#m-miles .becoming").innerText().catch(() => "")));
   const k2 = await kept(page);
   check("idempotent: opening again changes nothing", k2.unlocked.knowledge === k1.unlocked.knowledge && Object.keys(k2.unlocked).length === 1);
 
@@ -124,6 +130,9 @@ async function atlasList(p) {
   check("a moment kept in the Time Garden opens AI Creation", /AI Creation is open/.test(await page.locator("#e-body").evaluate((e) => e.textContent)));
   list = await atlasList(page);
   check("now nothing is locked", !/Locked/.test(list) && (await page.locator("#a-inner .gx.locked").count()) === 0);
+  check("and the path card says every galaxy is open", /Every galaxy is open/.test(await page.locator("#a-landing").innerText()));
+  await go(page, "journey/milestones");
+  check("with every galaxy open, Becoming is Whole", /Whole/.test(await page.locator("#m-miles .becoming").innerText()));
 
   // ----- Back closes a sheet -----
   await go(page, "home");
