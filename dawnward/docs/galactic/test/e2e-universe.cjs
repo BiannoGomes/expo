@@ -123,11 +123,12 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     results.timings[`${name}.to_first_step_ms`] = Date.now() - t0;
     // lenses: rate each reading
     const groups = page.locator(".lens-scale");
-    check(`${name}: three readings to weigh`, (await groups.count()) === 3);
+    check(`${name}: one reading at a time, 1 of 3`, (await groups.count()) === 1 && /1 of 3/.test(await page.textContent(".lens-pos")));
     check(`${name}: Continue waits until every reading is rated`, await page.getByRole("button", { name: "Continue" }).isDisabled());
-    await groups.nth(0).getByRole("radio", { name: "Partly" }).click();
-    await groups.nth(1).getByRole("radio", { name: "Fits well" }).click();
-    await groups.nth(2).getByRole("radio", { name: "Fits well" }).click();
+    await groups.getByRole("radio", { name: "Partly" }).click(); await page.waitForTimeout(400);
+    check(`${name}: rating one brings the next, and keeps the first visible`, /2 of 3/.test(await page.textContent(".lens-pos")) && (await page.locator(".lens-past").count()) === 1);
+    await groups.getByRole("radio", { name: "Fits well" }).click(); await page.waitForTimeout(400);
+    await groups.getByRole("radio", { name: "Fits well" }).click(); await page.waitForTimeout(400);
     check(`${name}: the lesson appears once all are rated`, /You know one thing for certain/.test(await page.textContent(".explain")));
     await page.screenshot({ path: `${OUT}/u-${name}-lens.png`, timeout: 90000 });
     await axe(page, `${name} lens step`);
@@ -140,7 +141,7 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     await page.waitForSelector("text=Discovered");
     const close = await page.textContent("#x-body");
     check(`${name}: discovery reward: a star for The Thought Labyrinth`, /A star: The Thought Labyrinth/.test(close));
-    await page.getByRole("button", { name: "Return to Earth" }).first().click();
+    await page.getByRole("button", { name: "Go home", exact: true }).first().click();
     await page.waitForTimeout(400);
 
     // Earth

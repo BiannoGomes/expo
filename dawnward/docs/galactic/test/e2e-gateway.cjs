@@ -86,7 +86,7 @@ async function toPortal(page, name) {
     check(`${name}: Return to Earth keeps the real step and finds a star`, /Write one idea before Thursday/.test(close) && /A star: The Quantum Gateway/.test(close));
     check(`${name}: the ending says the future isn't fixed`, /The future isn't fixed/.test(close));
     await shot(page, `${name}-return`);
-    await page.getByRole("button", { name: "Return to Earth" }).first().click();
+    await page.getByRole("button", { name: "Go home", exact: true }).first().click();
     await page.waitForTimeout(300);
     check(`${name}: home on Earth, with the action waiting`, (await place(page)) === "earth" && /Write one idea before Thursday/.test(await page.textContent("#earth")));
     await page.goto(BASE + "#/journey/milestones"); await ready(page);

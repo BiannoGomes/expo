@@ -515,32 +515,43 @@ export function createExplore(store, h) {
       return;
     }
     if (step.type === "lens") {
+      // one reading at a time: rate it, and the next one comes; earlier ones stay, tappable to change
       h.quiet(false);
       const ratings = { ...(prev && "ratings" in prev ? prev.ratings : {}) };
       const scale = [[1, "Doesn't fit"], [2, "Partly"], [3, "Fits well"]];
+      const lenses = step.lenses, still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let at = lenses.findIndex((l) => !ratings[l.id]); if (at < 0) at = lenses.length;
       const feedback = el("div", { class: "explain", "aria-live": "polite" });
       const go = el("button", { class: "primary", disabled: true, onclick: () => next({ ratings }) }, "Continue");
-      const update = () => {
-        const all = step.lenses.every((l) => ratings[l.id]);
+      const stage = el("div", { class: "lens-stage" }), done = el("ol", { class: "lens-done", "aria-label": "Your readings so far" });
+      const draw = () => {
+        done.replaceChildren(...lenses.filter((l, k) => ratings[l.id] && k !== at).map((l) => el("li", {}, el("button", { class: "lens-past", onclick: () => { at = lenses.indexOf(l); draw(); stage.querySelector("[role=radio]")?.focus(); } },
+          el("span", { class: "lens-past-t" }, l.text), el("span", { class: "mmeta" }, scale.find(([v]) => v === ratings[l.id])[1])))));
+        done.hidden = !done.children.length;
+        if (at < lenses.length) {
+          const l = lenses[at];
+          const group = el("div", { class: "seg lens-scale", role: "radiogroup", "aria-label": `How well does this fit: ${l.text}` },
+            scale.map(([v, label]) => el("button", { role: "radio", "aria-checked": String(ratings[l.id] === v), onclick: (e) => {
+              ratings[l.id] = v;
+              group.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b === e.currentTarget)));
+              const n = lenses.findIndex((x) => !ratings[x.id]); at = n < 0 ? lenses.length : n;
+              setTimeout(() => { draw(); (stage.querySelector("[role=radio]") ?? go).focus(); }, still ? 0 : 220);
+            } }, label)));
+          stage.replaceChildren(el("p", { class: "lens-pos" }, `${at + 1} of ${lenses.length}`), el("div", { class: "lens" }, el("p", { class: "lens-text" }, l.text), group));
+        } else stage.replaceChildren();
+        const all = lenses.every((l) => ratings[l.id]);
         go.disabled = !all;
         feedback.replaceChildren(...(all ? [el("p", { class: "outcome" }, "Your readings"), el("p", { class: "quiet" }, step.feedback)] : []));
       };
-      const rows = step.lenses.map((l) => {
-        const group = el("div", { class: "seg lens-scale", role: "radiogroup", "aria-label": `How well does this fit: ${l.text}` },
-          scale.map(([v, label]) => el("button", { role: "radio", "aria-checked": String(ratings[l.id] === v), onclick: (e) => {
-            ratings[l.id] = v;
-            group.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b === e.currentTarget)));
-            update();
-          } }, label)));
-        return el("div", { class: "lens" }, el("p", { class: "lens-text" }, l.text), group);
-      });
-      frame(m, i, title, el("div", { class: "card event" }, el("p", { class: "kicker" }, "What happened"), el("p", { class: "lead" }, step.body)),
-        el("p", { class: "lead" }, step.prompt), ...rows, feedback, err, el("div", { class: "actions" }, go));
-      update();
+      frame(m, i, title, el("div", { class: "card event" }, el("p", { class: "lead" }, step.body)),
+        el("p", { class: "lead" }, step.prompt), stage, done, feedback, err, el("div", { class: "actions" }, go));
+      draw();
       return;
     }
     if (step.type === "rehearse" || step.type === "reflect") {
-      const ta = el("textarea", { id: "q-words", rows: "5", maxlength: "2000", "aria-labelledby": "q-prompt" });
+      const ta = el("textarea", { id: "q-words", class: "grow", rows: "3", maxlength: "2000", "aria-labelledby": "q-prompt" });
+      const fitTa = () => { ta.style.height = "auto"; ta.style.height = `${Math.min(ta.scrollHeight + 2, Math.round(innerHeight * 0.5))}px`; };
+      ta.addEventListener("input", fitTa); requestAnimationFrame(fitTa);
       let draft = ""; try { draft = localStorage.getItem(DRAFT(a, step.id)) ?? ""; } catch {}
       ta.value = prev && "text" in prev ? prev.text : draft;
       ta.addEventListener("input", () => { try { localStorage.setItem(DRAFT(a, step.id), ta.value); } catch {} });
@@ -589,16 +600,17 @@ export function createExplore(store, h) {
     frame(m, m.steps.length - 1,
       el("h2", { class: "s-title", tabindex: "-1" }, closeStep.title),
       el("p", { class: "lead" }, closeStep.body),
-      el("div", { class: "card" }, el("p", { class: "kicker" }, "You practised"), el("p", {}, m.objective)),
-      plan ? el("div", { class: "card" }, el("p", { class: "kicker" }, "Your real action"), el("p", { class: "statement" }, plan.action), el("p", { class: "why" }, plan.when_text)) : null,
+      plan ? el("div", { class: "card" }, el("p", { class: "statement" }, plan.action), el("p", { class: "why" }, plan.when_text)) : null,
       found && data.gameLayer ? el("div", { class: "card found" },
         el("img", { class: "reward-moon", src: h.asset(artPath(ART.missions[m.id]?.moon ?? ART.moon)), alt: "" }),
         el("p", { class: "kicker" }, "Discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
       el("div", { class: "actions" },
-        el("button", { class: "primary", onclick: () => { current = null; from = null; h.goEarth(found ?? null); } }, "Return to Earth"),
+        // the universe changed: show it there first
+        found ? el("button", { class: "primary", onclick: () => { current = null; from = null; h.goHomeWith(found.key); } }, "See it in your universe") : null,
+        el("button", { class: found ? "ghost" : "primary", onclick: () => { current = null; from = null; h.goEarth(found ?? null); } }, "Go home"),
         (() => { const sys = SYSTEMS.find((x) => x.id === m.systemId); return sys?.kind === "expedition" && !isFollowing(sys.id) ? followButton(sys, () => finishFollowNote(sys)) : null; })(),
         m.worksheet ? el("button", { class: "ghost", onclick: () => worksheet(m, () => { current = null; draw(); $("x-title")?.focus(); }) }, `Worksheet: ${m.worksheet.title}`) : null,
-        el("button", { class: "ghost", onclick: () => { current = null; draw(); $("x-title")?.focus(); } }, "Back to Learn")));
+        el("button", { class: "text-btn", onclick: () => { current = null; draw(); $("x-title")?.focus(); } }, "Back to Learn")));
     h.announce(found ? `Done. ${found.title} appeared.` : "Done.");
   }
 
@@ -700,7 +712,7 @@ export function createExplore(store, h) {
         body().replaceChildren(...head("Thank you for coming back", null, () => { draw(); $("x-title")?.focus(); }),
           el("p", { class: "lead" }, outcome === "didnt" ? "Not doing it is information too. Next time, notice what got in the way." : "You tried something real. That's the part that changes things."),
           found && data.gameLayer ? el("div", { class: "card found" }, el("p", { class: "kicker" }, "Discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
-          el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => h.goEarth(found ?? null) }, "Return to Earth"), el("button", { class: "ghost", onclick: () => { draw(); $("x-title")?.focus(); } }, "Back to Explore")));
+          el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => h.goEarth(found ?? null) }, "Go home"), el("button", { class: "ghost", onclick: () => { draw(); $("x-title")?.focus(); } }, "Back to Explore")));
         $("x-title")?.focus();
       } }, "Save")));
     $("x-title")?.focus();

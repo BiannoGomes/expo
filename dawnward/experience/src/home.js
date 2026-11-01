@@ -296,14 +296,22 @@ function main(data, failed) {
       const k = tabs.findIndex(([id]) => id === cur), d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
       if (d) { e.preventDefault(); pick(tabs[(k + d + tabs.length) % tabs.length][0], true); }
     } }, tabs.map(([id, label]) => el("button", { role: "tab", id: `w-tab-${id}`, "aria-selected": String(id === cur), "aria-controls": "w-panel", tabindex: id === cur ? "0" : "-1", onclick: () => pick(id, true) }, label)));
+    const nx = worldNextMission(w);
     wbody.replaceChildren(
-      el("p", { class: "kicker" }, META[w].kicker),
       el("h2", { class: "w-q", id: "w-q", tabindex: "-1" }, META[w].q),
-      el("p", { class: "w-line" }, META[w].line),
-      el("p", { class: "w-start" }, META[w].start),
       el("button", { class: "primary wide", onclick: () => openEditor(w) }, "Begin reflection"),
+      nx ? el("button", { class: "row w-next", onclick: () => explore.play(nx.id, fromWorld(w)) },
+        el("span", { class: "rtext" }, el("span", { class: "rtitle" }, nx.title), el("span", { class: "rsub" }, `${nx.part.replace(/^Chapter \d+: /, "")} · ${nx.minutes} min`)),
+        el("span", { class: "rgo", html: svg(ICON.arrow, 16) })) : null,
       bar, panel);
     document.body.classList.remove("sheet-open");
+  }
+  /** This world's next open chapter, if there is one: the expedition you can start here and now. */
+  function worldNextMission(w) {
+    const open = (explore?.data.attempts ?? []).find((a) => (a.status === "in_progress" || a.status === "paused") && missionById(a.missionId)?.world === w);
+    if (open) return missionById(open.missionId);
+    for (const sys of SYSTEMS.filter((x) => x.world === w)) { const id = sys.missionIds.find((x) => !chapterDone(x)); const m = id && missionById(id); if (m && !explore?.locked?.(m)) return m; }
+    return null;
   }
   const fromWorld = (w) => ({ from: { label: META[w].name, go: () => goWorld(w), trail: [growthCrumb, { label: META[w].name, go: () => goWorld(w) }] } });
   const chapterDone = (id) => (explore?.data.attempts ?? []).some((a) => a.missionId === id && a.status === "completed");

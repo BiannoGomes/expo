@@ -677,6 +677,14 @@
   .cw-mark { position:absolute; top:50%; width:12px; height:12px; margin:-6px 0 0 -6px; border-radius:50%; background:var(--gold); box-shadow:0 0 10px var(--gold); }
   .cw-events li { display:flex; flex-direction:column; gap:2px; }
   .cw-sdetail[hidden] { display:none; }
+  /* one reading at a time; the world's next expedition as one row */
+  .lens-stage { display:flex; flex-direction:column; gap:var(--s2); }
+  .lens-pos { font-size:var(--t-meta); color:var(--faint); }
+  .lens-done { list-style:none; display:flex; flex-direction:column; gap:var(--s2); }
+  .lens-done[hidden] { display:none; }
+  .lens-past { width:100%; display:flex; align-items:center; gap:var(--s3); text-align:left; min-height:var(--tap); padding:var(--s2) var(--s4); border-radius:var(--r-card); border:1px solid var(--edge); background:rgba(6,10,20,.4); }
+  .lens-past-t { flex:1; color:var(--dim); font-size:var(--t-second); }
+  .w-next { margin-top:calc(-1 * var(--s1)); }
   .cw-card h3 { font-family:var(--display); font-weight:500; font-size:var(--t-section); text-transform:none; letter-spacing:0; color:var(--ink); }
   .cw-card .kicker { color:var(--gold-ink); }
   @media (prefers-reduced-motion: reduce) { .cw-hero img, .cw-temple svg, .cw-glowdoor { animation:none; } }

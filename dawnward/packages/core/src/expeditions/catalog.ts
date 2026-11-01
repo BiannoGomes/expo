@@ -196,7 +196,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "close",
         type: "close",
-        title: "Return to Earth",
+        title: "Done",
         body: "You've learned to notice the loop. Next in Beyond Overthinking: separating facts from assumptions. Your worksheet, The Loop Check, stays in this chapter whenever you want it.",
         required: false,
       },
@@ -294,7 +294,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "close",
         type: "close",
-        title: "Return to Earth",
+        title: "Done",
         body: "You've separated what you know from what you're guessing. Next: Chapter 3, Practise a pause. Your worksheet, Facts and Assumptions, stays in this chapter whenever you want it.",
         required: false,
       },
@@ -394,7 +394,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "close",
         type: "close",
-        title: "Return to Earth",
+        title: "Done",
         body: "You've practised putting space between a thought and what you do next. Next: Chapter 4, Enter the Decision Lab. Your pocket card, The One-Minute Pause, stays in this chapter whenever you want it.",
         required: false,
       },
@@ -493,7 +493,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "close",
         type: "close",
-        title: "Return to Earth",
+        title: "Done",
         body: "You've widened a decision into real options and looked at what each one costs. Chapter 5, Choose one small action, is still being written. Your worksheet, The Decision Lab, stays in this chapter whenever you want it.",
         required: false,
       },
@@ -556,7 +556,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "close",
         type: "close",
-        title: "Return to Earth",
+        title: "Done",
         body: "You practised finding a second reading before deciding. Next time your mind decides fast, look for one more way the facts could fit.",
         required: false,
       },
@@ -633,7 +633,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "close",
         type: "close",
-        title: "Return to Earth",
+        title: "Done",
         body: "You practised opening without blame, wrote your own words and chose a moment. When you've had the conversation, come back and say how it went. However it went, it counts.",
         required: false,
       },
@@ -709,7 +709,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "close",
         type: "close",
-        title: "Return to Earth",
+        title: "Done",
         body: "You practised hearing someone before answering them. Next time a conversation stings, try saying back what you heard first.",
         required: false,
       },
@@ -787,7 +787,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "close",
         type: "close",
-        title: "Return to Earth",
+        title: "Done",
         body: "You practised repair: naming it, owning it, and asking. That finishes The Bridge.",
         required: false,
       },
@@ -878,7 +878,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "close",
         type: "close",
-        title: "Return to Earth",
+        title: "Done",
         body: "You imagined a possible you, looked honestly at now, and chose a path. The future isn't fixed; this was one possibility, and your first step is real. Your letter, A Letter From a Possible You, stays here whenever you want it.",
         required: false,
       },

@@ -82,7 +82,7 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.locator("#x-body .found").waitFor();
     check(`${name} ch1: a star for the chapter, and the worksheet offered again`, /A star: Beyond Overthinking/.test(await page.textContent("#x-body")) && (await page.getByRole("button", { name: "Worksheet: The Loop Check" }).count()) === 1);
     check(`${name} ch1: no moon while chapters are still planned`, !/moon/i.test(await page.textContent("#x-body")));
-    await page.getByRole("button", { name: "Return to Earth" }).first().click();
+    await page.getByRole("button", { name: "Go home", exact: true }).first().click();
     await page.waitForTimeout(300);
 
     // the Compass moves on, and says why
@@ -111,7 +111,7 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     // follow the expedition from the end of a chapter
     await page.getByRole("button", { name: "Follow this expedition" }).click();
     check(`${name}: following is confirmed in plain words`, /You're following Beyond Overthinking/.test(await page.textContent("#x-body")));
-    await page.getByRole("button", { name: "Return to Earth" }).first().click();
+    await page.getByRole("button", { name: "Go home", exact: true }).first().click();
     await page.waitForTimeout(300);
     const comp3 = await page.textContent("#earth .nextcard");
     check(`${name}: the Compass offers Chapter 3 of 7, as the expedition you follow`, /Practise a pause/.test(comp3) && /Chapter 3 of 7/.test(comp3));

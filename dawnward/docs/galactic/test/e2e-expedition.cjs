@@ -75,14 +75,14 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     // reflect, then Return to Earth
     await page.fill("#q-words", "Saying it without sounding angry.");
     await page.getByRole("button", { name: "Continue", exact: true }).click();
-    await page.waitForSelector("text=Return to Earth");
+    await page.waitForSelector("text=Go home");
     const close = await page.textContent("#x-body");
-    check(`${name}: close shows what was practised, the action and the discovery`, /Begin a difficult conversation/.test(close) && /Ask Sam for ten minutes/.test(close) && /Discovered/.test(close));
+    check(`${name}: close shows the action and the discovery`, /Ask Sam for ten minutes/.test(close) && /Discovered/.test(close) && /See it in your universe/.test(close));
     await page.screenshot({ path: `${OUT}/x-${name}-3-return.png` });
     await axe(page, `${name} return to earth`);
     const s1 = await store(page);
     check(`${name}: kept on this device: completed, one experiment, one star`, s1.attempts["bridge-1"].status === "completed" && s1.experiments.length === 1 && s1.discoveries.some((d) => d.key === "star:bridge-1"));
-    await page.getByRole("button", { name: "Return to Earth" }).first().click();
+    await page.getByRole("button", { name: "Go home", exact: true }).first().click();
     await page.waitForTimeout(800);
     check(`${name}: Home, with the new discovery selected`, await page.evaluate(() => window.__dwHome.state.place === "earth" && window.__dwHome.state.selStar === "d:star:bridge-1"));
 

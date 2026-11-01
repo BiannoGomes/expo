@@ -1,0 +1,93 @@
+{
+  "when": "2026-11-01T10:51:25.551Z",
+  "checks": [
+    {
+      "name": "Universe opens Personal Growth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "tapping Soul opens Soul at its own address",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Soul opens with its question and one primary action",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no label above the question, no extra explanation",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "The Bridge is right there, one tap away",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Soul",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "The Bridge opens, with a way back to Soul",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the writing box starts compact",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the ending is simple: Done, the action, the discovery",
+      "ok": true,
+      "detail": "Done | Universe / Personal Growth / Soul / The Bridge / Soul /  / SOUL · THE BRIDGE · PART 1: OPENING /  / Done /  / You practised opening without blame, wrote your own words and chose a "
+    },
+    {
+      "name": "one primary action: See it in your universe",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the ending",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it lands in the galaxy, with the new discovery picked out",
+      "ok": true,
+      "detail": "[\"home\",\"d:star:bridge-1\"]"
+    },
+    {
+      "name": "Journey lists the new discovery",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "after a reload it's still there",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Soul now offers what comes next, not the part you finished",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "Soul": [],
+    "the ending": []
+  },
+  "summary": {
+    "total": 16,
+    "failed": 0
+  }
+}

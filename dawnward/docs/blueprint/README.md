@@ -1,6 +1,6 @@
 # Dawnward: immersive engine plan (answer to the ChatGPT blueprint)
 
-**Status:** 2026-11-01. Plan only; nothing in it is built yet. Waiting for Bianno's approval, as the blueprint asks.
+**Status:** 2026-11-01. Bianno approved the plan. The vertical slice (F) is built and tested; see "Slice: what was built" at the end. Nothing is deployed.
 
 ## A. What already exists (checked in the code, not assumed)
 | Blueprint asks for | Dawnward today |
@@ -75,3 +75,17 @@
 3. Apply the redesign system to Universe, Learn, Expeditions and Journey along that path.
 4. Ask Bianno to try it on a phone; measure speed.
 5. Only then: a VR test on a real headset.
+
+## Slice: what was built (2026-11-01)
+| Step | Before | Now |
+|---|---|---|
+| Soul opens | A label, the question, an explanation, then tabs | The question, one gold "Begin reflection", and The Bridge one tap below it (the next unfinished part, or the one you paused) |
+| The Bridge, the lens step | Every lens on one screen, each with three buttons | One lens at a time ("2 of 4"); tap a rating and the next appears. Rated ones stay listed, tap to change. Reduced motion: no delay |
+| Writing boxes | Tall from the start | Three lines, growing as you write |
+| The ending | "Return to Earth", a "You practised" recap, several equal buttons | "Done", your action and when, the discovery, one gold "See it in your universe" and a quieter "Go home" |
+| See it in your universe | (didn't exist) | Lands in the galaxy with the new discovery picked out |
+| Journey | Already listed it | Still lists it, and it survives a reload |
+
+**Tests:** `docs/galactic/test/e2e-slice.cjs` (16 checks) walks the whole path on a 390 px phone, with axe on Soul and on the ending. Screens: `docs/galactic/test/shots/s-1-soul.png`, `s-2-done.png`, `s-3-universe.png`. The other suites were updated for the new copy.
+
+**Not verified:** a real phone, and frame times on one. The galaxy lights the discovery, but the camera doesn't yet glide to it; that's the next refinement.
