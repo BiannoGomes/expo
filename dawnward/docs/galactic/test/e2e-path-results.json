@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T13:24:19.629Z",
+  "when": "2026-11-01T13:43:38.852Z",
   "checks": [
     {
       "name": "the path lists every galaxy, in the order they open",
@@ -192,6 +192,11 @@
       "detail": ""
     },
     {
+      "name": "a new person on a 320 × 568 phone sees every galaxy, locks and all, fully on the map",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "no page errors",
       "ok": true,
       "detail": ""
@@ -203,7 +208,7 @@
     "the unlock card": []
   },
   "summary": {
-    "total": 39,
+    "total": 40,
     "failed": 0
   }
 }

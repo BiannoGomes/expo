@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T11:31:38.117Z",
+  "when": "2026-11-01T13:45:14.867Z",
   "checks": [
     {
       "name": "phone: Learn lists the Communication system",
@@ -88,6 +88,11 @@
     },
     {
       "name": "phone: Continue offers the open mission at step 3",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: it's the featured step, Part 2 at 3 of 5",
       "ok": true,
       "detail": ""
     },
@@ -212,6 +217,11 @@
       "detail": ""
     },
     {
+      "name": "desktop: it's the featured step, Part 2 at 3 of 5",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "desktop: the unsaved draft comes back",
       "ok": true,
       "detail": ""
@@ -251,7 +261,7 @@
     "desktop return to earth": []
   },
   "summary": {
-    "total": 48,
+    "total": 50,
     "failed": 0
   }
 }

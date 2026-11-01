@@ -67,7 +67,7 @@ Galaxies open by doing real things, never by paying, and never by an invented pe
   - one celebration, reload, idempotency, migration, reduced motion, Delete, Back, 320 px, axe.
 - `e2e-phase5a.cjs` (37 checks): every acceptance test above, at 320, 390, 768 and 1440 px, with axe on each screen.
 - Suites that go straight to galaxies now start as a returning explorer with the path open. The path itself is tested separately.
-- Full-run results are in the commit after this one.
+- **Full run, 2026-11-01:** 16 suites, **833/833 checks pass** (phase5a 37, path 40, wisdom 22, questions 32, slice 16, redesign 53, tree 46, library 23, realms 63, creative 40, world 45, universe 102, home 101, expedition 50, chapters 110, gateway 53). axe stays at zero on every screen tested, and no screen scrolls sideways at 320 to 1440 px. The run found one real bug, now fixed: on a 320 × 568 phone, the new lock badges pushed the Quantum Gateway 10 px off a new person's map.
 
 ## Not verified
 - A real phone.
