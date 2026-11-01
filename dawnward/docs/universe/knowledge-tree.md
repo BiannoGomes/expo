@@ -73,3 +73,34 @@ Civilizations stays planned, off the map.
 - axe on seven screens;
 - frame times;
 - no errors.
+
+## The seven-branch tree (2026-11-01)
+The Knowledge galaxy's page is now one tree with seven branches, after Bianno's reference board.
+
+**The branches:**
+
+| Position | Branch | Kind | Places |
+|---|---|---|---|
+| Crown | Inner Knowing | practice | Inner Knowing |
+| Left | The Universe | science | Observatory, Discovery Lab, Cosmic Calendar |
+| Left | The Mind | science | the Wisdom Library |
+| Left | Life | science | the Cosmic Calendar for now; lessons planned |
+| Right | Ancient Wisdom | tradition | the Tree of Life lesson |
+| Right | The Seven Principles | tradition | the Hall |
+| Right | Sacred Geometry | science and tradition | the Flower of Life, the Five Solids |
+
+**How a branch works:**
+- **Discover:** what it is, and what kind of knowledge it is (science, tradition, both labelled apart, or a practice).
+- **Interact:** its real places, with Free, Members or Explored on each.
+- **Apply:** one question, and Reflect on this.
+
+**What each branch shows:** New, Explored (once you've opened one of its places; Dawnward remembers which, on this device) or Members.
+
+**Design details:**
+- Every branch is a real button, so the drawing is the interface.
+- Light flows along the limbs, and stands still with reduced motion.
+- The classic ten-sphere Tree of Life map stays in the lesson page, under Ancient Wisdom.
+
+**The art:** the branches use tinted orbs of light for now. When TR-BG and the seven TN- images (docs/universe/chatgpt-tree-and-path-prompts.txt) are in `assets/img/art`, set `ART.tree` to true in `src/registry.js`, and the tree draws them instead.
+
+**Tests:** in `e2e-tree.cjs`: seven branches and limbs, the crown position, the labels, Discover, Interact and Apply, the places leading to their worlds, "Explored" after a real visit, and the branch question carried into Reflect. axe is clean.

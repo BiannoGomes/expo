@@ -1,18 +1,43 @@
 {
-  "when": "2026-11-01T13:27:03.453Z",
+  "when": "2026-11-01T14:37:29.721Z",
   "checks": [
     {
-      "name": "the galaxy page shows the Tree of Life map",
+      "name": "the galaxy is one tree with seven branches, each a button",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "the tree has its 22 paths",
+      "name": "seven limbs carry light to them",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "Inner Knowing is at the crown, the Observatory at the root",
+      "name": "Inner Knowing is at the crown, above every other branch",
+      "ok": true,
+      "detail": "{\"knowing\":510.109375,\"universe\":619.9375,\"ancient\":619.9375,\"mind\":740.234375,\"principles\":740.234375,\"life\":860.515625,\"geometry\":860.515625}"
+    },
+    {
+      "name": "every branch says what kind of knowledge it is, and that it's new",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a branch opens Discover, Interact and Apply",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "The Universe is labelled science, and lists its real places",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the selected branch says so",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Sacred Geometry keeps the maths and the meanings apart",
       "ok": true,
       "detail": ""
     },
@@ -32,7 +57,7 @@
       "detail": ""
     },
     {
-      "name": "a sphere on the map opens its world",
+      "name": "a branch's place opens its world",
       "ok": true,
       "detail": ""
     },
@@ -65,6 +90,16 @@
       "name": "axe: the Cosmic Calendar",
       "ok": true,
       "detail": ""
+    },
+    {
+      "name": "after visiting the Calendar, The Universe and Life say Explored",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Apply: Reflect on this opens Reflect on the branch's question",
+      "ok": true,
+      "detail": "What do you already know, that you haven't let yourself say yet?"
     },
     {
       "name": "the Tree is introduced with its origin, respectfully",
@@ -114,7 +149,7 @@
     {
       "name": "flower draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":240,\"median\":17}"
+      "detail": "{\"n\":198,\"median\":17}"
     },
     {
       "name": "an inner knowing note is kept on this device",
@@ -144,7 +179,7 @@
     {
       "name": "knowing draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":103,\"median\":43}"
+      "detail": "{\"n\":113,\"median\":42}"
     },
     {
       "name": "the note appears in the Creation Gallery",
@@ -199,7 +234,7 @@
     {
       "name": "hall draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":211,\"median\":24}"
+      "detail": "{\"n\":231,\"median\":24}"
     },
     {
       "name": "tapping the star in 3D explains it, belief kept apart from geometry",
@@ -224,7 +259,7 @@
     {
       "name": "solids draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":155,\"median\":34}"
+      "detail": "{\"n\":160,\"median\":32}"
     },
     {
       "name": "no page or shader errors",
@@ -243,24 +278,24 @@
   },
   "frames": {
     "flower": {
-      "n": 240,
+      "n": 198,
       "median": 17
     },
     "knowing": {
-      "n": 103,
-      "median": 43
+      "n": 113,
+      "median": 42
     },
     "hall": {
-      "n": 211,
+      "n": 231,
       "median": 24
     },
     "solids": {
-      "n": 155,
-      "median": 34
+      "n": 160,
+      "median": 32
     }
   },
   "summary": {
-    "total": 46,
+    "total": 53,
     "failed": 0
   }
 }

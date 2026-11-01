@@ -32,8 +32,9 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
 
   // ----- reaching it from the Knowledge galaxy -----
   await page.goto(BASE + "#/universe/knowledge"); await ready(page); await page.waitForTimeout(1000);
-  const node = page.locator('#cw-page .cw-node[data-node="chesed"]');
-  check("the Tree of Life has the Wisdom Library on it, open", (await node.count()) === 1 && /Wisdom Library/.test(await node.innerText()) && !/planned/i.test(await node.innerText()), await node.innerText().catch(() => ""));
+  await page.locator('.cw-branch[data-branch="mind"]').click();
+  const node = page.locator("#cw-bpanel").getByRole("button", { name: /The Wisdom Library/ });
+  check("The Mind branch leads to the Wisdom Library, open", (await node.count()) === 1 && !/Members/.test(await node.innerText()), await node.innerText().catch(() => ""));
   await node.click(); await page.waitForTimeout(600);
   check("it opens at its own address", (await page.evaluate(() => location.hash)) === "#/knowledge/wisdom");
   const body = await page.locator("#cw-page").evaluate((e) => e.textContent);

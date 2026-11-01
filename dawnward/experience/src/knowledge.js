@@ -136,3 +136,31 @@ export const DEEPER = [
   ["Universe", "Brian Cox (BBC series, 2021)."],
   ["Breaking the Habit of Being Yourself", "Joe Dispenza (book, 2012). On meditation and changing habits of mind."],
 ];
+
+/** The Knowledge galaxy as one tree with seven branches (Bianno's reference board, 2026-11-01).
+ *  Each branch: Discover (what it is, and what kind of knowledge), Interact (its real places), Apply (one question
+ *  to take into your own life). `places` are planet ids in REALMS.knowledge; nothing is listed that isn't built.
+ *  `at` is the branch's position on the tree, in percent of the drawing (x from the left, y from the top). */
+export const BRANCHES = [
+  { id: "knowing", name: "Inner Knowing", sub: "Intuition · Awareness", kind: "practice", at: [50, 9], tint: "#37D5E8", art: "TN-KNW",
+    discover: "The quiet sense of what's right for you, and how to tell it apart from fear or wishful thinking. A practice, not a claim about the mind.",
+    places: ["knowing"], world: "spirit", question: "What do you already know, that you haven't let yourself say yet?" },
+  { id: "universe", name: "The Universe", sub: "Cosmology · Physics", kind: "science", at: [17, 30], tint: "#5B8CFF", art: "TN-UNI",
+    discover: "Where everything came from and how it moves: the Solar System at its real pace, gravity you can play with, and 13.8 billion years squeezed into one year.",
+    places: ["observatory", "lab", "calendar"], world: "spirit", question: "What changes for you when you remember how big and how old all of this is?" },
+  { id: "ancient", name: "Ancient Wisdom", sub: "Kabbalah · Stoics", kind: "wisdom", at: [83, 30], tint: "#F0C987", art: "TN-ANC",
+    discover: "Maps of meaning people have used for thousands of years: the Tree of Life itself, and the Stoic habit of separating what you can change from what you can't. Traditions to learn from, not facts.",
+    places: ["tree"], world: "mind", question: "What part of today was in your control, and what wasn't?" },
+  { id: "mind", name: "The Mind", sub: "Psychology · Habits", kind: "science", at: [17, 53], tint: "#9B5BFF", art: "TN-MND",
+    discover: "How attention, habits and judgment really work, from psychology and behavioural science, each idea labelled by how strong its evidence is.",
+    places: ["wisdom"], world: "mind", question: "Which habit would make the biggest difference if it became easy?" },
+  { id: "principles", name: "The Seven Principles", sub: "The Kybalion, 1908", kind: "wisdom", at: [83, 53], tint: "#E6C07B", art: "TN-PRN",
+    discover: "Seven Hermetic principles, from mind to rhythm to cause and effect, each with a practice and an honest note on where it comes from.",
+    places: ["hall"], world: "mind", question: "Where in your life are you in a low swing of a rhythm that will turn?" },
+  { id: "life", name: "Life", sub: "Biology · Evolution", kind: "science", at: [17, 76], tint: "#5FE3C0", art: "TN-LIF",
+    discover: "How life began and changed over billions of years. For now you can find it on the Cosmic Calendar; lessons on life and evolution are being written.",
+    places: ["calendar"], planned: "Lessons on life and evolution are planned.", world: "body", question: "What does your body do every day that you've never once thanked it for?" },
+  { id: "geometry", name: "Sacred Geometry", sub: "Flower of Life · Tetrahedron", kind: "both", at: [83, 76], tint: "#C9B8FF", art: "TN-GEO",
+    discover: "Patterns people have found beautiful for millennia: grow the Flower of Life into Metatron's Cube, and meet the five perfect solids, from Plato to chemistry. The mathematics is real; the meanings are tradition.",
+    places: ["flower", "solids"], world: "spirit", question: "Where do you see a pattern repeating in your own life?" },
+];

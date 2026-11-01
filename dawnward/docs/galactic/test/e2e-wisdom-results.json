@@ -1,10 +1,10 @@
 {
-  "when": "2026-11-01T13:25:42.747Z",
+  "when": "2026-11-01T14:38:21.172Z",
   "checks": [
     {
-      "name": "the Tree of Life has the Wisdom Library on it, open",
+      "name": "The Mind branch leads to the Wisdom Library, open",
       "ok": true,
-      "detail": "The Wisdom Library\nLoving-kindness"
+      "detail": "The Wisdom Library\nIdeas from psychologists, philosophers and teachers, each with its source and how strong the evidence is.\nFree"
     },
     {
       "name": "it opens at its own address",

@@ -1442,7 +1442,7 @@ function main(data, failed) {
   const exploreReady = explore.refresh().then(() => { sync(); initPath(); renderHome(); });
   creative = createCreative({ $, el, svg, ICON, asset, sound, announce, showPlace, crumbs, explore,
     toUniverse: () => openAtlas(), toLearn: () => explore.open(), textMode: () => state.mode === "text",
-    reflect: (w, prompt) => openEditor(w, { prompt }),
+    reflect: (w, prompt) => openEditor(w, { prompt }), treeArt: () => ART.tree === true,
     pathLock: (r) => pathLock(r), pathReady: () => pathInit, changed: () => checkPath(), goNext: (n) => goNext(n), nextLabel: (n) => nextLabel(n), lockCard: (lk) => lockCard(lk),
     distress: (t) => DISTRESS.test(t), crisisText: CRISIS_TEXT.join("\n"), ready: () => exploreReady });
   let firstVisit = false;

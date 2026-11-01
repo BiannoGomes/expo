@@ -68,5 +68,7 @@ export const ART = {
   planned: { "Emotional Awareness": "D3", "Belief Transformation": "D5", "Learning & Creativity": "D6" },
   galaxies: { ai: "A3", knowledge: "A4", spiritual: "A5", creative: "A6", earth: "A7", gateway: "A8" },
   home: "E1", compass: "U11", star: "T10", moon: "T9",
+  /** The Knowledge tree's art (TR-BG and the seven TN- spheres, docs/universe/chatgpt-tree-and-path-prompts.txt). Off until the images are in assets/img/art. */
+  tree: false,
 };
 export const artPath = (code) => (!code ? null : code.startsWith("worlds/") ? `img/${code}.webp` : `img/art/${code}.webp`);

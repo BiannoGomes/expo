@@ -9,7 +9,7 @@
 import { buildWorld, ARCH, BODIES } from "./creative-scene.js";
 import { PACKS } from "./packs.data.js";
 import { WISDOM, EVIDENCE } from "./wisdom.js";
-import { KINDS, SEFIROT, PATHS, TREE_LESSON, PRINCIPLES, HALL_INTRO, FLOWER, SOLIDS, SOLIDS_INTRO, KNOWING_STEPS, FELT, KNOWING_NOTE, CALENDAR, calendarDate, MONTHS, DEEPER } from "./knowledge.js";
+import { BRANCHES, KINDS, SEFIROT, PATHS, TREE_LESSON, PRINCIPLES, HALL_INTRO, FLOWER, SOLIDS, SOLIDS_INTRO, KNOWING_STEPS, FELT, KNOWING_NOTE, CALENDAR, calendarDate, MONTHS, DEEPER } from "./knowledge.js";
 
 /** Members' packs from content/packs (tools/packs.mjs). A test can supply its own. */
 const packs = () => window.DW_PACKS ?? PACKS;
@@ -140,7 +140,7 @@ const FACTS = {
 };
 
 function load() {
-  const empty = { lit: { kingdom: [], forest: [] }, found: {}, places: [], moments: [], dreams: [], principles: [], knowing: [] };
+  const empty = { lit: { kingdom: [], forest: [] }, found: {}, places: [], moments: [], dreams: [], principles: [], knowing: [], visited: [] };
   try { const s = JSON.parse(localStorage.getItem(KEY) || "{}"); return { ...empty, ...s, lit: { ...empty.lit, ...(s.lit ?? {}) } }; } catch { return empty; }
 }
 function hasGL() { try { const c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); } catch { return false; } }
@@ -212,8 +212,7 @@ export function createCreative(h) {
       el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, R.name),
       el("p", { class: "lead" }, R.lead),
       R.door ? el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => openDoor() }, "Open the Infinite Door")) : null,
-      R.tree ? treeMap({ label: "The Tree of Life: this galaxy's map, from the root up to the crown",
-        node: (sf) => { const p = R.planets.find((x) => x.node === sf.id); return p && { title: p.name, sub: sf.english, kind: p.kind, planned: p.status === "planned", lock: p.status === "open" && locked(r, p.id), go: () => enter(r, p.id) }; } }) : null,
+      R.tree ? branchTree(r) : null,
       el("h3", { class: "cw-h" }, R.tree ? "Every world on the tree" : "Planets here"),
       el("ul", { class: "cw-planets" }, R.planets.map((p) => {
         const lock = p.status === "open" && locked(r, p.id);
@@ -316,8 +315,10 @@ export function createCreative(h) {
     const p = planet(r, id);
     if (!p || p.status !== "open") return open(r);
     if (pathCheck(r, () => enter(r, id, args))) return;
+    if (p.page) markVisited(id);
     if (p.page) return p.page === "gallery" ? gallery() : p.page === "tree" ? treePage() : p.page === "wisdom" ? wisdomPage() : calendarPage();
     if (locked(r, id)) { await h.ready?.(); if (locked(r, id)) return gate(r, id); }
+    markVisited(id);
     realm = r; pid = id; show("world");
     const w = meta(r, id);
     stage.dataset.k = id;
@@ -464,6 +465,56 @@ export function createCreative(h) {
     try { const d = await window.claude?.use?.("downloads"); if (d) { await d.save({ filename, data: json }); announce("Saved."); return; } } catch (e) { if (e?.code === "declined") return; }
     const a = el("a", { href: URL.createObjectURL(new Blob([json], { type: "application/json" })), download: filename });
     document.body.append(a); a.click(); a.remove(); announce("Saved as a file.");
+  }
+
+  // ---------------- the seven-branch tree (the Knowledge galaxy's map) ----------------
+  function markVisited(id) { if (!saved.visited.includes(id)) { saved.visited = [...saved.visited, id]; save(); } }
+  const KIND_NOTE = { science: "What research shows.", wisdom: "A way of seeing, not a finding.", both: "The science and the tradition, labelled apart.", practice: "Something to try for yourself." };
+  /** Every branch is a real button on the drawing; the same branches are a list for screen readers and text view.
+   *  Discover, Interact (its real places), Apply (one question to take into your life). */
+  function branchTree(r) {
+    const R = REALMS[r], panel = el("section", { class: "card cw-bpanel", id: "cw-bpanel", "aria-live": "polite", hidden: "" });
+    const stateOf = (b) => {
+      const ps = b.places.map((id) => planet(r, id)).filter((p) => p?.status === "open");
+      if (ps.some((p) => saved.visited.includes(p.id))) return "Explored";
+      if (ps.length && ps.every((p) => locked(r, p.id))) return "Members";
+      return "New";
+    };
+    const ART = h.treeArt?.() ?? false;
+    const show = (b) => {
+      tree.querySelectorAll(".cw-branch").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.branch === b.id)));
+      const ps = b.places.map((id) => planet(r, id)).filter(Boolean);
+      panel.hidden = false;
+      panel.style.setProperty("--tint", b.tint);
+      panel.replaceChildren(...[
+        el("h3", { class: "cw-bname", id: "cw-bname", tabindex: "-1" }, b.name),
+        el("p", { class: `cw-kindtag cw-kind-${b.kind}` }, `${KINDS[b.kind]}. ${KIND_NOTE[b.kind]}`),
+        el("h4", { class: "cw-step" }, "Discover"), el("p", {}, b.discover),
+        el("h4", { class: "cw-step" }, "Interact"),
+        el("ul", { class: "cw-planets" }, ps.map((p) => { const lock = locked(r, p.id), been = saved.visited.includes(p.id);
+          return el("li", {}, el("button", { class: "row", onclick: () => enter(r, p.id) },
+            el("span", { class: "rtext" }, el("span", { class: "rtitle" }, p.name), el("span", { class: "rsub" }, p.line)),
+            el("span", { class: `mmeta${lock ? " plus-tag" : ""}` }, lock ? "Members" : been ? "Explored" : p.access === "free" ? "Free" : "Open"))); })),
+        b.planned ? el("p", { class: "quiet small" }, b.planned) : null,
+        el("h4", { class: "cw-step" }, "Apply"),
+        el("p", { class: "wz-q" }, b.question),
+        el("div", { class: "actions" }, el("button", { class: "ghost", onclick: () => h.reflect?.(b.world, b.question) }, "Reflect on this"))].filter(Boolean));
+      $("cw-bname").focus({ preventScroll: true });
+      panel.scrollIntoView?.({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    };
+    // the drawing: a trunk from the water to the crown, a curved branch out to each sphere, light flowing along them
+    const paths = BRANCHES.map((b) => { const [x, y] = b.at, sy = Math.min(92, y + 14);
+      return b.id === "knowing" ? `M50 92 L50 ${y + 4}` : `M50 ${sy} C ${50 + (x - 50) * 0.25} ${sy - 4}, ${x + (50 - x) * 0.35} ${y + 6}, ${x} ${y}`; });
+    const svgPaths = paths.map((d) => `<path class="cw-limb" d="${d}"/><path class="cw-flow" d="${d}"/>`).join("");
+    const tree = el("div", { class: `cw-btree${ART ? " art" : ""}`, role: "group", "aria-label": "The Tree: seven branches of knowledge" },
+      ART ? el("img", { class: "cw-btree-bg", src: asset("img/art/TR-BG.webp"), alt: "" }) : null,
+      el("div", { class: "cw-btree-lines", "aria-hidden": "true", html: `<svg viewBox="0 0 100 100" preserveAspectRatio="none">${svgPaths}</svg>` }),
+      ...BRANCHES.map((b) => { const st = stateOf(b);
+        return el("button", { class: `cw-branch st-${st.toLowerCase()}`, "data-branch": b.id, style: `left:${b.at[0]}%;top:${b.at[1]}%;--tint:${b.tint}`, "aria-pressed": "false",
+          "aria-label": `${b.name}: ${b.sub}. ${KINDS[b.kind]}. ${st}.`, onclick: () => show(b) },
+          ART ? el("img", { class: "cw-borb img", src: asset(`img/art/${b.art}.webp`), alt: "" }) : el("span", { class: "cw-borb", "aria-hidden": "true" }),
+          el("span", { class: "cw-blabel" }, el("span", { class: "cw-btitle" }, b.name), el("span", { class: "cw-bsub" }, b.sub), el("span", { class: "cw-bstate" }, st))); }));
+    return el("div", { class: "cw-btree-wrap" }, tree, panel);
   }
 
   // ---------------- the Tree of Life ----------------

@@ -38,16 +38,26 @@ const MOBILE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch
 
   // ---- the galaxy is drawn as a Tree of Life ----
   await go(page, "universe/knowledge");
-  check("the galaxy page shows the Tree of Life map", (await page.locator(".cw-treemap").count()) === 1 && (await page.locator(".cw-treemap .cw-node").count()) === 10);
-  check("the tree has its 22 paths", (await page.locator(".cw-treemap line").count()) === 22);
-  check("Inner Knowing is at the crown, the Observatory at the root", (await page.locator('.cw-node[data-node="keter"]').innerText()).includes("Inner Knowing") && (await page.locator('.cw-node[data-node="malkuth"]').innerText()).includes("Observatory"));
-  const rows = await page.locator(".cw-planets").innerText();
+  check("the galaxy is one tree with seven branches, each a button", (await page.locator(".cw-btree").count()) === 1 && (await page.locator(".cw-btree button.cw-branch").count()) === 7);
+  check("seven limbs carry light to them", (await page.locator(".cw-btree .cw-limb").count()) === 7 && (await page.locator(".cw-btree .cw-flow").count()) === 7);
+  const tops = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll(".cw-branch")].map((b) => [b.dataset.branch, b.getBoundingClientRect().top])));
+  check("Inner Knowing is at the crown, above every other branch", Object.entries(tops).every(([k, t]) => k === "knowing" || t > tops.knowing), JSON.stringify(tops));
+  check("every branch says what kind of knowledge it is, and that it's new", (await page.locator(".cw-branch").evaluateAll((bs) => bs.every((b) => /(Science|Wisdom tradition|Science and tradition|Practice)\. (New|Members)\./.test(b.getAttribute("aria-label"))))));
+  await page.locator('.cw-branch[data-branch="universe"]').click();
+  const bp = await page.locator("#cw-bpanel").textContent();
+  check("a branch opens Discover, Interact and Apply", /Discover/.test(bp) && /Interact/.test(bp) && /Apply/.test(bp) && (await page.evaluate(() => document.activeElement?.id)) === "cw-bname");
+  check("The Universe is labelled science, and lists its real places", /Science\. What research shows\./.test(bp) && /The Cosmic Observatory/.test(bp) && /The Discovery Lab/.test(bp) && /The Cosmic Calendar/.test(bp));
+  check("the selected branch says so", (await page.locator('.cw-branch[data-branch="universe"]').getAttribute("aria-pressed")) === "true");
+  await page.locator('.cw-branch[data-branch="geometry"]').click();
+  check("Sacred Geometry keeps the maths and the meanings apart", /Science and tradition\. The science and the tradition, labelled apart\./.test(await page.locator("#cw-bpanel").textContent()));
+  await page.locator('.cw-branch[data-branch="universe"]').click();
+  const rows = await page.locator(".cw-planets").last().innerText();
   check("every world says what kind of knowledge it is", /SCIENCE|Science/.test(rows) && /WISDOM TRADITION|Wisdom tradition/.test(rows) && /PRACTICE|Practice/.test(rows));
   check("Go deeper names other authors without copying them", /isn't connected with these authors/.test(await page.locator(".cw-deeper").textContent()) && /The Kybalion/.test(await page.locator(".cw-deeper").textContent()));
   await axe(page, "the Knowledge tree page");
   await shot(page, "galaxy", true);
-  await page.locator('.cw-node[data-node="hod"]').click();
-  check("a sphere on the map opens its world", (await where(page))[1] === "#/knowledge/calendar");
+  await page.locator("#cw-bpanel").getByRole("button", { name: /The Cosmic Calendar/ }).click(); await page.waitForTimeout(400);
+  check("a branch's place opens its world", (await where(page))[1] === "#/knowledge/calendar");
 
   // ---- the Cosmic Calendar ----
   check("the calendar is labelled science, and a draft", /Science · Draft, not yet reviewed/i.test(await page.locator("#cw-page .kicker").first().innerText()));
@@ -60,6 +70,15 @@ const MOBILE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch
   check("writing begins about 12 seconds before midnight", /December 31, 23:59:4[6-9]\s+Writing begins/.test(ev), ev.match(/23:59:\d+\s+Writing/)?.[0]);
   await axe(page, "the Cosmic Calendar");
   await shot(page, "calendar");
+
+  // ---- the tree remembers where you've been ----
+  await go(page, "universe/knowledge");
+  check("after visiting the Calendar, The Universe and Life say Explored", /Explored\.$/.test(await page.locator('.cw-branch[data-branch="universe"]').getAttribute("aria-label")) && /Explored\.$/.test(await page.locator('.cw-branch[data-branch="life"]').getAttribute("aria-label")) && /New\.$/.test(await page.locator('.cw-branch[data-branch="knowing"]').getAttribute("aria-label")));
+  await page.locator('.cw-branch[data-branch="knowing"]').click();
+  const kq = await page.locator("#cw-bpanel .wz-q").innerText();
+  await page.locator("#cw-bpanel").getByRole("button", { name: "Reflect on this" }).click();
+  await page.waitForSelector("#ed-q", { timeout: 15000 });
+  check("Apply: Reflect on this opens Reflect on the branch's question", (await page.locator("#ed-q").innerText()) === kq, kq);
 
   // ---- the Tree of Life lesson ----
   await go(page, "knowledge/tree");
