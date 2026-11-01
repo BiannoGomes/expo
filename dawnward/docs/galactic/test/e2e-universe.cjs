@@ -159,7 +159,9 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     await page.locator("#earth").getByRole("button", { name: /What's on your mind/ }).click();
     check(`${name}: reflecting is one tap from Earth`, await page.waitForSelector("#words", { timeout: 10000 }).then(() => true, () => false));
 
-    // breadcrumbs go back up
+    // while writing there are no breadcrumbs; Close returns to the world, where they lead back up
+    check(`${name}: no breadcrumbs while writing`, !(await page.locator("#w-crumbs").isVisible()));
+    await page.locator("#w-back").click();
     await page.locator("#w-crumbs button", { hasText: "Universe" }).click();
     check(`${name}: the Universe crumb returns to the Atlas`, (await place(page)) === "atlas");
 

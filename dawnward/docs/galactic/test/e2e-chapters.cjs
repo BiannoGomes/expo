@@ -104,7 +104,7 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.fill("#q-action", "Ask Sam for twenty minutes");
     await page.fill("#q-when", "Thursday after lunch");
-    await page.getByRole("button", { name: /Save/ }).last().click();
+    await page.getByRole("button", { name: "Continue", exact: true }).last().click();
     await page.locator("#x-body .found").waitFor();
     check(`${name} ch2: the real action is kept`, /Ask Sam for twenty minutes/.test(await page.textContent("#x-body")));
 

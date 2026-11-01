@@ -102,7 +102,7 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     await axe(page, `${name} mind`);
 
     // reflect: empty refused; a draft survives leaving and coming back
-    await page.getByRole("button", { name: /What's on your mind/ }).click();
+    await page.getByRole("button", { name: "Begin reflection" }).click();
     check(`${name}: editor is quiet and focused`, await page.evaluate(() => document.body.classList.contains("quiet") && document.activeElement?.id === "words"));
     check(`${name}: no stray "null" text`, !(await page.textContent("#w-body")).includes("null"));
     await page.getByRole("button", { name: "Save reflection" }).click();
@@ -141,7 +141,7 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     await toGalaxy(page);
     await page.locator('#planets .planet-body').evaluate((b) => b.click());
     await arrive(page);
-    await page.getByRole("button", { name: /What's on your mind/ }).click();
+    await page.getByRole("button", { name: "Begin reflection" }).click();
     await page.fill("#words", "Took the walk at lunch and the afternoon felt lighter.");
     await page.getByRole("button", { name: "Save reflection" }).click();
     await page.waitForTimeout(500);
