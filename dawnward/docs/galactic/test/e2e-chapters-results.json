@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T10:06:47.570Z",
+  "when": "2026-11-01T10:21:38.272Z",
   "checks": [
     {
       "name": "phone: the Compass starts with Beyond Overthinking, Chapter 1 of 7",
@@ -133,7 +133,7 @@
     },
     {
       "name": "phone: the Compass offers Chapter 3 of 7, as the expedition you follow",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
@@ -408,7 +408,7 @@
     },
     {
       "name": "small: the Compass offers Chapter 3 of 7, as the expedition you follow",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
@@ -568,6 +568,6 @@
   },
   "summary": {
     "total": 110,
-    "failed": 2
+    "failed": 0
   }
 }

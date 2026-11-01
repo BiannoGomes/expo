@@ -44,7 +44,7 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     await axe(page, `${name} explore`);
     await page.getByRole("button", { name: /Part 1: Opening/ }).click();
     await page.waitForSelector(".s-title");
-    check(`${name}: intro shows the objective, time and the safety note`, /About 6 minutes/.test(await page.textContent("#x-body")) && /findahelpline/.test(await page.textContent("#x-body")));
+    check(`${name}: intro shows the objective, time and the safety note`, /About 6 min/.test(await page.textContent("#x-body")) && /findahelpline/.test(await page.textContent("#x-body")));
     await page.getByRole("button", { name: "Begin" }).click();
 
     // choice: feedback, not a score

@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T10:06:21.901Z",
+  "when": "2026-11-01T10:20:58.702Z",
   "checks": [
     {
       "name": "phone: Learn lists the Communication system",
@@ -18,7 +18,7 @@
     },
     {
       "name": "phone: intro shows the objective, time and the safety note",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -138,7 +138,7 @@
     },
     {
       "name": "desktop: intro shows the objective, time and the safety note",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -252,6 +252,6 @@
   },
   "summary": {
     "total": 48,
-    "failed": 0
+    "failed": 2
   }
 }
