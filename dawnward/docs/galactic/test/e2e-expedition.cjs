@@ -120,7 +120,9 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     await page.waitForFunction(() => window.__dwHomeReady, null, { timeout: 30000 });
     await page.locator('#tabs [data-tab="learn"]').click();
     check(`${name}: Continue offers the open mission at step 3`, /3 of 5/.test(await page.textContent("#x-body")));
-    await page.getByRole("button", { name: /Part 2: Listening back.*3 of 5/ }).click();
+    // the open mission is Learn's featured step now: its part, and Continue with how far
+    check(`${name}: it's the featured step, Part 2 at 3 of 5`, /Listening back/.test(await page.locator("#x-body .x-feature").innerText()) && /^Continue · 3 of 5$/.test((await page.locator("#x-body .x-feature .primary").innerText()).trim()));
+    await page.locator("#x-body .x-feature .primary").click();
     check(`${name}: the unsaved draft comes back`, (await page.inputValue("#q-words")) === "a draft I haven't saved");
 
     // crisis words stop the mission and keep nothing
