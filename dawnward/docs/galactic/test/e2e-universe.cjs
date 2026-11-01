@@ -22,6 +22,8 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
 
 (async () => {
   const browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+  // a returning explorer: every galaxy already open (the path itself is tested in e2e-path.cjs)
+  { const nc = browser.newContext.bind(browser); browser.newContext = async (o) => { const c = await nc(o); await c.addInitScript(() => { try { if (!localStorage.getItem("dw-progress-v1")) localStorage.setItem("dw-progress-v1", JSON.stringify({ unlocked: { knowledge: "seed", spiritual: "seed", creative: "seed", ai: "seed", gateway: "seed" }, celebrated: { knowledge: true, spiritual: true, creative: true, ai: true, gateway: true } })); } catch {} }); return c; }; }
 
   // ---- the Atlas at every size: galaxies never overlap, nothing scrolls sideways at page level ----
   for (const [name, w, h] of [["320x568", 320, 568], ["360x800", 360, 800], ["390x844", 390, 844], ["430x932", 430, 932], ["tablet", 820, 1180], ["desktop", 1440, 900]]) {

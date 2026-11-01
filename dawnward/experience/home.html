@@ -588,7 +588,7 @@
   .lockbar { height:8px; border-radius:4px; background:rgba(255,255,255,.08); overflow:hidden; }
   .lockbar span { display:block; height:100%; background:var(--gold); border-radius:4px; }
   .gx.locked .gx-img { filter:grayscale(.5) brightness(.6); }
-  .gx-lock { display:inline-flex; align-items:center; gap:4px; font-size:13px; color:var(--dim); white-space:nowrap; background:rgba(5,7,13,.7); padding:2px 8px; border-radius:var(--r-pill); }
+  .gx-lock { position:absolute; left:50%; top:6px; transform:translateX(-50%); z-index:1; display:inline-flex; align-items:center; gap:4px; font-size:13px; color:var(--dim); white-space:nowrap; background:rgba(5,7,13,.7); padding:2px 8px; border-radius:var(--r-pill); }
   .alist .row.locked .rtitle { color:var(--dim); }
   .card.unlocked { position:relative; overflow:hidden; display:grid; gap:var(--s2); border-color:var(--edge-strong); }
   .un-title { font-family:var(--display); font-size:24px; font-weight:500; margin:0; color:var(--ink); }

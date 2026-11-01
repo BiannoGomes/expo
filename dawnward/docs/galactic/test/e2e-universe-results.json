@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T11:26:04.950Z",
+  "when": "2026-11-01T13:30:34.745Z",
   "checks": [
     {
       "name": "320x568: Atlas galaxies and names never overlap",
@@ -8,8 +8,8 @@
     },
     {
       "name": "320x568: every galaxy and name is fully on screen",
-      "ok": true,
-      "detail": ""
+      "ok": false,
+      "detail": "gateway"
     },
     {
       "name": "320x568: no sideways page scroll",
@@ -158,7 +158,7 @@
     },
     {
       "name": "phone: what isn't built yet says so plainly",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -358,7 +358,7 @@
     },
     {
       "name": "desktop: what isn't built yet says so plainly",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -527,13 +527,13 @@
   "timings": {
     "phone.arrival_fallbacks": 0,
     "phone.webgl_context_lost": 0,
-    "phone.to_first_step_ms": 114,
-    "desktop.arrival_fallbacks": 0,
+    "phone.to_first_step_ms": 123,
+    "desktop.arrival_fallbacks": 1,
     "desktop.webgl_context_lost": 0,
-    "desktop.to_first_step_ms": 156
+    "desktop.to_first_step_ms": 204
   },
   "summary": {
     "total": 102,
-    "failed": 0
+    "failed": 3
   }
 }

@@ -164,6 +164,12 @@ async function atlasList(p) {
   await page.setViewportSize({ width: 320, height: 640 });
   await atlasList(page);
   check("at 320 px the path fits without sideways scroll", await noSideways(page));
+  const c4 = await browser.newContext({ viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true });
+  const p4 = await c4.newPage();
+  await go(p4, "universe", 1200);
+  const off = await p4.evaluate(() => { const f = document.getElementById("a-field").getBoundingClientRect();
+    return [...document.querySelectorAll("#a-inner .gx")].filter((g) => { const r = g.getBoundingClientRect(); return r.top < f.top - 1 || r.bottom > f.bottom + 1 || r.left < f.left - 1 || r.right > f.right + 1; }).map((g) => g.dataset.id); });
+  check("a new person on a 320 × 568 phone sees every galaxy, locks and all, fully on the map", off.length === 0, off.join(", "));
   check("no page errors", errors.length === 0, errors.join(" | "));
 
   await browser.close();
