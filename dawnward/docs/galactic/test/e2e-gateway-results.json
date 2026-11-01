@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T23:24:12.568Z",
+  "when": "2026-11-01T09:31:52.063Z",
   "checks": [
     {
       "name": "phone: the Gateway is open, and says it's imagination, not prediction",
@@ -39,7 +39,7 @@
     {
       "name": "phone: the passage ends by itself in about 2.6 s (plus its fade)",
       "ok": true,
-      "detail": "3221 ms"
+      "detail": "3220 ms"
     },
     {
       "name": "phone: arrives at A possible you, framed as imagined",
@@ -129,7 +129,7 @@
     {
       "name": "desktop: the passage ends by itself in about 2.6 s (plus its fade)",
       "ok": true,
-      "detail": "3220 ms"
+      "detail": "3218 ms"
     },
     {
       "name": "desktop: arrives at A possible you, framed as imagined",
@@ -274,8 +274,8 @@
     "desktop future self": []
   },
   "timings": {
-    "phone.passage_ms": 3221,
-    "desktop.passage_ms": 3220
+    "phone.passage_ms": 3220,
+    "desktop.passage_ms": 3218
   },
   "summary": {
     "total": 53,
