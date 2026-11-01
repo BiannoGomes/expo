@@ -122,4 +122,4 @@ TR-BG replaced by Bianno's second tree (3:4, fills the Knowledge tree panel). PR
 LV-1..LV-6 (each galaxy's threshold: locked preview, its "is open" card, its Universe panel), YOU-1..YOU-4 (Becoming, Journey ›
 Milestones, earned only: Kindled after a first reflection or practice, Growing at 2 galaxies opened, Radiant at 4, Whole at 5),
 YOU-0 (spare: the figure with no light), LD-1..LD-5 (the path card in Universe › List, by galaxies opened). Resized to webp, 720 px wide.
-Still to make: PR-7 (Gender). The Hall's seven emblems go in together once it exists.
+PR-7 (Gender) added; all seven emblems now sit in the Hall: in its list and on each principle card.

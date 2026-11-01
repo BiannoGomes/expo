@@ -341,7 +341,7 @@ export function createCreative(h) {
     const words = h.textMode() || !hasGL();
     // what every experience can use
     const x = {
-      el, w, args, saved, save, announce, sound, reduced: reduced(), words,
+      el, w, args, saved, save, announce, sound, reduced: reduced(), words, asset,
       get scene() { return scene; },
       task: (t) => { task.textContent = t; },
       hint: (t) => { hint.textContent = t; hint.classList.remove("gone"); },
@@ -350,7 +350,7 @@ export function createCreative(h) {
       things(items) {
         if (!toggle.isConnected) tools.append(toggle);
         list.replaceChildren(...items.map((t) => el("li", {}, el("button", { class: `row${t.on ? " lit" : ""}`, "data-id": t.id, onclick: () => exp.pick?.(t.id) },
-          el("span", { class: "cw-bulb", "aria-hidden": "true" }),
+          t.icon ? el("img", { class: "cw-emblem", src: asset(t.icon), alt: "" }) : el("span", { class: "cw-bulb", "aria-hidden": "true" }),
           el("span", { class: "rtext" }, el("span", { class: "rtitle" }, t.title), t.sub ? el("span", { class: "rsub" }, t.sub) : null),
           t.meta ? el("span", { class: "mmeta" }, t.meta) : null))));
       },
@@ -752,7 +752,7 @@ const EXP = {
     const { el } = x, read = () => x.saved.principles;
     const draw = () => {
       x.task(`Seven principles. ${read().length} of 7 read.`);
-      x.things(PRINCIPLES.map((p, i) => ({ id: `p-${i}`, title: `${i + 1}. ${p.name}`, sub: p.axiom.split(";")[0] + ".", meta: read().includes(i) ? "Read" : "Open", on: read().includes(i) })));
+      x.things(PRINCIPLES.map((p, i) => ({ id: `p-${i}`, title: `${i + 1}. ${p.name}`, sub: p.axiom.split(";")[0] + ".", icon: `img/art/PR-${i + 1}.webp`, meta: read().includes(i) ? "Read" : "Open", on: read().includes(i) })));
     };
     const about = () => x.card(`Wisdom tradition · ${DRAFT}`, "Where these come from", el("p", {}, HALL_INTRO), el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => x.close() }, "Close")));
     x.tool("About", about);
@@ -763,6 +763,7 @@ const EXP = {
       x.quietHint(); x.scene?.api.select(i); x.scene?.api.light(i, true); x.sound.chime?.([261.63, 293.66, 329.63, 392, 440, 523.25, 587.33][i]);
       if (!read().includes(i)) { x.saved.principles = [...read(), i]; x.save(); draw(); }
       x.card(`Principle ${i + 1} of 7 · Wisdom tradition · ${DRAFT}`, p.name,
+        el("img", { class: "cw-emblem big", src: x.asset(`img/art/PR-${i + 1}.webp`), alt: "" }),
         el("blockquote", { class: "cw-axiom" }, el("p", {}, p.axiom), el("cite", {}, "The Kybalion, 1908")),
         el("p", {}, p.means), el("p", { class: "rtitle" }, "Try it"), el("p", {}, p.practise),
         el("p", { class: "quiet small" }, `Honestly: ${p.honest}`),

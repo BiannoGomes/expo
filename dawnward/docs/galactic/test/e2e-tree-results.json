@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T15:40:03.864Z",
+  "when": "2026-11-01T15:53:16.781Z",
   "checks": [
     {
       "name": "the galaxy is one tree with seven branches, each a button",
@@ -179,7 +179,7 @@
     {
       "name": "knowing draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":110,\"median\":43}"
+      "detail": "{\"n\":110,\"median\":38}"
     },
     {
       "name": "the note appears in the Creation Gallery",
@@ -234,7 +234,7 @@
     {
       "name": "hall draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":233,\"median\":22}"
+      "detail": "{\"n\":234,\"median\":22}"
     },
     {
       "name": "tapping the star in 3D explains it, belief kept apart from geometry",
@@ -259,7 +259,7 @@
     {
       "name": "solids draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":162,\"median\":34}"
+      "detail": "{\"n\":168,\"median\":31}"
     },
     {
       "name": "no page or shader errors",
@@ -283,15 +283,15 @@
     },
     "knowing": {
       "n": 110,
-      "median": 43
+      "median": 38
     },
     "hall": {
-      "n": 233,
+      "n": 234,
       "median": 22
     },
     "solids": {
-      "n": 162,
-      "median": 34
+      "n": 168,
+      "median": 31
     }
   },
   "summary": {
