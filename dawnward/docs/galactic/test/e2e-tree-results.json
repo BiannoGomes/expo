@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T10:11:38.401Z",
+  "when": "2026-11-01T10:52:11.127Z",
   "checks": [
     {
       "name": "the galaxy page shows the Tree of Life map",
@@ -144,7 +144,7 @@
     {
       "name": "knowing draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":101,\"median\":44}"
+      "detail": "{\"n\":107,\"median\":42}"
     },
     {
       "name": "the note appears in the Creation Gallery",
@@ -199,7 +199,7 @@
     {
       "name": "hall draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":227,\"median\":25}"
+      "detail": "{\"n\":228,\"median\":25}"
     },
     {
       "name": "tapping the star in 3D explains it, belief kept apart from geometry",
@@ -224,7 +224,7 @@
     {
       "name": "solids draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":151,\"median\":36}"
+      "detail": "{\"n\":155,\"median\":34}"
     },
     {
       "name": "no page or shader errors",
@@ -247,16 +247,16 @@
       "median": 17
     },
     "knowing": {
-      "n": 101,
-      "median": 44
+      "n": 107,
+      "median": 42
     },
     "hall": {
-      "n": 227,
+      "n": 228,
       "median": 25
     },
     "solids": {
-      "n": 151,
-      "median": 36
+      "n": 155,
+      "median": 34
     }
   },
   "summary": {
