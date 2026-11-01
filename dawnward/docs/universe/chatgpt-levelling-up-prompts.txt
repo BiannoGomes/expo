@@ -1,0 +1,74 @@
+DAWNWARD: LEVELLING UP. ChatGPT prompts in order (2026-11-01)
+==============================================================
+The feeling: becoming the fullest version of yourself, shown as a journey through impossible, beautiful places.
+Every image is a THRESHOLD: a moment of arriving somewhere new because of what you did.
+
+How: one new ChatGPT chat. Attach the Dawnward reference board and two earlier Dawnward images.
+Paste STEP 0, then one prompt at a time. If wrong, reply "Again, same prompt".
+Download each named by its CODE (e.g. LV-1.png) and send them back together.
+These pair with the Tree and Path prompts (chatgpt-tree-and-path-prompts.txt): make those first if you haven't.
+
+----------------------------------------------------------------------------------------------------------
+STEP 0 (paste first)
+----------------------------------------------------------------------------------------------------------
+You are the art director for Dawnward, an app where a person's inner life is a living universe they explore and grow through. Match the attached images.
+
+The look: iconic, world-class surreal art. Epic scale against one small, lone human figure. Dream logic made believable: stairways that become light, doors standing alone in vast landscapes, oceans of cloud, architecture growing like plants, the sky folding into new places. Painterly, cinematic light with deep atmosphere and real weight; every image should feel like the single frame people remember from a great film. Calm and awe, never horror, never chaos.
+Composition: one clear focal point, a strong silhouette, generous empty space, layered depth (near, middle, far) with drifting particles between layers.
+Colour: deep space #05070D to #0A1426; light only where it really falls: warm gold #E6C07B, violet #9B5BFF, lilac #C9B8FF, cyan #37D5E8, teal #5FE3C0, amber #F0C987. Fine film grain. No plastic CGI, no lens-flare spam, no neon outlines, no cartoons.
+People: always seen from behind or as a silhouette of light, small in the frame. Never a face. Never a real or recognisable person. No religious symbols of any specific faith. Do not imitate any named living artist.
+Never put text, letters, numbers, logos, UI, icons or watermarks in an image.
+Format unless I say otherwise: portrait 1080 x 1920, the focal point in the top 45%, the bottom 40% calmer and darker (words sit there).
+Reply "Ready" and wait.
+
+----------------------------------------------------------------------------------------------------------
+THE THRESHOLDS: one for each galaxy as it opens (shown on the "is open" moment and the galaxy's page)
+----------------------------------------------------------------------------------------------------------
+1. LV-0  The first step (Personal Growth).
+A lone figure stands at the edge of a cliff at night, facing a vast sky where five distant planets hang in a gentle arc, each a different world: an icy mountain sphere, a green waterfall sphere, a sphere of pink blossom, a dark observatory sphere ringed with starlight, a golden city sphere. A single path of soft gold light begins at the figure's feet and curves out across the void toward them.
+
+2. LV-1  Knowledge opens.
+A colossal tree of golden light grows out of an ocean of clouds, its roots holding floating libraries, its branches carrying planets and geometric shapes of light. A narrow bridge of stars leads from the foreground to its trunk, where a tall doorway glows open for the first time. The small figure stands at the start of the bridge.
+
+3. LV-2  Spiritual Exploration opens.
+An open temple of pale stone with no roof stands on a still lake under a sky full of slow violet aurora. Hundreds of tiny lights rise from the water like lanterns into the sky. The figure kneels at the edge of the lake as the first light rises from just in front of them.
+
+4. LV-3  Creative Worlds opens.
+A single wooden door stands alone in a wide meadow at dawn, and through its open frame is a completely different world: floating islands, waterfalls falling upward into a pastel sky. Light from the other world spills onto the grass. The figure stands a few steps away, about to walk through.
+
+5. LV-4  AI Creation opens.
+A vast hall made of light and glass, where every surface shows a softly moving painting of a different imagined world, like windows into dreams. In the centre, a single pedestal holds a small glowing seed of light. The figure reaches toward it. No screens, no robots, no technology clichés.
+
+6. LV-5  The Quantum Gateway opens.
+A great ring of light stands upright on a mountaintop above the clouds. Through the ring, the sky is a different time of day: warm sunrise, while around it is deep night. The figure stands at the threshold, and a faint, slightly taller silhouette of light stands on the far side, facing them. Hopeful, not mystical.
+
+7. LV-6  Return to Earth.
+Seen from high above the clouds at golden hour: the curve of the Earth, warm city lights beginning to glow, rivers like threads of gold. The small figure sits on the edge of a floating stone above it all, looking down, calm, about to go home. This is the image of bringing it back into real life.
+
+----------------------------------------------------------------------------------------------------------
+BECOMING: the same figure, growing in light (shown in Journey; each one appears only when it's been earned)
+----------------------------------------------------------------------------------------------------------
+Paste this line first, once:
+For the next four images: the same figure, seen from behind, standing on the same flat rock above the same sea of clouds at night, same camera, same framing, same size. Only the light changes. Square 1024 x 1024.
+
+8.  YOU-1  Kindled: a single small warm light glows in the figure's chest; the sky is dark with a few stars.
+9.  YOU-2  Growing: the light is brighter and a faint golden outline traces the figure; more stars, a soft glow on the clouds below.
+10. YOU-3  Radiant: a calm golden radiance around the figure lights the rock and the nearest clouds; a gentle aurora begins overhead.
+11. YOU-4  Whole: the figure's light and the sky's light meet; a soft path of light leads from the rock out across the clouds toward a distant dawn. Still the same person, not a superhero, not glowing eyes.
+
+----------------------------------------------------------------------------------------------------------
+THE LANDINGS: one for each resting place on the Path (chatgpt-tree-and-path-prompts.txt, PATH-BG)
+----------------------------------------------------------------------------------------------------------
+Paste this line first, once:
+For the next five images: a close view of one resting place on a winding golden path through dark mountains and cloud, the same path and style each time, higher each time. Portrait 1080 x 1920. The figure is seen from behind on the landing.
+
+12. LD-1  Begin: a small stone landing at the foot of the mountains, the path glowing ahead, the summit far away and faint.
+13. LD-2  Awakening: a landing on a ridge where the clouds first part, revealing a valley of light below.
+14. LD-3  Expansion: a wide terrace with a view across many floating peaks, each with its own small glow.
+15. LD-4  Integration: a landing beside a calm waterfall of light, where two paths join into one.
+16. LD-5  Mastery: the last landing before a citadel of soft light at the summit; the figure looks back down the whole path, which glows behind them.
+
+----------------------------------------------------------------------------------------------------------
+Send back: LV-0 to LV-6, YOU-1 to YOU-4, LD-1 to LD-5 (16 images).
+Where they go: LV images on each galaxy's opening card and locked page; YOU images in Journey, appearing as you
+reach real milestones (never shown ahead of time); LD images on the Path. Nothing is shown as earned before it is.
