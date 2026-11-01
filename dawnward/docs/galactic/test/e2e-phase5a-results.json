@@ -1,0 +1,199 @@
+{
+  "when": "2026-11-01T13:23:48.931Z",
+  "checks": [
+    {
+      "name": "Learn says Learn once",
+      "ok": true,
+      "detail": "1"
+    },
+    {
+      "name": "one featured next step, with the only gold button",
+      "ok": true,
+      "detail": "Beyond Overthinking\n\nMind · Understand the loop\n\nBegin · 8 min"
+    },
+    {
+      "name": "its button says what happens and how long",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Library comes last, after the practices",
+      "ok": true,
+      "detail": "Beyond Overthinking | Thought Patterns | Communication | The Quantum Gateway | The Mirror of Thought | The Temple of Vitality | The Garden of Becoming | The Observatory of Being | The Horizon of Possibility | Becoming Consistent | Library"
+    },
+    {
+      "name": "chapter rows run full width, titles on one or two lines",
+      "ok": true,
+      "detail": "[{\"full\":0.88,\"lines\":1},{\"full\":0.88,\"lines\":2},{\"full\":0.88,\"lines\":1},{\"full\":0.88,\"lines\":2},{\"full\":0.88,\"lines\":2},{\"full\":0.88,\"lines\":1}]"
+    },
+    {
+      "name": "no small or all-caps text on Learn",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no sideways scroll on Learn",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Learn",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the featured step opens that practice",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "once started, the featured step says Continue and how far",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Journey starts with a plain summary",
+      "ok": true,
+      "detail": "1 reflection"
+    },
+    {
+      "name": "with one reflection it opens on Milestones, not an empty sky",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "search and six world filters sit behind one Filter chip",
+      "ok": true,
+      "detail": "4"
+    },
+    {
+      "name": "Filter opens them, and says it's open",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "an active filter shows on the chip",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Galaxy is still there, and its stars open",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a star opens its memory",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a chosen view is kept while you move around",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Journey",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no sideways scroll on Journey",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "You: under 120 words on the first screen",
+      "ok": true,
+      "detail": "69"
+    },
+    {
+      "name": "You: no all-caps labels, no small text",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "You: short sections, data and privacy first after what's noticed",
+      "ok": true,
+      "detail": "What I've noticed|Your data|Privacy|Your plan|Display"
+    },
+    {
+      "name": "plan details are behind More, and still there",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "settings, privacy and data actions stay on screen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "More opens the plan details",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: You",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "world breadcrumbs are 44 px targets",
+      "ok": true,
+      "detail": "[44,44]"
+    },
+    {
+      "name": "the privacy line is said once per practice, not on every step",
+      "ok": true,
+      "detail": "1, 0"
+    },
+    {
+      "name": "the step label doesn't repeat the title from the breadcrumb",
+      "ok": true,
+      "detail": "Soul · Part 1: Opening"
+    },
+    {
+      "name": "the step label is in normal case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Tree of Life labels are at least 13 px",
+      "ok": true,
+      "detail": "[13,13,13]"
+    },
+    {
+      "name": "the Kingdom's hint leads with the one thing to do",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no sideways scroll on Learn, Journey and You at 320 px",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no sideways scroll on Learn, Journey and You at 768 px",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no sideways scroll on Learn, Journey and You at 1440 px",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "Learn": [],
+    "Journey": [],
+    "You": []
+  },
+  "summary": {
+    "total": 37,
+    "failed": 0
+  }
+}
