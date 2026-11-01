@@ -440,13 +440,15 @@ function main(data, failed) {
   // Privacy is one small control, not a sentence on every screen; its words stay attached
   // to the input for screen readers.
   let recog = null, autosave = null, saving = false, clientKey = null, edPrompt = null;
-  function openEditor(w, { speak = false } = {}) {
-    if (state.place !== "world" || state.world !== w) { goWorld(w, { then: () => openEditor(w, { speak }) }); return; }
+  function openEditor(w, { speak = false, prompt = null } = {}) {
+    if (state.place !== "world" || state.world !== w) { goWorld(w, { then: () => openEditor(w, { speak, prompt }) }); return; }
     const draft = device.read(DRAFT, null);
     state.draftWorld = draft?.world && ORDER.includes(draft.world) && draft.text ? draft.world : w;
     // the world's everyday question first, then deeper ones; the one you answered is kept with your words
-    const qs = () => [META[state.draftWorld].q, ...(QUESTIONS[state.draftWorld] ?? [])];
-    let qi = Math.max(0, draft?.text && draft.prompt ? qs().indexOf(draft.prompt) : 0);
+    // a question brought from elsewhere (the Wisdom Library) leads, unless unsent words are waiting
+    const asked = !draft?.text && prompt ? prompt : draft?.text ? draft.prompt : null;
+    const qs = () => { const list = [META[state.draftWorld].q, ...(QUESTIONS[state.draftWorld] ?? [])]; return asked && state.draftWorld === w && !list.includes(asked) ? [asked, ...list] : list; };
+    let qi = Math.max(0, asked ? qs().indexOf(asked) : 0);
     edPrompt = qs()[qi];
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     const ta = el("textarea", { id: "words", class: "grow", rows: "3", maxlength: "20000", "aria-labelledby": "ed-q", "aria-describedby": "ed-private ed-status" });
@@ -1346,6 +1348,7 @@ function main(data, failed) {
   const exploreReady = explore.refresh().then(() => { sync(); renderHome(); });
   creative = createCreative({ $, el, svg, ICON, asset, sound, announce, showPlace, crumbs, explore,
     toUniverse: () => openAtlas(), toLearn: () => explore.open(), textMode: () => state.mode === "text",
+    reflect: (w, prompt) => openEditor(w, { prompt }),
     distress: (t) => DISTRESS.test(t), crisisText: CRISIS_TEXT.join("\n"), ready: () => exploreReady });
   let firstVisit = false;
   try { firstVisit = localStorage.getItem("dw-home-seen") !== "1"; } catch {}

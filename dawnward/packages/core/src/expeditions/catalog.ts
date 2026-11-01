@@ -980,6 +980,51 @@ export const MISSIONS: Mission[] = [
       { id: "close", type: "close", title: "Done", body: "Take the step, then come back and say how it went. Any outcome counts.", required: false },
     ],
   },
+  // ----- A Wisdom Constellation (Bianno's brief, 2026-11-01): several perspectives on one struggle, in
+  // Dawnward's own words, labelled by evidence, then the user's own seven-day experiment. DRAFT. -----
+  {
+    id: "consistency-1",
+    version: 1,
+    systemId: "future-consistency",
+    world: "future",
+    title: "Becoming Consistent",
+    part: "A Wisdom Constellation",
+    objective: "See why things don't stick from four angles, then run your own seven-day experiment.",
+    minutes: 8,
+    status: "draft",
+    steps: [
+      { id: "intro", type: "intro", title: "Becoming Consistent", body: "Four ways of looking at why things don't stick. Then you choose one and try it for seven days.", required: false },
+      { id: "question", type: "reflect", title: "What do you keep meaning to do, and keep not doing?", prompt: "Write the one thing, and what usually happens instead.", examples: ["Going for a run. I plan it, then the evening disappears."], required: true },
+      {
+        id: "explore",
+        type: "lesson",
+        title: "Four ways of looking at it",
+        paragraphs: [
+          "Habits and surroundings. James Clear (Atomic Habits, 2018): make the action obvious and easy, and attach it to something you already do. Built on strong habit research, though habits usually take longer than a few weeks to form.",
+          "If-then plans. Peter Gollwitzer's research: decide in advance, “when this happens, I'll do that”. Across many studies, people who plan this way follow through more often. Strong research.",
+          "Kindness after a slip. Kristin Neff (Self-Compassion, 2011): treat a missed day the way you'd treat a friend's. It's linked with trying again rather than giving up. Promising research, much of it correlational.",
+          "Knowing why. Viktor Frankl (Man's Search for Meaning, 1946) wrote, quoting Nietzsche, that someone with a why can bear almost any how. A philosophy from his own life, not a measured finding.",
+          "They don't all agree. Clear says fix the system rather than rely on willpower; Frankl says find the reason. Both can be true for different people. The best one for you is the one that fits what usually goes wrong.",
+        ],
+        required: false,
+      },
+      {
+        id: "choose",
+        type: "choice",
+        title: "What usually goes wrong?",
+        body: "Choose the one that sounds most like you.",
+        options: [
+          { id: "cue", text: "I forget, or the moment never feels right", outcome: "Try an if-then plan: “After I [something you already do], I will [the action].”", why: "Tying a new action to an existing cue is one of the best-supported ways to follow through." },
+          { id: "small", text: "It feels too big, so I put it off", outcome: "Make it almost too small: two minutes, one page, one stretch.", why: "Small, easy actions get repeated, and repetition is what builds a habit." },
+          { id: "slip", text: "I miss a day, then give up", outcome: "Decide your restart now: “If I miss a day, I start again the next day, without making up for it.”", why: "A slip met with kindness tends to lead back to trying; harsh self-criticism tends to lead to quitting." },
+          { id: "why", text: "I'm not sure why it matters to me", outcome: "Write one sentence about who it's for, or what it would make possible.", why: "A clear reason won't do the work, but it helps on the days the action feels pointless." },
+        ],
+        required: true,
+      },
+      { id: "act", type: "plan", title: "Your seven-day experiment", prompt: "Write the action the way you chose, and when. Try it for seven days.", examples: ["After I make coffee, I'll write one line in my notebook"], required: true },
+      { id: "close", type: "close", title: "Done", body: "Seven days, then come back and say how it went. A missed day is information, not failure.", required: false },
+    ],
+  },
 ];
 
 export const SYSTEMS: SolarSystem[] = [
@@ -1023,6 +1068,7 @@ export const SYSTEMS: SolarSystem[] = [
   { id: "soul-becoming", world: "soul", title: "The Garden of Becoming", objective: "Live one value you've set aside.", missionIds: ["becoming-1"] },
   { id: "spirit-observatory", world: "spirit", title: "The Observatory of Being", objective: "Ten quiet minutes with what still matters.", missionIds: ["observatory-1"] },
   { id: "future-horizon", world: "future", title: "The Horizon of Possibility", objective: "Hear your future self, take one step.", missionIds: ["horizon-1"] },
+  { id: "future-consistency", world: "future", title: "Becoming Consistent", objective: "Four perspectives, then your own seven-day experiment.", missionIds: ["consistency-1"] },
 ];
 
 export const missionById = (id: string): Mission | undefined => MISSIONS.find((m) => m.id === id);

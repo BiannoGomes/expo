@@ -8,6 +8,7 @@
 // No scores, no streaks. Nothing here calls a paid service.
 import { buildWorld, ARCH, BODIES } from "./creative-scene.js";
 import { PACKS } from "./packs.data.js";
+import { WISDOM, EVIDENCE } from "./wisdom.js";
 import { KINDS, SEFIROT, PATHS, TREE_LESSON, PRINCIPLES, HALL_INTRO, FLOWER, SOLIDS, SOLIDS_INTRO, KNOWING_STEPS, FELT, KNOWING_NOTE, CALENDAR, calendarDate, MONTHS, DEEPER } from "./knowledge.js";
 
 /** Members' packs from content/packs (tools/packs.mjs). A test can supply its own. */
@@ -93,7 +94,7 @@ export const REALMS = {
       { id: "flower", node: "netzach", kind: "wisdom", name: "The Flower of Life", line: "Grow the best-known pattern of sacred geometry, one circle at a time.", status: "open", access: "free", exp: "flower", sky: "#070516" },
       { id: "hall", node: "tiferet", kind: "wisdom", name: "The Hall of the Seven Principles", line: "The seven Hermetic principles, each with a practice and an honest note.", status: "open", access: "plus", exp: "hall", sky: "linear-gradient(180deg,#07061a,#1a1238 60%,#3a2448)" },
       { id: "solids", node: "gevurah", kind: "both", name: "The Five Solids", line: "The tetrahedron and its four siblings, from Plato to Kepler to chemistry.", status: "open", access: "plus", exp: "solids", sky: "#04050f" },
-      { id: "mind", node: "chesed", kind: "science", name: "The Human Mind", line: "How attention, memory and habits work.", status: "planned", why: NEEDS_REVIEW },
+      { id: "wisdom", node: "chesed", kind: "both", name: "The Wisdom Library", line: "Ideas from psychologists, philosophers and teachers, each with its source and how strong the evidence is.", status: "open", access: "free", page: "wisdom" },
       { id: "philosophy", node: "binah", kind: "wisdom", name: "The Philosophy Temple", line: "Old questions, asked plainly.", status: "planned", why: NEEDS_REVIEW },
       { id: "tree", node: "chokmah", kind: "map", name: "The Tree of Life", line: "The map this galaxy is drawn on, and what each sphere means.", status: "open", access: "free", page: "tree" },
       { id: "knowing", node: "keter", kind: "practice", name: "Inner Knowing", line: "A careful practice for hearing the quiet sense of what's right for you.", status: "open", access: "free", exp: "crown", sky: "linear-gradient(180deg,#02030c,#0a1030 60%,#1e2650)" },
@@ -290,7 +291,7 @@ export function createCreative(h) {
   async function enter(r, id, args = {}) {
     const p = planet(r, id);
     if (!p || p.status !== "open") return open(r);
-    if (p.page) return p.page === "gallery" ? gallery() : p.page === "tree" ? treePage() : calendarPage();
+    if (p.page) return p.page === "gallery" ? gallery() : p.page === "tree" ? treePage() : p.page === "wisdom" ? wisdomPage() : calendarPage();
     if (locked(r, id)) { await h.ready?.(); if (locked(r, id)) return gate(r, id); }
     realm = r; pid = id; show("world");
     const w = meta(r, id);
@@ -505,6 +506,42 @@ export function createCreative(h) {
     root.scrollTop = 0;
     $("cw-title").focus({ preventScroll: true });
     announce("The Cosmic Calendar.");
+  }
+
+  // ---------------- the Wisdom Library ----------------
+  /** Grouped by evidence, so research, early research and philosophy are never shown as equal.
+   *  Every idea ends somewhere real: a question to reflect on, and one small thing to try. */
+  function wisdomPage() {
+    realm = "knowledge"; pid = "wisdom"; pageKind = "wisdom"; show("page");
+    const here = { label: "The Wisdom Library", go: () => enter("knowledge", "wisdom"),
+      trail: [{ label: "Universe", go: h.toUniverse }, { label: "Knowledge", go: () => open("knowledge") }, { label: "The Wisdom Library", go: () => enter("knowledge", "wisdom") }] };
+    const entry = (w) => {
+      const hid = `wz-${w.id}`;
+      return el("li", {}, el("section", { class: "card wz", "aria-labelledby": hid },
+        el("h4", { class: "rtitle", id: hid }, w.name),
+        el("p", { class: "quiet small" }, `${w.field} · ${w.source}`),
+        el("p", {}, w.idea),
+        el("p", { class: "quiet small" }, w.limits),
+        el("p", { class: "wz-q" }, w.question),
+        el("p", { class: "small" }, el("span", { class: "wz-try" }, "Try: "), w.try),
+        el("div", { class: "actions" }, el("button", { class: "ghost", "aria-describedby": hid, onclick: () => h.reflect(w.world, w.question) }, "Reflect on this"))));
+    };
+    page.replaceChildren(el("div", { class: "ycol" },
+      h.crumbs([{ label: "Universe", go: h.toUniverse }, { label: "Knowledge", go: () => open("knowledge") }, { label: "The Wisdom Library" }]),
+      el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, "The Wisdom Library"),
+      el("p", { class: "lead" }, "Ideas worth trying, in our own words, with where to read them and how strong the evidence is."),
+      el("button", { class: "row wz-path", onclick: () => h.explore.play("consistency-1", { from: here }) },
+        el("span", { class: "rtext" }, el("span", { class: "rtitle" }, "Becoming Consistent"), el("span", { class: "rsub" }, "Four perspectives, then your own seven-day experiment · 8 min")),
+        el("span", { class: "rgo", html: svg(ICON.arrow, 16) })),
+      ...[1, 2, 3].map((k) => el("section", { class: "cw-gsec", "aria-labelledby": `wz-e${k}` },
+        el("h3", { class: "wz-h", id: `wz-e${k}` }, EVIDENCE[k].label),
+        el("p", { class: "quiet small" }, EVIDENCE[k].line),
+        el("ul", { class: "wz-list" }, WISDOM.filter((w) => w.evidence === k).map(entry)))),
+      el("p", { class: "quiet small" }, "None of these people is connected with Dawnward. Draft, not yet reviewed."),
+      el("div", { class: "actions" }, el("button", { class: "ghost", onclick: () => open("knowledge") }, "Back to Knowledge"))));
+    root.scrollTop = 0;
+    $("cw-title").focus({ preventScroll: true });
+    announce("The Wisdom Library.");
   }
 
   // ---------------- the Members' Library: packs Bianno makes ----------------

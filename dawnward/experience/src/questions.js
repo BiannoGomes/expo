@@ -9,6 +9,7 @@ export const QUESTIONS = {
     "What are you avoiding thinking about?",
     "Which worry today was about something you can't control?",
     "What would you decide if you weren't afraid of getting it wrong?",
+    "What are you discovering about yourself, and what will you do differently because of it?", // ★
   ],
   body: [
     "If your body could tell you what it needs, what have you been ignoring?", // ★
@@ -23,6 +24,8 @@ export const QUESTIONS = {
     "Who would you like to understand better?",
     "When did you last feel you belonged?",
     "What would you say if you weren't trying to be liked?",
+    "Who would you be if you no longer needed to prove your worth?", // ★
+    "Do the people you love experience the love you believe you give?", // ★
   ],
   spirit: [
     "What remains meaningful when achievement, status and comparison fall silent?", // ★
@@ -30,6 +33,7 @@ export const QUESTIONS = {
     "What question do you keep coming back to?",
     "Where do you feel most at peace?",
     "What are you grateful for that you rarely say?",
+    "If your time were limited, which parts of your life would suddenly become important?", // ★ optional by nature: Another question moves on
   ],
   future: [
     "If your future self could observe your decisions today, what would they ask you to change?", // ★
@@ -37,5 +41,6 @@ export const QUESTIONS = {
     "What do you want to be true a year from now?",
     "What are you saying yes to that you'd like to say no to?",
     "What small step have you been putting off?",
+    "What would you attempt if you no longer needed certainty before beginning?", // ★
   ],
 };

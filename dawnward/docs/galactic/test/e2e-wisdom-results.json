@@ -1,0 +1,123 @@
+{
+  "when": "2026-11-01T11:14:04.012Z",
+  "checks": [
+    {
+      "name": "the Tree of Life has the Wisdom Library on it, open",
+      "ok": true,
+      "detail": "The Wisdom Library\nLoving-kindness"
+    },
+    {
+      "name": "it opens at its own address",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "grouped by evidence, research first, philosophy apart",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "21 thinkers, each a card",
+      "ok": true,
+      "detail": "21"
+    },
+    {
+      "name": "every card shows its source",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "says plainly that none of them is connected with Dawnward",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Frankl is under philosophy, not research",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Wisdom Library",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Reflect opens in Spirit, on Frankl's question",
+      "ok": true,
+      "detail": "What would make this week meaningful, even if nothing went to plan?"
+    },
+    {
+      "name": "the saved reflection keeps the question",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Becoming Consistent opens, with the way back to the library",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Question: what do you keep meaning to do",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Explore: four perspectives, each labelled by evidence, and where they disagree",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Choose: picking one shows what to try and why",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "after a reload it resumes at the seven-day experiment",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Done shows the experiment",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Becoming Consistent, done",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Home asks how the experiment went",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Journey shows Becoming Consistent, after a reload",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "at 320 px the library fits without sideways scroll",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "the Wisdom Library": [],
+    "Becoming Consistent, done": []
+  },
+  "summary": {
+    "total": 22,
+    "failed": 0
+  }
+}
