@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T09:28:50.225Z",
+  "when": "2026-11-01T10:03:29.799Z",
   "url": "http://localhost:8771/home.html",
   "checks": [
     {
@@ -133,7 +133,7 @@
       "detail": ""
     },
     {
-      "name": "phone: draft kept on this device",
+      "name": "phone: draft kept on this device, quietly",
       "ok": true,
       "detail": ""
     },
@@ -328,7 +328,7 @@
       "detail": ""
     },
     {
-      "name": "desktop: draft kept on this device",
+      "name": "desktop: draft kept on this device, quietly",
       "ok": true,
       "detail": ""
     },
@@ -515,20 +515,20 @@
     "desktop text": []
   },
   "timings": {
-    "phone.ready_ms": 284,
-    "phone.mind_arrival_ms": 738,
+    "phone.ready_ms": 368,
+    "phone.mind_arrival_ms": 767,
     "phone.frames_swiftshader": {
-      "n": 49,
-      "median": 66.59999999999854,
-      "p95": 100,
+      "n": 51,
+      "median": 50.100000000000364,
+      "p95": 116.69999999999891,
       "degraded": false
     },
-    "desktop.ready_ms": 304,
-    "desktop.mind_arrival_ms": 1117,
+    "desktop.ready_ms": 320,
+    "desktop.mind_arrival_ms": 1274,
     "desktop.frames_swiftshader": {
-      "n": 16,
-      "median": 200.09999999999854,
-      "p95": 550,
+      "n": 14,
+      "median": 216.70000000000073,
+      "p95": 433.2999999999993,
       "degraded": false
     },
     "reduced.soul_arrival_ms": 5

@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T09:26:00.966Z",
+  "when": "2026-11-01T10:00:19.620Z",
   "checks": [
     {
       "name": "320x568: Atlas galaxies and names never overlap",
@@ -103,6 +103,11 @@
     },
     {
       "name": "phone: the Compass says why",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: one primary action on Home",
       "ok": true,
       "detail": ""
     },
@@ -262,6 +267,11 @@
       "detail": ""
     },
     {
+      "name": "phone: no breadcrumbs while writing",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "phone: the Universe crumb returns to the Atlas",
       "ok": true,
       "detail": ""
@@ -288,6 +298,11 @@
     },
     {
       "name": "desktop: the Compass says why",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop: one primary action on Home",
       "ok": true,
       "detail": ""
     },
@@ -447,6 +462,11 @@
       "detail": ""
     },
     {
+      "name": "desktop: no breadcrumbs while writing",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "desktop: the Universe crumb returns to the Atlas",
       "ok": true,
       "detail": ""
@@ -497,13 +517,13 @@
   "timings": {
     "phone.arrival_fallbacks": 0,
     "phone.webgl_context_lost": 0,
-    "phone.to_first_step_ms": 223,
+    "phone.to_first_step_ms": 193,
     "desktop.arrival_fallbacks": 1,
     "desktop.webgl_context_lost": 0,
-    "desktop.to_first_step_ms": 118
+    "desktop.to_first_step_ms": 212
   },
   "summary": {
-    "total": 96,
+    "total": 100,
     "failed": 0
   }
 }
