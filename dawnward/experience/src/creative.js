@@ -85,7 +85,7 @@ export const REALMS = {
   },
   knowledge: {
     name: "Knowledge", art: "A4", tree: true,
-    lead: "A Tree of Life of knowledge: the world you can see at its root, inner knowing at its crown. Science and wisdom traditions side by side, each labelled for what it is.",
+    lead: "Science and wisdom, from the world you can see to the world within.",
     planets: [
       { id: "observatory", node: "malkuth", kind: "science", name: "The Cosmic Observatory", line: "The Sun and its eight planets, moving in their true proportions of time.", status: "open", access: "free", exp: "observatory", sky: "#02030a" },
       { id: "lab", node: "yesod", kind: "science", name: "The Discovery Lab", line: "Throw moons around a star and watch real gravity at work.", status: "open", access: "plus", exp: "lab", sky: "#03050c" },
@@ -205,8 +205,8 @@ export function createCreative(h) {
       packRows(packs().filter((k) => k.place === r), "From Bianno"),
       R.tree ? el("details", { class: "cw-deeper" }, el("summary", {}, "Go deeper"),
         el("ul", { class: "cw-words" }, DEEPER.map(([t, d]) => el("li", {}, el("p", { class: "rtitle" }, t), el("p", { class: "quiet small" }, d)))),
-        el("p", { class: "quiet small" }, "Dawnward isn't connected with these authors. Their work is theirs; nothing of it is copied here. Everything in this galaxy is original writing, marked as a draft until it's been reviewed.")) : null,
-      el("p", { class: "quiet small" }, "Drawn live on your device. What you make is kept on this device, and you can save or delete it in the Creation Gallery. Nothing here is scored."),
+        el("p", { class: "quiet small" }, "Dawnward isn't connected with these authors, and nothing of theirs is copied here.")) : null,
+      el("p", { class: "quiet small" }, "What you make stays on this device."),
       el("div", { class: "actions" }, el("button", { class: "ghost", onclick: h.toUniverse }, "Back to the Universe"))));
     root.scrollTop = 0;
     $("cw-title").focus({ preventScroll: true });
@@ -497,9 +497,9 @@ export function createCreative(h) {
       h.crumbs([{ label: "Universe", go: h.toUniverse }, { label: "Knowledge", go: () => open("knowledge") }, { label: "The Cosmic Calendar" }]),
       el("p", { class: "kicker" }, "Science · Draft, not yet reviewed"),
       el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, "The Cosmic Calendar"),
-      el("p", { class: "lead" }, "Squeeze the whole history of the universe, about 13.8 billion years, into one year. The Big Bang is the first moment of January 1. Now is the last moment of December 31."),
+      el("p", { class: "lead" }, "13.8 billion years, squeezed into one year. The Big Bang is January 1. Now is midnight on December 31."),
       seg, bar, list,
-      el("p", { class: "quiet small" }, "An idea made famous by Carl Sagan in Cosmos, and by Neil deGrasse Tyson in its 2014 return. The dates here are worked out from the ages scientists estimate, so they're approximate."),
+      el("p", { class: "quiet small" }, "After Carl Sagan's Cosmic Calendar. Dates are approximate."),
       el("div", { class: "actions" }, el("button", { class: "ghost", onclick: () => open("knowledge") }, "Back to Knowledge"))));
     draw("year");
     root.scrollTop = 0;
@@ -806,7 +806,7 @@ const EXP = {
     x.panel(lenR,
       radios("Pace", [["calm", "Calm: in 4, out 6"], ["even", "Even: in 4, out 4"]], () => (st.pace[1] === 6 ? "calm" : "even"), (v) => { st.pace = v === "calm" ? [4, 6] : [4, 4]; }),
       cue, left, el("div", { class: "actions" }, startB),
-      el("p", { class: "quiet small" }, "Follow the light: breathe in as it grows, out as it fades. If you feel light-headed, stop and breathe normally."));
+      el("p", { class: "quiet small" }, "Breathe in as the light grows, out as it fades. Feel light-headed? Stop and breathe normally."));
     x.task("A light that breathes with you.");
     x.hint("Choose a length, then Begin. Or tap the light.");
     const tick = () => {
@@ -922,12 +922,12 @@ const EXP = {
         btn("Too slow", () => x.scene?.api.throw("slow")), btn("Too fast", () => x.scene?.api.throw("fast")),
         btn("Clear", () => { x.scene?.api.clear(); count(0); x.announce("The sky is clear."); })),
       stat,
-      el("p", { class: "quiet small" }, "Drag from anywhere to throw a moon, or tap to place one in a circle. Closer orbits go faster. Too slow and a moon falls in; too fast and it escapes."));
+      el("p", { class: "quiet small" }, "Drag to throw a moon. Tap for a perfect circle."));
     x.task("A star, and real gravity.");
     x.hint("Drag to throw a moon. Tap to place one in a circle.");
     return {
       opts,
-      words() { stat.textContent = "This lab needs 3D drawing, which isn't available here. The idea: a moon falls toward the star all the time, but moves sideways fast enough to keep missing it. That's an orbit."; },
+      words() { stat.textContent = "This lab needs 3D, which isn't available on this device."; },
     };
   },
 };

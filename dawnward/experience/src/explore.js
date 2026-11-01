@@ -358,7 +358,7 @@ export function createExplore(store, h) {
     if (step.type === "intro") {
       h.quiet(false);
       frame(m, i, title, m.status === "draft" ? el("p", { class: "draft-tag" }, "Draft: not yet reviewed") : null, el("p", { class: "lead" }, step.body),
-        el("p", { class: "quiet" }, `What you'll practise: ${m.objective} About ${m.minutes} minutes. You can leave at any step and keep your place.`),
+        el("p", { class: "quiet" }, `${m.objective} About ${m.minutes} min.`),
         m.worksheet ? el("p", { class: "quiet" }, "Includes a worksheet to print or keep: ", el("button", { class: "text-btn", onclick: () => worksheet(m, () => show(i)) }, m.worksheet.title)) : null,
         m.safetyNote ? el("p", { class: "quiet safety" }, m.safetyNote) : null,
         err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => next({ ack: true }) }, "Begin")));
