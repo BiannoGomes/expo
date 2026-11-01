@@ -132,3 +132,6 @@ docs/pages/versions/*/react-native/*.diff
 
 # TypeScript state
 tsconfig.tsbuildinfo
+
+# Impeccable live-server state (local only)
+.impeccable/live/
