@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T10:00:19.620Z",
+  "when": "2026-11-01T10:15:05.318Z",
   "checks": [
     {
       "name": "320x568: Atlas galaxies and names never overlap",
@@ -103,7 +103,7 @@
     },
     {
       "name": "phone: the Compass says why",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -238,7 +238,7 @@
     },
     {
       "name": "phone: Home shows what was just discovered",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -298,7 +298,7 @@
     },
     {
       "name": "desktop: the Compass says why",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -433,7 +433,7 @@
     },
     {
       "name": "desktop: Home shows what was just discovered",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -517,13 +517,13 @@
   "timings": {
     "phone.arrival_fallbacks": 0,
     "phone.webgl_context_lost": 0,
-    "phone.to_first_step_ms": 193,
+    "phone.to_first_step_ms": 161,
     "desktop.arrival_fallbacks": 1,
     "desktop.webgl_context_lost": 0,
-    "desktop.to_first_step_ms": 212
+    "desktop.to_first_step_ms": 196
   },
   "summary": {
     "total": 100,
-    "failed": 0
+    "failed": 4
   }
 }

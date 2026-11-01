@@ -60,7 +60,7 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     const comp = await page.textContent("#earth .nextcard");
     check(`${name}: the Compass offers a first expedition`, /Beyond Overthinking/.test(comp) && /Begin · Chapter 1 of 7 · 8 min/.test(comp));
     await page.locator("#earth .c-why summary").click();
-    check(`${name}: the Compass says why`, /short first expedition/.test(await page.textContent("#earth .c-why")) && /Nothing is read from your reflections/.test(await page.textContent("#earth .c-why")));
+    check(`${name}: the Compass says why`, /short first expedition/.test(await page.textContent("#earth .c-why")) && /never on what you write/.test(await page.textContent("#earth .c-why")));
     check(`${name}: one primary action on Home`, (await page.locator("#earth .primary").count()) === 1);
     check(`${name}: the first action is visible without scrolling`, await page.evaluate(() => { const b = document.querySelector("#earth .nextcard .primary").getBoundingClientRect(); return b.bottom <= innerHeight - 64 || innerWidth >= 1000; }));
     await page.getByRole("button", { name: "Not today" }).click();
@@ -146,7 +146,7 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     // Earth
     check(`${name}: Return to Earth lands on Home`, (await place(page)) === "earth");
     const earth = await page.textContent("#earth");
-    check(`${name}: Home shows what was just discovered`, /Just discovered/.test(earth) && /The Thought Labyrinth/.test(earth));
+    check(`${name}: Home shows what was just discovered`, (await page.locator("#earth .card.found").count()) === 1 && /The Thought Labyrinth/.test(earth));
     check(`${name}: the Compass moves on to an expedition not yet done`, /Beyond Overthinking/.test(await page.textContent("#earth .nextcard")));
     check(`${name}: Home has no urgency, streaks or scores`, !/streak|score|\bxp\b|hurry|don't miss|last chance/i.test(earth));
     await page.screenshot({ path: `${OUT}/u-${name}-earth.png`, timeout: 90000 });
