@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T23:21:16.201Z",
+  "when": "2026-11-01T09:28:50.225Z",
   "url": "http://localhost:8771/home.html",
   "checks": [
     {
@@ -495,7 +495,7 @@
     {
       "name": "reduced motion: arrival is immediate",
       "ok": true,
-      "detail": "6 ms"
+      "detail": "5 ms"
     }
   ],
   "axe": {
@@ -515,23 +515,23 @@
     "desktop text": []
   },
   "timings": {
-    "phone.ready_ms": 332,
-    "phone.mind_arrival_ms": 741,
+    "phone.ready_ms": 284,
+    "phone.mind_arrival_ms": 738,
     "phone.frames_swiftshader": {
       "n": 49,
-      "median": 50,
-      "p95": 116.70000000000073,
+      "median": 66.59999999999854,
+      "p95": 100,
       "degraded": false
     },
-    "desktop.ready_ms": 302,
-    "desktop.mind_arrival_ms": 943,
+    "desktop.ready_ms": 304,
+    "desktop.mind_arrival_ms": 1117,
     "desktop.frames_swiftshader": {
-      "n": 15,
-      "median": 183.29999999999927,
-      "p95": 500,
+      "n": 16,
+      "median": 200.09999999999854,
+      "p95": 550,
       "degraded": false
     },
-    "reduced.soul_arrival_ms": 6
+    "reduced.soul_arrival_ms": 5
   },
   "summary": {
     "total": 99,
