@@ -150,7 +150,7 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.locator('#tabs [data-tab="learn"]').click();
     await page.waitForTimeout(300);
     const learn = await page.textContent("#x-body");
-    check(`${name}: Learn lists Beyond Overthinking as 7 chapters`, /expedition · 7 chapters/.test(learn));
+    check(`${name}: Learn lists Beyond Overthinking as 7 chapters`, /Mind · 7 chapters/.test(learn));
     check(`${name}: chapters 5 to 7 are marked Planned and can't be opened`, (await page.locator("#x-body li.planned").count()) === 3 && (await page.locator("#x-body li.planned button").count()) === 0);
     const stopBtn = page.getByRole("button", { name: "Following · stop" });
     check(`${name}: Learn shows you're following, as a pressed toggle`, (await stopBtn.getAttribute("aria-pressed")) === "true");
