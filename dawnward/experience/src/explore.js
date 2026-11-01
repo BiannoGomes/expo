@@ -147,6 +147,23 @@ export function createExplore(store, h) {
     ].filter(Boolean);
   }
 
+  /** What to do next: what you're in the middle of, else the first open practice you haven't finished. */
+  function featured(going) {
+    const a = going[0];
+    if (a && missionById(a.missionId)) return { m: missionById(a.missionId), a };
+    const done = (id) => data.attempts.some((x) => x.missionId === id && x.status === "completed");
+    for (const sys of SYSTEMS) for (const id of sys.missionIds) { const m = missionById(id); if (m && !done(id) && !locked(m) && !h.missionLock?.(m)) return { m, a: null }; }
+    return null;
+  }
+  function featureCard({ m, a }) {
+    const n = m.steps.length, at = a ? Math.min(a.step + 1, n) : 0;
+    return el("section", { class: "nextcard x-feature", "aria-labelledby": "x-feat" },
+      el("h3", { class: "c-title", id: "x-feat" }, m.title),
+      el("p", { class: "c-part" }, `${META[m.world].name} · ${m.part.replace(/^Chapter \d+: /, "")}`),
+      a ? el("div", { class: "lockbar", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(n), "aria-valuenow": String(at), "aria-label": `${at} of ${n}` }, el("span", { style: `width:${Math.round((at / n) * 100)}%` })) : null,
+      el("button", { class: "primary wide", onclick: () => play(m.id) }, a ? `Continue · ${at} of ${n}` : `Begin · ${m.minutes} min`));
+  }
+
   // ----- the Discovery Galaxy, as a list that works without any 3D -----
   async function open() {
     h.showPlace("explore");
@@ -157,11 +174,15 @@ export function createExplore(store, h) {
   }
   function draw() {
     setArt(null);
-    const kids = [...head("Learn", "Explore. Practise. Grow.")];
+    // Learn's own heading, once; then one featured next step (the only gold button), then everything else
+    const kids = [el("h2", { class: "s-title", id: "x-title", tabindex: "-1" }, "Learn"), el("p", { class: "quiet" }, "Explore. Practise. Grow.")];
     const going = data.attempts.filter((a) => a.status === "in_progress" || a.status === "paused");
-    if (going.length) {
+    const feat = featured(going);
+    if (feat) kids.push(featureCard(feat));
+    const others = going.filter((a) => a.missionId !== feat?.m.id);
+    if (others.length) {
       kids.push(el("section", { class: "group", "aria-labelledby": "x-cont" }, el("h3", { id: "x-cont" }, "Pick up where you left off"),
-        ...going.map((a) => { const m = missionById(a.missionId); return el("button", { class: "row", onclick: () => play(m.id) },
+        ...others.map((a) => { const m = missionById(a.missionId); return el("button", { class: "row", onclick: () => play(m.id) },
           el("span", { class: "ricon", html: svg(ICON[m.world], 22) }),
           el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `${m.title}, ${m.part}`), el("span", { class: "rsub" }, `${Math.min(a.step + 1, m.steps.length)} of ${m.steps.length}`)),
           el("span", { class: "rgo", html: svg(ICON.arrow, 16) })); })));
@@ -174,16 +195,12 @@ export function createExplore(store, h) {
           el("span", { class: "rtext" }, el("span", { class: "rtitle" }, x.action), el("span", { class: "rsub" }, `You planned: ${x.when_text}`)),
           el("span", { class: "rgo", html: svg(ICON.arrow, 16) })))));
     }
-    kids.push(el("section", { class: "group", "aria-labelledby": "x-lib" }, el("h3", { id: "x-lib" }, "Library"),
-      el("button", { class: "row", onclick: () => h.openLibrary?.() },
-        el("span", { class: "rtext" }, el("span", { class: "rtitle" }, "Lessons, audio & films"), el("span", { class: "rsub" }, "From Bianno")),
-        el("span", { class: "rgo", html: svg(ICON.arrow, 16) }))));
     for (const sys of SYSTEMS) {
       const ms = sys.missionIds.map(missionById);
       kids.push(el("section", { class: "group system", "aria-labelledby": `x-${sys.id}` },
         ART.systems[sys.id] ? el("img", { class: "sys-planet", src: h.asset(artPath(ART.systems[sys.id])), alt: "" }) : null,
-        el("p", { class: "kicker" }, `${META[sys.world].name} · ${sys.kind === "expedition" ? `expedition · ${sys.missionIds.length + (sys.planned?.length ?? 0)} chapters` : "solar system"}`),
         el("h3", { id: `x-${sys.id}`, class: "sys-title" }, sys.title),
+        el("p", { class: "sys-meta" }, `${META[sys.world].name}${sys.kind === "expedition" ? ` · ${sys.missionIds.length + (sys.planned?.length ?? 0)} chapters` : ""}`),
         el("p", { class: "quiet" }, sys.objective),
         sys.kind === "expedition" ? el("div", { class: "actions" }, followButton(sys, () => { draw(); body().querySelector(`[aria-labelledby="x-${sys.id}"] .follow`)?.focus(); })) : null,
         el("ul", { class: "missions" }, ms.map((m) => {
@@ -191,13 +208,17 @@ export function createExplore(store, h) {
           const pl = !done && h.missionLock?.(m), lock = !done && !a && !pl && locked(m);
           const state = done ? "Done" : pl ? "Opens later" : a ? "In progress" : lock ? "Plus" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`;
           return el("li", {}, el("button", { class: `mission${done ? " done" : ""}${lock || pl ? " locked" : ""}`, onclick: () => play(m.id), "aria-label": `${m.title}, ${m.part}. ${m.objective} ${pl ? `Opens when you: ${pl.need}` : lock ? "Part of Dawnward Plus." : `${state}.`}` },
-            el("span", { class: "mstate", "aria-hidden": "true" }, done ? "✦" : ""),
-            el("span", { class: "rtext" }, el("span", { class: "rtitle" }, m.part), el("span", { class: "rsub" }, m.objective)),
-            el("span", { class: "mmeta" }, state)));
+            el("span", { class: "rtext" }, el("span", { class: "rtitle" }, m.part), el("span", { class: "rsub" }, m.objective),
+              el("span", { class: "mmeta mline" }, done ? "✦ Done" : state)),
+            el("span", { class: "rgo", html: svg(ICON.arrow, 16) })));
         }), (sys.planned ?? []).map((p, k) => el("li", { class: "planned" },
           el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `Chapter ${sys.missionIds.length + k + 1}: ${p.title}`), el("span", { class: "rsub" }, p.line)),
           el("span", { class: "mmeta" }, "Planned"))))));
     }
+    kids.push(el("section", { class: "group", "aria-labelledby": "x-lib" }, el("h3", { id: "x-lib" }, "Library"),
+      el("button", { class: "row", onclick: () => h.openLibrary?.() },
+        el("span", { class: "rtext" }, el("span", { class: "rtitle" }, "Lessons, audio & films"), el("span", { class: "rsub" }, "From Bianno")),
+        el("span", { class: "rgo", html: svg(ICON.arrow, 16) }))));
     kids.push(el("p", { class: "quiet" }, "More solar systems will arrive in each world, one at a time and carefully written."));
     body().replaceChildren(...kids);
   }
@@ -336,7 +357,7 @@ export function createExplore(store, h) {
       el("div", { class: "qhead" },
         h.crumbs([...(from?.trail ?? [{ label: "Learn", root: true, go: () => { current = null; from = null; h.quiet(false); draw(); } }]), { label: m.title }]),
         el("button", { class: "text-btn back", onclick: back }, el("span", { html: svg(ICON.back, 16) }), ` ${from?.label ?? "Learn"}`),
-        el("p", { class: "kicker" }, `${META[m.world].name} · ${m.title} · ${m.part}`),
+        el("p", { class: "kicker" }, `${META[m.world].name} · ${m.part}`),
         el("p", { class: "qpos", role: "img", "aria-label": `Step ${i + 1} of ${m.steps.length}` }, ...m.steps.map((_, k) => el("span", { class: k < i ? "on" : k === i ? "here" : "" })))),
       ...kids.filter(Boolean));
     body().querySelector(".s-title")?.focus();
@@ -565,7 +586,7 @@ export function createExplore(store, h) {
       h.quiet(true);
       frame(m, i, title, el("p", { class: "lead", id: "q-prompt" }, step.prompt), ta,
         step.examples?.length ? el("p", { class: "quiet" }, `For example: “${step.examples[0]}”`) : null,
-        el("p", { class: "quiet" }, store.local ? "Kept on this device, in your words." : "Kept in your Dawnward, in your words."),
+        m.steps.findIndex((x) => x.type === "rehearse" || x.type === "reflect") === i ? el("p", { class: "quiet" }, store.local ? "Kept on this device, in your words." : "Kept in your Dawnward, in your words.") : null, // said once per practice
         err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => next({ text: ta.value }) }, "Continue")));
       ta.focus({ preventScroll: true });
       return;

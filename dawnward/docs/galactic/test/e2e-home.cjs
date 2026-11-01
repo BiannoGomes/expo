@@ -153,9 +153,12 @@ const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorag
     // Memories: galaxy, filter, search, list, detail
     await page.locator('#tabs [data-tab="journey"]').click();
     await page.waitForTimeout(300);
+    check(`${name}: with only two reflections, Journey opens on Milestones`, (await page.locator('#m-views [data-v="miles"]').getAttribute("aria-checked")) === "true");
+    await page.locator('#m-views [data-v="galaxy"]').click();
     check(`${name}: two stars, each a button`, (await page.locator(".mstar").count()) === 2);
     await page.screenshot({ path: `${OUT}/${name}-5-memories.png`, timeout: 90000 });
     await axe(page, `${name} memories`);
+    await page.locator("#m-filter-btn").click();
     await page.locator('#m-filters [data-f="body"]').click();
     check(`${name}: filter by world`, (await page.locator(".mstar").count()) === 1);
     await page.locator('#m-filters [data-f="all"]').click();

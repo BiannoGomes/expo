@@ -218,6 +218,8 @@
   .ed-chip { display:inline-flex; align-items:center; gap:var(--s1); min-height:var(--tap); padding:0 var(--s3); border-radius:var(--r-pill); border:1px solid var(--edge); background:rgba(6,10,20,.55); font-size:14px; color:var(--dim); }
   .ed-chip[aria-expanded="true"] { border-color:var(--edge-strong); color:var(--ink); }
   .ed-another { align-self:flex-start; min-height:var(--tap); margin-top:var(--s1); }
+  .m-filterbox { display:grid; gap:var(--s2); }
+  #m-filter-btn[aria-expanded="true"], #m-filter-btn.on { border-color:var(--gold); color:var(--ink); }
   .wz-h { font-family:var(--display); font-size:24px; font-weight:500; color:var(--ink); margin:var(--s5) 0 0; text-transform:none; letter-spacing:0; }
   .wz-list { list-style:none; margin:0; padding:0; display:grid; gap:var(--s3); }
   .wz { display:grid; gap:var(--s2); }
@@ -314,8 +316,11 @@
   .group-head { display:flex; justify-content:space-between; align-items:center; gap:var(--s3); }
 
   /* ============ Shared pieces ============ */
-  .kicker { font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--faint); }
-  h3 { font-size:13px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); }
+  .kicker { font-size:14px; letter-spacing:0; text-transform:none; color:var(--dim); }
+  h3 { font-family:var(--display); font-size:22px; font-weight:500; line-height:1.2; letter-spacing:0; text-transform:none; color:var(--ink); }
+  .y-h4 { font-size:15px; font-weight:600; color:var(--ink); margin:var(--s3) 0 var(--s2); }
+  details.more > summary { cursor:pointer; min-height:var(--tap); display:inline-flex; align-items:center; color:var(--gold-ink); text-decoration:underline; text-underline-offset:3px; text-decoration-color:rgba(240,214,162,.35); }
+  details.more[open] > summary { margin-bottom:var(--s2); }
   .quiet { color:var(--dim); font-size:var(--t-second); }
   .why { color:var(--gold-ink); font-style:italic; font-size:var(--t-second); }
   .note { color:var(--cyan); font-size:var(--t-second); }
@@ -395,7 +400,8 @@
   #x-art { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; background:#05070D; }
   #x-art img { width:100%; height:100%; object-fit:cover; object-position:50% 0%; }
   #x-art::after { content:""; position:absolute; inset:0; }
-  #explore[data-art="scene"] #x-art::after { background:linear-gradient(rgba(5,7,13,.88) 0, rgba(5,7,13,.7) 13%, rgba(5,7,13,.2) 21%, rgba(5,7,13,0) 28%, rgba(5,7,13,.86) 50%, #05070D 64%); }
+  #explore[data-art="scene"] #x-art::after { background:linear-gradient(rgba(5,7,13,.9) 0, rgba(5,7,13,.8) 17%, rgba(5,7,13,.4) 25%, rgba(5,7,13,0) 32%, rgba(5,7,13,.86) 50%, #05070D 64%); }
+  #explore .qhead .kicker, #explore .qhead .crumbs { text-shadow:0 1px 6px rgba(0,0,0,.9); }
   #explore[data-art="dim"] #x-art::after { background:linear-gradient(rgba(5,7,13,.78), rgba(5,7,13,.86) 40%, rgba(5,7,13,.95)); }
   #explore[data-art="scene"] #x-art img { animation:drift 28s ease-in-out infinite alternate; }
   @keyframes drift { from { transform:scale(1.02) translateY(0); } to { transform:scale(1.08) translateY(-1.5%); } }
@@ -442,6 +448,11 @@
   .mission { width:100%; display:flex; align-items:center; gap:var(--s3); text-align:left; min-height:56px; padding:var(--s3) var(--s4); border-radius:var(--s3); border:1px solid var(--edge); background:rgba(6,10,20,.5); }
   .mission:hover { border-color:var(--edge-strong); }
   .mission .mstate { width:var(--s5); color:var(--gold); text-align:center; }
+  .mission .rtext { flex:1; min-width:0; }
+  .mission .mmeta.mline { display:block; font-family:var(--sans, inherit); font-size:13px; white-space:normal; margin-top:2px; }
+  .mission.done .mline { color:var(--gold); }
+  .sys-meta { color:var(--dim); font-size:14px; margin-top:-2px; }
+  .x-feature { margin:var(--s3) 0 var(--s4); }
   .mission .mmeta { font-family:var(--mono); font-size:12px; color:var(--faint); white-space:nowrap; }
   .mission.done { border-color:rgba(230,192,123,.35); }
   .qhead { display:flex; flex-direction:column; gap:var(--s2); }
@@ -473,7 +484,7 @@
   .crumbs [aria-current] { color:var(--dim); }
   .wtitle { display:flex; flex-direction:column; align-items:center; min-width:0; }
   #w-crumbs .crumbs ol { justify-content:center; font-size:12px; }
-  #w-crumbs .crumbs button { min-height:32px; min-width:var(--tap); }
+  #w-crumbs .crumbs button { min-height:var(--tap); min-width:var(--tap); margin-block:-6px; } /* a 44 px target in the same 32 px of header */
   .tools { display:flex; gap:var(--s2); }
   #notice { top:calc(var(--tap) + var(--s3)); }
 
@@ -586,7 +597,7 @@
   @media (prefers-reduced-motion: reduce) { .unlock-ring { animation:none; opacity:.7; } }
   .cw-hero img { width:100%; height:100%; object-fit:contain; -webkit-mask-image:radial-gradient(circle, #000 58%, transparent 71%); mask-image:radial-gradient(circle, #000 58%, transparent 71%); filter:drop-shadow(0 0 40px rgba(197,91,255,.35)); animation:cw-breathe 9s ease-in-out infinite; }
   @keyframes cw-breathe { 50% { transform:scale(1.035) rotate(1.5deg); } }
-  .cw-h { font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--faint); font-weight:500; margin-top:var(--s3); }
+  .cw-h { font-family:var(--display); font-size:22px; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:500; margin-top:var(--s3); }
   .cw-planets { list-style:none; display:flex; flex-direction:column; gap:var(--s2); }
   .cw-planets .row.planned { opacity:.62; }
   .cw-planets .mmeta, .cw-choice .mmeta, .cw-list .mmeta { font-family:var(--mono); font-size:12px; color:var(--faint); white-space:nowrap; }
@@ -684,7 +695,7 @@
   .cw-node.planned { opacity:.5; }
   .cw-nlabel { display:flex; flex-direction:column; align-items:center; }
   .cw-ntitle { font-size:13px; line-height:1.25; color:var(--ink); text-shadow:0 1px 4px #000; }
-  .cw-nsub { font-size:11px; color:var(--faint); text-shadow:0 1px 4px #000; }
+  .cw-nsub { font-size:13px; color:var(--dim); text-shadow:0 1px 4px #000; }
   .cw-orb.cw-kind-map { color:#d8d0c0; }
   .cw-deeper summary { cursor:pointer; color:var(--gold-ink); min-height:var(--tap); display:flex; align-items:center; font-weight:500; }
   .cw-deeper[open] { display:flex; flex-direction:column; gap:var(--s3); }
@@ -758,15 +769,20 @@
     <div class="mhead">
       <div class="mhead-row"><h2 id="m-title" tabindex="-1">Your Journey</h2><p id="m-count"></p></div>
       <div id="m-tools">
-        <label class="sr" for="m-q">Search your memories</label>
-        <input id="m-q" class="search" type="search" placeholder="Search your words" autocomplete="off">
-        <div id="m-filters" class="seg" role="radiogroup" aria-label="Show memories from"></div>
         <div class="mrow">
           <div id="m-views" class="seg" role="radiogroup" aria-label="View">
             <button role="radio" data-v="galaxy" aria-checked="true">Galaxy</button>
             <button role="radio" data-v="list" aria-checked="false">List</button>
             <button role="radio" data-v="miles" aria-checked="false">Milestones</button>
           </div>
+          <button id="m-filter-btn" class="ed-chip" aria-expanded="false" aria-controls="m-filterbox">Filter</button>
+        </div>
+        <div id="m-filterbox" class="m-filterbox" hidden>
+          <label class="sr" for="m-q">Search your memories</label>
+          <input id="m-q" class="search" type="search" placeholder="Search your words" autocomplete="off">
+          <div id="m-filters" class="seg" role="radiogroup" aria-label="Show memories from"></div>
+        </div>
+        <div class="mrow">
           <div id="m-zoom">
             <button class="round" id="m-zoom-out" aria-label="Zoom out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
             <button class="round" id="m-zoom-in" aria-label="Zoom in"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -777,7 +793,7 @@
     <div id="m-field" aria-label="Your memories as stars" role="group"></div>
     <ul id="m-list" hidden></ul>
     <div class="mfoot"></div>
-    <div id="m-miles" hidden></div>
+    <div id="m-miles" hidden tabindex="0" role="region" aria-label="Milestones"></div>
   </section>
   <section id="m-detail" hidden aria-label="Memory"></section>
 
@@ -822,31 +838,30 @@
   <section id="you" hidden aria-labelledby="y-title">
     <div class="ycol">
       <h2 id="y-title" tabindex="-1">You</h2>
-      <section aria-labelledby="y-u-h"><h3 id="y-u-h">What I understand</h3><div id="y-understand"></div></section>
-      <section aria-labelledby="y-j-h"><h3 id="y-j-h">Your Journey</h3><div id="y-journey"></div>
-        <div class="actions"><button id="y-game" class="ghost" aria-pressed="true">Discoveries shown</button></div>
-        <p class="quiet">Discoveries are places that appear in your galaxy when you practise or come back to say how something went. Hiding them deletes nothing.</p>
+      <section aria-labelledby="y-u-h"><h3 id="y-u-h">What I've noticed</h3><div id="y-understand"></div>
+        <div id="y-c-wrap"><h4 id="y-c-h" class="y-h4">Possible connections</h4><div id="y-connections" class="cards"></div></div>
       </section>
-      <section aria-labelledby="y-c-h"><h3 id="y-c-h">Possible connections</h3><div id="y-connections" class="cards"></div></section>
-      <section aria-labelledby="y-plan-h"><h3 id="y-plan-h">Your plan</h3><div id="y-plan"></div></section>
-      <section aria-labelledby="y-d-h"><h3 id="y-d-h">Your memories</h3>
+      <section aria-labelledby="y-d-h"><h3 id="y-d-h">Your data</h3>
         <p id="y-data-line" class="quiet"></p>
         <div class="actions"><button id="y-export" class="ghost">Save a copy as a file</button><button id="y-delete" class="danger">Delete everything on this device</button></div>
         <div id="y-delete-confirm" class="confirm" hidden></div>
       </section>
-      <section aria-labelledby="y-p-h"><h3 id="y-p-h">Private. Never sold.</h3>
-        <ul class="facts">
-          <li>Every reflection is kept word for word. Nothing is rewritten.</li>
-          <li>Nothing is concluded from one evening. Every pattern shows the evenings behind it, and you can correct it or set it aside.</li>
-          <li>Here, your memories stay in this browser on this device. They aren't sent anywhere.</li>
-          <li>You can save a copy, or delete everything, at any time.</li>
-        </ul>
+      <section aria-labelledby="y-p-h"><h3 id="y-p-h">Privacy</h3>
+        <p>Private, never sold, and kept word for word.</p>
+        <details class="more"><summary>More</summary>
+          <ul class="facts">
+            <li>Nothing is concluded from one evening. Every pattern shows the evenings behind it, and you can correct it or set it aside.</li>
+            <li>Here, your memories stay in this browser on this device. They aren't sent anywhere.</li>
+            <li>You can save a copy, or delete everything, at any time.</li>
+          </ul>
+        </details>
       </section>
+      <section aria-labelledby="y-plan-h"><h3 id="y-plan-h">Your plan</h3><div id="y-plan"></div></section>
       <section aria-labelledby="y-v-h"><h3 id="y-v-h">Display</h3>
-        <div class="actions"><button id="y-text" class="ghost" aria-pressed="false">Text view</button><button id="y-sound" class="ghost" aria-pressed="false">Sound off</button><button id="y-replay" class="ghost">Replay the entrance</button></div>
-        <p class="quiet">Text view shows everything as plain text, without the galaxy.</p>
+        <div class="actions"><button id="y-text" class="ghost" aria-pressed="false">Text view</button><button id="y-sound" class="ghost" aria-pressed="false">Sound off</button><button id="y-game" class="ghost" aria-pressed="true">Discoveries shown</button><button id="y-replay" class="ghost">Replay the entrance</button></div>
+        <details class="more"><summary>Your discoveries</summary><div id="y-journey"></div><p class="quiet small">Hiding discoveries deletes nothing.</p></details>
       </section>
-      <section aria-labelledby="y-m-h"><h3 id="y-m-h">More</h3><p><a href="universe.html">The story of Dawnward</a></p></section>
+      <p class="quiet small"><a href="universe.html">The story of Dawnward</a></p>
     </div>
   </section>
 

@@ -27,7 +27,7 @@ export const CW = {
   kingdom: {
     hue: "#F2B880", sky: "linear-gradient(180deg,#2a1d4a,#8a4f7d 55%,#f2b880)",
     task: (n, of) => `Light the lanterns. ${n} of ${of} lit.`,
-    hint: "Drag to look around. Pinch or scroll to come closer. Tap a lantern to light it.",
+    hint: "Tap a lantern to light it. Drag to look around.",
     things: [
       ["lantern-0", "The island of the old bell", "A bell somewhere below answers the light."],
       ["lantern-1", "The twin-tree island", "Two trees lean toward the glow, as if listening."],
@@ -42,7 +42,7 @@ export const CW = {
   forest: {
     hue: "#5FE3C0", sky: "linear-gradient(180deg,#02060c,#06231f 60%,#0d3b33)",
     task: (n, of) => `Wake the glowing plants. ${n} of ${of} awake.`,
-    hint: "Drag to look around. Move or tap to call the fireflies. Tap a plant to wake it.",
+    hint: "Tap a plant to wake it. Drag to look around.",
     things: [
       ["plant-0", "The fern by the stream", "Its fronds unroll in blue light."],
       ["plant-1", "The moon lily", "It opens slowly, the colour of sea glass."],

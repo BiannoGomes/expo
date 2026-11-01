@@ -711,7 +711,10 @@ function main(data, failed) {
   function openMemories({ filter, select, search } = {}) {
     stopSpeech(); quiet(false);
     if (filter) state.filter = filter;
+    // with only a few reflections, Milestones says more than an almost empty sky; a chosen view is kept
+    if (!state.viewPicked) state.view = select ? "galaxy" : data.stars.length < 5 ? "miles" : "galaxy";
     if (search) state.view = "list";
+    if (search || (filter && filter !== "all")) { $("m-filterbox").hidden = false; $("m-filter-btn").setAttribute("aria-expanded", "true"); }
     showPlace("memories");
     drawMemories();
     if (select) openMemory(select);
@@ -724,13 +727,21 @@ function main(data, failed) {
   }
   function drawMemories() {
     const vis = visibleStars();
-    $("m-count").textContent = data.stars.length
-      ? (vis.length === data.stars.length ? plural(data.stars.length, "reflection", "reflections") : `Showing ${vis.length} of ${plural(data.stars.length, "reflection", "reflections")}`)
-      : "No memories yet";
+    // the summary comes first: what you've done, in plain counts
+    const ex = explore?.data ?? { attempts: [], experiments: [] };
+    const practices = new Set((ex.attempts ?? []).filter((a) => a.status === "completed").map((a) => a.missionId)).size;
+    const filtering = state.filter !== "all" || state.query.trim();
+    $("m-count").textContent = filtering && data.stars.length
+      ? `Showing ${vis.length} of ${plural(data.stars.length, "reflection", "reflections")}`
+      : [plural(data.stars.length, "reflection", "reflections"), practices ? plural(practices, "practice", "practices") : null, ex.experiments?.length ? plural(ex.experiments.length, "action", "actions") : null].filter(Boolean).join(" · ");
+    const fb = $("m-filter-btn");
+    fb.hidden = !data.stars.length;
+    fb.classList.toggle("on", !!filtering);
+    fb.textContent = filtering ? `Filter · ${state.query.trim() ? `“${state.query.trim()}”` : META[state.filter].name}` : "Filter";
     document.querySelectorAll("#m-filters button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.f === state.filter)));
     document.querySelectorAll("#m-views button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === state.view)));
     $("m-tools").hidden = false;
-    $("m-q").hidden = $("m-filters").hidden = !data.stars.length;
+    if (!data.stars.length) { $("m-filterbox").hidden = true; fb.setAttribute("aria-expanded", "false"); }
     const miles = $("m-miles");
     miles.hidden = state.view !== "miles";
     if (state.view === "miles") { $("m-zoom").hidden = true; $("m-field").hidden = $("m-list").hidden = true; drawMiles(miles); return; }
@@ -833,7 +844,12 @@ function main(data, failed) {
   }
   $("m-filters").append(...[["all", "All"], ...ORDER.map((w) => [w, META[w].name])].map(([f, label]) =>
     el("button", { role: "radio", "data-f": f, "aria-checked": "false", onclick: () => { state.filter = f; drawMemories(); } }, label)));
-  document.querySelectorAll("#m-views button").forEach((b) => b.addEventListener("click", () => { state.view = b.dataset.v; drawMemories(); routeTo(routeOf("memories"), { replace: true }); }));
+  $("m-filter-btn").addEventListener("click", (e) => {
+    const box = $("m-filterbox"), open = box.hidden;
+    box.hidden = !open; e.currentTarget.setAttribute("aria-expanded", String(open));
+    if (open) $("m-q").focus();
+  });
+  document.querySelectorAll("#m-views button").forEach((b) => b.addEventListener("click", () => { state.view = b.dataset.v; state.viewPicked = true; drawMemories(); routeTo(routeOf("memories"), { replace: true }); }));
   $("m-q").addEventListener("input", (e) => { state.query = e.target.value; drawMemories(); });
   $("m-zoom-in").addEventListener("click", () => { state.zoom = Math.min(2, state.zoom + 0.5); drawMemories(); });
   $("m-zoom-out").addEventListener("click", () => { state.zoom = Math.max(1, state.zoom - 0.5); drawMemories(); });
@@ -847,13 +863,16 @@ function main(data, failed) {
   }
   function drawYou() {
     const themes = liveThemes(), sugs = suggestions();
-    $("y-understand").replaceChildren(themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : el("p", { class: "quiet" }, "I don't have enough evidence to conclude anything yet. Patterns appear when evenings share something and you confirm it."));
-    $("y-connections").replaceChildren(...(sugs.length ? sugs.map((s) => connectionCard(s, drawYou)) : [el("p", { class: "quiet" }, "None right now.")]));
+    $("y-understand").replaceChildren(themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : el("p", { class: "quiet" }, "Nothing yet. A pattern appears only when several evenings share something and you confirm it."));
+    $("y-c-wrap").hidden = !sugs.length;
+    $("y-connections").replaceChildren(...sugs.map((s) => connectionCard(s, drawYou)));
     const plan = explore?.plan?.() ?? "free", label = { free: "Free", plus: "Plus", pro: "Pro" }[plan];
     $("y-plan").replaceChildren(
       el("p", { class: "statement" }, data.local && plan !== "free" ? `${label}, as a member preview on this device` : label),
-      el("p", { class: "quiet" }, "Free is yours for good: reflection, memories, Journey, your Daily Compass, the first chapter of every expedition, and the Quantum Gateway once. Plus adds every chapter, all worksheets and lessons, and new expeditions as they're written."),
-      el("p", { class: "quiet" }, "Membership isn't open yet. It opens after the beta, with a reminder before any charge and one-tap cancel. Your own words are never behind it."),
+      el("p", { class: "quiet" }, "Your words, memories and Journey are free for good."),
+      el("details", { class: "more" }, el("summary", {}, "More"),
+        el("p", { class: "quiet" }, "Free also includes the first chapter of every expedition and the Quantum Gateway once. Plus adds every chapter, all worksheets and lessons, and new expeditions as they're written."),
+        el("p", { class: "quiet" }, "Membership isn't open yet. It opens after the beta, with a reminder before any charge and one-tap cancel. Your own words are never behind it.")),
       data.local ? el("div", { class: "actions" }, el("button", { class: "ghost", id: "y-member", "aria-pressed": String(plan !== "free"),
         onclick: async () => { await explore.setPlan(plan === "free" ? "plus" : "free"); drawYou(); renderHome(); announce(plan === "free" ? "Member preview on." : "Member preview off."); $("y-member").focus(); } },
         plan === "free" ? "Preview as a member" : "Member preview on · switch off")) : null);
@@ -931,7 +950,7 @@ function main(data, failed) {
       else if (a === "universe") openAtlas();
       else if (a === "world" && ORDER.includes(b)) { if (WTABS.includes(c)) state.wtab = { ...(state.wtab ?? {}), [b]: c }; goWorld(b); }
       else if (a === "learn") explore.open();
-      else if (a === "journey") { if (b === "milestones") state.view = "miles"; openMemories(); }
+      else if (a === "journey") { if (b === "milestones") { state.view = "miles"; state.viewPicked = true; } openMemories(); }
       else if (a === "you") openYou();
       else openEarth();
     } finally { routing = false; }
