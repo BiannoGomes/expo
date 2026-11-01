@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T11:29:23.765Z",
+  "when": "2026-11-01T13:33:49.825Z",
   "url": "http://localhost:8771/home.html",
   "checks": [
     {
@@ -184,6 +184,11 @@
     },
     {
       "name": "phone: linking draws one line and keeps it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: with only two reflections, Journey opens on Milestones",
       "ok": true,
       "detail": ""
     },
@@ -383,6 +388,11 @@
       "detail": ""
     },
     {
+      "name": "desktop: with only two reflections, Journey opens on Milestones",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "desktop: two stars, each a button",
       "ok": true,
       "detail": ""
@@ -495,7 +505,7 @@
     {
       "name": "reduced motion: arrival is immediate",
       "ok": true,
-      "detail": "15 ms"
+      "detail": "11 ms"
     }
   ],
   "axe": {
@@ -515,26 +525,26 @@
     "desktop text": []
   },
   "timings": {
-    "phone.ready_ms": 278,
-    "phone.mind_arrival_ms": 748,
+    "phone.ready_ms": 426,
+    "phone.mind_arrival_ms": 897,
     "phone.frames_swiftshader": {
-      "n": 46,
-      "median": 66.60000000000036,
-      "p95": 116.70000000000073,
+      "n": 25,
+      "median": 100,
+      "p95": 233.20000000000073,
       "degraded": false
     },
-    "desktop.ready_ms": 315,
-    "desktop.mind_arrival_ms": 738,
+    "desktop.ready_ms": 505,
+    "desktop.mind_arrival_ms": 933,
     "desktop.frames_swiftshader": {
-      "n": 12,
-      "median": 200,
+      "n": 13,
+      "median": 216.6999999999971,
       "p95": 433.2999999999993,
       "degraded": false
     },
-    "reduced.soul_arrival_ms": 15
+    "reduced.soul_arrival_ms": 11
   },
   "summary": {
-    "total": 99,
+    "total": 101,
     "failed": 0
   }
 }
