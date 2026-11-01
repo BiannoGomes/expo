@@ -29,6 +29,7 @@ const rand = (seed) => () => { seed = (seed * 16807) % 2147483647; return (seed 
  * onPick(id) is called when something is tapped; the page decides what that means.
  */
 export function buildWorld(kind, { host, reduced, onPick, opts = {} }) {
+  if (!BUILDERS[kind]) throw new Error(`No world called ${kind}`);
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 700 ? 1.6 : 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -787,4 +788,156 @@ function lab(scene, glow, pickables, tickers, reduced, opts) {
   };
 }
 
-const BUILDERS = { kingdom, forest, architect, garden, stillness, sanctuary, cosmos, dreams, observatory, lab };
+// ======================= The Flower of Life =======================
+// Grown in five steps: one circle, the Seed, the Flower, the Fruit, Metatron's Cube.
+function flower(scene, glow, pickables, tickers, reduced) {
+  scene.background = C(0x070516);
+  starfield(scene, glow, 900, 51, 0.5);
+  const g = new THREE.Group(); scene.add(g);
+  const circle = (x, y, r, color) => new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 96 }, (_, k) => new THREE.Vector3(x + Math.cos(k / 96 * 6.2832) * r, y + Math.sin(k / 96 * 6.2832) * r, 0))),
+    new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+  const r = 1, h = Math.sqrt(3) / 2;
+  // the hexagonal grid: every centre within two radii of the middle (19 of them)
+  const grid = [];
+  for (let a = -2; a <= 2; a++) for (let b = -2; b <= 2; b++) { const x = (a + b / 2) * r, y = b * h * r; if (Math.hypot(x, y) < 2 * r + 1e-6) grid.push([x, y]); }
+  grid.sort((p, q) => Math.hypot(...p) - Math.hypot(...q));
+  const layers = [[], [], [], [], []];
+  layers[0].push(circle(0, 0, r, 0xfff2d0));
+  grid.slice(1, 7).forEach(([x, y]) => layers[1].push(circle(x, y, r, 0xf0d6a2)));
+  grid.slice(7).forEach(([x, y]) => layers[2].push(circle(x, y, r, 0xc9a8ff)));
+  layers[2].push(circle(0, 0, 3 * r, 0xc9a8ff));
+  // the Fruit: thirteen touching circles, centres on two hexagons (2r and 4r), drawn a little in front
+  const fruit = [[0, 0]]; for (let k = 0; k < 6; k++) { const a = k / 6 * 6.2832 + Math.PI / 2; fruit.push([Math.cos(a) * 2 * r, Math.sin(a) * 2 * r]); } for (let k = 0; k < 6; k++) { const a = k / 6 * 6.2832 + Math.PI / 2; fruit.push([Math.cos(a) * 4 * r, Math.sin(a) * 4 * r]); }
+  fruit.forEach(([x, y]) => { const c = circle(x, y, r, 0x7fd8ff); c.position.z = 0.6; layers[3].push(c); });
+  // Metatron's Cube: every centre joined to every other, 78 lines
+  const pts = []; for (let i = 0; i < 13; i++) for (let j = i + 1; j < 13; j++) pts.push(new THREE.Vector3(fruit[i][0], fruit[i][1], 1.2), new THREE.Vector3(fruit[j][0], fruit[j][1], 1.2));
+  const cube = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xffe2a8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+  layers[4].push(cube);
+  layers.flat().forEach((o) => g.add(o));
+  const core = halo(glow, 0xfff2d0, 2.4, 0.5); g.add(core);
+  const hit = new THREE.Mesh(new THREE.CircleGeometry(5.5, 32), new THREE.MeshBasicMaterial({ visible: false })); hit.userData.id = "flower"; g.add(hit); pickables.push(hit);
+  let step = 0;
+  const want = (i) => (i <= step ? (i === 4 ? 0.55 : i === step ? 0.95 : 0.4) : 0);
+  tickers.push((t, dt) => {
+    const k = reduced ? 1 : 1 - Math.pow(2, -dt / 0.4);
+    layers.forEach((l, i) => l.forEach((o) => { o.material.opacity += (want(i) - o.material.opacity) * k; }));
+    if (!reduced) { g.rotation.y = Math.sin(t * 0.15) * 0.35; g.rotation.x = Math.sin(t * 0.11) * 0.18; core.material.opacity = 0.4 + 0.15 * Math.sin(t * 0.8); }
+  });
+  return {
+    view: { target: new THREE.Vector3(0, -2.2, 0), yaw: 0, pitch: 0, dist: 15, minPitch: -0.6, maxPitch: 0.6, minDist: 6, maxDist: 24, noTurn: true },
+    api: { step(n) { step = Math.max(0, Math.min(4, n)); }, get at() { return step; } },
+  };
+}
+
+// ======================= The Five Solids =======================
+// The Platonic solids in a ring around the star tetrahedron.
+function solids(scene, glow, pickables, tickers, reduced) {
+  scene.background = C(0x04050f);
+  starfield(scene, glow, 1100, 61, 0.55);
+  scene.add(new THREE.AmbientLight(0x8090c0, 0.6));
+  const key = new THREE.PointLight(0xfff0d0, 3, 0, 0); key.position.set(0, 6, 6); scene.add(key);
+  const make = (geo, color) => {
+    const g = new THREE.Group();
+    g.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, transparent: true, opacity: 0.18, roughness: 0.3, metalness: 0.2, side: THREE.DoubleSide, depthWrite: false })));
+    g.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.95 })));
+    return g;
+  };
+  const DEFS = [["tetra", new THREE.TetrahedronGeometry(1.1), 0xff8a5a], ["cube", new THREE.BoxGeometry(1.25, 1.25, 1.25), 0x7fd08a], ["octa", new THREE.OctahedronGeometry(1.05), 0xfff0a8],
+    ["icosa", new THREE.IcosahedronGeometry(1.05), 0x7fb2ff], ["dodeca", new THREE.DodecahedronGeometry(1.05), 0xc9a8ff]];
+  const items = new Map();
+  DEFS.forEach(([id, geo, color], i) => {
+    const a = i / 5 * 6.2832 - Math.PI / 2, g = make(geo, color);
+    g.position.set(Math.cos(a) * 4.2, 0, Math.sin(a) * 4.2); scene.add(g);
+    const aura = halo(glow, color, 3.2, 0.12); g.add(aura);
+    const hit = hitSphere(id, 1.5); g.add(hit); pickables.push(hit);
+    items.set(id, { g, aura, phase: i, sel: 0 });
+  });
+  // the star tetrahedron: two tetrahedra, each other's mirror
+  const star = new THREE.Group(), t1 = make(new THREE.TetrahedronGeometry(1.5), 0xf0d6a2), t2 = make(new THREE.TetrahedronGeometry(1.5), 0xf0d6a2);
+  // one tetrahedron points up, its mirror points down; they turn together as one star
+  t2.rotation.z = Math.PI / 2; const upright = new THREE.Group(); upright.add(t1, t2);
+  upright.quaternion.setFromUnitVectors(new THREE.Vector3(1, 1, 1).normalize(), new THREE.Vector3(0, 1, 0));
+  star.add(upright); star.position.y = 0.4; scene.add(star);
+  const sAura = halo(glow, 0xffd890, 5, 0.25); star.add(sAura);
+  const sHit = hitSphere("star", 1.9); star.add(sHit); pickables.push(sHit);
+  items.set("star", { g: star, aura: sAura, phase: 0, sel: 0 });
+  let picked = null;
+  tickers.push((t, dt) => {
+    if (!reduced) { for (const it of items.values()) if (it.g !== star) { it.g.rotation.y = t * 0.3 + it.phase; it.g.rotation.x = t * 0.17 + it.phase; } star.rotation.y = t * 0.25; }
+    for (const [id, it] of items) { it.sel += ((picked === id ? 1 : 0) - it.sel) * (1 - Math.pow(2, -dt / 0.25)); it.g.scale.setScalar(1 + 0.3 * it.sel); it.aura.material.opacity = (id === "star" ? 0.25 : 0.12) + 0.45 * it.sel; }
+  });
+  return {
+    view: { target: new THREE.Vector3(0, 0.2, 0), yaw: 0, pitch: 0.42, dist: 13, minPitch: -0.2, maxPitch: 1.3, minDist: 6, maxDist: 22 },
+    api: { select(id) { picked = id; } },
+  };
+}
+
+// ======================= The Hall of the Seven Principles =======================
+// Seven pillars around a flame, each with its own sign; a seven-pointed star on the floor.
+function hall(scene, glow, pickables, tickers, reduced) {
+  skyDome(scene, 0x07061a, 0x1a1238, 0x3a2448);
+  starfield(scene, glow, 700, 71, 0.6);
+  scene.add(new THREE.HemisphereLight(0xc8b8ff, 0x100818, 0.45));
+  const fire = new THREE.PointLight(0xffb060, 10, 22); fire.position.y = 1.4; scene.add(fire);
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(8, 64), new THREE.MeshStandardMaterial({ color: 0x1c1830, roughness: 0.3, metalness: 0.5 })); floor.rotation.x = -Math.PI / 2; scene.add(floor);
+  const star7 = []; for (let k = 0; k <= 7; k++) { const a = (k * 3) / 7 * 6.2832 - Math.PI / 2; star7.push(new THREE.Vector3(Math.cos(a) * 3.2, 0.02, Math.sin(a) * 3.2)); }
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(star7), new THREE.LineBasicMaterial({ color: 0xe6c07b, transparent: true, opacity: 0.6 })));
+  const flame = halo(glow, 0xffb060, 2.6, 0.9); flame.position.y = 1.3; scene.add(flame);
+  const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.3, 0.5, 24), std(0xc89a5a, { metalness: 0.8, roughness: 0.3, flatShading: false })); bowl.position.y = 0.55; scene.add(bowl);
+  const stone = std(0xe8e2f0, { flatShading: false, roughness: 0.6 }), gold = () => new THREE.MeshStandardMaterial({ color: 0xe6c07b, metalness: 0.7, roughness: 0.3, emissive: 0x000000 });
+  const SIGNS = [() => new THREE.SphereGeometry(0.32, 24, 12), () => new THREE.ConeGeometry(0.3, 0.7, 4), () => new THREE.TorusKnotGeometry(0.22, 0.06, 64, 8), () => new THREE.CapsuleGeometry(0.12, 0.6, 4, 12),
+    () => new THREE.TorusGeometry(0.3, 0.07, 12, 32), () => new THREE.ConeGeometry(0.22, 0.6, 3), () => new THREE.TorusGeometry(0.24, 0.05, 12, 32)];
+  const pillars = [];
+  for (let i = 0; i < 7; i++) {
+    const a = i / 7 * 6.2832 - Math.PI / 2, g = new THREE.Group(); g.position.set(Math.cos(a) * 5.4, 0, Math.sin(a) * 5.4);
+    const col = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.34, 3.4, 16), stone); col.position.y = 1.7; g.add(col);
+    const m = gold(), sign = new THREE.Mesh(SIGNS[i](), m); sign.position.y = 4.0; g.add(sign);
+    if (i === 6) { const s2 = new THREE.Mesh(SIGNS[i](), m); s2.position.set(0.22, 4.0, 0); s2.rotation.y = Math.PI / 2; g.add(s2); }
+    const aura = halo(glow, 0xffd8a0, 1.6, 0.1); aura.position.y = 4.0; g.add(aura);
+    const hit = hitSphere(`p-${i}`, 1.2, 2.6); g.add(hit); pickables.push(hit);
+    scene.add(g); pillars.push({ sign, m, aura, on: 0, want: 0, sel: 0, phase: i });
+  }
+  let picked = -1;
+  tickers.push((t, dt) => {
+    const k = reduced ? 1 : 1 - Math.pow(2, -dt / 0.35);
+    pillars.forEach((p, i) => {
+      p.on += (p.want - p.on) * k; p.sel += ((picked === i ? 1 : 0) - p.sel) * k;
+      p.m.emissive.setRGB(0.5 * p.on + 0.4 * p.sel, 0.35 * p.on + 0.3 * p.sel, 0.1 * p.on);
+      p.aura.material.opacity = 0.1 + 0.4 * p.on + 0.3 * p.sel; p.aura.scale.setScalar(1.6 + 1.6 * p.sel);
+      if (!reduced) { p.sign.rotation.y = t * 0.6 + p.phase; p.sign.position.y = 4.0 + Math.sin(t * 0.8 + p.phase) * 0.08; }
+    });
+    if (!reduced) { flame.scale.setScalar(2.4 + Math.sin(t * 7) * 0.12 + Math.sin(t * 3.1) * 0.1); fire.intensity = 9 + Math.sin(t * 6) * 1.2; }
+  });
+  return {
+    view: { target: new THREE.Vector3(0, 2.0, 0), yaw: 0, pitch: 0.2, dist: 3.6, minPitch: -0.2, maxPitch: 1.1, minDist: 2.2, maxDist: 4.6 },
+    api: { light(i, on = true) { if (pillars[i]) pillars[i].want = on ? 1 : 0; }, select(i) { picked = i; } },
+  };
+}
+
+// ======================= The Crown: inner knowing =======================
+// A ring of light above a still sea, under the stars.
+function crown(scene, glow, pickables, tickers, reduced) {
+  skyDome(scene, 0x02030c, 0x0a1030, 0x1e2650);
+  starfield(scene, glow, 1600, 81, 0.6);
+  scene.add(new THREE.HemisphereLight(0x8090ff, 0x050510, 0.35));
+  const sea = new THREE.Mesh(new THREE.CircleGeometry(80, 64), new THREE.MeshStandardMaterial({ color: 0x0a1028, roughness: 0.08, metalness: 0.9 })); sea.rotation.x = -Math.PI / 2; scene.add(sea);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0xffe2a8, transparent: true, opacity: 0.85 });
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.04, 12, 96), ringMat); ring.position.y = 3.2; ring.rotation.x = Math.PI / 2; scene.add(ring);
+  const jewels = []; for (let i = 0; i < 12; i++) { const a = i / 12 * 6.2832, j = halo(glow, 0xfff2d0, 0.5, 0.9); j.position.set(Math.cos(a) * 1.6, 3.2, Math.sin(a) * 1.6); scene.add(j); jewels.push(j); }
+  const heart = halo(glow, 0xffd890, 3, 0.5); heart.position.y = 3.2; scene.add(heart);
+  const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.6, 3.2, 24, 1, true), new THREE.MeshBasicMaterial({ color: 0xffe2a8, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending })); beam.position.y = 1.6; scene.add(beam);
+  const reflection = halo(glow, 0xffd890, 4, 0.25); reflection.position.y = 0.02; scene.add(reflection);
+  const hit = hitSphere("crown", 2.2, 3.2); scene.add(hit); pickables.push(hit);
+  let g = 0.2, show = 0.2;
+  tickers.push((t, dt) => {
+    show += (g - show) * (1 - Math.pow(2, -dt / 0.5));
+    heart.material.opacity = 0.3 + 0.6 * show; heart.scale.setScalar(2.4 + 2.6 * show); beam.material.opacity = 0.04 + 0.14 * show; reflection.material.opacity = 0.15 + 0.4 * show;
+    if (!reduced) { ring.rotation.z = t * 0.12; jewels.forEach((j, i) => { const a = i / 12 * 6.2832 + t * 0.12; j.position.set(Math.cos(a) * 1.6, 3.2 + Math.sin(t + i) * 0.05, Math.sin(a) * 1.6); }); }
+  });
+  return {
+    view: { target: new THREE.Vector3(0, 2.6, 0), yaw: 0, pitch: 0.38, dist: 8.5, minPitch: 0, maxPitch: 1.1, minDist: 5, maxDist: 16 },
+    api: { glow(v) { g = Math.max(0, Math.min(1, v)); } },
+  };
+}
+
+const BUILDERS = { kingdom, forest, architect, garden, stillness, sanctuary, cosmos, dreams, observatory, lab, flower, solids, hall, crown };

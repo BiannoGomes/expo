@@ -592,6 +592,7 @@
   @media (min-width: 700px) { .cw-choices { display:grid; grid-template-columns:1fr 1fr; max-width:720px; } }
   .cw-dot.cw-stillness { --c:#FFD8A0; } .cw-dot.cw-dreams { --c:#E8A8C8; } .cw-dot.cw-sanctuary { --c:#C89A5A; } .cw-dot.cw-cosmos { --c:#9B5BFF; } .cw-dot.cw-traditions { --c:#8a7a6a; }
   .cw-dot.cw-observatory { --c:#FFC860; } .cw-dot.cw-lab { --c:#9AD8FF; } .cw-dot.cw-mind, .cw-dot.cw-civilizations, .cw-dot.cw-philosophy { --c:#6a7a9a; }
+  .cw-dot.cw-calendar { --c:#9AD8FF; } .cw-dot.cw-flower { --c:#F0D6A2; } .cw-dot.cw-hall { --c:#E6C07B; } .cw-dot.cw-solids { --c:#C9B8FF; } .cw-dot.cw-tree { --c:#d8d0c0; } .cw-dot.cw-knowing { --c:#FFE2A8; }
   .cw-dot.cw-gallery { --c:#37D5E8; } .cw-dot.cw-forge, .cw-dot.cw-builder, .cw-dot.cw-future, .cw-dot.cw-companion { --c:#5a7a8a; }
   .cw-pcover { width:48px; height:48px; flex:none; border-radius:var(--s3); object-fit:cover; }
   .cw-dot.cw-pack { --c:#E6C07B; }
@@ -602,6 +603,32 @@
   .cw-media { width:100%; max-height:60vh; border-radius:var(--s3); background:#000; }
   audio.cw-media { background:none; }
   .cw-item details summary { cursor:pointer; color:var(--gold-ink); min-height:var(--tap); display:flex; align-items:center; }
+  .cw-kind { font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+  .cw-kind-science { color:#9AD8FF; } .cw-kind-wisdom { color:#E6C07B; } .cw-kind-both { color:#C9B8FF; } .cw-kind-practice { color:#9FE8C8; } .cw-kind-map { color:var(--dim); }
+  .cw-treemap { position:relative; width:100%; max-width:440px; align-self:center; aspect-ratio:0.6; margin:var(--s2) 0; }
+  .cw-tree-lines, .cw-tree-lines svg { position:absolute; inset:0; width:100%; height:100%; }
+  .cw-tree-lines line { stroke:rgba(230,192,123,.38); stroke-width:1.2; vector-effect:non-scaling-stroke; }
+  .cw-node { position:absolute; transform:translate(-50%,-22px); display:flex; flex-direction:column; align-items:center; gap:var(--s1); width:118px; text-align:center; min-height:var(--tap); }
+  .cw-node .cw-orb { width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.35); background:radial-gradient(circle at 35% 30%, #fff9, transparent 50%), currentColor; box-shadow:0 0 18px currentColor; transition:transform var(--t-ui) var(--ease); }
+  .cw-node:hover .cw-orb, .cw-node:focus-visible .cw-orb { transform:scale(1.12); }
+  .cw-node.planned { opacity:.5; }
+  .cw-nlabel { display:flex; flex-direction:column; align-items:center; }
+  .cw-ntitle { font-size:13px; line-height:1.25; color:var(--ink); text-shadow:0 1px 4px #000; }
+  .cw-nsub { font-size:11px; color:var(--faint); text-shadow:0 1px 4px #000; }
+  .cw-orb.cw-kind-map { color:#d8d0c0; }
+  .cw-deeper summary { cursor:pointer; color:var(--gold-ink); min-height:var(--tap); display:flex; align-items:center; font-weight:500; }
+  .cw-deeper[open] { display:flex; flex-direction:column; gap:var(--s3); }
+  .cw-axiom { border-left:2px solid var(--gold); padding:var(--s2) var(--s4); font-family:var(--display); font-size:19px; line-height:1.45; }
+  .cw-axiom cite { display:block; font-family:var(--ui); font-size:12px; color:var(--faint); font-style:normal; margin-top:var(--s1); }
+  .cw-calseg { display:flex; flex-wrap:wrap; gap:var(--s2); }
+  .cw-calseg [role=radio] { min-height:var(--tap); padding:0 var(--s4); border-radius:var(--r-pill); border:1px solid var(--edge); background:rgba(6,10,20,.55); font-size:14px; }
+  .cw-calseg [role=radio][aria-checked="true"] { border-color:var(--gold); background:rgba(230,192,123,.18); color:var(--gold-ink); }
+  .cw-cal { position:relative; height:64px; border-radius:var(--s3); background:linear-gradient(90deg, rgba(91,140,255,.18), rgba(155,91,255,.2), rgba(230,192,123,.22)); border:1px solid var(--edge); margin:var(--s2) var(--s1) var(--s5); }
+  .cw-tick { position:absolute; bottom:-22px; transform:translateX(-50%); font-size:11px; color:var(--faint); white-space:nowrap; }
+  .cw-tick::before { content:""; position:absolute; left:50%; bottom:22px; height:64px; border-left:1px solid rgba(255,255,255,.08); }
+  .cw-mark { position:absolute; top:50%; width:12px; height:12px; margin:-6px 0 0 -6px; border-radius:50%; background:var(--gold); box-shadow:0 0 10px var(--gold); }
+  .cw-events li { display:flex; flex-direction:column; gap:2px; }
+  .cw-sdetail[hidden] { display:none; }
   .cw-card h3 { font-family:var(--display); font-weight:500; font-size:var(--t-section); text-transform:none; letter-spacing:0; color:var(--ink); }
   .cw-card .kicker { color:var(--gold-ink); }
   @media (prefers-reduced-motion: reduce) { .cw-hero img, .cw-temple svg, .cw-glowdoor { animation:none; } }

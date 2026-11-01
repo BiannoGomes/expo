@@ -1,0 +1,266 @@
+{
+  "when": "2026-11-01T09:21:20.108Z",
+  "checks": [
+    {
+      "name": "the galaxy page shows the Tree of Life map",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the tree has its 22 paths",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Inner Knowing is at the crown, the Observatory at the root",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "every world says what kind of knowledge it is",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Go deeper names other authors without copying them",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Knowledge tree page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a sphere on the map opens its world",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the calendar is labelled science, and a draft",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the year starts with the Big Bang on January 1",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the Sun and Earth form at the end of August",
+      "ok": true,
+      "detail": "September 1\n\nThe Sun and Earth form"
+    },
+    {
+      "name": "in the last minute: farming, writing, now",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "writing begins about 12 seconds before midnight",
+      "ok": true,
+      "detail": "23:59:48\n\nWriting"
+    },
+    {
+      "name": "axe: the Cosmic Calendar",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the Tree is introduced with its origin, respectfully",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all ten spheres are listed in words",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a sphere explains itself",
+      "ok": true,
+      "detail": "Tiferet · BeautyHarmony and balance at the heart.Here: The Hall of the Seven Pri"
+    },
+    {
+      "name": "axe: the Tree of Life lesson",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the flower starts with one circle",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "tapping the flower in 3D grows it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it grows to Metatron's Cube, and says what can be traced exactly",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the flower is labelled a wisdom tradition and a draft",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Flower of Life",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "flower draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":240,\"median\":17}"
+    },
+    {
+      "name": "an inner knowing note is kept on this device",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "then it asks you to let it rest",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it reminds you to pair inner knowing with facts and people",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a crisis line in a question brings support first",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Inner Knowing",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "knowing draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":114,\"median\":37}"
+    },
+    {
+      "name": "the note appears in the Creation Gallery",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "The Hall of the Seven Principles shows the members' gate",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "The Five Solids shows the members' gate",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "tapping a pillar in 3D opens its principle",
+      "ok": true,
+      "detail": "pillar 0"
+    },
+    {
+      "name": "Mentalism quotes The Kybalion exactly, with its source",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "each principle has a practice and an honest note",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the seventh is Gender, explained as active and receptive in everyone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all seven read, kept on this device",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "About says where the principles really come from",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Hall of the Seven Principles",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hall draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":228,\"median\":25}"
+    },
+    {
+      "name": "tapping the star in 3D explains it, belief kept apart from geometry",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the tetrahedron: counts, Plato's fire, and real chemistry",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "About tells Kepler's beautiful wrong idea",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Five Solids",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "solids draws (SwiftShader median frame, ms)",
+      "ok": true,
+      "detail": "{\"n\":160,\"median\":34}"
+    },
+    {
+      "name": "no page or shader errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "the Knowledge tree page": [],
+    "the Cosmic Calendar": [],
+    "the Tree of Life lesson": [],
+    "the Flower of Life": [],
+    "Inner Knowing": [],
+    "the Hall of the Seven Principles": [],
+    "the Five Solids": []
+  },
+  "frames": {
+    "flower": {
+      "n": 240,
+      "median": 17
+    },
+    "knowing": {
+      "n": 114,
+      "median": 37
+    },
+    "hall": {
+      "n": 228,
+      "median": 25
+    },
+    "solids": {
+      "n": 160,
+      "median": 34
+    }
+  },
+  "summary": {
+    "total": 46,
+    "failed": 0
+  }
+}

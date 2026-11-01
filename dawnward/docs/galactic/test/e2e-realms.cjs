@@ -37,7 +37,7 @@ const frames = async (p, name) => { await p.waitForTimeout(2200); results.frames
   const page = await ctx.newPage(); watch(page);
 
   // ---- the three galaxy pages ----
-  for (const [g, open, planned, label] of [["spiritual", 4, 1, "Spiritual Exploration"], ["knowledge", 2, 3, "Knowledge"], ["ai", 1, 4, "AI Creation"]]) {
+  for (const [g, open, planned, label] of [["spiritual", 4, 1, "Spiritual Exploration"], ["knowledge", 8, 3, "Knowledge"], ["ai", 1, 4, "AI Creation"]]) {
     await go(page, `universe/${g}`);
     const rows = await page.locator(".cw-planets li").allInnerTexts();
     check(`${label}: ${open} open, ${planned} planned`, rows.length === open + planned && rows.filter((t) => /Planned/.test(t)).length === planned, rows.map((t) => t.split("\n")[0]).join(" | "));
