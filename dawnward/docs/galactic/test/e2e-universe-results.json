@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-31T23:26:16.194Z",
+  "when": "2026-11-01T09:26:00.966Z",
   "checks": [
     {
       "name": "320x568: Atlas galaxies and names never overlap",
@@ -497,10 +497,10 @@
   "timings": {
     "phone.arrival_fallbacks": 0,
     "phone.webgl_context_lost": 0,
-    "phone.to_first_step_ms": 211,
+    "phone.to_first_step_ms": 223,
     "desktop.arrival_fallbacks": 1,
     "desktop.webgl_context_lost": 0,
-    "desktop.to_first_step_ms": 124
+    "desktop.to_first_step_ms": 118
   },
   "summary": {
     "total": 96,
