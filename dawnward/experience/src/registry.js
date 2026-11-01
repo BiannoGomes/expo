@@ -59,6 +59,9 @@ export const ART = {
     // the Gateway journey: each step has its own place
     "gateway-1": { hero: "B1", exercise: "B5", reflect: "B5", moon: "T9", passage: "B3",
       steps: { intro: "B1", intention: "B1", passage: "B2", "future-self": "B4", close: "B6" }, scene: ["intention", "passage", "future-self"] },
+    // the five gateway questions: each world's own painting
+    ...Object.fromEntries([["mirror-1", "mind"], ["vitality-1", "body"], ["becoming-1", "soul"], ["observatory-1", "spirit"], ["horizon-1", "future"]]
+      .map(([id, w]) => [id, { hero: `worlds/closeup-${w}`, reflect: `worlds/closeup-${w}` }])),
   },
   /** each skill pathway's planet */
   systems: { "mind-thought-patterns": "D1", "mind-beyond-overthinking": "D2", "future-quantum-gateway": "A8" },
@@ -66,4 +69,4 @@ export const ART = {
   galaxies: { ai: "A3", knowledge: "A4", spiritual: "A5", creative: "A6", earth: "A7", gateway: "A8" },
   home: "E1", compass: "U11", star: "T10", moon: "T9",
 };
-export const artPath = (code) => (code ? `img/art/${code}.webp` : null);
+export const artPath = (code) => (!code ? null : code.startsWith("worlds/") ? `img/${code}.webp` : `img/art/${code}.webp`);

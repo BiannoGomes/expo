@@ -12,6 +12,7 @@
 import { buildHome } from "./home-scene.js";
 import { createExplore, localStore, remoteStore } from "./explore.js";
 import { createCreative, REALMS } from "./creative.js";
+import { QUESTIONS } from "./questions.js";
 import { MISSIONS, SYSTEMS, WORLD_PLAY, missionById } from "../../packages/core/src/expeditions/index.ts";
 
 const $ = (id) => document.getElementById(id);
@@ -95,7 +96,7 @@ function localData() {
   return finish({ stars: kept.stars ?? [], themes: kept.themes ?? [], goal: null, local: true });
 }
 const keepLocal = (data) => device.write(STORE, {
-  stars: data.stars.map(({ id, world, date, excerpt }) => ({ id, world, date, excerpt })),
+  stars: data.stars.map(({ id, world, date, excerpt, prompt }) => ({ id, world, date, excerpt, ...(prompt ? { prompt } : {}) })),
   themes: data.themes.map(({ id, world, statement, starIds, confidence, words, accepted, corrected, rejected }) => ({ id, world, statement, starIds, confidence, words, accepted, corrected, rejected })),
 });
 
@@ -438,11 +439,15 @@ function main(data, failed) {
   // ----- reflecting: one question, a compact input that grows, voice as a quiet option -----
   // Privacy is one small control, not a sentence on every screen; its words stay attached
   // to the input for screen readers.
-  let recog = null, autosave = null, saving = false, clientKey = null;
+  let recog = null, autosave = null, saving = false, clientKey = null, edPrompt = null;
   function openEditor(w, { speak = false } = {}) {
     if (state.place !== "world" || state.world !== w) { goWorld(w, { then: () => openEditor(w, { speak }) }); return; }
     const draft = device.read(DRAFT, null);
     state.draftWorld = draft?.world && ORDER.includes(draft.world) && draft.text ? draft.world : w;
+    // the world's everyday question first, then deeper ones; the one you answered is kept with your words
+    const qs = () => [META[state.draftWorld].q, ...(QUESTIONS[state.draftWorld] ?? [])];
+    let qi = Math.max(0, draft?.text && draft.prompt ? qs().indexOf(draft.prompt) : 0);
+    edPrompt = qs()[qi];
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     const ta = el("textarea", { id: "words", class: "grow", rows: "3", maxlength: "20000", "aria-labelledby": "ed-q", "aria-describedby": "ed-private ed-status" });
     if (draft?.text) ta.value = draft.text;
@@ -454,22 +459,27 @@ function main(data, failed) {
     const worldBtn = el("button", { class: "ed-chip", "aria-expanded": "false", "aria-label": `World: ${META[state.draftWorld].name}. Change`, onclick: () => { chips.hidden = !chips.hidden; worldBtn.setAttribute("aria-expanded", String(!chips.hidden)); if (!chips.hidden) chips.querySelector('[aria-checked="true"]')?.focus(); } });
     const drawWorld = () => { worldBtn.replaceChildren(el("span", { class: `ed-dot dot-${state.draftWorld}`, "aria-hidden": "true" }), META[state.draftWorld].name, el("span", { class: "ed-caret", "aria-hidden": "true" }, "▾")); worldBtn.setAttribute("aria-label", `World: ${META[state.draftWorld].name}. Change`); };
     const privBtn = el("span", { class: "ed-private-tag", title: privacy.textContent }, el("span", { html: svg(ICON.lock, 14) }), "Private");
+    const anotherBtn = el("button", { class: "text-btn ed-another", onclick: () => {
+      qi = (qi + 1) % qs().length; edPrompt = qs()[qi];
+      $("ed-q").textContent = edPrompt; saveDraft(ta.value, status); ta.focus({ preventScroll: true });
+    } }, "Another question");
     for (const k of ORDER) chips.append(el("button", { role: "radio", "aria-checked": String(k === state.draftWorld), onclick: () => {
       const was = state.draftWorld;
       state.draftWorld = k; chips.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.textContent === META[k].name))); drawWorld(); saveDraft(ta.value, status);
       // the whole screen follows: name, painting, and the world's own question
       $("w-name").textContent = META[k].name; $("closeup-img").src = asset(`img/worlds/closeup-${k}.webp`); document.body.dataset.world = k;
-      const q = $("ed-q"); if (q.textContent === META[was].q) q.textContent = META[k].q;
+      qi = 0; edPrompt = META[k].q; $("ed-q").textContent = edPrompt;
       chips.hidden = true; worldBtn.setAttribute("aria-expanded", "false"); worldBtn.focus();
     } }, META[k].name));
     drawWorld();
     const vstate = el("span", { class: "vstate" }, "Speak");
     const micBtn = SR ? el("button", { class: "mic quietmic", "aria-pressed": "false", "aria-label": "Speak", onclick: () => toggleSpeech(micBtn, vstate, ta, status) }, el("span", { class: "mic-orb", html: svg(ICON.mic, 18) }), vstate) : null;
     ta.addEventListener("input", () => { fit(); clearTimeout(autosave); autosave = setTimeout(() => saveDraft(ta.value, status), 400); });
-    sheet(META[state.draftWorld].q, null,
+    sheet(edPrompt, null,
       el("div", { class: "ed-meta" }, worldBtn, privBtn), chips, privacy,
       ta, status, err,
-      el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => save(ta, err, status) }, "Save reflection"), micBtn));
+      el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => save(ta, err, status) }, "Save reflection"), micBtn),
+      anotherBtn);
     wbody.querySelector(".text-btn.back")?.remove(); // the top bar's back closes the editor: one way back, not two
     wbody.querySelector(".s-title").id = "ed-q";
     quiet(true);
@@ -480,7 +490,7 @@ function main(data, failed) {
   function closeEditor() { stopSpeech(); quiet(false); worldIntro(state.world); $("w-q").focus(); }
   function saveDraft(text, status) {
     if (!text.trim()) { device.remove(DRAFT); return; }
-    const ok = device.write(DRAFT, { world: state.draftWorld, text });
+    const ok = device.write(DRAFT, { world: state.draftWorld, text, prompt: edPrompt });
     if (status) status.textContent = ok ? "" : "This browser won't keep a draft, so keep this page open until you save.";
   }
   function stopSpeech() { try { recog?.stop(); } catch {} recog = null; }
@@ -539,6 +549,7 @@ function main(data, failed) {
     if (!words) { err.textContent = "Write or say something first."; ta.focus(); return; }
     if (saving) return;
     stopSpeech();
+    clearTimeout(autosave); // a draft written after this save would bring the words back into the next reflection
     saving = true; err.textContent = "";
     status.textContent = "Saving…";
     const w = state.draftWorld;
@@ -547,7 +558,8 @@ function main(data, failed) {
       let id = null, reply = null;
       if (data.local) {
         id = `m-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e6).toString(36)}`;
-        data.stars.push({ id, world: w, date: today(), excerpt: words, themeIds: [] });
+        const prompt = edPrompt && edPrompt !== META[w].q ? edPrompt : null;
+        data.stars.push({ id, world: w, date: today(), excerpt: words, themeIds: [], ...(prompt ? { prompt } : {}) });
         finish(data);
         if (!keepLocal(data)) {
           data.stars = data.stars.filter((s) => s.id !== id); finish(data);
@@ -591,6 +603,7 @@ function main(data, failed) {
     const sug = suggestions().find((x) => x.a === id || x.b === id);
     sheet(`A new star in ${META[s.world].name}`, null,
       el("p", { class: "quiet small" }, longDate(s.date)),
+      s.prompt ? el("p", { class: "said-q" }, s.prompt) : null,
       el("blockquote", { class: "said" }, el("p", {}, s.excerpt)),
       el("p", { class: "quiet" }, reply ?? `Kept ${keptWhere}, word for word.`),
       sug ? connectionCard(sug, () => showNewStar(id, reply)) : el("p", { class: "quiet" }, "One evening is a note, not a pattern. Nothing is concluded from it."),
@@ -785,6 +798,7 @@ function main(data, failed) {
       el("div", { class: "m-detail-head" }, el("p", { class: "kicker" }, `${META[s.world].name} · ${longDate(s.date)}`),
         el("button", { class: "icon-btn", "aria-label": "Close this memory", html: svg('<path d="M6 6l12 12M18 6 6 18"/>', 18), onclick: closeMemory })),
       el("h2", { class: "sr", id: "md-h", tabindex: "-1" }, `Memory from ${longDate(s.date)}`),
+      s.prompt ? el("p", { class: "said-q" }, s.prompt) : null,
       el("blockquote", { class: "said" }, el("p", {}, s.excerpt)),
       themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : el("p", { class: "quiet" }, "Not linked to anything yet."),
       el("div", { class: "actions" },

@@ -34,8 +34,19 @@ function play(mission = bridge1): Attempt {
 describe("expedition catalog", () => {
   it("is sound: every mission has a completion state, valid options and a close step", () => {
     assert.deepEqual(checkCatalog(), []);
-    assert.equal(MISSIONS.length, 9);
-    assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-beyond-overthinking", 4], ["mind-thought-patterns", 1], ["soul-communication", 3], ["future-quantum-gateway", 1]]);
+    assert.equal(MISSIONS.length, 14);
+    assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-beyond-overthinking", 4], ["mind-thought-patterns", 1], ["soul-communication", 3], ["future-quantum-gateway", 1],
+      ["mind-mirror", 1], ["body-vitality", 1], ["soul-becoming", 1], ["spirit-observatory", 1], ["future-horizon", 1]]);
+  });
+  it("gives every world one guided question: discover, reflect, then one real action", () => {
+    for (const [id, world] of [["mirror-1", "mind"], ["vitality-1", "body"], ["becoming-1", "soul"], ["observatory-1", "spirit"], ["horizon-1", "future"]]) {
+      const m = MISSIONS.find((x) => x.id === id);
+      assert.ok(m, id);
+      assert.equal(m.world, world);
+      assert.deepEqual(m.steps.map((s) => s.type), ["intro", "reflect", "reflect", "plan", "close"], id);
+      assert.ok(m.steps[1].title.endsWith("?"), `${id} opens with its gateway question`);
+      assert.ok(m.steps[3].required, `${id}: the action is the point`);
+    }
   });
   it("contains no scoring or forbidden words", () => {
     const text = JSON.stringify(MISSIONS).toLowerCase();
