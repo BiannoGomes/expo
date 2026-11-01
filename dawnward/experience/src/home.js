@@ -445,15 +445,18 @@ function main(data, failed) {
     const chips = el("div", { class: "seg", role: "radiogroup", "aria-label": "Which world it belongs to", hidden: true });
     const worldBtn = el("button", { class: "ed-chip", "aria-expanded": "false", "aria-label": `World: ${META[state.draftWorld].name}. Change`, onclick: () => { chips.hidden = !chips.hidden; worldBtn.setAttribute("aria-expanded", String(!chips.hidden)); if (!chips.hidden) chips.querySelector('[aria-checked="true"]')?.focus(); } });
     const drawWorld = () => { worldBtn.replaceChildren(el("span", { class: `ed-dot dot-${state.draftWorld}`, "aria-hidden": "true" }), META[state.draftWorld].name, el("span", { class: "ed-caret", "aria-hidden": "true" }, "▾")); worldBtn.setAttribute("aria-label", `World: ${META[state.draftWorld].name}. Change`); };
-    const privBtn = el("button", { class: "ed-chip", "aria-expanded": "false", "aria-controls": "ed-private", onclick: () => { privacy.hidden = !privacy.hidden; privBtn.setAttribute("aria-expanded", String(!privacy.hidden)); } },
-      el("span", { html: svg(ICON.lock, 14) }), "Private");
+    const privBtn = el("span", { class: "ed-private-tag", title: privacy.textContent }, el("span", { html: svg(ICON.lock, 14) }), "Private");
     for (const k of ORDER) chips.append(el("button", { role: "radio", "aria-checked": String(k === state.draftWorld), onclick: () => {
+      const was = state.draftWorld;
       state.draftWorld = k; chips.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.textContent === META[k].name))); drawWorld(); saveDraft(ta.value, status);
+      // the whole screen follows: name, painting, and the world's own question
+      $("w-name").textContent = META[k].name; $("closeup-img").src = asset(`img/worlds/closeup-${k}.webp`); document.body.dataset.world = k;
+      const q = $("ed-q"); if (q.textContent === META[was].q) q.textContent = META[k].q;
       chips.hidden = true; worldBtn.setAttribute("aria-expanded", "false"); worldBtn.focus();
     } }, META[k].name));
     drawWorld();
     const vstate = el("span", { class: "vstate" }, "Speak");
-    const micBtn = SR ? el("button", { class: "mic quietmic", "aria-pressed": "false", onclick: () => toggleSpeech(micBtn, vstate, ta, status) }, el("span", { class: "mic-orb", html: svg(ICON.mic, 18) }), vstate) : null;
+    const micBtn = SR ? el("button", { class: "mic quietmic", "aria-pressed": "false", "aria-label": "Speak", onclick: () => toggleSpeech(micBtn, vstate, ta, status) }, el("span", { class: "mic-orb", html: svg(ICON.mic, 18) }), vstate) : null;
     ta.addEventListener("input", () => { fit(); clearTimeout(autosave); autosave = setTimeout(() => saveDraft(ta.value, status), 400); });
     sheet(META[state.draftWorld].q, null,
       el("div", { class: "ed-meta" }, worldBtn, privBtn), chips, privacy,
@@ -573,18 +576,20 @@ function main(data, failed) {
       el("div", { class: "actions" }, el("button", { class: "ghost", onclick: () => goHome() }, "Return to your galaxy")));
   }
   function showNewStar(id, reply) {
-    quiet(false);
+    quiet(true);
     const s = id && starById(id);
     if (!s) { sheet("Kept", null, el("p", {}, reply ?? "Kept, word for word."), el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => openMemories() }, "See your memories"))); return; }
     state.selStar = id; highlight();
     const sug = suggestions().find((x) => x.a === id || x.b === id);
-    sheet(`A new star in ${META[s.world].name}`, longDate(s.date),
+    sheet(`A new star in ${META[s.world].name}`, null,
+      el("p", { class: "quiet small" }, longDate(s.date)),
       el("blockquote", { class: "said" }, el("p", {}, s.excerpt)),
       el("p", { class: "quiet" }, reply ?? `Kept ${keptWhere}, word for word.`),
       sug ? connectionCard(sug, () => showNewStar(id, reply)) : el("p", { class: "quiet" }, "One evening is a note, not a pattern. Nothing is concluded from it."),
       el("div", { class: "actions" },
-        el("button", { class: "primary", onclick: () => openMemories({ select: id }) }, "See it in your memories"),
-        el("button", { class: "ghost", onclick: () => { worldIntro(state.world); $("w-q").focus(); } }, `Back to ${META[state.world].name}`)));
+        el("button", { class: "primary", onclick: () => closeEditor() }, "Done"),
+        el("button", { class: "text-btn", onclick: () => { quiet(false); openMemories({ select: id }); } }, "See it in your Journey")));
+    wbody.querySelector(".text-btn.back")?.remove();
   }
 
   // ----- possible connections: a shared word between two of your own evenings -----
@@ -1061,21 +1066,18 @@ function main(data, failed) {
   const direction = () => device.read(DIRECTION, null);
   function nextCard(pick) {
     const { m } = pick, total = m.steps.length;
-    const meta = pick.resume ? `${pick.step + 1} of ${total}` : m.chapter ? `Chapter ${m.chapter} of ${chaptersIn(m)} · ${m.minutes} min` : `${m.minutes} min`;
+    const meta = pick.resume ? `${pick.step + 1} of ${total} · ${m.minutes} min` : m.chapter ? `Chapter ${m.chapter} of ${chaptersIn(m)} · ${m.minutes} min` : `${m.minutes} min`;
     return el("article", { class: "nextcard", "aria-labelledby": "c-title" },
-      el("p", { class: "kicker" }, "Your next step"),
       el("h3", { id: "c-title", class: "c-title" }, m.title),
-      el("p", { class: "c-part" }, `${META[m.world].name} · ${m.part.replace(/^Chapter \d+: /, "")}${m.status === "draft" ? " · draft" : ""}`),
-      el("div", { class: "c-bar", role: "progressbar", "aria-label": "Your progress through this expedition", "aria-valuemin": "0", "aria-valuemax": String(total), "aria-valuenow": String(pick.step), "aria-valuetext": pick.step ? `${pick.step + 1} of ${total}` : "Not started" },
-        el("span", { style: `width:${Math.round((100 * pick.step) / total)}%` })),
+      el("p", { class: "c-part" }, `${META[m.world].name} · ${m.part.replace(/^Chapter \d+: /, "")}`),
+      pick.step ? el("div", { class: "c-bar", role: "progressbar", "aria-label": "Progress", "aria-valuemin": "0", "aria-valuemax": String(total), "aria-valuenow": String(pick.step), "aria-valuetext": `${pick.step + 1} of ${total}` },
+        el("span", { style: `width:${Math.round((100 * pick.step) / total)}%` })) : null,
+      el("button", { class: "primary wide", onclick: () => explore.play(m.id, { from: fromHome }) }, `${pick.resume ? "Continue" : "Begin"} · ${meta}`),
       el("div", { class: "c-row" },
-        el("button", { class: "ghost", onclick: () => explore.play(m.id, { from: fromHome }) }, pick.resume ? "Continue" : "Begin"),
-        el("span", { class: "c-meta" }, meta)),
-      el("details", { class: "c-why" }, el("summary", {}, "Why this?"),
-        el("p", {}, `${pick.why} Suggestions come only from what you've done in Dawnward${data.local ? ", on this device" : ""}. Nothing is read from your reflections.`),
-        el("div", { class: "c-more" },
-          el("button", { class: "text-btn", onclick: () => explore.open() }, "Choose another"),
-          el("button", { class: "text-btn", onclick: () => { try { localStorage.setItem(COMPASS_HIDE, localDay()); } catch {} drawEarth(); $("e-title").focus(); announce("No suggestion today."); } }, "Not today"))));
+        el("button", { class: "text-btn", onclick: () => explore.open() }, "Choose another"),
+        el("button", { class: "text-btn", onclick: () => { try { localStorage.setItem(COMPASS_HIDE, localDay()); } catch {} drawEarth(); $("e-title").focus(); announce("No suggestion today."); } }, "Not today"),
+        el("details", { class: "c-why" }, el("summary", {}, "Why this?"),
+          el("p", {}, `${pick.why} Based only on what you've done here, never on what you write.`))));
   }
   /** Your direction: one line you choose, kept on this device, in a small sheet. */
   function directionSheet() {
@@ -1094,13 +1096,13 @@ function main(data, failed) {
         $("dir-h").focus(); return;
       }
       const ok = t ? device.write(DIRECTION, { text: t, at: new Date().toISOString() }) : device.remove(DIRECTION);
-      if (!ok) { err.textContent = "I couldn't keep that on this device."; return; }
+      if (!ok) { err.textContent = "Couldn't save it on this device. Copy it somewhere safe and try again."; return; }
       close(); drawEarth(); announce(t ? "Direction saved." : "Direction cleared.");
     };
     dlg.append(el("h2", { id: "dir-h", class: "s-title" }, "Your direction"),
       el("label", { id: "dir-q", for: "dir-text" }, "What do you want to change?"), ta, err,
       el("div", { class: "actions" }, el("button", { class: "primary", onclick: keep }, "Save"), el("button", { class: "ghost", onclick: close }, "Cancel")),
-      el("p", { class: "quiet small" }, data.local ? "Kept on this device." : "Kept in your Dawnward."));
+      el("p", { class: "quiet small" }, data.local ? "Only on this device." : "Only in your Dawnward."));
     dlg.addEventListener("close", () => dlg.remove());
     document.body.append(dlg);
     dlg.showModal();
@@ -1116,27 +1118,29 @@ function main(data, failed) {
     $("e-crumbs").replaceChildren();
     const dir = direction();
     const next = !pick
-      ? el("article", { class: "nextcard" }, el("p", { class: "kicker" }, "Your next step"), el("h3", { class: "c-title" }, "Every open expedition is done"), el("p", { class: "c-part" }, "More are being written. Reflecting is always here."))
+      ? null
       : hidden
-        ? el("div", { class: "nextcard slim" }, el("p", { class: "quiet" }, "No suggestion today."),
+        ? el("div", { class: "nextcard slim" }, el("p", { class: "quiet" }, "No suggestion today"),
             el("button", { class: "text-btn", onclick: () => { try { localStorage.removeItem(COMPASS_HIDE); } catch {} drawEarth(); } }, "Show it"))
         : nextCard(pick);
+    const reflectRow = el("button", { class: "row e-reflect", onclick: () => openEditor(state.lastWorld) },
+      el("span", { class: "ni", html: svg(ICON.pen, 18) }), el("span", { class: "rtitle" }, "What's on your mind?"), el("span", { class: "rgo", html: svg(ICON.arrow, 16) }));
+    // with no next step, writing becomes the one primary action
+    const writeFirst = !pick || hidden ? el("button", { class: "primary wide", onclick: () => openEditor(state.lastWorld) }, "What's on your mind?") : null;
+    $("e-dir").replaceChildren(dir
+      ? el("button", { class: "e-dir-line", id: "e-dir-btn", onclick: directionSheet, "aria-label": `Your direction: ${dir.text}. Edit` }, el("span", { class: "e-dir-to" }, "Toward"), ` ${dir.text}`)
+      : el("button", { class: "text-btn", id: "e-dir-btn", onclick: directionSheet }, "Set a direction"));
     $("e-body").replaceChildren(...[
-      found ? el("div", { class: "card found", role: "status" }, el("p", { class: "kicker" }, "Just discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : "",
-      el("div", { class: "e-actions" },
-        el("button", { class: "primary wide", onclick: () => goHome() }, "Explore your worlds"),
-        dir ? el("p", { class: "e-dir" }, el("span", { class: "kicker" }, "Your direction"), el("span", { class: "e-dir-text" }, dir.text),
-              el("button", { class: "text-btn", id: "e-dir-btn", onclick: directionSheet, "aria-label": "Edit your direction" }, "Edit"))
-            : el("button", { class: "text-btn e-dir-set", id: "e-dir-btn", onclick: directionSheet }, "Set your direction")),
+      found ? el("div", { class: "card found", role: "status" }, el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
       next,
+      writeFirst,
       active[0] ? el("button", { class: "row e-wait", onclick: () => explore.review(active[0].id) },
         el("span", { class: "rtext" }, el("span", { class: "rsub" }, "How did it go?"), el("span", { class: "rtitle" }, active[0].action)), el("span", { class: "rgo", html: svg(ICON.arrow, 16) })) : null,
       el("section", { "aria-labelledby": "e-worlds" },
         el("h3", { id: "e-worlds", class: "e-h" }, "Your worlds"),
         el("div", { class: "wplanets" }, ORDER.map((w) => el("button", { class: `planet-${w}`, onclick: () => goWorld(w), "aria-label": `${META[w].name}: ${META[w].kicker.toLowerCase()}` },
           el("img", { src: asset(`img/worlds/planet-${w}-640.webp`), alt: "", loading: "lazy" }), el("span", {}, META[w].name))))),
-      el("button", { class: "row e-reflect", onclick: () => openEditor(state.lastWorld) },
-        el("span", { class: "ni", html: svg(ICON.pen, 18) }), el("span", { class: "rtitle" }, "What's on your mind?"), el("span", { class: "rgo", html: svg(ICON.arrow, 16) }))].filter(Boolean));
+      writeFirst ? null : reflectRow].filter(Boolean));
   }
   // ----- Journey: milestones, discoveries and the actions you chose -----
   function drawMiles(box) {
@@ -1168,7 +1172,7 @@ function main(data, failed) {
   addEventListener("keydown", (e) => {
     if (e.key !== "Escape" || state.mode === "text") return;
     if (!$("m-detail").hidden) return closeMemory();
-    if (state.place === "world") goHome();
+    if (state.place === "world") { if (document.body.classList.contains("quiet")) closeEditor(); else goHome(); }
     else if (state.place === "creative") creative.escape();
     else if (state.place !== "earth") openEarth();
   });

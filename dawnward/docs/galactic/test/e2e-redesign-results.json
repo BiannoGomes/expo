@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T09:48:52.873Z",
+  "when": "2026-11-01T10:09:21.994Z",
   "checks": [
     {
       "name": "320×568: Home has no sideways scroll",
@@ -7,7 +7,7 @@
       "detail": ""
     },
     {
-      "name": "320×568: \"Explore your worlds\" is visible without scrolling",
+      "name": "320×568: the next step's button is visible without scrolling",
       "ok": true,
       "detail": ""
     },
@@ -27,7 +27,7 @@
       "detail": ""
     },
     {
-      "name": "360×800: \"Explore your worlds\" is visible without scrolling",
+      "name": "360×800: the next step's button is visible without scrolling",
       "ok": true,
       "detail": ""
     },
@@ -47,7 +47,7 @@
       "detail": ""
     },
     {
-      "name": "390×844: \"Explore your worlds\" is visible without scrolling",
+      "name": "390×844: the next step's button is visible without scrolling",
       "ok": true,
       "detail": ""
     },
@@ -67,7 +67,7 @@
       "detail": ""
     },
     {
-      "name": "430×932: \"Explore your worlds\" is visible without scrolling",
+      "name": "430×932: the next step's button is visible without scrolling",
       "ok": true,
       "detail": ""
     },
@@ -87,17 +87,27 @@
       "detail": ""
     },
     {
-      "name": "Home has exactly one primary action",
+      "name": "Home's one primary action is the next step itself",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "the next step is compact: title, one line, one button",
+      "name": "no detour button, no labels above headings",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "Why this? still explains the suggestion, on request",
+      "name": "Choose another and Not today are visible, not hidden",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "an unstarted expedition shows no progress bar",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Why this? is a full-size target and still explains",
       "ok": true,
       "detail": ""
     },
@@ -107,12 +117,17 @@
       "detail": ""
     },
     {
+      "name": "primary buttons cast a shadow, not a halo",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "axe: Home",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "Explore your worlds opens your five worlds",
+      "name": "the primary action opens the expedition",
       "ok": true,
       "detail": ""
     },
@@ -137,7 +152,7 @@
       "detail": ""
     },
     {
-      "name": "the direction shows on Home, with Edit",
+      "name": "the direction shows as one quiet line under the question",
       "ok": true,
       "detail": ""
     },
@@ -182,7 +197,7 @@
       "detail": ""
     },
     {
-      "name": "the Private chip shows the privacy note",
+      "name": "Private is a quiet status, not a switch",
       "ok": true,
       "detail": ""
     },
@@ -197,12 +212,37 @@
       "detail": ""
     },
     {
+      "name": "and the whole screen follows: name and question",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "axe: Reflect",
       "ok": true,
       "detail": ""
     },
     {
       "name": "Save reflection keeps it in Body",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "after saving, you stay in Reflect: no breadcrumbs, Reflect still current",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "one primary after saving: Done",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Done returns calmly to the world",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Escape while writing closes the editor, like Close",
       "ok": true,
       "detail": ""
     },
@@ -233,7 +273,7 @@
     "Reflect": []
   },
   "summary": {
-    "total": 45,
+    "total": 53,
     "failed": 0
   }
 }

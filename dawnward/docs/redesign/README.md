@@ -113,3 +113,25 @@ New reusable pieces:
 - Whether someone new to Dawnward can find their way without help. That's the brief's real success test: watch one or two people use Home and Reflect without instructions.
 
 **Your approval is needed for Phase 5:** applying the same system to Universe (the map first), Learn (a featured journey), Expeditions (one decision at a time, starting with the Thought Labyrinth) and Journey (a summary line, a constellation, then a timeline).
+
+## Round 2: Impeccable critique, then edits (2026-11-01)
+Bianno's direction: never over-explain; simple; everything makes sense. Two independent reviews ran (a design review, and the automated detector with browser measurements), and their findings were applied:
+
+| Finding | Fix |
+|---|---|
+| Home's gold button ("Explore your worlds") was a detour that asked "where?" again; the real next step was a small outlined button | The next step is now the one gold button: "Begin · Chapter 1 of 7 · 8 min". With no next step, the gold button is "What's on your mind?" |
+| "Your direction" was a big gold block that did nothing | It's one quiet line under the question ("Toward …"), tap to edit. Its sheet says "Only on this device." |
+| Changing the world in Reflect left the old name, painting and question | The whole screen follows the world you choose |
+| After saving, breadcrumbs and the Universe tab came back | You stay in Reflect; one gold "Done", and "See it in your Journey" as a link |
+| "Choose another" and "Not today" were hidden under "Why this?"; "Why this?" was 32 px | All three are visible, each a 44 px target |
+| "Private" looked like a switch | A quiet lock-and-word status, not a button; the full sentence is still read to screen readers |
+| Labels above headings ("Your universe", "Your next step", the date) | Removed, or moved below the heading; Impeccable's craft floor bans them |
+| Glowing halos round buttons, planets and the discovery card | Real drop shadows with an offset |
+| Escape while writing did something different from Close | Escape now does what Close does |
+| Speak was as loud as Save | A quiet round mic button; it says "Listening…" only while listening |
+| An unstarted expedition showed a gold stub of progress | No bar until there's progress |
+| Long sentences across the app (help, empty states, notes) | Shortened, keeping the facts and safety lines |
+
+The detector now reports no glow on Home or Reflect. What's left are literal lights elsewhere, two images whose source is set by script, and Inter as the UI font: by design, paired with Cormorant.
+
+`e2e-redesign.cjs` now has 53 checks, including each fix above.

@@ -46,9 +46,9 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.waitForTimeout(400);
 
     const comp = await page.textContent("#earth .nextcard");
-    check(`${name}: the Compass starts with Beyond Overthinking, Chapter 1 of 7`, /Beyond Overthinking/.test(comp) && /Chapter 1 of 7/.test(comp) && /draft/.test(comp));
+    check(`${name}: the Compass starts with Beyond Overthinking, Chapter 1 of 7`, /Beyond Overthinking/.test(comp) && /Chapter 1 of 7/.test(comp));
     check(`${name}: Home never offers Chapter 2 before Chapter 1`, !/Chapter 2/.test(await page.textContent("#earth")));
-    await page.locator("#earth .nextcard .c-row .ghost").click();
+    await page.locator("#earth .nextcard .primary").click();
     await page.waitForSelector("#x-body .draft-tag");
     check(`${name}: the chapter says it's a draft`, /Draft: not yet reviewed/.test(await page.textContent("#x-body")));
     check(`${name}: the safety note is there`, /findahelpline\.com/.test(await page.textContent("#x-body")));
@@ -92,7 +92,7 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     check(`${name}: and says it's the next part of what you began`, /next part of Beyond Overthinking/.test(await page.textContent("#earth .c-why")));
 
     // Chapter 2
-    await page.locator("#earth .nextcard .c-row .ghost").click();
+    await page.locator("#earth .nextcard .primary").click();
     await page.getByRole("button", { name: "Begin" }).click();
     check(`${name} ch2: lesson`, (await page.locator(".lesson p").count()) === 4);
     await page.getByRole("button", { name: "Continue" }).click();
@@ -114,12 +114,12 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.getByRole("button", { name: "Return to Earth" }).first().click();
     await page.waitForTimeout(300);
     const comp3 = await page.textContent("#earth .nextcard");
-    check(`${name}: the Compass offers Chapter 3 of 7, as the expedition you follow`, /Practise a pause/.test(comp3) && /Chapter 3 of 7/.test(comp3) && /You're following Beyond Overthinking · 2 of 7 chapters done/.test(comp3));
+    check(`${name}: the Compass offers Chapter 3 of 7, as the expedition you follow`, /Practise a pause/.test(comp3) && /Chapter 3 of 7/.test(comp3));
     await page.locator("#earth .c-why summary").click();
     check(`${name}: and says why: you chose to follow it`, /You chose to follow Beyond Overthinking/.test(await page.textContent("#earth .c-why")));
 
     // Chapter 3: the pause
-    await page.locator("#earth .nextcard .c-row .ghost").click();
+    await page.locator("#earth .nextcard .primary").click();
     await page.getByRole("button", { name: "Begin" }).click();
     check(`${name} ch3: lesson`, (await page.locator(".lesson p").count()) === 4);
     await page.getByRole("button", { name: "Continue" }).click();

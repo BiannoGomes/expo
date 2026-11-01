@@ -27,7 +27,7 @@ const noSideScroll = (p) => p.evaluate(() => document.documentElement.scrollWidt
     const p = await c.newPage(); p.on("pageerror", (e) => errors.push(String(e)));
     await p.goto(BASE + "#/home"); await ready(p); await p.waitForTimeout(500);
     check(`${w}×${h}: Home has no sideways scroll`, await noSideScroll(p));
-    check(`${w}×${h}: "Explore your worlds" is visible without scrolling`, await p.evaluate(() => { const b = document.querySelector("#earth .primary").getBoundingClientRect(); return b.top >= 0 && b.bottom <= innerHeight - 64; }));
+    check(`${w}×${h}: the next step's button is visible without scrolling`, await p.evaluate(() => { const b = document.querySelector("#earth .primary").getBoundingClientRect(); return b.top >= 0 && b.bottom <= innerHeight - 64; }));
     await p.locator('#tabs [data-tab="reflect"]').click(); await p.waitForTimeout(1500);
     check(`${w}×${h}: Reflect has no sideways scroll`, await noSideScroll(p));
     check(`${w}×${h}: Save reflection is visible without scrolling`, await p.evaluate(() => { const b = [...document.querySelectorAll("#w-body .primary")].find((x) => x.textContent === "Save reflection")?.getBoundingClientRect(); return !!b && b.bottom <= innerHeight - 64; }));
@@ -41,30 +41,33 @@ const noSideScroll = (p) => p.evaluate(() => document.documentElement.scrollWidt
   // ---- Home ----
   const earth = await page.locator("#earth").innerText();
   check("Home asks one question", /Where will you grow today\?/.test(earth));
-  check("Home has exactly one primary action", (await page.locator("#earth .primary").count()) === 1 && (await page.locator("#earth .primary").innerText()) === "Explore your worlds");
-  check("the next step is compact: title, one line, one button", (await page.locator("#earth .nextcard button.ghost").count()) === 1 && /Your next step/i.test(await page.locator("#earth .nextcard").innerText()));
-  check("Why this? still explains the suggestion, on request", /Nothing is read from your reflections/.test(await page.locator("#earth .c-why").textContent()));
+  check("Home's one primary action is the next step itself", (await page.locator("#earth .primary").count()) === 1 && /^Begin · /.test(await page.locator("#earth .primary").innerText()));
+  check("no detour button, no labels above headings", !/Explore your worlds/.test(earth) && (await page.locator("#earth .kicker").count()) === 0);
+  check("Choose another and Not today are visible, not hidden", await page.getByRole("button", { name: "Choose another" }).isVisible() && await page.getByRole("button", { name: "Not today" }).isVisible());
+  check("an unstarted expedition shows no progress bar", (await page.locator("#earth .c-bar").count()) === 0);
+  check("Why this? is a full-size target and still explains", await page.evaluate(() => document.querySelector("#earth .c-why summary").getBoundingClientRect().height >= 44) && /never on what you write/.test(await page.locator("#earth .c-why").textContent()));
   check("no stray null on Home", !/\bnull\b/.test(earth));
+  check("primary buttons cast a shadow, not a halo", await page.evaluate(() => !/^rgba?\([^)]*\) 0px 0px /.test(getComputedStyle(document.querySelector("#earth .primary")).boxShadow)));
   await axe(page, "Home");
-  await page.getByRole("button", { name: "Explore your worlds" }).click();
-  await page.waitForTimeout(500);
-  check("Explore your worlds opens your five worlds", (await page.evaluate(() => window.__dwHome.state.place)) === "home");
+  await page.locator("#earth .primary").click();
+  await page.waitForTimeout(600);
+  check("the primary action opens the expedition", (await page.evaluate(() => window.__dwHome.state.place)) === "explore");
   await page.locator('#tabs [data-tab="home"]').click(); await page.waitForTimeout(400);
 
   // ---- the direction sheet ----
-  await page.getByRole("button", { name: "Set your direction" }).click();
+  await page.getByRole("button", { name: "Set a direction" }).click();
   check("the direction opens in a modal sheet, focus inside", await page.evaluate(() => { const d = document.querySelector("dialog.sheetdlg"); return !!d && d.open && d.contains(document.activeElement); }));
   check("it asks the audit's question", /What do you want to change\?/.test(await page.locator("dialog.sheetdlg").innerText()));
   await axe(page, "the direction sheet");
   await page.keyboard.press("Escape");
   await page.waitForTimeout(200);
   check("Escape closes it and focus returns", await page.evaluate(() => !document.querySelector("dialog.sheetdlg") && document.activeElement?.id === "e-dir-btn"));
-  await page.getByRole("button", { name: "Set your direction" }).click();
+  await page.getByRole("button", { name: "Set a direction" }).click();
   await page.fill("#dir-text", "Spend less time in my head and more time outside.");
   await page.locator("dialog.sheetdlg").getByRole("button", { name: "Save", exact: true }).click();
-  check("the direction shows on Home, with Edit", /Spend less time in my head/.test(await page.locator("#earth .e-dir").innerText()) && (await page.getByRole("button", { name: "Edit your direction" }).count()) === 1);
+  check("the direction shows as one quiet line under the question", /Toward\s+Spend less time in my head/.test(await page.locator("#earth .e-dir").innerText()) && (await page.getByRole("button", { name: /^Your direction: Spend less/ }).count()) === 1);
   check("the direction is kept on this device", await page.evaluate(() => /less time in my head/.test(JSON.parse(localStorage.getItem("dw-direction-v1") || "{}").text ?? "")));
-  await page.getByRole("button", { name: "Edit your direction" }).click();
+  await page.getByRole("button", { name: /^Your direction:/ }).click();
   await page.fill("#dir-text", "I want to end my life");
   await page.locator("dialog.sheetdlg").getByRole("button", { name: "Save", exact: true }).click();
   await page.waitForTimeout(300);
@@ -80,8 +83,7 @@ const noSideScroll = (p) => p.evaluate(() => document.documentElement.scrollWidt
   check("no 'a private reflection' label, no 'Kept in'", !/private reflection|Kept in/i.test(await page.locator("#w-body").innerText()));
   check("one way back: no second back link, no breadcrumbs", (await page.locator("#w-body .text-btn.back").count()) === 0 && !(await page.locator("#w-crumbs").isVisible()) && (await page.getAttribute("#w-back", "aria-label")) === "Close");
   check("privacy isn't repeated on screen, but screen readers hear it", !(await page.locator("#ed-private").isVisible()) && /ed-private/.test(await page.getAttribute("#words", "aria-describedby")) && /Only you can see this/.test(await page.locator("#ed-private").textContent()));
-  await page.getByRole("button", { name: "Private" }).click();
-  check("the Private chip shows the privacy note", await page.locator("#ed-private").isVisible() && (await page.getAttribute("button:has-text('Private')", "aria-expanded")) === "true");
+  check("Private is a quiet status, not a switch", (await page.locator(".ed-private-tag").count()) === 1 && (await page.locator("button", { hasText: /^Private$/ }).count()) === 0);
   const h0 = await page.evaluate(() => document.getElementById("words").offsetHeight);
   await page.fill("#words", "One.\nTwo.\nThree.\nFour.\nFive.\nSix.\nSeven lines of a longer evening.");
   await page.locator("#words").dispatchEvent("input");
@@ -90,10 +92,19 @@ const noSideScroll = (p) => p.evaluate(() => document.documentElement.scrollWidt
   await page.getByRole("button", { name: /World: Mind/ }).click();
   await page.getByRole("radio", { name: "Body" }).click();
   check("the world chip changes the world", (await page.getByRole("button", { name: /World: Body/ }).count()) === 1);
+  check("and the whole screen follows: name and question", (await page.locator("#w-name").innerText()).toLowerCase() === "body" && (await page.locator("#ed-q").innerText()) === "How did your body carry you today?");
   await axe(page, "Reflect");
   await page.getByRole("button", { name: "Save reflection" }).click();
   await page.waitForTimeout(600);
   check("Save reflection keeps it in Body", await page.evaluate(() => (JSON.parse(localStorage.getItem("dw-local-v1") || "{}").stars ?? []).some((s) => s.world === "body" && /Seven lines/.test(s.excerpt))));
+  check("after saving, you stay in Reflect: no breadcrumbs, Reflect still current", !(await page.locator("#w-crumbs").isVisible()) && (await page.getAttribute('#tabs [data-tab="reflect"]', "aria-current")) === "page");
+  check("one primary after saving: Done", (await page.locator("#w-body .primary").count()) === 1 && (await page.locator("#w-body .primary").innerText()) === "Done");
+  await page.getByRole("button", { name: "Done" }).click(); await page.waitForTimeout(300);
+  check("Done returns calmly to the world", await page.evaluate(() => !document.body.classList.contains("quiet") && window.__dwHome.state.place === "world"));
+  // Escape while writing does what Close does
+  await page.locator('#tabs [data-tab="reflect"]').click(); await page.waitForTimeout(1200);
+  await page.keyboard.press("Escape"); await page.waitForTimeout(300);
+  check("Escape while writing closes the editor, like Close", await page.evaluate(() => !document.body.classList.contains("quiet") && window.__dwHome.state.place === "world"));
   // the close button returns from the editor to the world
   await page.locator('#tabs [data-tab="reflect"]').click(); await page.waitForTimeout(1200);
   await page.locator("#w-back").click(); await page.waitForTimeout(300);

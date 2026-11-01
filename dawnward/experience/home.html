@@ -182,25 +182,27 @@
   .c-why p { color:var(--dim); font-size:15px; line-height:1.5; }
   .c-more { display:flex; gap:var(--s5); flex-wrap:wrap; margin-top:calc(-1 * var(--s2)); }
   .compass .c-why { margin-top:calc(-1 * var(--s1)); }
-  /* ---- Home, redesigned: one primary action, a compact next step ---- */
-  .e-actions { display:flex; flex-direction:column; align-items:flex-start; gap:var(--s3); }
-  .e-actions .primary.wide { width:100%; min-height:56px; font-size:17px; }
-  .e-dir { display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--s1) var(--s2); }
-  .e-dir .kicker { width:100%; color:var(--gold-ink); }
-  .e-dir-text { font-family:var(--display); font-size:20px; line-height:1.3; }
-  .nextcard { display:flex; flex-direction:column; gap:var(--s2); padding:var(--s4) var(--s5); border-radius:var(--r-card); background:rgba(10,20,38,.78); border:1px solid var(--edge); }
-  .nextcard .kicker { color:var(--faint); }
-  .nextcard .c-title { font-family:var(--display); font-weight:500; font-size:clamp(24px, 6.4vw, 30px); line-height:1.1; text-transform:none; letter-spacing:0; color:var(--ink); }
+  /* ---- Home, redesigned: the next step is the one primary action ---- */
+  .e-dir { margin-top:calc(-1 * var(--s3)); }
+  .e-dir-line { display:inline; text-align:left; min-height:var(--tap); padding:var(--s2) 0; font-family:var(--display); font-size:19px; line-height:1.35; color:var(--dim); }
+  .e-dir-line:hover, .e-dir-line:focus-visible { color:var(--ink); }
+  .e-dir-to { font-family:var(--ui); font-size:13px; color:var(--gold-ink); margin-right:var(--s1); }
+  .e-dir .text-btn { padding:0; }
+  .nextcard { display:flex; flex-direction:column; gap:var(--s3); padding:var(--s5); border-radius:var(--r-card); background:rgba(10,20,38,.78); border:1px solid var(--edge); }
+  .nextcard .c-title { font-family:var(--display); font-weight:500; font-size:clamp(26px, 7vw, 32px); line-height:1.1; text-transform:none; letter-spacing:0; color:var(--ink); margin-bottom:calc(-1 * var(--s2)); }
   .nextcard .c-part { color:var(--dim); font-size:var(--t-second); }
-  .nextcard .c-row { display:flex; align-items:center; gap:var(--s3); margin-top:var(--s1); }
-  .nextcard .c-meta { color:var(--faint); font-size:var(--t-meta); text-transform:none; letter-spacing:0; }
+  .nextcard .primary.wide { width:100%; min-height:56px; font-size:17px; }
   .nextcard .c-bar { height:3px; border-radius:3px; background:rgba(255,255,255,.08); overflow:hidden; }
-  .nextcard .c-bar span { display:block; height:100%; background:var(--gold); }
-  .nextcard .c-why summary { color:var(--dim); font-size:var(--t-meta); cursor:pointer; min-height:32px; display:inline-flex; align-items:center; }
-  .nextcard .c-why[open] { display:flex; flex-direction:column; gap:var(--s2); }
-  .nextcard .c-why p { color:var(--dim); font-size:var(--t-second); }
-  .nextcard .c-more { display:flex; gap:var(--s4); }
-  .nextcard.slim { flex-direction:row; align-items:center; justify-content:space-between; }
+  .nextcard .c-bar span { display:block; height:100%; background:var(--gold); min-width:0; }
+  .nextcard .c-row { display:flex; flex-wrap:wrap; align-items:center; gap:0 var(--s5); }
+  .nextcard .c-row .text-btn { padding:0; font-size:var(--t-meta); color:var(--dim); text-decoration-color:rgba(195,201,212,.35); }
+  .nextcard .c-why summary { color:var(--dim); font-size:var(--t-meta); cursor:pointer; min-height:var(--tap); display:inline-flex; align-items:center; text-decoration:underline; text-underline-offset:4px; text-decoration-color:rgba(195,201,212,.35); list-style:none; }
+  .nextcard .c-why summary::-webkit-details-marker { display:none; }
+  .nextcard .c-why[open] { flex-basis:100%; }
+  .nextcard .c-why p { color:var(--dim); font-size:var(--t-second); padding-bottom:var(--s2); }
+  .nextcard.slim { flex-direction:row; align-items:center; justify-content:space-between; padding:var(--s3) var(--s5); }
+  #earth .e-actions, #earth > .ycol > .primary { width:100%; }
+  #e-body > .primary.wide { width:100%; min-height:56px; font-size:17px; }
   .e-h { font-family:var(--display); font-weight:500; font-size:var(--t-card); text-transform:none; letter-spacing:0; color:var(--ink); margin-bottom:var(--s3); }
   .e-reflect .ni { color:var(--gold-ink); display:flex; }
   .e-reflect .rtitle { flex:1; }
@@ -219,8 +221,12 @@
   .dot-mind { color:var(--mind); } .dot-body { color:var(--body); } .dot-soul { color:var(--soul); } .dot-spirit { color:var(--spirit); } .dot-future { color:var(--future); }
   .ed-caret { font-size:11px; opacity:.7; }
   .ed-private { margin-top:calc(-1 * var(--s1)); }
+  .ed-private-tag { display:inline-flex; align-items:center; gap:var(--s1); min-height:var(--tap); padding:0 var(--s1); font-size:13px; color:var(--faint); }
+  .mic.quietmic { width:var(--tap); padding:0; justify-content:center; border-color:var(--edge); background:transparent; }
+  .mic.quietmic .vstate { display:none; }
+  .mic.quietmic[aria-pressed="true"] { width:auto; padding:0 var(--s4) 0 var(--s2); }
+  .mic.quietmic[aria-pressed="true"] .vstate { display:inline; }
   #ed-status:empty { display:none; }
-  .mic.quietmic { min-height:var(--tap); padding:0 var(--s4) 0 var(--s2); }
   body.quiet #w-crumbs { display:none; }
   body.quiet #closeup::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,7,13,.55) 0%, rgba(5,7,13,.35) 30%, rgba(5,7,13,.8) 60%, #05070D 85%); }
   body.quiet #ed-q { font-size:clamp(28px, 7.6vw, 36px); color:var(--ink); text-shadow:0 1px 3px rgba(0,0,0,.9), 0 2px 18px rgba(0,0,0,.7); }
@@ -230,7 +236,7 @@
   .sec-head h3 { font-family:var(--display); font-size:22px; font-weight:600; }
   .wplanets { display:grid; grid-template-columns:repeat(5, 1fr); gap:var(--s2); }
   .wplanets button { display:flex; flex-direction:column; align-items:center; gap:var(--s2); min-height:var(--tap); padding:var(--s1) 0; border-radius:var(--s4); font-size:14px; }
-  .wplanets img { width:min(64px, 15vw); aspect-ratio:1; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px currentColor, 0 0 16px -2px currentColor; }
+  .wplanets img { width:min(64px, 15vw); aspect-ratio:1; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px currentColor, 0 6px 14px -6px currentColor; }
   .wplanets button > span { color:var(--ink); }
   .wplanets button:hover img, .wplanets button:focus-visible img { transform:scale(1.06); }
   .nextrow { display:grid; grid-template-columns:repeat(3, 1fr); gap:var(--s3); }
@@ -310,7 +316,7 @@
   .label { font-size:var(--t-second); color:var(--dim); }
   .statement { font-family:var(--display); font-size:var(--t-card); line-height:1.25; }
   .primary, .ghost, .danger { min-height:var(--tap); padding:0 var(--s6); border-radius:var(--r-pill); font-size:var(--t-btn); font-weight:500; display:inline-flex; align-items:center; justify-content:center; gap:var(--s2); }
-  .primary { background:linear-gradient(180deg, #F2D49B, #D9AE62); color:#1A1206; box-shadow:0 0 24px rgba(230,192,123,.3); }
+  .primary { background:linear-gradient(180deg, #F2D49B, #D9AE62); color:#1A1206; box-shadow:0 8px 20px -8px rgba(230,192,123,.55), 0 2px 4px rgba(0,0,0,.35); }
   .primary.wide { width:100%; }
   .ghost { border:1px solid var(--edge-strong); color:var(--ink); background:rgba(6,10,20,.55); }
   .danger { border:1px solid rgba(227,154,146,.6); color:var(--danger); background:rgba(6,10,20,.55); }
@@ -443,7 +449,7 @@
   .small { font-size:13px; }
   .field { width:100%; min-height:var(--tap); padding:0 var(--s4); border-radius:var(--s3); background:rgba(8,14,28,.88); border:1px solid rgba(214,228,255,.32); font-size:16px; }
   .field:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
-  .card.found { border-color:var(--edge-strong); box-shadow:0 0 30px rgba(230,192,123,.15); }
+  .card.found { border-color:var(--edge-strong); box-shadow:0 10px 28px -12px rgba(230,192,123,.35); }
   .safety { font-size:14px; }
   .journey { list-style:none; display:flex; flex-direction:column; gap:var(--s2); }
   .journey li { display:flex; flex-direction:column; gap:2px; padding:var(--s3) 0; border-bottom:1px solid var(--edge); }
@@ -766,8 +772,8 @@
     <div class="ycol">
       <div id="e-crumbs"></div>
       <div class="e-hero" aria-hidden="true"></div>
-      <p class="kicker e-kick">Your universe</p>
       <h2 id="e-title" tabindex="-1">Where will you grow today?</h2>
+      <div id="e-dir" class="e-dir"></div>
       <div id="e-body" class="ebody"></div>
     </div>
   </section>

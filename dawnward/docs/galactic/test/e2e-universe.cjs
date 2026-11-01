@@ -58,15 +58,15 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     await page.waitForTimeout(500);
     check(`${name}: Dawnward opens on Home`, (await place(page)) === "earth" && (await page.locator('#tabs [data-tab="home"][aria-current="page"]').count()) === 1);
     const comp = await page.textContent("#earth .nextcard");
-    check(`${name}: the Compass offers a first expedition`, /Your next step/i.test(comp) && /Beyond Overthinking/.test(comp) && /Begin/.test(comp) && /8 min/.test(comp));
+    check(`${name}: the Compass offers a first expedition`, /Beyond Overthinking/.test(comp) && /Begin · Chapter 1 of 7 · 8 min/.test(comp));
     await page.locator("#earth .c-why summary").click();
     check(`${name}: the Compass says why`, /short first expedition/.test(await page.textContent("#earth .c-why")) && /Nothing is read from your reflections/.test(await page.textContent("#earth .c-why")));
     check(`${name}: one primary action on Home`, (await page.locator("#earth .primary").count()) === 1);
-    check(`${name}: the first action is visible without scrolling`, await page.evaluate(() => { const b = document.querySelector("#earth .nextcard .c-row .ghost").getBoundingClientRect(); return b.bottom <= innerHeight - 64 || innerWidth >= 1000; }));
+    check(`${name}: the first action is visible without scrolling`, await page.evaluate(() => { const b = document.querySelector("#earth .nextcard .primary").getBoundingClientRect(); return b.bottom <= innerHeight - 64 || innerWidth >= 1000; }));
     await page.getByRole("button", { name: "Not today" }).click();
     check(`${name}: "Not today" sets the suggestion aside`, /No suggestion today/.test(await page.textContent("#earth")));
     await page.getByRole("button", { name: "Show it" }).click();
-    check(`${name}: and it comes back on request`, (await page.locator("#earth .nextcard .c-row .ghost").count()) === 1);
+    check(`${name}: and it comes back on request`, (await page.locator("#earth .nextcard .primary").count()) === 1);
     check(`${name}: five worlds on Home, each a button`, (await page.locator("#earth .wplanets button").count()) === 5);
     await axe(page, `${name} home`);
     await page.screenshot({ path: `${OUT}/u-${name}-home.png`, timeout: 90000 });

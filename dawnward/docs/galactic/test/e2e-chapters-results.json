@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T09:31:33.277Z",
+  "when": "2026-11-01T10:06:47.570Z",
   "checks": [
     {
       "name": "phone: the Compass starts with Beyond Overthinking, Chapter 1 of 7",
@@ -7,7 +7,7 @@
       "detail": ""
     },
     {
-      "name": "phone: \"Practise\" offers a different expedition, not Chapter 2",
+      "name": "phone: Home never offers Chapter 2 before Chapter 1",
       "ok": true,
       "detail": ""
     },
@@ -133,7 +133,7 @@
     },
     {
       "name": "phone: the Compass offers Chapter 3 of 7, as the expedition you follow",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -282,7 +282,7 @@
       "detail": ""
     },
     {
-      "name": "small: \"Practise\" offers a different expedition, not Chapter 2",
+      "name": "small: Home never offers Chapter 2 before Chapter 1",
       "ok": true,
       "detail": ""
     },
@@ -408,7 +408,7 @@
     },
     {
       "name": "small: the Compass offers Chapter 3 of 7, as the expedition you follow",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -568,6 +568,6 @@
   },
   "summary": {
     "total": 110,
-    "failed": 0
+    "failed": 2
   }
 }
