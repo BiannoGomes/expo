@@ -19,6 +19,8 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
 
 (async () => {
   const browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+  // a returning explorer: every galaxy already open (the path itself is tested in e2e-path.cjs)
+  { const nc = browser.newContext.bind(browser); browser.newContext = async (o) => { const c = await nc(o); await c.addInitScript(() => { try { if (!localStorage.getItem("dw-progress-v1")) localStorage.setItem("dw-progress-v1", JSON.stringify({ unlocked: { knowledge: "seed", spiritual: "seed", creative: "seed", ai: "seed", gateway: "seed" }, celebrated: { knowledge: true, spiritual: true, creative: true, ai: true, gateway: true } })); } catch {} }); return c; }; }
 
   // ---- every address opens its place directly, with no arrival film in the way ----
   for (const [hash, place] of [["#/home", "earth"], ["#/universe", "atlas"], ["#/universe/growth", "home"], ["#/world/spirit/library", "world"], ["#/learn", "explore"], ["#/journey/milestones", "memories"], ["#/you", "you"], ["#/nowhere", "earth"]]) {

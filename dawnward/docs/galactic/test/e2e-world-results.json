@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T11:25:32.299Z",
+  "when": "2026-11-01T13:30:03.718Z",
   "checks": [
     {
       "name": "address #/home opens earth",
@@ -208,12 +208,12 @@
     },
     {
       "name": "AI Creation says some worlds are free",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
       "name": "AI Creation never presents its AI studios as working",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -234,6 +234,6 @@
   },
   "summary": {
     "total": 45,
-    "failed": 0
+    "failed": 2
   }
 }
