@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T10:20:58.702Z",
+  "when": "2026-11-01T11:00:32.330Z",
   "checks": [
     {
       "name": "phone: Learn lists the Communication system",
@@ -18,7 +18,7 @@
     },
     {
       "name": "phone: intro shows the objective, time and the safety note",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
@@ -47,7 +47,7 @@
       "detail": ""
     },
     {
-      "name": "phone: close shows what was practised, the action and the discovery",
+      "name": "phone: close shows the action and the discovery",
       "ok": true,
       "detail": ""
     },
@@ -138,7 +138,7 @@
     },
     {
       "name": "desktop: intro shows the objective, time and the safety note",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
@@ -167,7 +167,7 @@
       "detail": ""
     },
     {
-      "name": "desktop: close shows what was practised, the action and the discovery",
+      "name": "desktop: close shows the action and the discovery",
       "ok": true,
       "detail": ""
     },
@@ -252,6 +252,6 @@
   },
   "summary": {
     "total": 48,
-    "failed": 2
+    "failed": 0
   }
 }
