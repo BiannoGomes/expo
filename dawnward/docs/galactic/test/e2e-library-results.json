@@ -1,8 +1,8 @@
 {
-  "when": "2026-11-01T09:23:09.006Z",
+  "when": "2026-11-01T09:49:52.685Z",
   "checks": [
     {
-      "name": "Learn leads to the Members' Library",
+      "name": "Learn leads to the Library",
       "ok": true,
       "detail": ""
     },
