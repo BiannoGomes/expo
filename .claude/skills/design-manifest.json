@@ -1,0 +1,555 @@
+{
+ "_doc": "Third-party design skills installed into .claude/skills by install.py. Each was read and scanned (13-14 Oct 2026). auto = Claude may load it on its own; manual = only when invoked by name (/name), to stop dozens of overlapping design skills fighting over the same triggers.",
+ "installed": "2026-11-02",
+ "skills": [
+  {
+   "name": "taste",
+   "repo": "senlindesign/taste-skill",
+   "commit": "6dce223",
+   "src": "ext2/senlindesign_taste-skill",
+   "license": "MIT (README badge; no LICENSE file in repo)",
+   "lic_file": null,
+   "mode": "auto",
+   "why": "extracts design DNA + reasoning from a reference URL; needs Playwright MCP",
+   "patches": [
+    [
+     "@playwright/mcp@latest",
+     "@playwright/mcp@0.0.83"
+    ]
+   ],
+   "exclude": [
+    "docs"
+   ]
+  },
+  {
+   "name": "emil-design-eng",
+   "repo": "emilkowalski/skills",
+   "commit": "2d22863",
+   "src": "ext/emil/skills/emil-design-eng",
+   "license": "MIT",
+   "lic_file": "ext/emil/LICENSE",
+   "mode": "manual",
+   "why": "motion craft (Emil Kowalski)"
+  },
+  {
+   "name": "animate",
+   "repo": "emilkowalski/skills",
+   "commit": "2d22863",
+   "src": "ext/emil/skills/animate",
+   "license": "MIT",
+   "lic_file": "ext/emil/LICENSE",
+   "mode": "manual",
+   "why": "motion craft (Emil Kowalski)"
+  },
+  {
+   "name": "review-animations",
+   "repo": "emilkowalski/skills",
+   "commit": "2d22863",
+   "src": "ext/emil/skills/review-animations",
+   "license": "MIT",
+   "lic_file": "ext/emil/LICENSE",
+   "mode": "manual",
+   "why": "motion craft (Emil Kowalski)"
+  },
+  {
+   "name": "improve-animations",
+   "repo": "emilkowalski/skills",
+   "commit": "2d22863",
+   "src": "ext/emil/skills/improve-animations",
+   "license": "MIT",
+   "lic_file": "ext/emil/LICENSE",
+   "mode": "manual",
+   "why": "motion craft (Emil Kowalski)"
+  },
+  {
+   "name": "find-animation-opportunities",
+   "repo": "emilkowalski/skills",
+   "commit": "2d22863",
+   "src": "ext/emil/skills/find-animation-opportunities",
+   "license": "MIT",
+   "lic_file": "ext/emil/LICENSE",
+   "mode": "manual",
+   "why": "motion craft (Emil Kowalski)"
+  },
+  {
+   "name": "animation-performance",
+   "repo": "emilkowalski/skills",
+   "commit": "2d22863",
+   "src": "ext/emil/skills/animation-performance",
+   "license": "MIT",
+   "lic_file": "ext/emil/LICENSE",
+   "mode": "manual",
+   "why": "motion craft (Emil Kowalski)"
+  },
+  {
+   "name": "animation-vocabulary",
+   "repo": "emilkowalski/skills",
+   "commit": "2d22863",
+   "src": "ext/emil/skills/animation-vocabulary",
+   "license": "MIT",
+   "lic_file": "ext/emil/LICENSE",
+   "mode": "manual",
+   "why": "motion craft (Emil Kowalski)"
+  },
+  {
+   "name": "apple-design",
+   "repo": "emilkowalski/skills",
+   "commit": "2d22863",
+   "src": "ext/emil/skills/apple-design",
+   "license": "MIT",
+   "lic_file": "ext/emil/LICENSE",
+   "mode": "manual",
+   "why": "motion craft (Emil Kowalski)"
+  },
+  {
+   "name": "break-ui",
+   "repo": "emilkowalski/skills",
+   "commit": "2d22863",
+   "src": "ext/emil/skills/break-ui",
+   "license": "MIT",
+   "lic_file": "ext/emil/LICENSE",
+   "mode": "manual",
+   "why": "motion craft (Emil Kowalski)"
+  },
+  {
+   "name": "prototype",
+   "repo": "emilkowalski/skills",
+   "commit": "2d22863",
+   "src": "ext/emil/skills/prototype",
+   "license": "MIT",
+   "lic_file": "ext/emil/LICENSE",
+   "mode": "manual",
+   "why": "motion craft (Emil Kowalski)"
+  },
+  {
+   "name": "pick-ui-library",
+   "repo": "emilkowalski/skills",
+   "commit": "2d22863",
+   "src": "ext/emil/skills/pick-ui-library",
+   "license": "MIT",
+   "lic_file": "ext/emil/LICENSE",
+   "mode": "manual",
+   "why": "motion craft (Emil Kowalski)"
+  },
+  {
+   "name": "design-taste",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/design-taste",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "brutalist-industrial",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/brutalist-industrial",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "cinematic-motion",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/cinematic-motion",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "corporate-trust",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/corporate-trust",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "dark-tech",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/dark-tech",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "editorial-minimal",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/editorial-minimal",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "japanese-minimal",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/japanese-minimal",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "neo-brutalism",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/neo-brutalism",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "playful-color",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/playful-color",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "quiet-luxury",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/quiet-luxury",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "retro-print",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/retro-print",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-accessibility",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-accessibility",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-brand-identity",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-brand-identity",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-code-craft",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-code-craft",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-code-review",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-code-review",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-color",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-color",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-design-review",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-design-review",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-design-system",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-design-system",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-gsap",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-gsap",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-landing-page",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-landing-page",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-motion",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-motion",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-typography",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-typography",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-ux-copy",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-ux-copy",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "taste-web-performance",
+   "repo": "madebymustafa/design-taste",
+   "commit": "c4a6bff",
+   "src": "ext2/madebymustafa_design-taste/skills/taste-web-performance",
+   "license": "MIT",
+   "lic_file": "ext2/madebymustafa_design-taste/LICENSE",
+   "mode": "manual",
+   "why": "design genres + craft lenses"
+  },
+  {
+   "name": "ui-ux-pro-max",
+   "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
+   "commit": "7246805",
+   "src": "ext2/nextlevelbuilder_ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max",
+   "license": "MIT",
+   "lic_file": "ext2/nextlevelbuilder_ui-ux-pro-max-skill/LICENSE",
+   "mode": "manual",
+   "why": "design-system search over local CSV data (python, offline); paid logo/icon generators NOT installed",
+   "patches": [
+    [
+     "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max",
+     ".claude/skills/ui-ux-pro-max"
+    ]
+   ],
+   "exclude": [
+    "scripts/tests"
+   ]
+  },
+  {
+   "name": "extract-design",
+   "repo": "Manavarya09/design-extract",
+   "commit": "23b6c1b",
+   "src": "ext2/Manavarya09_design-extract/skills/extract-design",
+   "license": "MIT",
+   "lic_file": "ext2/Manavarya09_design-extract/LICENSE",
+   "mode": "manual",
+   "why": "website \u2192 design-system files via the designlang CLI (pinned)",
+   "patches": [
+    [
+     "npx designlang",
+     "npx designlang@13.3.2"
+    ]
+   ]
+  },
+  {
+   "name": "mobile-app-ui-design",
+   "repo": "ceorkm/mobile-app-ui-design",
+   "commit": "4c67a0e",
+   "src": "ext2/ceorkm_mobile-app-ui-design",
+   "license": "MIT (README badge; no LICENSE file in repo)",
+   "lic_file": null,
+   "mode": "manual",
+   "why": "touch-first app screens"
+  },
+  {
+   "name": "figma-suite",
+   "repo": "robukh/figma-suite",
+   "commit": "79c4ea6",
+   "src": "ext2/robukh_figma-suite/skills/figma-suite",
+   "license": "MPL-2.0",
+   "lic_file": "ext2/robukh_figma-suite/LICENSE",
+   "mode": "manual",
+   "why": "Figma tokens/libraries/audits through the official Figma MCP"
+  },
+  {
+   "name": "design-review",
+   "repo": "Bbasche/design-review",
+   "commit": "b734051",
+   "src": "ext2/Bbasche_design-review/skills/design-review",
+   "license": "MIT",
+   "lic_file": "ext2/Bbasche_design-review/LICENSE",
+   "mode": "manual",
+   "why": "independent screenshot-based design critique"
+  },
+  {
+   "name": "vercel-react-best-practices",
+   "repo": "vercel-labs/agent-skills",
+   "commit": "063bee9",
+   "src": "ext2/vercel-labs_agent-skills/skills/react-best-practices",
+   "license": "MIT",
+   "lic_file": null,
+   "mode": "manual",
+   "why": "React engineering practice"
+  },
+  {
+   "name": "vercel-composition-patterns",
+   "repo": "vercel-labs/agent-skills",
+   "commit": "063bee9",
+   "src": "ext2/vercel-labs_agent-skills/skills/composition-patterns",
+   "license": "MIT",
+   "lic_file": null,
+   "mode": "manual",
+   "why": "React engineering practice"
+  },
+  {
+   "name": "vercel-react-view-transitions",
+   "repo": "vercel-labs/agent-skills",
+   "commit": "063bee9",
+   "src": "ext2/vercel-labs_agent-skills/skills/react-view-transitions",
+   "license": "MIT",
+   "lic_file": null,
+   "mode": "manual",
+   "why": "React engineering practice"
+  },
+  {
+   "name": "web-design-guidelines",
+   "repo": "vercel-labs/agent-skills",
+   "commit": "063bee9",
+   "src": "ext2/vercel-labs_agent-skills/skills/web-design-guidelines",
+   "license": "MIT",
+   "lic_file": null,
+   "mode": "manual",
+   "why": "Vercel guideline review; remote rules replaced by a pinned local copy",
+   "pin_remote": "https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md"
+  },
+  {
+   "name": "writing-guidelines",
+   "repo": "vercel-labs/agent-skills",
+   "commit": "063bee9",
+   "src": "ext2/vercel-labs_agent-skills/skills/writing-guidelines",
+   "license": "MIT",
+   "lic_file": null,
+   "mode": "manual",
+   "why": "Vercel guideline review; remote rules replaced by a pinned local copy",
+   "pin_remote": "https://raw.githubusercontent.com/vercel-labs/writing-guidelines/main/command.md"
+  },
+  {
+   "name": "chrome-devtools",
+   "repo": "ChromeDevTools/chrome-devtools-mcp",
+   "commit": "c34bbe6",
+   "src": "ext2/ChromeDevTools_chrome-devtools-mcp/skills/chrome-devtools",
+   "license": "Apache-2.0",
+   "lic_file": "ext2/ChromeDevTools_chrome-devtools-mcp/LICENSE",
+   "mode": "manual",
+   "why": "browser debugging via Chrome DevTools MCP (pinned in .mcp.json)",
+   "patches": [
+    [
+     "chrome-devtools-mcp@latest",
+     "chrome-devtools-mcp@1.10.1"
+    ]
+   ]
+  },
+  {
+   "name": "a11y-debugging",
+   "repo": "ChromeDevTools/chrome-devtools-mcp",
+   "commit": "c34bbe6",
+   "src": "ext2/ChromeDevTools_chrome-devtools-mcp/skills/a11y-debugging",
+   "license": "Apache-2.0",
+   "lic_file": "ext2/ChromeDevTools_chrome-devtools-mcp/LICENSE",
+   "mode": "manual",
+   "why": "browser debugging via Chrome DevTools MCP (pinned in .mcp.json)",
+   "patches": [
+    [
+     "chrome-devtools-mcp@latest",
+     "chrome-devtools-mcp@1.10.1"
+    ]
+   ]
+  },
+  {
+   "name": "debug-optimize-lcp",
+   "repo": "ChromeDevTools/chrome-devtools-mcp",
+   "commit": "c34bbe6",
+   "src": "ext2/ChromeDevTools_chrome-devtools-mcp/skills/debug-optimize-lcp",
+   "license": "Apache-2.0",
+   "lic_file": "ext2/ChromeDevTools_chrome-devtools-mcp/LICENSE",
+   "mode": "manual",
+   "why": "browser debugging via Chrome DevTools MCP (pinned in .mcp.json)",
+   "patches": [
+    [
+     "chrome-devtools-mcp@latest",
+     "chrome-devtools-mcp@1.10.1"
+    ]
+   ]
+  },
+  {
+   "name": "apple-hig",
+   "repo": "ebuntario/apple-hig",
+   "commit": "c434b91",
+   "src": "ext/apple-hig",
+   "license": "MIT",
+   "lic_file": "ext/apple-hig/LICENSE",
+   "mode": "manual",
+   "why": "Apple HIG as rules (foundations, components, patterns); setup + bin/uninstall scripts left out; broad 'Dark Mode/Apple design' triggers would fight apple-design, so manual",
+   "exclude": [
+    "setup",
+    "bin",
+    "README.md"
+   ]
+  }
+ ]
+}

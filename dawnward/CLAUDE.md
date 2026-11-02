@@ -17,4 +17,5 @@ Approval required for deploy/publish/send/pay.
 - Living Universe 2.0 audit, dependency map and risk register: `dawnward/experience/v2/AUDIT.md`. Rollback point: commit `59a56c31`.
 - Films: `dawnward/marketing/remotion` (Remotion 4.0.533) with `docs/` (creative direction, references, claims ledger, asset licensing).
 - Skills live in the repository root `.claude/skills/` (this repo is the Expo fork; Dawnward is the `dawnward/` folder).
+- Design skills (2 Nov 2026): 50 vetted third-party skills plus impeccable 4.7.1 and design-taste-frontend. Registry, sources, commits and licences: `.claude/skills/design-SOURCE.md`. `taste` loads by itself; the rest only by name (`/emil-design-eng`, `/cinematic-motion`, `/apple-hig`, `/prototype`...).
 - Verified tool access (2026-10-30): Higgsfield yes (credits, owner-approved budget); Fable motion app no (no CLI here); GetLayers and 21st.dev not verified.
