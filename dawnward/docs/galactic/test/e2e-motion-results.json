@@ -1,0 +1,177 @@
+{
+  "when": "2026-11-02T11:12:44.934Z",
+  "checks": [
+    {
+      "name": "Now is the default",
+      "ok": true,
+      "detail": "now"
+    },
+    {
+      "name": "no motion pill while on Now",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Now: moving between places starts no motion-lab animations",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "name": "You › Display has the motion switcher with four choices",
+      "ok": true,
+      "detail": "4"
+    },
+    {
+      "name": "Now is checked to begin with",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "choosing Living checks it and is kept on this device",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the pill appears with the three directions",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the pill marks Living as on",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: You with the motion switcher and pill",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Living: the pill switches the direction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Living: arrivals animate",
+      "ok": true,
+      "detail": "48 animations over 4 places"
+    },
+    {
+      "name": "Living: once landed, nothing is left faded, shifted or blurred",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Living: tabs still work straight away (no click is delayed)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Calm: the pill switches the direction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Calm: arrivals animate",
+      "ok": true,
+      "detail": "71 animations over 4 places"
+    },
+    {
+      "name": "Calm: once landed, nothing is left faded, shifted or blurred",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Calm: tabs still work straight away (no click is delayed)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Depth: the pill switches the direction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Depth: arrivals animate",
+      "ok": true,
+      "detail": "75 animations over 4 places"
+    },
+    {
+      "name": "Depth: once landed, nothing is left faded, shifted or blurred",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Depth: tabs still work straight away (no click is delayed)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Calm: an expedition step arrives with motion",
+      "ok": true,
+      "detail": "5"
+    },
+    {
+      "name": "Done: one star flies to Journey, hidden from screen readers, then is gone",
+      "ok": true,
+      "detail": "1 true"
+    },
+    {
+      "name": "Done: the focus stays on the Done heading",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the choice survives a reload",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "back to Now: nothing kept, no pill",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "back to Now: no motion-lab animations",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "name": "reduced motion: the lab stands down even with Depth chosen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: no motion-lab animations at all",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "name": "reduced motion: no star element",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "320 px: the pill sits inside the screen, above the tabs, no sideways scroll",
+      "ok": true,
+      "detail": "{\"inside\":true,\"aboveTabs\":true,\"sideways\":false}"
+    },
+    {
+      "name": "pill buttons meet the 24 px target minimum",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "You with the motion switcher and pill": []
+  },
+  "summary": {
+    "total": 33,
+    "failed": 0
+  }
+}

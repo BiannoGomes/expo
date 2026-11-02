@@ -40,8 +40,8 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
   const body = await page.locator("#cw-page").evaluate((e) => e.textContent);
   check("grouped by evidence, research first, philosophy apart", ["Strong research", "Mixed or early research", "Philosophy or practice"].every((t) => body.includes(t)) && body.indexOf("Strong research") < body.indexOf("Mixed or early research") && body.indexOf("Mixed or early research") < body.indexOf("Philosophy or practice"));
   const cards = await page.locator("#cw-page .wz").count();
-  check("21 thinkers, each a card", cards === 21, String(cards));
-  check("every card shows its source", (await page.locator("#cw-page .wz").evaluateAll((cs) => cs.filter((c) => /\d{4}/.test(c.querySelector(".quiet.small")?.textContent ?? "")).length)) === 21);
+  check("25 thinkers, each a card", cards === 25, String(cards));
+  check("every card shows its source", (await page.locator("#cw-page .wz").evaluateAll((cs) => cs.filter((c) => /\d{4}/.test(c.querySelector(".quiet.small")?.textContent ?? "")).length)) === 25);
   check("says plainly that none of them is connected with Dawnward", /None of these people is connected with Dawnward/.test(body));
   check("Frankl is under philosophy, not research", await page.evaluate(() => { const sec = [...document.querySelectorAll("#cw-page .cw-gsec")].find((s) => /Philosophy or practice/.test(s.textContent)); return /Viktor Frankl/.test(sec?.textContent ?? ""); }));
   check("no sideways scroll", await noSideways(page));
@@ -61,7 +61,7 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
 
   // ----- Becoming Consistent -----
   await page.goto(BASE + "#/knowledge/wisdom"); await ready(page); await page.waitForTimeout(800);
-  await page.locator("#cw-page .wz-path").click();
+  await page.locator("#cw-page .wz-path", { hasText: "Becoming Consistent" }).click();
   await page.waitForSelector("#x-body .s-title");
   check("Becoming Consistent opens, with the way back to the library", /The Wisdom Library/.test(await page.locator(".qhead .back").innerText().catch(() => "")));
   await page.getByRole("button", { name: "Begin" }).click();
@@ -78,7 +78,7 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
   // reload in the middle: it resumes at the action
   await page.reload(); await ready(page); await page.waitForTimeout(600);
   await page.goto(BASE + "#/knowledge/wisdom"); await ready(page); await page.waitForTimeout(600);
-  await page.locator("#cw-page .wz-path").click();
+  await page.locator("#cw-page .wz-path", { hasText: "Becoming Consistent" }).click();
   await page.waitForSelector("#x-body .s-title");
   check("after a reload it resumes at the seven-day experiment", /Your seven-day experiment/.test(await page.locator("#x-body .s-title").first().innerText()));
   await page.fill("#q-action", "After I get home, shoes on and out for ten minutes");
@@ -101,6 +101,34 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
   await page.locator('#tabs [data-tab="journey"]').click();
   await page.locator('#m-views [data-v="miles"]').click();
   check("Journey shows Becoming Consistent, after a reload", /Becoming Consistent/.test(await page.locator("#m-miles").innerText()));
+
+  // ----- Feeling Closer: the Connection constellation -----
+  await page.goto(BASE + "#/knowledge/wisdom"); await ready(page); await page.waitForTimeout(800);
+  check("the library offers both constellations", (await page.locator("#cw-page .wz-path").count()) === 2);
+  const tiers = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll("#cw-page .cw-gsec")].map((s) => [s.querySelector("h3")?.textContent.trim(), [...s.querySelectorAll(".wz h4")].map((h) => h.textContent).join("|")])));
+  check("Connection thinkers sit under their evidence: attachment and Holt-Lunstad strong, Gottman and Gable mixed, Perel philosophy",
+    /Cindy Hazan/.test(tiers["Strong research"]) && /Holt-Lunstad/.test(tiers["Strong research"]) && /John Gottman/.test(tiers["Mixed or early research"]) && /Shelly Gable/.test(tiers["Mixed or early research"]) && /Esther Perel/.test(tiers["Philosophy or practice"]), JSON.stringify(Object.keys(tiers)) + " " + (tiers["Philosophy or practice"] ?? "none"));
+  await page.locator("#cw-page .wz-path", { hasText: "Feeling Closer" }).click();
+  await page.waitForSelector("#x-body .s-title");
+  check("Feeling Closer opens, with the way back to the library", /The Wisdom Library/.test(await page.locator(".qhead .back").innerText().catch(() => "")));
+  check("it carries the relationship safety note", /isn't the right practice/.test(await page.locator("#x-body").innerText()));
+  await page.getByRole("button", { name: "Begin" }).click();
+  check("Question: who do you feel further from", /Who do you feel further from/.test(await page.locator("#x-body .s-title").first().innerText()));
+  await page.fill("#q-words", "My sister. Only plans, never how we are.");
+  await cont(page);
+  const cl = await page.locator("#x-body").innerText();
+  check("Explore: four perspectives, each with its evidence and its limit", /Gottman/.test(cl) && /Attachment research/.test(cl) && /Shelly Gable/.test(cl) && /Holt-Lunstad/.test(cl) && /Mixed or early research/.test(cl) && /Strong research/.test(cl) && /not types/.test(cl) && /isn't a failure to try/.test(cl));
+  await cont(page);
+  check("Choose asks what's worth exploring, never what explains it", /Which feels worth exploring/.test(await page.locator("#x-body .s-title").first().innerText()));
+  await page.getByRole("button", { name: /rarely enjoy good things together/ }).click();
+  check("picking one shows what to try and why", /went well/.test(await page.locator("#x-body .explain").innerText()));
+  await cont(page);
+  await page.fill("#q-action", "Ask my sister about one good thing in her week");
+  await page.fill("#q-when", "Each evening for seven days");
+  await cont(page);
+  await page.waitForFunction(() => /Done/.test(document.querySelector("#x-body .s-title")?.textContent ?? ""), null, { timeout: 15000 });
+  check("Done: come back in seven days, any answer counts", /how they responded/.test(await page.locator("#x-body").innerText()) && /one good thing in her week/.test(await page.locator("#x-body").innerText()));
+  await axe(page, "Feeling Closer, done");
 
   // ----- small phone -----
   await page.setViewportSize({ width: 320, height: 640 });

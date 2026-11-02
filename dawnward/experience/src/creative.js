@@ -165,6 +165,7 @@ export function createCreative(h) {
     root.classList.toggle("immersive", v === "door" || v === "world");
     if (v !== "world") closeWorld();
     h.showPlace("creative");
+    requestAnimationFrame(() => h.motion?.enter(v === "world" ? stage : v === "door" ? door : page, v));
   }
   const back = (label, go) => el("button", { class: "text-btn back", onclick: go }, el("span", { html: svg(ICON.back, 16) }), ` ${label}`);
 
@@ -609,6 +610,9 @@ export function createCreative(h) {
       el("p", { class: "lead" }, "Ideas worth trying, in our own words, with where to read them and how strong the evidence is."),
       el("button", { class: "row wz-path", onclick: () => h.explore.play("consistency-1", { from: here }) },
         el("span", { class: "rtext" }, el("span", { class: "rtitle" }, "Becoming Consistent"), el("span", { class: "rsub" }, "Four perspectives, then your own seven-day experiment · 8 min")),
+        el("span", { class: "rgo", html: svg(ICON.arrow, 16) })),
+      el("button", { class: "row wz-path", onclick: () => h.explore.play("connection-1", { from: here }) },
+        el("span", { class: "rtext" }, el("span", { class: "rtitle" }, "Feeling Closer"), el("span", { class: "rsub" }, "Four perspectives on feeling distant, then one small way back · 8 min")),
         el("span", { class: "rgo", html: svg(ICON.arrow, 16) })),
       ...[1, 2, 3].map((k) => el("section", { class: "cw-gsec", "aria-labelledby": `wz-e${k}` },
         el("h3", { class: "wz-h", id: `wz-e${k}` }, EVIDENCE[k].label),

@@ -362,6 +362,7 @@ export function createExplore(store, h) {
       ...kids.filter(Boolean));
     body().querySelector(".s-title")?.focus();
     $("explore").scrollTop = 0;
+    h.motion?.enter(body(), "step");
   }
 
   function show(i) {
@@ -640,6 +641,7 @@ export function createExplore(store, h) {
         m.worksheet ? el("button", { class: "ghost", onclick: () => worksheet(m, () => { current = null; draw(); $("x-title")?.focus(); }) }, `Worksheet: ${m.worksheet.title}`) : null,
         el("button", { class: "text-btn", onclick: () => { current = null; draw(); $("x-title")?.focus(); } }, "Back to Learn")));
     h.announce(found ? `Done. ${found.title} appeared.` : "Done.");
+    h.motion?.star(body().querySelector(".s-title"));
   }
 
   // ----- worksheets: readable here, printable on paper -----

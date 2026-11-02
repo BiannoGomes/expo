@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-01T15:52:02.051Z",
+  "when": "2026-11-02T11:14:33.173Z",
   "checks": [
     {
       "name": "The Mind branch leads to the Wisdom Library, open",
@@ -17,9 +17,9 @@
       "detail": ""
     },
     {
-      "name": "21 thinkers, each a card",
+      "name": "25 thinkers, each a card",
       "ok": true,
-      "detail": "21"
+      "detail": "25"
     },
     {
       "name": "every card shows its source",
@@ -102,6 +102,56 @@
       "detail": ""
     },
     {
+      "name": "the library offers both constellations",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Connection thinkers sit under their evidence: attachment and Holt-Lunstad strong, Gottman and Gable mixed, Perel philosophy",
+      "ok": true,
+      "detail": "[\"Strong research\",\"Mixed or early research\",\"Philosophy or practice\"] Viktor Frankl|The Stoics, and Ryan Holiday|Carl Jung|Esther Perel|Vishen Lakhiani|Marisa Peer|Michael Bernard Beckwith|Dr. Shefali Tsabary|Lisa Nichols"
+    },
+    {
+      "name": "Feeling Closer opens, with the way back to the library",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it carries the relationship safety note",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Question: who do you feel further from",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Explore: four perspectives, each with its evidence and its limit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Choose asks what's worth exploring, never what explains it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "picking one shows what to try and why",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Done: come back in seven days, any answer counts",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Feeling Closer, done",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "at 320 px the library fits without sideways scroll",
       "ok": true,
       "detail": ""
@@ -114,10 +164,11 @@
   ],
   "axe": {
     "the Wisdom Library": [],
-    "Becoming Consistent, done": []
+    "Becoming Consistent, done": [],
+    "Feeling Closer, done": []
   },
   "summary": {
-    "total": 22,
+    "total": 32,
     "failed": 0
   }
 }

@@ -1025,6 +1025,53 @@ export const MISSIONS: Mission[] = [
       { id: "close", type: "close", title: "Done", body: "Seven days, then come back and say how it went. A missed day is information, not failure.", required: false },
     ],
   },
+  // ----- The second Wisdom Constellation: Connection (research by ChatGPT for Bianno, 2026-11-02;
+  // docs/universe/connection.md). Four perspectives, labelled by evidence; "which feels worth exploring",
+  // never "which explains your relationship". DRAFT until a reviewer checks it. -----
+  {
+    id: "connection-1",
+    version: 1,
+    systemId: "soul-connection",
+    world: "soul",
+    title: "Feeling Closer",
+    part: "A Wisdom Constellation",
+    objective: "Look at feeling distant from four angles, then try one small way back for seven days.",
+    minutes: 8,
+    status: "draft",
+    safetyNote: SOUL_SAFETY,
+    steps: [
+      { id: "intro", type: "intro", title: "Feeling Closer", body: "Four ways of looking at feeling distant from someone: a partner, a friend or family. None of them is a diagnosis. You pick the one worth exploring and try it for seven days.", required: false },
+      { id: "question", type: "reflect", title: "Who do you feel further from than you'd like?", prompt: "Write who, and what the distance looks like day to day. Their first name or a letter is enough.", examples: ["My sister. We only talk about plans, never about how we are."], required: true },
+      {
+        id: "explore",
+        type: "lesson",
+        title: "Four ways of looking at it",
+        paragraphs: [
+          "Small moments. John Gottman (The Relationship Cure, 2001, with Joan DeClaire): people often reach for connection through small remarks and questions, not big talks. Noticing and answering them can help someone feel seen. Mixed or early research: drawn from watching couples, which doesn't prove that practising it causes lasting change.",
+          "Reacting differently to closeness. Attachment research (Hazan and Shaver, 1987; a review of 73 studies by Li and Chan, 2012): when connection feels uncertain, some people reach for reassurance and others pull back, and each can leave the other feeling further away. Strong research for the link with how good relationships feel; it can't tell you why yours is the way it is. These are tendencies, not types.",
+          "Good news, too. Shelly Gable and colleagues (2004, 2006): how people respond to each other's good news matters, not only how they handle problems. Real interest, and room to enjoy it, goes with feeling closer. Mixed or early research: several studies, but no proof a seven-day exercise lasts.",
+          "Beyond one person. Julianne Holt-Lunstad (reviews, 2015 and 2022): feeling lonely and having little contact are different, and both matter. One relationship can't meet every need. Strong research for the link between connection and health; it doesn't prove more contact will mend a particular relationship. Money, caring, disability and grief can all make connection harder; loneliness isn't a failure to try.",
+          "They answer different questions. Gottman asks about everyday attention; attachment about how closeness feels; Gable about sharing what's good; Holt-Lunstad about your wider circle. Some feel worth exploring for you, some won't. That comparison is our own, not a study's.",
+        ],
+        required: false,
+      },
+      {
+        id: "choose",
+        type: "choice",
+        title: "Which feels worth exploring?",
+        body: "Not which explains it. Just which you'd like to try.",
+        options: [
+          { id: "bids", text: "Our small moments keep getting missed", outcome: "Once a day, notice one small invitation (a remark, a question, a look) and answer it: phone down, acknowledge it, ask one question about it.", why: "Small, frequent moments of attention are where people often feel seen or not." },
+          { id: "closeness", text: "When connection feels uncertain, we react differently", outcome: "Once a day, swap an accusation or a silent retreat for one concrete request, like “Could we have ten minutes together after dinner?”, and agree a time rather than needing it now.", why: "A clear, specific request is easier to answer than blame or distance." },
+          { id: "goodnews", text: "We talk about problems, but rarely enjoy good things together", outcome: "Each day, ask someone about one thing that went well. Ask one specific follow-up and let them enjoy it before giving advice or your own news.", why: "Taking real interest in good news is linked with feeling closer, and it needs no difficult conversation." },
+          { id: "wider", text: "I need connection beyond this one relationship", outcome: "Arrange one manageable contact outside your usual closest people: a walk, a call or a group, and suggest a next time if it felt worthwhile.", why: "A wider circle means no one person has to meet every need." },
+        ],
+        required: true,
+      },
+      { id: "act", type: "plan", title: "Your seven-day experiment", prompt: "Write what you'll try, with whom, and roughly when. Seven days.", examples: ["Ask Sam one question about her day after dinner, phone in the other room"], required: true },
+      { id: "close", type: "close", title: "Done", body: "In seven days, come back and say what you tried, how they responded, and whether you want to keep going or change course. Any answer counts.", required: false },
+    ],
+  },
 ];
 
 export const SYSTEMS: SolarSystem[] = [
@@ -1068,6 +1115,7 @@ export const SYSTEMS: SolarSystem[] = [
   { id: "soul-becoming", world: "soul", title: "The Garden of Becoming", objective: "Live one value you've set aside.", missionIds: ["becoming-1"] },
   { id: "spirit-observatory", world: "spirit", title: "The Observatory of Being", objective: "Ten quiet minutes with what still matters.", missionIds: ["observatory-1"] },
   { id: "future-horizon", world: "future", title: "The Horizon of Possibility", objective: "Hear your future self, take one step.", missionIds: ["horizon-1"] },
+  { id: "soul-connection", world: "soul", title: "Feeling Closer", objective: "Four perspectives, then one small way back, for seven days.", missionIds: ["connection-1"] },
   { id: "future-consistency", world: "future", title: "Becoming Consistent", objective: "Four perspectives, then your own seven-day experiment.", missionIds: ["consistency-1"] },
 ];
 

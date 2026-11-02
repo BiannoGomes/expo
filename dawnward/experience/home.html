@@ -248,6 +248,10 @@
   .cw-emblem { width:40px; height:40px; object-fit:contain; flex:none; }
   .cw-list .row.lit .cw-emblem { filter:drop-shadow(0 0 6px rgba(240,214,162,.8)); }
   .cw-emblem.big { width:72px; height:72px; display:block; margin:0 auto var(--s2); }
+  .y-motion { display:grid; gap:var(--s1); margin-bottom:var(--s3); }
+  .m-pill { position:fixed; z-index:60; right:calc(var(--gutter) + env(safe-area-inset-right, 0px)); bottom:calc(var(--tabs-h) + var(--safe-b) + var(--s3)); display:flex; gap:2px; padding:3px; border-radius:var(--r-pill); background:rgba(5,7,13,.82); border:1px solid var(--edge); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+  .m-pill button { min-height:36px; min-width:44px; padding:0 10px; border-radius:var(--r-pill); font-size:13px; color:var(--dim); }
+  .m-pill button[aria-pressed="true"] { background:var(--gold); color:#14100a; }
   .wz-h { font-family:var(--display); font-size:24px; font-weight:500; color:var(--ink); margin:var(--s5) 0 0; text-transform:none; letter-spacing:0; }
   .wz-list { list-style:none; margin:0; padding:0; display:grid; gap:var(--s3); }
   .wz { display:grid; gap:var(--s2); }
@@ -913,6 +917,7 @@
       </section>
       <section aria-labelledby="y-plan-h"><h3 id="y-plan-h">Your plan</h3><div id="y-plan"></div></section>
       <section aria-labelledby="y-v-h"><h3 id="y-v-h">Display</h3>
+        <div id="y-motion" class="y-motion"></div>
         <div class="actions"><button id="y-text" class="ghost" aria-pressed="false">Text view</button><button id="y-sound" class="ghost" aria-pressed="false">Sound off</button><button id="y-game" class="ghost" aria-pressed="true">Discoveries shown</button><button id="y-replay" class="ghost">Replay the entrance</button></div>
         <details class="more"><summary>Your discoveries</summary><div id="y-journey"></div><p class="quiet small">Hiding discoveries deletes nothing.</p></details>
       </section>
@@ -928,6 +933,7 @@
   </section>
 </main>
 
+<div id="m-pill" class="m-pill" role="group" aria-label="Motion style (preview)" hidden></div>
 <nav id="tabs" aria-label="Main">
   <button data-tab="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20h-5.5v-5.5h-5V20H4z"/></svg>Home</button>
   <button data-tab="universe"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-20 12 12)"/><circle cx="12" cy="12" r="2.2"/></svg>Universe</button>

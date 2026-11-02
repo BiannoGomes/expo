@@ -34,9 +34,9 @@ function play(mission = bridge1): Attempt {
 describe("expedition catalog", () => {
   it("is sound: every mission has a completion state, valid options and a close step", () => {
     assert.deepEqual(checkCatalog(), []);
-    assert.equal(MISSIONS.length, 15);
+    assert.equal(MISSIONS.length, 16);
     assert.deepEqual(SYSTEMS.map((x) => [x.id, x.missionIds.length]), [["mind-beyond-overthinking", 4], ["mind-thought-patterns", 1], ["soul-communication", 3], ["future-quantum-gateway", 1],
-      ["mind-mirror", 1], ["body-vitality", 1], ["soul-becoming", 1], ["spirit-observatory", 1], ["future-horizon", 1], ["future-consistency", 1]]);
+      ["mind-mirror", 1], ["body-vitality", 1], ["soul-becoming", 1], ["spirit-observatory", 1], ["future-horizon", 1], ["soul-connection", 1], ["future-consistency", 1]]);
   });
   it("Becoming Consistent: a question, four labelled perspectives, a choice, a seven-day action", () => {
     const m = MISSIONS.find((x) => x.id === "consistency-1");
@@ -44,6 +44,17 @@ describe("expedition catalog", () => {
     assert.deepEqual(m.steps.map((s) => s.type), ["intro", "reflect", "lesson", "choice", "plan", "close"]);
     const lesson = m.steps[2].paragraphs.join(" ");
     for (const w of ["Strong research", "Promising research", "not a measured finding", "They don't all agree"]) assert.ok(lesson.includes(w), w);
+  });
+  it("Feeling Closer: four perspectives labelled by evidence, a choice of what to explore, never a diagnosis", () => {
+    const m = MISSIONS.find((x) => x.id === "connection-1");
+    assert.ok(m);
+    assert.equal(m.world, "soul");
+    assert.ok(m.safetyNote, "relationships carry the safety note");
+    assert.deepEqual(m.steps.map((s) => s.type), ["intro", "reflect", "lesson", "choice", "plan", "close"]);
+    const lesson = m.steps[2].paragraphs.join(" ");
+    for (const w of ["Gottman", "Hazan and Shaver", "Gable", "Holt-Lunstad", "Strong research", "Mixed or early research", "not types", "our own, not a study's"]) assert.ok(lesson.includes(w), w);
+    assert.equal(m.steps[3].title, "Which feels worth exploring?");
+    assert.ok(!/explains your relationship/i.test(JSON.stringify(m)));
   });
   it("gives every world one guided question: discover, reflect, then one real action", () => {
     for (const [id, world] of [["mirror-1", "mind"], ["vitality-1", "body"], ["becoming-1", "soul"], ["observatory-1", "spirit"], ["horizon-1", "future"]]) {

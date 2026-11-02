@@ -13,6 +13,7 @@ import { buildHome } from "./home-scene.js";
 import { createExplore, localStore, remoteStore } from "./explore.js";
 import { createCreative, REALMS } from "./creative.js";
 import { QUESTIONS } from "./questions.js";
+import { createMotion, PROFILES as MOTIONS } from "./motion.js";
 import { createProgress, facts as pathFacts, PATH, KEY as PATH_KEY } from "./progress.js";
 import { MISSIONS, SYSTEMS, WORLD_PLAY, missionById } from "../../packages/core/src/expeditions/index.ts";
 
@@ -441,6 +442,7 @@ function main(data, failed) {
   // Privacy is one small control, not a sentence on every screen; its words stay attached
   // to the input for screen readers.
   let recog = null, autosave = null, saving = false, clientKey = null, edPrompt = null;
+  const motion = createMotion();
   let progress = createProgress(device), pathInit = false, unlockShowing = null; // the galaxy path (progress.js)
   function openEditor(w, { speak = false, prompt = null } = {}) {
     if (state.place !== "world" || state.world !== w) { goWorld(w, { then: () => openEditor(w, { speak, prompt }) }); return; }
@@ -888,6 +890,16 @@ function main(data, failed) {
     $("y-game").setAttribute("aria-pressed", String(explore?.data.gameLayer !== false));
     $("y-game").textContent = explore?.data.gameLayer !== false ? "Discoveries shown" : "Discoveries hidden";
   }
+  // the motion lab: flip between the three directions anywhere in the app (kept on this device)
+  function drawMotionLab() {
+    const seg = el("div", { class: "seg", role: "radiogroup", "aria-label": "Motion style (preview)" }, MOTIONS.map(([k, label]) =>
+      el("button", { role: "radio", "aria-checked": String(motion.profile === k), "data-m": k, onclick: () => { motion.set(k); drawMotionLab(); announce(`Motion: ${label}.`); } }, label)));
+    $("y-motion").replaceChildren(el("p", { class: "quiet small", id: "y-motion-h" }, "Motion style (preview)"), seg);
+    $("m-pill").hidden = motion.profile === "now";
+    $("m-pill").replaceChildren(...MOTIONS.filter(([k]) => k !== "now").map(([k, label]) =>
+      el("button", { "aria-pressed": String(motion.profile === k), onclick: () => { motion.set(k); drawMotionLab(); announce(`Motion: ${label}.`); } }, label)));
+  }
+  drawMotionLab();
   $("y-game").addEventListener("click", async () => {
     const on = explore.data.gameLayer === false;
     const r = await explore.store.setGameLayer(on);
@@ -969,6 +981,7 @@ function main(data, failed) {
     if (p !== "world") { document.body.classList.remove("closeup-on", "in-world", "sheet-open"); if (ctx && state.mode === "galaxy" && ctx.focus) ctx.focusWorld(null); }
     markTabs();
     routeTo(routeOf(p));
+    motion.enter(p === "world" ? world : $(p), p);
   }
   function goWorld(w, { then } = {}) {
     stopSpeech(); quiet(false);
@@ -1444,7 +1457,7 @@ function main(data, failed) {
   // account, through the API with one.
   explore = createExplore(data.local ? localStore(device) : remoteStore(call), {
     $, el, svg, ICON, META, announce, quiet, longDate, sound, showPlace, asset,
-    distress: (t) => DISTRESS.test(t), crisisText: CRISIS_TEXT.join("\n"),
+    distress: (t) => DISTRESS.test(t), crisisText: CRISIS_TEXT.join("\n"), motion,
     onDiscoveries: (_d, fresh) => { sync(); checkPath(); if (fresh.length && explore.data.gameLayer) sound.chime(1175); },
     missionLock: (m) => (m.id === "gateway-1" ? pathLock("gateway") : null),
     goNext: (n) => goNext(n), nextLabel: (n) => nextLabel(n), lockCard: (lk) => lockCard(lk),
@@ -1456,7 +1469,7 @@ function main(data, failed) {
   const exploreReady = explore.refresh().then(() => { sync(); initPath(); renderHome(); });
   creative = createCreative({ $, el, svg, ICON, asset, sound, announce, showPlace, crumbs, explore,
     toUniverse: () => openAtlas(), toLearn: () => explore.open(), textMode: () => state.mode === "text",
-    reflect: (w, prompt) => openEditor(w, { prompt }), treeArt: () => ART.tree === true,
+    reflect: (w, prompt) => openEditor(w, { prompt }), motion, treeArt: () => ART.tree === true,
     pathLock: (r) => pathLock(r), pathReady: () => pathInit, changed: () => checkPath(), goNext: (n) => goNext(n), nextLabel: (n) => nextLabel(n), lockCard: (lk) => lockCard(lk),
     distress: (t) => DISTRESS.test(t), crisisText: CRISIS_TEXT.join("\n"), ready: () => exploreReady });
   let firstVisit = false;
