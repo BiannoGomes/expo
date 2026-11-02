@@ -38,13 +38,13 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
   await page.waitForSelector("#x-body .s-title");
   await page.getByRole("button", { name: "Begin" }).click();
   const q1 = await page.locator("#x-body .s-title").first().innerText();
-  check("Discover: the gateway question is the heading", q1.trim() === "If your body could tell you what it needs, what have you been ignoring?", q1);
+  check("Discover: the gateway question is the heading", q1.trim() === "What do you notice in your body today, and is there any care or support you would like?", q1);
   check("the step shows the world's own painting", await page.evaluate(() => !document.getElementById("x-art").hidden && /closeup-body/.test(document.querySelector("#x-art img").getAttribute("src"))));
   await shot(page, "1-discover");
   await axe(page, "Discover step");
   await page.fill("#q-words", "Sleep. I've been scrolling until one most nights.");
   await cont(page);
-  check("Reflect follows", /What gets in the way\?/.test(await page.locator("#x-body .s-title").first().innerText()));
+  check("Reflect follows", /What would make caring for yourself easier\?/.test(await page.locator("#x-body .s-title").first().innerText()));
   await page.fill("#q-words", "I tell myself it's the only time that's mine.");
   // a reload mid-way keeps your place
   await page.reload(); await ready(page); await page.waitForTimeout(800);
@@ -53,10 +53,10 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
   await page.locator("#w-body .w-next").click();
   await page.waitForSelector("#x-body .s-title");
   const resumed = await page.locator("#x-body .s-title").first().innerText();
-  check("it resumes at Reflect, not the beginning", /What gets in the way\?/.test(resumed), resumed);
+  check("it resumes at Reflect, not the beginning", /What would make caring for yourself easier\?/.test(resumed), resumed);
   if (!(await page.inputValue("#q-words"))) await page.fill("#q-words", "I tell myself it's the only time that's mine.");
   await cont(page);
-  check("Choose: one small practice for seven days", /Seven days/.test(await page.locator("#x-body .s-title").first().innerText()) && (await page.locator("#q-action").count()) === 1);
+  check("Choose: one manageable act of care, adapt or stop allowed", /One manageable act of care/.test(await page.locator("#x-body .s-title").first().innerText()) && (await page.locator("#q-action").count()) === 1);
   await page.fill("#q-action", "Phone in the kitchen at eleven");
   await page.fill("#q-when", "Every night this week");
   await cont(page);
@@ -97,6 +97,27 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
   const five = ["The Mirror of Thought", "The Temple of Vitality", "The Garden of Becoming", "The Observatory of Being", "The Horizon of Possibility"];
   check("Learn lists all five guided questions", five.every((t) => learn.includes(t)), five.filter((t) => !learn.includes(t)).join(", "));
 
+  // ----- "Not sure", skipping and stopping count exactly like any other answer -----
+  await page.goto(BASE + "#/learn"); await ready(page); await page.waitForTimeout(1000);
+  await page.locator("#x-body").getByRole("button", { name: /The Horizon of Possibility/ }).first().click();
+  await page.waitForSelector("#x-body .s-title");
+  await page.getByRole("button", { name: "Begin" }).click();
+  check("Future: Discover offers “I'm not sure” as an answer", (await page.getByRole("button", { name: "I'm not sure" }).count()) === 1);
+  await page.getByRole("button", { name: "I'm not sure" }).click();
+  await page.waitForFunction(() => /A letter from ahead/.test(document.querySelector("#x-body .s-title")?.textContent ?? ""), null, { timeout: 10000 });
+  check("the follow-up can be left", (await page.getByRole("button", { name: "Not this time" }).count()) === 1);
+  await page.getByRole("button", { name: "Not this time" }).click();
+  await page.waitForFunction(() => /One realistic step/.test(document.querySelector("#x-body .s-title")?.textContent ?? ""), null, { timeout: 10000 });
+  check("the step is optional, and needing information or support first is a valid answer", /information or support you need first/.test(await page.locator("#x-body").innerText()));
+  await page.getByRole("button", { name: "Not this time" }).click();
+  await page.waitForFunction(() => /Done/.test(document.querySelector("#x-body .s-title")?.textContent ?? ""), null, { timeout: 15000 });
+  check("Done says nothing-for-now counts, and doesn't pretend an action was chosen", /including nothing for now, counts/.test(await page.locator("#x-body").innerText()) && (await page.locator("#x-body .card:not(.found) .statement").count()) === 0);
+  await page.goto(BASE + "#/home"); await ready(page); await page.waitForTimeout(800);
+  check("Home doesn't ask how a skipped action went", !/Horizon/.test(await page.locator("#e-body").innerText()));
+  await page.locator('#tabs [data-tab="journey"]').click();
+  await page.locator('#m-views [data-v="miles"]').click();
+  check("Journey keeps it, the same as a fully answered one", /The Horizon of Possibility/.test(await page.locator("#m-miles").innerText()));
+
   // ----- Reflect: another question -----
   await page.goto(BASE + "#/world/mind/overview"); await ready(page); await page.waitForTimeout(1000);
   await page.getByRole("button", { name: "Begin reflection" }).click();
@@ -104,7 +125,7 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
   check("Reflect opens on the everyday question", (await page.locator("#ed-q").innerText()) === "What's on your mind?");
   await page.getByRole("button", { name: "Another question" }).click();
   const deeper = await page.locator("#ed-q").innerText();
-  check("Another question shows Mind's gateway question", deeper === "What if the thoughts you believe most strongly are the ones you need to question?", deeper);
+  check("Another question shows Mind's gateway question", deeper === "Is there one everyday thought you would like to examine more closely?", deeper);
   check("the input keeps focus after changing the question", await page.evaluate(() => document.activeElement?.id === "words"));
   const btn = await page.getByRole("button", { name: "Another question" }).boundingBox();
   check("Another question is a full-size target", btn && btn.height >= 44, JSON.stringify(btn));

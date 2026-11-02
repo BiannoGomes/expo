@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-02T11:14:33.173Z",
+  "when": "2026-11-02T11:29:09.699Z",
   "checks": [
     {
       "name": "The Mind branch leads to the Wisdom Library, open",
@@ -49,7 +49,7 @@
     {
       "name": "Reflect opens in Spirit, on Frankl's question",
       "ok": true,
-      "detail": "What would make this week meaningful, even if nothing went to plan?"
+      "detail": "What small thing could make this week meaningful to you?"
     },
     {
       "name": "the saved reflection keeps the question",
@@ -109,7 +109,7 @@
     {
       "name": "Connection thinkers sit under their evidence: attachment and Holt-Lunstad strong, Gottman and Gable mixed, Perel philosophy",
       "ok": true,
-      "detail": "[\"Strong research\",\"Mixed or early research\",\"Philosophy or practice\"] Viktor Frankl|The Stoics, and Ryan Holiday|Carl Jung|Esther Perel|Vishen Lakhiani|Marisa Peer|Michael Bernard Beckwith|Dr. Shefali Tsabary|Lisa Nichols"
+      "detail": "[\"Strong research\",\"Mixed or early research\",\"Philosophy or practice\"] Viktor Frankl|Epictetus and Ryan Holiday|Carl Jung|Esther Perel|Vishen Lakhiani|Marisa Peer|Michael Bernard Beckwith|Dr. Shefali Tsabary|Lisa Nichols"
     },
     {
       "name": "Feeling Closer opens, with the way back to the library",

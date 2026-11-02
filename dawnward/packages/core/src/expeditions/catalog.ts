@@ -59,6 +59,8 @@ export interface Step {
   feedback?: string;
   /** Example wording, offered as a starting point, never prefilled. */
   examples?: string[];
+  /** A reflect step that also accepts "I'm not sure" as a complete answer (one tap, saved as "Not sure."). */
+  notSure?: boolean;
   required: boolean;
 }
 
@@ -884,9 +886,11 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
-  // ----- The five gateway questions (one per world). Bianno's gateway questions and missions (2026-11-01);
-  // the follow-up questions are drafts for his review. Discover, reflect, choose one real action:
-  // the action comes back as "How did it go?", which is where the change happens. -----
+  // ----- The five gateway questions (one per world). Wording from the editorial review of 2 Nov 2026
+  // (docs/universe/questions.md, run in ChatGPT for Bianno), which revised his 1 Nov questions to remove
+  // presumptions (neglect, mistaken beliefs, avoidance). Only Discover is required, and "I'm not sure" is a
+  // complete answer; the follow-up and the action can be skipped; Done never assumes anything was done.
+  // Skipping, adapting or stopping completes the practice exactly like any other answer. -----
   {
     id: "mirror-1",
     version: 1,
@@ -894,16 +898,16 @@ export const MISSIONS: Mission[] = [
     world: "mind",
     title: "The Mirror of Thought",
     part: "Guided question",
-    objective: "Question one thought you keep believing, and test a fairer one.",
+    objective: "Look more closely at one everyday thought, and gather a little more information.",
     minutes: 5,
     safetyNote: MIND_SAFETY,
     status: "draft",
     steps: [
-      { id: "intro", type: "intro", title: "The Mirror of Thought", body: "Three questions, then one small step to try in your real life.", required: false },
-      { id: "discover", type: "reflect", title: "What if the thoughts you believe most strongly are the ones you need to question?", prompt: "Write one thought about yourself that keeps coming back.", examples: ["I always leave things too late."], required: true },
-      { id: "reflect", type: "reflect", title: "What do you actually know?", prompt: "Write one thing that supports it, one thing that doesn't, and a fairer version of the thought.", examples: ["I left the report late, but I finished the move early. Fairer: I put off things I'm unsure about."], required: true },
-      { id: "choose", type: "plan", title: "Test it", prompt: "Choose one small thing to do this week as if the fairer version were true.", examples: ["Start the tax form on Saturday, even badly"], required: true },
-      { id: "close", type: "close", title: "Done", body: "Try it, then come back and say how it went. Whatever happens, that's what teaches you.", required: false },
+      { id: "intro", type: "intro", title: "The Mirror of Thought", body: "A question, an optional follow-up, then an optional small step. You can stop at any point.", required: false },
+      { id: "discover", type: "reflect", title: "Is there one everyday thought you would like to examine more closely?", prompt: "Choose a manageable, everyday one. A few words is enough.", examples: ["I always leave things too late."], notSure: true, required: true },
+      { id: "reflect", type: "reflect", title: "What supports it, what suggests otherwise, and what's still uncertain?", prompt: "Write what you notice. Uncertain is a fine answer.", examples: ["I left the report late, but I finished the move early. Not sure which is more typical."], required: false },
+      { id: "choose", type: "plan", title: "Gather a little more information", prompt: "If you like, choose one low-stakes way to find out more. You don't need to act on an uncertain interpretation.", examples: ["Notice on Saturday whether I start the form when I'm less tired"], required: false },
+      { id: "close", type: "close", title: "Done", body: "Whatever you chose, including nothing for now, counts. If you tried something, you can come back and say how it went.", required: false },
     ],
   },
   {
@@ -913,16 +917,16 @@ export const MISSIONS: Mission[] = [
     world: "body",
     title: "The Temple of Vitality",
     part: "Guided question",
-    objective: "Listen for what your body needs, and give it one thing for seven days.",
+    objective: "Notice how your body is today, and choose one manageable act of care.",
     minutes: 5,
-    safetyNote: "This isn't medical advice. If something about your body worries you, please talk to a doctor.",
+    safetyNote: "This isn't medical advice, and noticing a sensation isn't a diagnosis. If something about your body worries you, please talk to a doctor.",
     status: "draft",
     steps: [
-      { id: "intro", type: "intro", title: "The Temple of Vitality", body: "Three questions, then one small practice for seven days.", required: false },
-      { id: "discover", type: "reflect", title: "If your body could tell you what it needs, what have you been ignoring?", prompt: "Write what comes first: sleep, movement, food, rest, or something else.", examples: ["Sleep. I've been scrolling until one most nights."], required: true },
-      { id: "reflect", type: "reflect", title: "What gets in the way?", prompt: "Write what usually stops you giving it that.", required: true },
-      { id: "choose", type: "plan", title: "Seven days", prompt: "Choose one small practice you can repeat every day for seven days.", examples: ["Phone in the kitchen at eleven"], required: true },
-      { id: "close", type: "close", title: "Done", body: "Try it for seven days, then come back and say how it went. Any outcome counts.", required: false },
+      { id: "intro", type: "intro", title: "The Temple of Vitality", body: "A question, an optional follow-up, then an optional small act of care. You can stop at any point.", required: false },
+      { id: "discover", type: "reflect", title: "What do you notice in your body today, and is there any care or support you would like?", prompt: "Write what comes first. Nothing in particular is an answer too.", examples: ["Tired shoulders. I'd like a proper night's sleep."], notSure: true, required: true },
+      { id: "reflect", type: "reflect", title: "What would make caring for yourself easier?", prompt: "Write one thing that would help, if anything comes to mind.", required: false },
+      { id: "choose", type: "plan", title: "One manageable act of care", prompt: "If it's useful, choose one act of care and when you might try it over the next week. Adapt or stop if it doesn't suit you.", examples: ["Phone in the kitchen at eleven, a couple of nights"], required: false },
+      { id: "close", type: "close", title: "Done", body: "Whatever you chose, including nothing for now, counts. If you try it, you can come back and say how it went.", required: false },
     ],
   },
   {
@@ -932,15 +936,15 @@ export const MISSIONS: Mission[] = [
     world: "soul",
     title: "The Garden of Becoming",
     part: "Guided question",
-    objective: "Find a value you've set aside, and live it once this week.",
+    objective: "Name a value that matters to you, and give it a little more room.",
     minutes: 5,
     status: "draft",
     steps: [
-      { id: "intro", type: "intro", title: "The Garden of Becoming", body: "Three questions, then one small step to try in your real life.", required: false },
-      { id: "discover", type: "reflect", title: "Who are you when there is nobody left to impress?", prompt: "Write what you'd do, say or choose differently.", required: true },
-      { id: "reflect", type: "reflect", title: "Which value have you set aside?", prompt: "Name one value that matters to you but has had little room lately, and why.", examples: ["Honesty. I've been agreeing just to keep the peace."], required: true },
-      { id: "choose", type: "plan", title: "Live it once", prompt: "Choose one action that expresses that value this week.", examples: ["Tell Maya I'd rather not go, kindly"], required: true },
-      { id: "close", type: "close", title: "Done", body: "Try it, then come back and say how it went. However it went, it counts.", required: false },
+      { id: "intro", type: "intro", title: "The Garden of Becoming", body: "A question, an optional follow-up, then an optional small step. You can stop at any point.", required: false },
+      { id: "discover", type: "reflect", title: "What matters to you when you are not thinking about other people's approval?", prompt: "Write whatever comes, even a single word.", notSure: true, required: true },
+      { id: "reflect", type: "reflect", title: "Which value would you like to make more room for?", prompt: "Name one, and what giving it room might look like.", examples: ["Honesty. Saying what I think a little more often."], required: false },
+      { id: "choose", type: "plan", title: "Give it a little room", prompt: "If that feels useful this week, choose one small action that expresses it.", examples: ["Tell Maya I'd rather not go, kindly"], required: false },
+      { id: "close", type: "close", title: "Done", body: "Whatever you chose, including nothing for now, counts. If you try it, you can come back and say how it went.", required: false },
     ],
   },
   {
@@ -950,15 +954,15 @@ export const MISSIONS: Mission[] = [
     world: "spirit",
     title: "The Observatory of Being",
     part: "Guided question",
-    objective: "Notice what still matters when nothing needs proving, then sit with it for ten minutes.",
+    objective: "Notice what still matters when nothing needs proving, then take a brief pause.",
     minutes: 5,
     status: "draft",
     steps: [
-      { id: "intro", type: "intro", title: "The Observatory of Being", body: "Three questions, then ten quiet minutes in your real life.", required: false },
-      { id: "discover", type: "reflect", title: "What remains meaningful when achievement, status and comparison fall silent?", prompt: "Write whatever comes, even if it's only a word.", required: true },
-      { id: "reflect", type: "reflect", title: "When did you last feel it?", prompt: "Write where you were and what you noticed.", required: true },
-      { id: "choose", type: "plan", title: "Ten quiet minutes", prompt: "Choose when you'll spend ten minutes without your phone, music or tasks, just noticing.", examples: ["Ten minutes on the bench by the river"], required: true },
-      { id: "close", type: "close", title: "Done", body: "When you've had your ten minutes, come back and write what you noticed.", required: false },
+      { id: "intro", type: "intro", title: "The Observatory of Being", body: "A question, an optional follow-up, then an optional brief pause. You can stop at any point.", required: false },
+      { id: "discover", type: "reflect", title: "What remains meaningful when achievement, status and comparison fall silent?", prompt: "Write whatever comes, even if it's only a word.", notSure: true, required: true },
+      { id: "reflect", type: "reflect", title: "Does a moment connected with that meaning come to mind?", prompt: "If one does, write where you were and what you noticed. If not, that's fine.", required: false },
+      { id: "choose", type: "plan", title: "A brief pause", prompt: "If you like, choose a brief pause: sit, walk, listen to something gentle or notice your surroundings. Stop whenever you want.", examples: ["A few minutes on the bench by the river"], required: false },
+      { id: "close", type: "close", title: "Done", body: "Whatever you chose, including nothing for now, counts. If you take the pause, you can come back and write what you noticed.", required: false },
     ],
   },
   {
@@ -968,16 +972,16 @@ export const MISSIONS: Mission[] = [
     world: "future",
     title: "The Horizon of Possibility",
     part: "Guided question",
-    objective: "Hear what a future you might ask, then take one concrete step.",
+    objective: "Imagine a year from now, then choose one realistic step, or what you need first.",
     minutes: 6,
     safetyNote: GATEWAY_SAFETY,
     status: "draft",
     steps: [
-      { id: "intro", type: "intro", title: "The Horizon of Possibility", body: "Three questions, then one concrete step. This is imagination, not a prediction.", required: false },
-      { id: "discover", type: "reflect", title: "If your future self could observe your decisions today, what would they ask you to change?", prompt: "Write what they'd ask, in their words.", required: true },
-      { id: "reflect", type: "reflect", title: "A letter from ahead", prompt: "Write a few lines from that future you, to you today.", required: true },
-      { id: "choose", type: "plan", title: "One concrete step", prompt: "Choose one concrete step toward that future you can take this week.", examples: ["Email the course about the January start"], required: true },
-      { id: "close", type: "close", title: "Done", body: "Take the step, then come back and say how it went. Any outcome counts.", required: false },
+      { id: "intro", type: "intro", title: "The Horizon of Possibility", body: "A question, an optional letter, then an optional step. This is imagination, not a prediction. You can stop at any point.", required: false },
+      { id: "discover", type: "reflect", title: "Imagine yourself a year from now. What might you appreciate about today, and what might you want to change?", prompt: "Write what comes. Not sure is an answer too.", notSure: true, required: true },
+      { id: "reflect", type: "reflect", title: "A letter from ahead", prompt: "If it's useful, write a few lines from that imagined you. It's imagination, not a prediction, and it has no special authority.", required: false },
+      { id: "choose", type: "plan", title: "One realistic step", prompt: "If you like, choose one realistic step this week, or name the information or support you need first.", examples: ["Email the course about the January start"], required: false },
+      { id: "close", type: "close", title: "Done", body: "Whatever you chose, including nothing for now, counts. If you take a step, you can come back and say how it went.", required: false },
     ],
   },
   // ----- A Wisdom Constellation (Bianno's brief, 2026-11-01): several perspectives on one struggle, in
@@ -1000,10 +1004,10 @@ export const MISSIONS: Mission[] = [
         type: "lesson",
         title: "Four ways of looking at it",
         paragraphs: [
-          "Habits and surroundings. James Clear (Atomic Habits, 2018): make the action obvious and easy, and attach it to something you already do. Built on strong habit research, though habits usually take longer than a few weeks to form.",
-          "If-then plans. Peter Gollwitzer's research: decide in advance, “when this happens, I'll do that”. Across many studies, people who plan this way follow through more often. Strong research.",
-          "Kindness after a slip. Kristin Neff (Self-Compassion, 2011): treat a missed day the way you'd treat a friend's. It's linked with trying again rather than giving up. Promising research, much of it correlational.",
-          "Knowing why. Viktor Frankl (Man's Search for Meaning, 1946) wrote, quoting Nietzsche, that someone with a why can bear almost any how. A philosophy from his own life, not a measured finding.",
+          "Habits and surroundings. James Clear (Atomic Habits, 2018): make the action easy to notice and easy to repeat, and attach it to something you already do. Strong research supports repeating actions in the same context; not every claim in the book. How long a habit takes varies widely.",
+          "If-then plans. Peter Gollwitzer's research: decide in advance, “when this happens, I'll do that”. Across many studies, people who plan this way follow through more often. Strong research, though it can't remove practical barriers.",
+          "Kindness after a slip. Kristin Neff (Self-Compassion, 2011): meet a missed day with a fair, kind response, as you might for someone you care about. Mixed or early research: trials suggest benefits for distress, though study quality varies.",
+          "Knowing why. Viktor Frankl (Man's Search for Meaning, 1946) argued that a sense of meaning can matter even in great difficulty. A perspective from his own life, not a measured finding.",
           "They don't all agree. Clear says fix the system rather than rely on willpower; Frankl says find the reason. Both can be true for different people. The best one for you is the one that fits what usually goes wrong.",
         ],
         required: false,
@@ -1016,13 +1020,13 @@ export const MISSIONS: Mission[] = [
         options: [
           { id: "cue", text: "I forget, or the moment never feels right", outcome: "Try an if-then plan: “After I [something you already do], I will [the action].”", why: "Tying a new action to an existing cue is one of the best-supported ways to follow through." },
           { id: "small", text: "It feels too big, so I put it off", outcome: "Make it almost too small: two minutes, one page, one stretch.", why: "Small, easy actions get repeated, and repetition is what builds a habit." },
-          { id: "slip", text: "I miss a day, then give up", outcome: "Decide your restart now: “If I miss a day, I start again the next day, without making up for it.”", why: "A slip met with kindness tends to lead back to trying; harsh self-criticism tends to lead to quitting." },
+          { id: "slip", text: "I miss a day, then give up", outcome: "Decide your restart now: “If I miss a day, I start again the next day, without making up for it.”", why: "A missed day is information, not a verdict. A fair, kind response makes starting again easier." },
           { id: "why", text: "I'm not sure why it matters to me", outcome: "Write one sentence about who it's for, or what it would make possible.", why: "A clear reason won't do the work, but it helps on the days the action feels pointless." },
         ],
         required: true,
       },
-      { id: "act", type: "plan", title: "Your seven-day experiment", prompt: "Write the action the way you chose, and when. Try it for seven days.", examples: ["After I make coffee, I'll write one line in my notebook"], required: true },
-      { id: "close", type: "close", title: "Done", body: "Seven days, then come back and say how it went. A missed day is information, not failure.", required: false },
+      { id: "act", type: "plan", title: "Your seven-day experiment", prompt: "If you'd like to try it, write the action the way you chose, and when, over the next seven days. Adapt it whenever you need to.", examples: ["After I make coffee, I'll write one line in my notebook"], required: false },
+      { id: "close", type: "close", title: "Done", body: "If you try it, come back in seven days and say how it went. A missed day is information, not failure, and so is deciding it isn't for you.", required: false },
     ],
   },
   // ----- The second Wisdom Constellation: Connection (research by ChatGPT for Bianno, 2026-11-02;
@@ -1059,7 +1063,7 @@ export const MISSIONS: Mission[] = [
         id: "choose",
         type: "choice",
         title: "Which feels worth exploring?",
-        body: "Not which explains it. Just which you'd like to try.",
+        body: "Not which explains it. Just which you'd like to explore. Trying anything afterwards is optional; thinking it through privately is a complete choice.",
         options: [
           { id: "bids", text: "Our small moments keep getting missed", outcome: "Once a day, notice one small invitation (a remark, a question, a look) and answer it: phone down, acknowledge it, ask one question about it.", why: "Small, frequent moments of attention are where people often feel seen or not." },
           { id: "closeness", text: "When connection feels uncertain, we react differently", outcome: "Once a day, swap an accusation or a silent retreat for one concrete request, like “Could we have ten minutes together after dinner?”, and agree a time rather than needing it now.", why: "A clear, specific request is easier to answer than blame or distance." },
@@ -1068,8 +1072,8 @@ export const MISSIONS: Mission[] = [
         ],
         required: true,
       },
-      { id: "act", type: "plan", title: "Your seven-day experiment", prompt: "Write what you'll try, with whom, and roughly when. Seven days.", examples: ["Ask Sam one question about her day after dinner, phone in the other room"], required: true },
-      { id: "close", type: "close", title: "Done", body: "In seven days, come back and say what you tried, how they responded, and whether you want to keep going or change course. Any answer counts.", required: false },
+      { id: "act", type: "plan", title: "Your seven-day experiment", prompt: "If you'd like to try something, write what, with whom, and roughly when, over the next seven days. Adapt or stop if it doesn't feel right.", examples: ["Ask Sam one question about her day after dinner, phone in the other room"], required: false },
+      { id: "close", type: "close", title: "Done", body: "If you tried something, come back in seven days and say what happened, how they responded, and whether you want to keep going, change course or stop. Any answer counts, including not trying.", required: false },
     ],
   },
 ];
@@ -1110,11 +1114,11 @@ export const SYSTEMS: SolarSystem[] = [
     objective: "Imagine a possible future self, then take one real first step.",
     missionIds: ["gateway-1"],
   },
-  { id: "mind-mirror", world: "mind", title: "The Mirror of Thought", objective: "Question one thought you keep believing.", missionIds: ["mirror-1"] },
-  { id: "body-vitality", world: "body", title: "The Temple of Vitality", objective: "Give your body one thing it needs, for seven days.", missionIds: ["vitality-1"] },
-  { id: "soul-becoming", world: "soul", title: "The Garden of Becoming", objective: "Live one value you've set aside.", missionIds: ["becoming-1"] },
-  { id: "spirit-observatory", world: "spirit", title: "The Observatory of Being", objective: "Ten quiet minutes with what still matters.", missionIds: ["observatory-1"] },
-  { id: "future-horizon", world: "future", title: "The Horizon of Possibility", objective: "Hear your future self, take one step.", missionIds: ["horizon-1"] },
+  { id: "mind-mirror", world: "mind", title: "The Mirror of Thought", objective: "Look more closely at one everyday thought.", missionIds: ["mirror-1"] },
+  { id: "body-vitality", world: "body", title: "The Temple of Vitality", objective: "Notice your body, and choose one act of care.", missionIds: ["vitality-1"] },
+  { id: "soul-becoming", world: "soul", title: "The Garden of Becoming", objective: "Give a value that matters a little more room.", missionIds: ["becoming-1"] },
+  { id: "spirit-observatory", world: "spirit", title: "The Observatory of Being", objective: "What still matters, then a brief pause.", missionIds: ["observatory-1"] },
+  { id: "future-horizon", world: "future", title: "The Horizon of Possibility", objective: "Imagine a year ahead, then one realistic step.", missionIds: ["horizon-1"] },
   { id: "soul-connection", world: "soul", title: "Feeling Closer", objective: "Four perspectives, then one small way back, for seven days.", missionIds: ["connection-1"] },
   { id: "future-consistency", world: "future", title: "Becoming Consistent", objective: "Four perspectives, then your own seven-day experiment.", missionIds: ["consistency-1"] },
 ];

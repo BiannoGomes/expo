@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-02T11:04:50.143Z",
+  "when": "2026-11-02T11:47:04.010Z",
   "checks": [
     {
       "name": "Body offers its guided question, one tap away",
@@ -9,7 +9,7 @@
     {
       "name": "Discover: the gateway question is the heading",
       "ok": true,
-      "detail": "If your body could tell you what it needs, what have you been ignoring?"
+      "detail": "What do you notice in your body today, and is there any care or support you would like?"
     },
     {
       "name": "the step shows the world's own painting",
@@ -34,10 +34,10 @@
     {
       "name": "it resumes at Reflect, not the beginning",
       "ok": true,
-      "detail": "What gets in the way?"
+      "detail": "What would make caring for yourself easier?"
     },
     {
-      "name": "Choose: one small practice for seven days",
+      "name": "Choose: one manageable act of care, adapt or stop allowed",
       "ok": true,
       "detail": ""
     },
@@ -92,6 +92,36 @@
       "detail": ""
     },
     {
+      "name": "Future: Discover offers “I'm not sure” as an answer",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the follow-up can be left",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the step is optional, and needing information or support first is a valid answer",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Done says nothing-for-now counts, and doesn't pretend an action was chosen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Home doesn't ask how a skipped action went",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Journey keeps it, the same as a fully answered one",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "Reflect opens on the everyday question",
       "ok": true,
       "detail": ""
@@ -99,7 +129,7 @@
     {
       "name": "Another question shows Mind's gateway question",
       "ok": true,
-      "detail": "What if the thoughts you believe most strongly are the ones you need to question?"
+      "detail": "Is there one everyday thought you would like to examine more closely?"
     },
     {
       "name": "the input keeps focus after changing the question",
@@ -129,7 +159,7 @@
     {
       "name": "the question is kept with the words, on this device",
       "ok": true,
-      "detail": "{\"id\":\"m-mvz5k17s-dhse\",\"world\":\"mind\",\"date\":\"2026-11-02\",\"excerpt\":\"That I'm bad at starting things.\",\"prompt\":\"What if the thoughts you believe most strongly are the ones you need to question?\"}"
+      "detail": "{\"id\":\"m-mvz72bbi-5en1\",\"world\":\"mind\",\"date\":\"2026-11-02\",\"excerpt\":\"That I'm bad at starting things.\",\"prompt\":\"Is there one everyday thought you would like to examine more closely?\"}"
     },
     {
       "name": "Journey shows the question with the reflection",
@@ -144,7 +174,7 @@
     {
       "name": "saving straight after typing doesn't leak into the next reflection (kept in Soul, no old question)",
       "ok": true,
-      "detail": "{\"id\":\"m-mvz5k3bu-eja5\",\"world\":\"soul\",\"date\":\"2026-11-02\",\"excerpt\":\"Lunch with Dad.\"}"
+      "detail": "{\"id\":\"m-mvz72d77-b2cc\",\"world\":\"soul\",\"date\":\"2026-11-02\",\"excerpt\":\"Lunch with Dad.\"}"
     },
     {
       "name": "and no stale draft is left behind",
@@ -168,7 +198,7 @@
     "Reflect with another question": []
   },
   "summary": {
-    "total": 32,
+    "total": 38,
     "failed": 0
   }
 }

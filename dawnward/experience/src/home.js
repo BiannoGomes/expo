@@ -12,7 +12,7 @@
 import { buildHome } from "./home-scene.js";
 import { createExplore, localStore, remoteStore } from "./explore.js";
 import { createCreative, REALMS } from "./creative.js";
-import { QUESTIONS } from "./questions.js";
+import { bank as questionBank } from "./questions.js";
 import { createMotion, PROFILES as MOTIONS } from "./motion.js";
 import { createProgress, facts as pathFacts, PATH, KEY as PATH_KEY } from "./progress.js";
 import { MISSIONS, SYSTEMS, WORLD_PLAY, missionById } from "../../packages/core/src/expeditions/index.ts";
@@ -451,7 +451,10 @@ function main(data, failed) {
     // the world's everyday question first, then deeper ones; the one you answered is kept with your words
     // a question brought from elsewhere (the Wisdom Library) leads, unless unsent words are waiting
     const asked = !draft?.text && prompt ? prompt : draft?.text ? draft.prompt : null;
-    const qs = () => { const list = [META[state.draftWorld].q, ...(QUESTIONS[state.draftWorld] ?? [])]; return asked && state.draftWorld === w && !list.includes(asked) ? [asked, ...list] : list; };
+    // what you answered lately, and the gateway questions you've already explored, go last (never removed)
+    const gateways = Object.values(explore?.store.snapshot?.()?.attempts ?? {}).filter((x) => x?.status === "completed").map((x) => missionById(x.missionId)?.steps.find((st) => st.id === "discover")?.title).filter(Boolean);
+    const recent = [...data.stars.slice(-8).map((x) => x.prompt).filter(Boolean), ...gateways];
+    const qs = () => { const list = [META[state.draftWorld].q, ...questionBank(state.draftWorld, recent)]; return asked && state.draftWorld === w && !list.includes(asked) ? [asked, ...list] : list; };
     let qi = Math.max(0, asked ? qs().indexOf(asked) : 0);
     edPrompt = qs()[qi];
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;

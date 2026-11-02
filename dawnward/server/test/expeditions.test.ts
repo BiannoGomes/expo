@@ -43,7 +43,9 @@ describe("expedition catalog", () => {
     assert.ok(m);
     assert.deepEqual(m.steps.map((s) => s.type), ["intro", "reflect", "lesson", "choice", "plan", "close"]);
     const lesson = m.steps[2].paragraphs.join(" ");
-    for (const w of ["Strong research", "Promising research", "not a measured finding", "They don't all agree"]) assert.ok(lesson.includes(w), w);
+    for (const w of ["Strong research", "Mixed or early research", "not a measured finding", "They don't all agree"]) assert.ok(lesson.includes(w), w);
+    assert.ok(!/Nietzsche/.test(lesson), "no unverified attribution");
+    assert.equal(m.steps[4].required, false, "the seven-day experiment is optional");
   });
   it("Feeling Closer: four perspectives labelled by evidence, a choice of what to explore, never a diagnosis", () => {
     const m = MISSIONS.find((x) => x.id === "connection-1");
@@ -62,8 +64,11 @@ describe("expedition catalog", () => {
       assert.ok(m, id);
       assert.equal(m.world, world);
       assert.deepEqual(m.steps.map((s) => s.type), ["intro", "reflect", "reflect", "plan", "close"], id);
-      assert.ok(m.steps[1].title.endsWith("?"), `${id} opens with its gateway question`);
-      assert.ok(m.steps[3].required, `${id}: the action is the point`);
+      assert.ok(m.steps[1].title.endsWith("?") || m.steps[1].title.endsWith("."), `${id} opens with its gateway question`);
+      // 2 Nov review: only Discover is required, "not sure" is a full answer, the rest can be left
+      assert.ok(m.steps[1].required && m.steps[1].notSure, `${id}: Discover accepts "not sure"`);
+      assert.ok(!m.steps[2].required && !m.steps[3].required, `${id}: the follow-up and the action are optional`);
+      assert.ok(/including nothing for now, counts/.test(m.steps[4].body ?? ""), `${id}: Done never assumes an action`);
     }
   });
   it("contains no scoring or forbidden words", () => {

@@ -588,7 +588,10 @@ export function createExplore(store, h) {
       frame(m, i, title, el("p", { class: "lead", id: "q-prompt" }, step.prompt), ta,
         step.examples?.length ? el("p", { class: "quiet" }, `For example: “${step.examples[0]}”`) : null,
         m.steps.findIndex((x) => x.type === "rehearse" || x.type === "reflect") === i ? el("p", { class: "quiet" }, store.local ? "Kept on this device, in your words." : "Kept in your Dawnward, in your words.") : null, // said once per practice
-        err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => next({ text: ta.value }) }, "Continue")));
+        err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => next({ text: ta.value }) }, "Continue"),
+          // "not sure" is a complete answer, and an optional step can be left: both count the same
+          step.notSure ? el("button", { class: "ghost", onclick: () => next({ text: "Not sure." }) }, "I'm not sure") : null,
+          step.required ? null : el("button", { class: "ghost", onclick: () => next({ skip: true }) }, "Not this time")));
       ta.focus({ preventScroll: true });
       return;
     }

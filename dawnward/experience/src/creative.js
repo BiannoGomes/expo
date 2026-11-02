@@ -8,7 +8,7 @@
 // No scores, no streaks. Nothing here calls a paid service.
 import { buildWorld, ARCH, BODIES } from "./creative-scene.js";
 import { PACKS } from "./packs.data.js";
-import { WISDOM, EVIDENCE } from "./wisdom.js";
+import { WISDOM, EVIDENCE, UNREVIEWED } from "./wisdom.js";
 import { BRANCHES, KINDS, SEFIROT, PATHS, TREE_LESSON, PRINCIPLES, HALL_INTRO, FLOWER, SOLIDS, SOLIDS_INTRO, KNOWING_STEPS, FELT, KNOWING_NOTE, CALENDAR, calendarDate, MONTHS, DEEPER } from "./knowledge.js";
 
 /** Members' packs from content/packs (tools/packs.mjs). A test can supply its own. */
@@ -602,6 +602,10 @@ export function createCreative(h) {
         el("p", { class: "quiet small" }, w.limits),
         el("p", { class: "wz-q" }, w.question),
         el("p", { class: "small" }, el("span", { class: "wz-try" }, "Try: "), w.try),
+        el("p", { class: "quiet small wz-links" },
+          el("a", { href: w.url, target: "_blank", rel: "noopener noreferrer", "aria-describedby": hid }, "Source"),
+          w.review ? [" · ", el("a", { href: w.review, target: "_blank", rel: "noopener noreferrer", "aria-describedby": hid }, "What the research says")] : null,
+          UNREVIEWED.has(w.id) ? " · Not yet reviewed" : null),
         el("div", { class: "actions" }, el("button", { class: "ghost", "aria-describedby": hid, onclick: () => h.reflect(w.world, w.question) }, "Reflect on this"))));
     };
     page.replaceChildren(el("div", { class: "ycol" },
@@ -618,7 +622,7 @@ export function createCreative(h) {
         el("h3", { class: "wz-h", id: `wz-e${k}` }, EVIDENCE[k].label),
         el("p", { class: "quiet small" }, EVIDENCE[k].line),
         el("ul", { class: "wz-list" }, WISDOM.filter((w) => w.evidence === k).map(entry)))),
-      el("p", { class: "quiet small" }, "None of these people is connected with Dawnward. Draft, not yet reviewed."),
+      el("p", { class: "quiet small" }, "None of these people is connected with Dawnward or endorses it. Labels describe the claim on each card, not the whole book or the person. Reviewed for sources and wording on 2 November 2026; some passages are still being checked."),
       el("div", { class: "actions" }, el("button", { class: "ghost", onclick: () => open("knowledge") }, "Back to Knowledge"))));
     root.scrollTop = 0;
     $("cw-title").focus({ preventScroll: true });
