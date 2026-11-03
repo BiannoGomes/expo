@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-02T11:26:43.678Z",
+  "when": "2026-11-03T21:44:15.318Z",
   "checks": [
     {
       "name": "Learn says Learn once",
@@ -104,7 +104,7 @@
     {
       "name": "You: under 120 words on the first screen",
       "ok": true,
-      "detail": "69"
+      "detail": "99"
     },
     {
       "name": "You: no all-caps labels, no small text",

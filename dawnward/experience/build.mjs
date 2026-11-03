@@ -21,6 +21,7 @@ function copyStatic() {
   cpSync("galaxy.html", "dist/galaxy.html");
   cpSync("home.html", "dist/home.html");
   cpSync("fonts.css", "dist/fonts.css");
+  cpSync("manifest.webmanifest", "dist/manifest.webmanifest");
   cpSync("fonts", "dist/fonts", { recursive: true });
   cpSync("assets", "dist/assets", { recursive: true });
 }

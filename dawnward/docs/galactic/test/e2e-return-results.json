@@ -1,0 +1,138 @@
+{
+  "when": "2026-11-03T21:58:31.125Z",
+  "checks": [
+    {
+      "name": "a newcomer is told what it's for, in plain words, and how long",
+      "ok": true,
+      "detail": "Find one next step in about 8 minutes. Stop any time and pick up later. What you write stays on this phone."
+    },
+    {
+      "name": "…that they can stop and come back, and that their words stay on this phone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "…and the one suggestion is the decision practice",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "still one primary action",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Home, first visit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "320 px: the Begin button is visible without scrolling",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Done offers Remind me when an action was chosen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a sheet asks for the day and time, defaulting to tomorrow at 9",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it says nothing is sent anywhere",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the Remind me sheet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the file is a calendar file named for Dawnward",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the event is on the chosen day and time, local",
+      "ok": true,
+      "detail": "DTSTART:20261110T213000"
+    },
+    {
+      "name": "the action is in it, with commas and semicolons escaped",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "lines are folded at 75 octets",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it links back to Dawnward's Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it has an alert at the start",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the sheet closes and focus returns to Remind me",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Home asks how it went",
+      "ok": true,
+      "detail": "Knowledge is open /  / What you've done opened it. It stays open. /  / Go there / Beyond Overthinking /  / Mind · Understand the loop /  / Begin · Chapter 1 of 7 · 8 min / Choose another / Not today / Why this? / How did it go? / Phone in the kitchen, at night; then sleep / Remind me in my calendar / Your worlds / Mind / Body / Soul / Spi | place=earth #/home"
+    },
+    {
+      "name": "…and offers the calendar reminder there too",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the first-visit welcome is gone once you've begun",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "You says how to keep what's here from being cleared",
+      "ok": true,
+      "detail": "Your browser keeps this. Clearing your browsing data would remove it, so save a copy as a file now and then. Installing Dawnward from your browser's menu also helps keep it."
+    },
+    {
+      "name": "on iPhone it explains the 7 days and Add to Home Screen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the manifest loads, standalone, starting at Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "icons and the Home Screen icon load",
+      "ok": true,
+      "detail": "[true,true,true]"
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "Home, first visit": [],
+    "the Remind me sheet": []
+  },
+  "summary": {
+    "total": 25,
+    "failed": 0
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-02T11:30:37.799Z",
+  "when": "2026-11-03T21:59:18.802Z",
   "checks": [
     {
       "name": "320×568: Home has no sideways scroll",
@@ -82,7 +82,7 @@
       "detail": ""
     },
     {
-      "name": "Home asks one question",
+      "name": "Home asks one question (a newcomer gets the plain-words one)",
       "ok": true,
       "detail": ""
     },

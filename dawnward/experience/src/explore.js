@@ -3,6 +3,7 @@
 // state is kept on this device, with an account it goes through the API.
 // Progress is discoveries only (owner decision): no XP, levels or scores.
 import { ART, artPath } from "./registry.js";
+import { reminderSheet } from "./remind.js";
 import {
   MISSIONS,
   SYSTEMS,
@@ -640,6 +641,8 @@ export function createExplore(store, h) {
         // the universe changed: show it there first
         found ? el("button", { class: "primary", onclick: () => { current = null; from = null; h.goHomeWith(found.key); } }, "See it in your universe") : null,
         el("button", { class: found ? "ghost" : "primary", onclick: () => { current = null; from = null; h.goEarth(found ?? null); } }, "Go home"),
+        // the one way back without accounts or notifications: their own calendar, on the day they chose
+        plan ? el("button", { class: "ghost", id: "x-remind", onclick: (e) => reminderSheet({ el, action: plan.action, when: plan.when_text, announce: h.announce, returnFocus: e.currentTarget }) }, "Remind me") : null,
         (() => { const sys = SYSTEMS.find((x) => x.id === m.systemId); return sys?.kind === "expedition" && !isFollowing(sys.id) ? followButton(sys, () => finishFollowNote(sys)) : null; })(),
         m.worksheet ? el("button", { class: "ghost", onclick: () => worksheet(m, () => { current = null; draw(); $("x-title")?.focus(); }) }, `Worksheet: ${m.worksheet.title}`) : null,
         el("button", { class: "text-btn", onclick: () => { current = null; draw(); $("x-title")?.focus(); } }, "Back to Learn")));

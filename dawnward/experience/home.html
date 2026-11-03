@@ -6,6 +6,12 @@
 <title>Dawnward · Galaxy Home</title>
 <meta name="description" content="Your universe: four worlds, your evenings as stars, and what Dawnward understands about you, with the evidence for every line.">
 <meta name="theme-color" content="#05070D">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dawnward">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="stylesheet" href="fonts.css">
 <style>
   /* ============ Tokens ============ */
@@ -260,6 +266,8 @@
   .wz-try { color:var(--gold); }
   .wz-links a { color:var(--gold); text-decoration:underline; text-underline-offset:3px; display:inline-block; min-height:24px; padding:2px 0; }
   .wz-path { margin:var(--s3) 0; }
+  .e-welcome { margin:0 0 var(--s2); }
+  .e-remind { margin-top:calc(var(--s1) * -1); }
   .said-q { color:var(--dim); font-size:15px; line-height:1.4; margin:0 0 var(--s2); }
   .ed-dot { width:8px; height:8px; border-radius:50%; background:currentColor; }
   .dot-mind { color:var(--mind); } .dot-body { color:var(--body); } .dot-soul { color:var(--soul); } .dot-spirit { color:var(--spirit); } .dot-future { color:var(--future); }
@@ -903,6 +911,7 @@
       </section>
       <section aria-labelledby="y-d-h"><h3 id="y-d-h">Your data</h3>
         <p id="y-data-line" class="quiet"></p>
+        <p id="y-keep" class="quiet small" hidden></p>
         <div class="actions"><button id="y-export" class="ghost">Save a copy as a file</button><button id="y-delete" class="danger">Delete everything on this device</button></div>
         <div id="y-delete-confirm" class="confirm" hidden></div>
       </section>

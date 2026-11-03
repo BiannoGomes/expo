@@ -14,6 +14,7 @@ import { createExplore, localStore, remoteStore } from "./explore.js";
 import { createCreative, REALMS } from "./creative.js";
 import { bank as questionBank } from "./questions.js";
 import { createMotion, PROFILES as MOTIONS } from "./motion.js";
+import { reminderSheet } from "./remind.js";
 import { createProgress, facts as pathFacts, PATH, KEY as PATH_KEY } from "./progress.js";
 import { MISSIONS, SYSTEMS, WORLD_PLAY, missionById } from "../../packages/core/src/expeditions/index.ts";
 
@@ -885,6 +886,14 @@ function main(data, failed) {
       ? `${plural(data.stars.length, "memory", "memories")} kept on this device, and nowhere else.`
       : `${plural(data.stars.length, "memory", "memories")} in your Dawnward.`;
     const anything = data.stars.length || creative?.hasData() || device.read(DIRECTION, null);
+    // what's kept here can be cleared by the browser: say how to keep it safe, plainly (iOS Safari clears
+    // site storage after 7 days without a visit, unless Dawnward is on the Home Screen)
+    const installed = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+    const apple = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    $("y-keep").hidden = !data.local || installed;
+    $("y-keep").textContent = apple
+      ? "On iPhone and iPad, Safari can clear what's kept here if you don't open Dawnward for 7 days. To keep it safe, add it to your Home Screen (Share, then Add to Home Screen), or save a copy as a file."
+      : "Your browser keeps this. Clearing your browsing data would remove it, so save a copy as a file now and then. Installing Dawnward from your browser's menu also helps keep it.";
     $("y-export").hidden = !data.local || !anything; $("y-delete").hidden = !data.local || !anything;
     const found = explore?.data.discoveries ?? [];
     $("y-journey").replaceChildren(found.length
@@ -1170,6 +1179,12 @@ function main(data, failed) {
     $("earth").scrollTop = 0;
     announce(found ? `Home. ${found.title} appeared.` : "Home.");
   }
+  // ----- keeping it: ask the browser, once per visit, not to clear what's kept on this device -----
+  let keepAsked = false;
+  function keepSafe() {
+    if (keepAsked) return; keepAsked = true;
+    try { navigator.storage?.persisted?.().then((p) => (p ? true : navigator.storage.persist?.())).catch(() => {}); } catch {}
+  }
   // ----- the Daily Compass: one clear, optional next step, and the reason for it -----
   const COMPASS_HIDE = "dw-compass-hide";
   const localDay = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
@@ -1249,6 +1264,7 @@ function main(data, failed) {
   }
   function drawEarth(found) {
     const ex = explore?.data ?? { experiments: [], discoveries: [], attempts: [] };
+    if (data.local && (data.stars.length || ex.attempts?.length)) keepSafe();
     const active = ex.experiments.filter((x) => x.status === "planned");
     const pick = compassPick();
     let hidden = false;
@@ -1269,13 +1285,21 @@ function main(data, failed) {
     $("e-dir").replaceChildren(dir
       ? el("button", { class: "e-dir-line", id: "e-dir-btn", onclick: directionSheet, "aria-label": `Your direction: ${dir.text}. Edit` }, el("span", { class: "e-dir-to" }, "Toward"), ` ${dir.text}`)
       : el("button", { class: "text-btn", id: "e-dir-btn", onclick: directionSheet }, "Set a direction"));
+    // a first visit: say what this is for in plain words, how long, and where their words go
+    const newcomer = !data.stars.length && !(ex.attempts ?? []).length && pick && !pick.resume && !hidden && pick.m.systemId === "mind-beyond-overthinking";
+    // the question is the title, so the one button stays above the fold on the smallest phones
+    if (newcomer) $("e-title").textContent = "Going back and forth on something?";
+    const welcome = newcomer ? el("p", { class: "quiet small e-welcome" },
+      `Find one next step in about ${pick.m.minutes} minutes. Stop any time and pick up later. ${data.local ? "What you write stays on this phone." : "What you write stays private."}`) : null;
     $("e-body").replaceChildren(...[
+      welcome,
       celebrateCard(),
       found ? el("div", { class: "card found", role: "status" }, el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
       next,
       writeFirst,
       active[0] ? el("button", { class: "row e-wait", onclick: () => explore.review(active[0].id) },
         el("span", { class: "rtext" }, el("span", { class: "rsub" }, "How did it go?"), el("span", { class: "rtitle" }, active[0].action)), el("span", { class: "rgo", html: svg(ICON.arrow, 16) })) : null,
+      active[0] ? el("button", { class: "text-btn e-remind", onclick: (e) => reminderSheet({ el, action: active[0].action, when: active[0].when_text, announce, returnFocus: e.currentTarget }) }, "Remind me in my calendar") : null,
       el("section", { "aria-labelledby": "e-worlds" },
         el("h3", { id: "e-worlds", class: "e-h" }, "Your worlds"),
         el("div", { class: "wplanets" }, ORDER.map((w) => el("button", { class: `planet-${w}`, onclick: () => goWorld(w), "aria-label": `${META[w].name}: ${META[w].kicker.toLowerCase()}` },
@@ -1469,7 +1493,11 @@ function main(data, failed) {
     openLibrary: () => creative?.library(),
     crumbs,
   });
-  const exploreReady = explore.refresh().then(() => { sync(); initPath(); renderHome(); });
+  const exploreReady = explore.refresh().then(() => {
+    sync(); initPath(); renderHome();
+    // Home was drawn before practices loaded: redraw it, or a returning person wouldn't see "How did it go?"
+    if (state.place === "earth") drawEarth();
+  });
   creative = createCreative({ $, el, svg, ICON, asset, sound, announce, showPlace, crumbs, explore,
     toUniverse: () => openAtlas(), toLearn: () => explore.open(), textMode: () => state.mode === "text",
     reflect: (w, prompt) => openEditor(w, { prompt }), motion, treeArt: () => ART.tree === true,

@@ -40,7 +40,7 @@ const noSideScroll = (p) => p.evaluate(() => document.documentElement.scrollWidt
 
   // ---- Home ----
   const earth = await page.locator("#earth").innerText();
-  check("Home asks one question", /Where will you grow today\?/.test(earth));
+  check("Home asks one question (a newcomer gets the plain-words one)", /Where will you grow today\?|Going back and forth on something\?/.test(earth) && (earth.match(/Where will you grow today\?|Going back and forth on something\?/g) || []).length === 1);
   check("Home's one primary action is the next step itself", (await page.locator("#earth .primary").count()) === 1 && /^Begin · /.test(await page.locator("#earth .primary").innerText()));
   check("no detour button, no labels above headings", !/Explore your worlds/.test(earth) && (await page.locator("#earth .kicker").count()) === 0);
   check("Choose another and Not today are visible, not hidden", await page.getByRole("button", { name: "Choose another" }).isVisible() && await page.getByRole("button", { name: "Not today" }).isVisible());
