@@ -66,6 +66,10 @@
   "Bianno" on frames; music on every post; no piano; captions and hashtags written for him; scheduling through Blotato
   (account 75385) only after his "approve". Every post is a reel until post 30; carousels are paused.
 
+- **2026-11-03 · No brand name, numbers or dots on posts.** Bianno: never put "The Becoming Project" on a post (no end
+  mark, no `BM.mark`), no on-screen numbers and no progress dots. Every post adds value, connects, and carries a
+  voiceover plus his sound library (Night Watch score + earshot bank SFX).
+
 ## Out of scope for this brand
 The "Unbelievably Real" hyperreal-character method (Nano Banana Pro + Kling) belongs to Bianno's **separate AI
 influencer project**, on its own AI-labelled account. Never use it, or any AI-generated person, here.
