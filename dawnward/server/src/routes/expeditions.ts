@@ -282,11 +282,11 @@ export function registerExpeditionRoutes(app: FastifyInstance) {
   app.post("/experiments/:experimentId/review", { onRequest: requireAuth, preHandler: [requireConsent, stepWriteLimit, modelCallLimit] }, async (request, reply) => {
     const userId = request.userId;
     const { experimentId } = z.object({ experimentId: z.string().uuid() }).parse(request.params);
-    const body = z.object({ outcome: z.enum(["did", "partly", "didnt"]), text: z.string().trim().min(1).max(2000) }).parse(request.body);
+    const body = z.object({ outcome: z.enum(["did", "partly", "didnt", "notyet", "changed"]), text: z.string().trim().max(2000).default("") }).parse(request.body);
     const [ex] = await query<{ id: string; world: string; status: string }>("select id, world, status from experiments where id = $1 and user_id = $2", [experimentId, userId]);
     if (!ex) return reply.code(404).send({ error: "experiment not found" });
     if (ex.status === "reviewed") return { reviewed: true, discoveries: [] };
-    if (!(await triage(userId, [body.text], reply))) return;
+    if (body.text && !(await triage(userId, [body.text], reply))) return; // the note is optional; only words are checked
     return inTransaction(async (c) => {
       const upd = await c.query("update experiments set status = 'reviewed', outcome = $1, reviewed_at = now() where id = $2 and status = 'planned' returning id", [body.outcome, ex.id]);
       if (!upd.rows[0]) return { reviewed: true, discoveries: [] };

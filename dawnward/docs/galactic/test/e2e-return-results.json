@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-03T21:58:31.125Z",
+  "when": "2026-11-04T03:05:29.085Z",
   "checks": [
     {
       "name": "a newcomer is told what it's for, in plain words, and how long",
@@ -18,6 +18,11 @@
     },
     {
       "name": "still one primary action",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a first visit shows the five-world planet behind Home",
       "ok": true,
       "detail": ""
     },
@@ -43,6 +48,11 @@
     },
     {
       "name": "it says nothing is sent anywhere",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the sheet shows the reminder mark, and focus lands on its title, not the date field (no picker popping open)",
       "ok": true,
       "detail": ""
     },
@@ -97,6 +107,31 @@
       "detail": ""
     },
     {
+      "name": "How did it go? offers four outcomes as tiles",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "…with the coming-back painting behind it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: How did it go?",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Not yet, with no note, is saved and thanked",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "after a practice, Home is Earth again (not the first-visit planet)",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "the first-visit welcome is gone once you've begun",
       "ok": true,
       "detail": ""
@@ -129,10 +164,11 @@
   ],
   "axe": {
     "Home, first visit": [],
-    "the Remind me sheet": []
+    "the Remind me sheet": [],
+    "How did it go?": []
   },
   "summary": {
-    "total": 25,
+    "total": 32,
     "failed": 0
   }
 }

@@ -1047,6 +1047,24 @@ describe("expeditions (Soul · Communication, first slice)", () => {
     assert.deepEqual(again.discoveries, []);
   });
 
+  it("a review can be just the outcome: \"not yet\" and \"I changed my mind\" count like any other, no note needed", async () => {
+    for (const outcome of ["notyet", "changed"]) {
+      const s = await createSession();
+      await member(s);
+      const id = await playMission(s, "bridge-1");
+      const ex = (await inject(s, { method: "POST", url: `/attempts/${id}/complete` })).json().experiment.id;
+      const r = await inject(s, { method: "POST", url: `/experiments/${ex}/review`, payload: { outcome } });
+      assert.equal(r.statusCode, 200, outcome);
+      assert.deepEqual(r.json().discoveries.map((d: { key: string }) => d.key), ["landmark:soul:1"], outcome);
+    }
+    const s = await createSession();
+    await member(s);
+    const id = await playMission(s, "bridge-1");
+    const ex = (await inject(s, { method: "POST", url: `/attempts/${id}/complete` })).json().experiment.id;
+    const bad = await inject(s, { method: "POST", url: `/experiments/${ex}/review`, payload: { outcome: "great" } });
+    assert.equal(bad.statusCode, 400, "an unknown outcome is still refused");
+  });
+
   it("finishing all three missions reveals the moon", async () => {
     const s = await createSession();
     await member(s);

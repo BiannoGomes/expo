@@ -259,7 +259,7 @@ export function createExplore(store, h) {
   // The chapter's art: its scene behind the opening and the ending, a softer backdrop behind
   // practice and writing. Decorative only (alt=""), and never under text without a dark veil.
   function setArt(m, step) {
-    const a = ART.missions[m?.id] ?? {}, type = step?.type;
+    const a = m?.id === "review" ? { hero: ART.review } : ART.missions[m?.id] ?? {}, type = step?.type;
     const code = !m ? null : a.steps?.[step?.id] ?? (["intro", "lesson", "close"].includes(type) ? a.hero : ["rehearse", "reflect", "plan"].includes(type) ? a.reflect ?? a.exercise : a.exercise ?? a.hero);
     const box = $("x-art");
     if (!code) { box.hidden = true; $("explore").dataset.art = ""; look.on(false); return; }
@@ -633,7 +633,7 @@ export function createExplore(store, h) {
     frame(m, m.steps.length - 1,
       el("h2", { class: "s-title", tabindex: "-1" }, closeStep.title),
       el("p", { class: "lead" }, closeStep.body),
-      plan ? el("div", { class: "card" }, el("p", { class: "statement" }, plan.action), el("p", { class: "why" }, plan.when_text)) : null,
+      plan ? el("div", { class: "card x-action" }, el("p", { class: "kicker" }, "Your action"), el("p", { class: "statement" }, plan.action), el("p", { class: "why" }, plan.when_text)) : null,
       found && data.gameLayer ? el("div", { class: "card found" },
         el("img", { class: "reward-moon", src: h.asset(artPath(ART.missions[m.id]?.moon ?? ART.moon)), alt: "" }),
         el("p", { class: "kicker" }, "Discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
@@ -642,7 +642,7 @@ export function createExplore(store, h) {
         found ? el("button", { class: "primary", onclick: () => { current = null; from = null; h.goHomeWith(found.key); } }, "See it in your universe") : null,
         el("button", { class: found ? "ghost" : "primary", onclick: () => { current = null; from = null; h.goEarth(found ?? null); } }, "Go home"),
         // the one way back without accounts or notifications: their own calendar, on the day they chose
-        plan ? el("button", { class: "ghost", id: "x-remind", onclick: (e) => reminderSheet({ el, action: plan.action, when: plan.when_text, announce: h.announce, returnFocus: e.currentTarget }) }, "Remind me") : null,
+        plan ? el("button", { class: "ghost", id: "x-remind", onclick: (e) => reminderSheet({ el, action: plan.action, when: plan.when_text, announce: h.announce, returnFocus: e.currentTarget, mark: h.asset(artPath(ART.remind)) }) }, "Remind me") : null,
         (() => { const sys = SYSTEMS.find((x) => x.id === m.systemId); return sys?.kind === "expedition" && !isFollowing(sys.id) ? followButton(sys, () => finishFollowNote(sys)) : null; })(),
         m.worksheet ? el("button", { class: "ghost", onclick: () => worksheet(m, () => { current = null; draw(); $("x-title")?.focus(); }) }, `Worksheet: ${m.worksheet.title}`) : null,
         el("button", { class: "text-btn", onclick: () => { current = null; draw(); $("x-title")?.focus(); } }, "Back to Learn")));
@@ -722,23 +722,26 @@ export function createExplore(store, h) {
   function review(experimentId) {
     const x = data.experiments.find((e) => e.id === experimentId);
     if (!x) return;
-    const outcomes = [["did", "I did it"], ["partly", "Partly"], ["didnt", "I didn't, this time"]];
+    // four outcomes, all counting the same (2 Nov review: not yet, and changing your mind, are real answers)
+    const outcomes = [["did", "I did it", '<path d="m5 12.5 4.5 4.5L19 7.5"/>'], ["partly", "Partly", '<path d="M4 12c2.5-3 5-3 8 0s5.5 3 8 0"/>'],
+      ["notyet", "Not yet", '<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>'], ["changed", "I changed my mind", '<path d="M18.5 9A7 7 0 1 0 19 13"/><path d="M19 4.5V9h-4.5"/>']];
     let outcome = null;
-    const group = el("div", { class: "seg", role: "radiogroup", "aria-label": "How did it go?" },
-      outcomes.map(([v, label]) => el("button", { role: "radio", "aria-checked": "false", onclick: (e) => { outcome = v; group.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b === e.currentTarget))); } }, label)));
-    const ta = el("textarea", { id: "x-review", rows: "5", maxlength: "2000", "aria-labelledby": "x-review-q" });
+    const group = el("div", { class: "x-tiles", role: "radiogroup", "aria-label": "How did it go?" },
+      outcomes.map(([v, label, icon]) => el("button", { role: "radio", "aria-checked": "false", class: "x-tile", onclick: (e) => { outcome = v; group.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b === e.currentTarget))); } },
+        el("span", { class: "x-tile-i", html: svg(icon, 26) }), el("span", {}, label))));
+    const ta = el("textarea", { id: "x-review", rows: "3", maxlength: "2000", "aria-labelledby": "x-review-q", placeholder: "Anything you noticed?" });
     const err = el("p", { class: "error", role: "alert" });
     h.showPlace("explore");
+    setArt({ id: "review" }, { type: "intro" });
     body().replaceChildren(...head("How did it go?", null, () => { draw(); $("x-title")?.focus(); }),
       el("div", { class: "card" }, el("p", { class: "kicker" }, "You planned"), el("p", { class: "statement" }, x.action), el("p", { class: "why" }, x.when_text)),
       group,
-      el("p", { class: "lead", id: "x-review-q" }, "What happened? What surprised you?"), ta,
-      el("p", { class: "quiet" }, "Whatever happened, saying how it went is what counts."),
+      el("label", { class: "label", id: "x-review-q", for: "x-review" }, "What happened? (optional)"), ta,
+      el("p", { class: "quiet small" }, "Whatever happened, saying how it went is what counts."),
       err,
       el("div", { class: "actions" }, el("button", { class: "primary", onclick: async () => {
         if (!outcome) { err.textContent = "Choose how it went."; return; }
-        if (!ta.value.trim()) { err.textContent = "Write a few words first."; ta.focus(); return; }
-        if (store.local && h.distress(ta.value)) { crisis(h.crisisText); return; }
+        if (store.local && ta.value.trim() && h.distress(ta.value)) { crisis(h.crisisText); return; }
         const r = await store.review(x.id, outcome, ta.value.trim());
         if (r.crisis) { crisis(r.reply); return; }
         if (r.error) { err.textContent = r.error; return; }
@@ -746,7 +749,7 @@ export function createExplore(store, h) {
         h.onDiscoveries(data, r.discoveries ?? []);
         const found = (r.discoveries ?? [])[0];
         body().replaceChildren(...head("Thank you for coming back", null, () => { draw(); $("x-title")?.focus(); }),
-          el("p", { class: "lead" }, outcome === "didnt" ? "Not doing it is information too. Next time, notice what got in the way." : "You tried something real. That's the part that changes things."),
+          el("p", { class: "lead" }, { didnt: "Not doing it is information too. Next time, notice what got in the way.", notyet: "Not yet is fine. It's here whenever you're ready.", changed: "Changing your mind is a real decision too. Knowing that is worth something." }[outcome] ?? "You tried something real. That's the part that changes things."),
           found && data.gameLayer ? el("div", { class: "card found" }, el("p", { class: "kicker" }, "Discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
           el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => h.goEarth(found ?? null) }, "Go home"), el("button", { class: "ghost", onclick: () => { draw(); $("x-title")?.focus(); } }, "Back to Explore")));
         $("x-title")?.focus();

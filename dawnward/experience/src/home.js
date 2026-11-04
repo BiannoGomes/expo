@@ -1289,6 +1289,8 @@ function main(data, failed) {
     const newcomer = !data.stars.length && !(ex.attempts ?? []).length && pick && !pick.resume && !hidden && pick.m.systemId === "mind-beyond-overthinking";
     // the question is the title, so the one button stays above the fold on the smallest phones
     if (newcomer) $("e-title").textContent = "Going back and forth on something?";
+    $("earth").classList.toggle("newcomer", !!newcomer);
+    $("earth").style.setProperty("--e-art", `url("${asset(artPath(newcomer ? ART.welcome : ART.home))}")`);
     const welcome = newcomer ? el("p", { class: "quiet small e-welcome" },
       `Find one next step in about ${pick.m.minutes} minutes. Stop any time and pick up later. ${data.local ? "What you write stays on this phone." : "What you write stays private."}`) : null;
     $("e-body").replaceChildren(...[
@@ -1299,7 +1301,7 @@ function main(data, failed) {
       writeFirst,
       active[0] ? el("button", { class: "row e-wait", onclick: () => explore.review(active[0].id) },
         el("span", { class: "rtext" }, el("span", { class: "rsub" }, "How did it go?"), el("span", { class: "rtitle" }, active[0].action)), el("span", { class: "rgo", html: svg(ICON.arrow, 16) })) : null,
-      active[0] ? el("button", { class: "text-btn e-remind", onclick: (e) => reminderSheet({ el, action: active[0].action, when: active[0].when_text, announce, returnFocus: e.currentTarget }) }, "Remind me in my calendar") : null,
+      active[0] ? el("button", { class: "text-btn e-remind", onclick: (e) => reminderSheet({ el, action: active[0].action, when: active[0].when_text, announce, returnFocus: e.currentTarget, mark: asset(artPath(ART.remind)) }) }, "Remind me in my calendar") : null,
       el("section", { "aria-labelledby": "e-worlds" },
         el("h3", { id: "e-worlds", class: "e-h" }, "Your worlds"),
         el("div", { class: "wplanets" }, ORDER.map((w) => el("button", { class: `planet-${w}`, onclick: () => goWorld(w), "aria-label": `${META[w].name}: ${META[w].kicker.toLowerCase()}` },

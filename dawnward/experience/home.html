@@ -71,6 +71,11 @@
   body[data-place="earth"] .e-hero { display:none; }
   #earth { background:linear-gradient(rgba(5,7,13,.25), rgba(5,7,13,.1) 30vw, rgba(5,7,13,.65) 48vw, #05070D 57vw) top / 100% auto no-repeat, var(--e-art, none) top / 100% auto no-repeat, #05070D; }
   @media (min-width: 1000px) { #earth { background:linear-gradient(rgba(5,7,13,.35), rgba(5,7,13,.8) 22vw, #05070D 40vw) top / 100% auto no-repeat, var(--e-art, none) top / 100% auto no-repeat, #05070D; } }
+  /* a first visit: the five worlds as one planet, deeper, with a veil where the words sit */
+  #earth.newcomer { background:linear-gradient(rgba(5,7,13,.2), rgba(5,7,13,.38) 34vw, rgba(5,7,13,.72) 82vw, #05070D 118vw) top / 100% auto no-repeat, var(--e-art, none) top / 100% auto no-repeat, #05070D; }
+  #earth.newcomer #e-title { text-shadow:0 1px 2px rgba(0,0,0,.95), 0 2px 24px rgba(0,0,0,.9); }
+  #earth.newcomer .e-welcome { color:var(--ink); text-shadow:0 1px 2px rgba(0,0,0,.9); }
+  @media (min-width: 1000px) { #earth.newcomer { background:linear-gradient(rgba(5,7,13,.45), rgba(5,7,13,.85) 26vw, #05070D 44vw) top / 100% auto no-repeat, var(--e-art, none) top / 100% auto no-repeat, #05070D; } }
   #earth .ycol { padding-top:calc(var(--safe-t) + 88px); }
   /* the wordmark sits on its own patch of night so it reads over any sky */
   #brand { position:relative; display:block; text-decoration:none; color:var(--mark); padding:var(--s2) var(--s3) var(--s2) 0; }
@@ -216,6 +221,16 @@
   /* an accessible bottom sheet (native dialog: focus stays inside, Escape closes) */
   .sheetdlg { position:fixed; inset:auto 0 0 0; margin:0 auto; width:100%; max-width:560px; max-height:85vh; border:0; border-top:1px solid var(--edge-strong); border-radius:var(--r-card) var(--r-card) 0 0; padding:var(--s6) var(--gutter) calc(var(--safe-b) + var(--s6)); background:var(--glass-strong); color:var(--ink); display:flex; flex-direction:column; gap:var(--s3); }
   .sheetdlg:not([open]) { display:none; }
+  .sheetdlg::before { content:""; align-self:center; width:40px; height:4px; border-radius:2px; background:var(--edge-strong); margin:calc(var(--s3) * -1) 0 var(--s1); }
+  .rm-mark { width:56px; height:56px; align-self:center; }
+  .sheetdlg:has(.rm-row) > p { text-align:center; }
+  .sheetdlg:has(.rm-row) > .actions { flex-direction:column; align-items:stretch; }
+  .sheetdlg:has(.rm-row) > .actions > button { width:100%; }
+  #rm-h { text-align:center; }
+  .sheetdlg .rm-row { display:grid; grid-template-columns:24px auto 1fr; align-items:center; gap:var(--s3); padding:var(--s2) var(--s3); border:1px solid var(--edge); border-radius:14px; background:rgba(255,255,255,.03); }
+  .sheetdlg .rm-row label { color:var(--ink); }
+  .sheetdlg .rm-row .field { border:0; background:transparent; text-align:right; min-height:var(--tap); color:var(--ink); color-scheme:dark; }
+  .rm-i { color:var(--gold); display:flex; }
   .sheetdlg::backdrop { background:rgba(2,3,8,.6); backdrop-filter:blur(4px); }
   .sheetdlg label { color:var(--dim); }
   /* ---- Reflect, redesigned: one question, a compact input that grows ---- */
@@ -266,6 +281,12 @@
   .wz-try { color:var(--gold); }
   .wz-links a { color:var(--gold); text-decoration:underline; text-underline-offset:3px; display:inline-block; min-height:24px; padding:2px 0; }
   .wz-path { margin:var(--s3) 0; }
+  .x-tiles { display:grid; grid-template-columns:1fr 1fr; gap:var(--s3); margin:var(--s3) 0; }
+  .x-tile { min-height:104px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--s2); padding:var(--s3); border-radius:16px; border:1px solid var(--edge); background:rgba(10,14,24,.72); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); color:var(--ink); font-size:var(--t-btn); text-align:center; }
+  .x-tile-i { color:var(--gold); display:flex; }
+  .x-tile[aria-checked="true"] { border-color:var(--gold); background:rgba(230,192,123,.12); box-shadow:0 0 0 1px var(--gold) inset; }
+  .x-action { text-align:center; }
+  .x-action .statement { font-size:calc(var(--t-card) * 1.25); }
   .e-welcome { margin:0 0 var(--s2); }
   .e-remind { margin-top:calc(var(--s1) * -1); }
   .said-q { color:var(--dim); font-size:15px; line-height:1.4; margin:0 0 var(--s2); }
@@ -640,8 +661,9 @@
   .a-landing { display:flex; gap:var(--s3); align-items:center; margin:0 var(--gutter) var(--s3); padding:var(--s2); border-radius:var(--r-card); background:rgba(10,20,38,.72); border:1px solid var(--edge); }
   .a-landing img { width:64px; height:96px; object-fit:cover; border-radius:10px; flex:none; }
   .a-landing p { display:flex; flex-direction:column; gap:2px; margin:0; }
-  .becoming { display:flex; gap:var(--s3); align-items:center; margin-bottom:var(--s3); }
-  .becoming img { width:96px; height:96px; border-radius:14px; object-fit:cover; flex:none; }
+  .becoming { display:flex; flex-direction:column; align-items:center; gap:var(--s2); margin-bottom:var(--s4); padding:var(--s4); border-radius:20px; border:1px solid var(--edge); background:rgba(10,14,24,.72); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); text-align:center; }
+  .becoming img { width:132px; height:132px; border-radius:50%; object-fit:cover; flex:none; box-shadow:0 0 40px -6px rgba(230,192,123,.45); }
+  .becoming .rtitle { font-family:var(--display); font-size:calc(var(--t-card) * 1.5); }
   .a-threshold { width:100%; max-height:200px; object-fit:cover; object-position:50% 30%; border-radius:var(--r-card); margin-bottom:var(--s2); }
   /* with the painting behind: one calm line per branch, a soft glow, no dashes; labels on a dark plate in the UI font */
   .cw-btree.art { aspect-ratio:3 / 4; }

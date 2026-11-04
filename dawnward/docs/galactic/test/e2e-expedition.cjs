@@ -94,11 +94,11 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     const ex = await page.textContent("#x-body");
     check(`${name}: after reload, Part 1 is done and the action waits for a check-in`, /Waiting to hear how it went/.test(ex) && /Ask Sam for ten minutes/.test(ex));
     await page.getByRole("button", { name: /Ask Sam for ten minutes/ }).click();
-    await page.getByRole("radio", { name: "I didn't, this time" }).click();
+    await page.getByRole("radio", { name: "Not yet" }).click();
     await page.fill("#x-review", "I lost my nerve, but I know what I'd say now.");
     await page.getByRole("button", { name: "Save" }).click();
     await page.waitForSelector("text=Thank you for coming back");
-    check(`${name}: "I didn't" still counts: a landmark appears`, /lantern in Soul/.test(await page.textContent("#x-body")));
+    check(`${name}: "Not yet" still counts: a landmark appears`, /lantern in Soul/.test(await page.textContent("#x-body")));
 
     // journey log, and hiding discoveries keeps the data
     await page.locator('#tabs [data-tab="home"]').click(); await page.locator("#to-you").click();

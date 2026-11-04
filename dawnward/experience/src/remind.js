@@ -44,7 +44,7 @@ export function defaultMoment(now = new Date()) {
 }
 
 /** A small sheet: choose a day and time, then save the calendar file. */
-export function reminderSheet({ el, action, when, announce, returnFocus }) {
+export function reminderSheet({ el, action, when, announce, returnFocus, mark }) {
   const dlg = el("dialog", { class: "sheetdlg", "aria-labelledby": "rm-h" });
   const def = defaultMoment();
   const date = el("input", { id: "rm-date", class: "field", type: "date", value: def.date, required: true });
@@ -63,16 +63,19 @@ export function reminderSheet({ el, action, when, announce, returnFocus }) {
     announce?.("Calendar file saved. Open it to add the reminder to your calendar.");
   };
   dlg.append(
-    el("h2", { id: "rm-h", class: "s-title" }, "Remind me"),
+    mark ? el("img", { class: "rm-mark", src: mark, alt: "" }) : null,
+    el("h2", { id: "rm-h", class: "s-title", tabindex: "-1" }, "Remind me"),
+    el("p", { class: "quiet small" }, "Choose when you'd like a gentle reminder."),
     el("p", { class: "statement" }, action),
     when ? el("p", { class: "quiet small" }, `You said: ${when}`) : null,
-    el("label", { for: "rm-date", class: "label" }, "Day"), date,
-    el("label", { for: "rm-time", class: "label" }, "Time"), time,
+    el("div", { class: "rm-row" }, el("span", { class: "rm-i", html: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>' }), el("label", { for: "rm-date" }, "Day"), date),
+    el("div", { class: "rm-row" }, el("span", { class: "rm-i", html: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>' }), el("label", { for: "rm-time" }, "Time"), time),
     err,
     el("div", { class: "actions" }, el("button", { class: "primary", onclick: save }, "Save to my calendar"), el("button", { class: "ghost", onclick: close }, "Cancel")),
     el("p", { class: "quiet small" }, "This makes a calendar file on your device. Nothing is sent anywhere; your calendar app keeps it."));
   dlg.addEventListener("close", () => dlg.remove());
   document.body.append(dlg);
   dlg.showModal();
-  date.focus();
+  // focus the title, not the date: on a phone, focusing a date field can pop its picker open before the sheet is read
+  dlg.querySelector("#rm-h").focus();
 }

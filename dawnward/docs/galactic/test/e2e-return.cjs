@@ -34,6 +34,7 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
   check("…that they can stop and come back, and that their words stay on this phone", /Stop any time/.test(welcome) && /stays on this phone/.test(welcome));
   check("…and the one suggestion is the decision practice", /Beyond Overthinking/.test(await body.locator(".nextcard").innerText()));
   check("still one primary action", (await body.locator(".primary").count()) === 1);
+  check("a first visit shows the five-world planet behind Home", await page.evaluate(() => document.getElementById("earth").classList.contains("newcomer") && /HM-1/.test(getComputedStyle(document.getElementById("earth")).getPropertyValue("--e-art"))));
   await axe(page, "Home, first visit");
   await page.setViewportSize({ width: 320, height: 568 }); await page.waitForTimeout(300);
   check("320 px: the Begin button is visible without scrolling", await page.evaluate(() => { const b = document.querySelector("#e-body .nextcard .primary").getBoundingClientRect(); const t = document.getElementById("tabs").getBoundingClientRect(); return b.bottom <= Math.min(innerHeight, t.top); }));
@@ -56,6 +57,7 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
   const dlg = page.getByRole("dialog", { name: "Remind me" });
   check("a sheet asks for the day and time, defaulting to tomorrow at 9", (await dlg.count()) === 1 && (await page.inputValue("#rm-time")) === "09:00" && /^\d{4}-\d{2}-\d{2}$/.test(await page.inputValue("#rm-date")));
   check("it says nothing is sent anywhere", /Nothing is sent anywhere/.test(await dlg.innerText()));
+  check("the sheet shows the reminder mark, and focus lands on its title, not the date field (no picker popping open)", await page.evaluate(() => { const m = document.querySelector(".rm-mark"); return !!m && m.complete && m.naturalWidth > 0 && document.activeElement?.id === "rm-h"; }));
   await axe(page, "the Remind me sheet");
   await page.fill("#rm-date", "2026-11-10"); await page.fill("#rm-time", "21:30");
   const [dl] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Save to my calendar" }).click()]);
@@ -73,6 +75,18 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
   const homeText = await body.innerText().catch((e) => "ERR " + e.message);
   check("Home asks how it went", /How did it go\?/.test(homeText) && /Phone in the kitchen/.test(homeText), homeText.slice(0, 300).replace(/\n/g, " / ") + " | place=" + await page.evaluate(() => document.body.dataset.place + " " + location.hash));
   check("…and offers the calendar reminder there too", (await page.getByRole("button", { name: "Remind me in my calendar" }).count()) === 1);
+  // ----- How did it go?: four outcomes as tiles, the note optional, "Not yet" counts like any other -----
+  await page.locator("#e-body .e-wait").click();
+  await page.waitForSelector(".x-tiles");
+  check("How did it go? offers four outcomes as tiles", (await page.locator(".x-tiles [role=radio]").count()) === 4 && (await page.getByRole("radio", { name: "I changed my mind" }).count()) === 1 && (await page.getByRole("radio", { name: "Not yet" }).count()) === 1);
+  check("…with the coming-back painting behind it", /RV-1/.test(await page.locator("#x-art img").getAttribute("src").catch(() => "")) && await page.evaluate(() => !document.getElementById("x-art").hidden));
+  await axe(page, "How did it go?");
+  await page.getByRole("radio", { name: "Not yet" }).click();
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.waitForFunction(() => /Thank you for coming back/.test(document.getElementById("x-body")?.innerText ?? ""), null, { timeout: 15000 });
+  check("Not yet, with no note, is saved and thanked", /Not yet is fine/.test(await page.locator("#x-body").innerText()));
+  await go(page, "home");
+  check("after a practice, Home is Earth again (not the first-visit planet)", await page.evaluate(() => !document.getElementById("earth").classList.contains("newcomer") && /E1/.test(getComputedStyle(document.getElementById("earth")).getPropertyValue("--e-art"))));
   check("the first-visit welcome is gone once you've begun", (await body.locator(".e-welcome").count()) === 0 && (await page.locator("#e-title").innerText()) === "Where will you grow today?");
 
   // ----- You: keeping it safe -----

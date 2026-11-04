@@ -50,7 +50,7 @@ export const ART = {
   missions: {
     "overthinking-1": { hero: "BO1-H", exercise: "BO1-X", reflect: "BO1-R", moon: "BO1-K", header: "BO1-W" },
     "overthinking-2": { hero: "BO2-H", exercise: "BO2-X", reflect: "BO2-R", moon: "BO2-K" },
-    "overthinking-3": { hero: "T4", exercise: "BO3-R", reflect: "BO3-R", moon: "BO3-K", header: "BO3-W" },
+    "overthinking-3": { hero: "BO3-H", exercise: "BO3-R", reflect: "BO3-R", moon: "BO3-K", header: "BO3-W" },
     "overthinking-4": { hero: "BO4-H", exercise: "BO4-X", reflect: "BO4-R", moon: "BO4-K" },
     "labyrinth-1": { hero: "TL1-H", exercise: "TL1-X", reflect: "TL1-R", moon: "TL1-K" },
     "bridge-1": { hero: "BR1-H", exercise: "BR1-X", reflect: "BR1-X", moon: "BR1-K" },
@@ -59,6 +59,9 @@ export const ART = {
     // the Gateway journey: each step has its own place
     "gateway-1": { hero: "B1", exercise: "B5", reflect: "B5", moon: "T9", passage: "B3",
       steps: { intro: "B1", intention: "B1", passage: "B2", "future-self": "B4", close: "B6" }, scene: ["intention", "passage", "future-self"] },
+    // the two Wisdom Constellations (final art pass, 4 Nov 2026)
+    "consistency-1": { hero: "BC-H", exercise: "BC-X", reflect: "BC-R", moon: "BC-K" },
+    "connection-1": { hero: "FC-H", exercise: "FC-R", reflect: "FC-R", moon: "FC-K" },
     // the five gateway questions: each world's own painting
     ...Object.fromEntries([["mirror-1", "mind"], ["vitality-1", "body"], ["becoming-1", "soul"], ["observatory-1", "spirit"], ["horizon-1", "future"]]
       .map(([id, w]) => [id, { hero: `worlds/closeup-${w}`, reflect: `worlds/closeup-${w}` }])),
@@ -68,6 +71,10 @@ export const ART = {
   planned: { "Emotional Awareness": "D3", "Belief Transformation": "D5", "Learning & Creativity": "D6" },
   galaxies: { ai: "A3", knowledge: "A4", spiritual: "A5", creative: "A6", earth: "A7", gateway: "A8" },
   home: "E1", compass: "U11", star: "T10", moon: "T9",
+  /** "How did it go?" (coming back to tell) and the calendar reminder mark. */
+  review: "RV-1", remind: "RM-1",
+  /** A first visit: the five worlds as one planet (HM-1). After the first practice, Home is Earth again. */
+  welcome: "HM-1",
   /** The Knowledge tree's art (TR-BG and the seven TN- spheres, docs/universe/chatgpt-tree-and-path-prompts.txt). Off until the images are in assets/img/art. */
   tree: true,
   /** Bianno's levelling-up art (docs/universe/chatgpt-levelling-up-prompts.txt): the path, and each threshold as it arrives. */

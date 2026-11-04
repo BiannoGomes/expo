@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-03T21:48:27.627Z",
+  "when": "2026-11-04T03:11:28.445Z",
   "checks": [
     {
       "name": "Spiritual Exploration: 4 open, 1 planned",
@@ -99,7 +99,7 @@
     {
       "name": "garden draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":209,\"median\":29}"
+      "detail": "{\"n\":151,\"median\":57}"
     },
     {
       "name": "a dream is kept with its title",
@@ -119,7 +119,7 @@
     {
       "name": "dreams draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":106,\"median\":50}"
+      "detail": "{\"n\":80,\"median\":83}"
     },
     {
       "name": "the practice begins with breathing in",
@@ -149,7 +149,7 @@
     {
       "name": "stillness draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":114,\"median\":84}"
+      "detail": "{\"n\":79,\"median\":100}"
     },
     {
       "name": "tapping the Sun in 3D opens its facts",
@@ -179,7 +179,7 @@
     {
       "name": "observatory draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":82,\"median\":74}"
+      "detail": "{\"n\":65,\"median\":100}"
     },
     {
       "name": "The Sound Sanctuary by link shows the members' gate",
@@ -244,7 +244,7 @@
     {
       "name": "architect draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":232,\"median\":19}"
+      "detail": "{\"n\":161,\"median\":32}"
     },
     {
       "name": "a kept place opens again from the gallery",
@@ -264,7 +264,7 @@
     {
       "name": "sanctuary draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":96,\"median\":53}"
+      "detail": "{\"n\":81,\"median\":66}"
     },
     {
       "name": "a star offers an invitation",
@@ -279,7 +279,7 @@
     {
       "name": "cosmos draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":64,\"median\":75}"
+      "detail": "{\"n\":53,\"median\":100}"
     },
     {
       "name": "a moon goes into orbit",
@@ -304,7 +304,7 @@
     {
       "name": "lab draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":240,\"median\":69}"
+      "detail": "{\"n\":198,\"median\":100}"
     },
     {
       "name": "no page or shader errors",
@@ -333,36 +333,36 @@
   },
   "frames": {
     "garden": {
-      "n": 209,
-      "median": 29
+      "n": 151,
+      "median": 57
     },
     "dreams": {
-      "n": 106,
-      "median": 50
+      "n": 80,
+      "median": 83
     },
     "stillness": {
-      "n": 114,
-      "median": 84
+      "n": 79,
+      "median": 100
     },
     "observatory": {
-      "n": 82,
-      "median": 74
+      "n": 65,
+      "median": 100
     },
     "architect": {
-      "n": 232,
-      "median": 19
+      "n": 161,
+      "median": 32
     },
     "sanctuary": {
-      "n": 96,
-      "median": 53
+      "n": 81,
+      "median": 66
     },
     "cosmos": {
-      "n": 64,
-      "median": 75
+      "n": 53,
+      "median": 100
     },
     "lab": {
-      "n": 240,
-      "median": 69
+      "n": 198,
+      "median": 100
     }
   },
   "summary": {
