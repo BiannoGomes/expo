@@ -666,8 +666,30 @@
   .gx-lock { position:absolute; left:50%; top:6px; transform:translateX(-50%); z-index:1; display:inline-flex; align-items:center; gap:4px; font-size:13px; color:var(--dim); white-space:nowrap; background:rgba(5,7,13,.7); padding:2px 8px; border-radius:var(--r-pill); }
   .alist .row.locked .rtitle { color:var(--dim); }
   .card.unlocked { position:relative; overflow:hidden; display:grid; gap:var(--s2); border-color:var(--edge-strong); }
-  /* focus mode: inside a practice, no tab bar (one way out, at the top) */
-  body.in-practice #tabs { display:none; }
+  /* focus mode: inside a practice the tab bar steps aside (one way out, at the top). It slides, so nothing
+     teleports; visibility makes it unreachable for touch, keyboard and screen readers while away. */
+  #tabs { transition:transform .26s cubic-bezier(.32,.72,0,1), visibility 0s; }
+  body.in-practice #tabs { transform:translateY(110%); visibility:hidden; transition:transform .26s cubic-bezier(.32,.72,0,1), visibility 0s .26s; }
+  @media (min-width:900px) { body.in-practice #tabs { transform:translate(calc(100% + 48px), -50%); } }
+
+  /* ---- Flow (the default motion, motion.js): small, physical, never in the way ---- */
+  /* sheets rise from the bottom edge they live on, on the drawer curve; pull-down to dismiss is in motion.js */
+  :root:not([data-motion="now"]):not([data-motion="reduced"]) .sheetdlg[open] { transition:transform .38s cubic-bezier(.32,.72,0,1), opacity .2s ease-out, overlay .38s allow-discrete, display .38s allow-discrete; }
+  @starting-style { :root:not([data-motion="now"]):not([data-motion="reduced"]) .sheetdlg[open] { transform:translateY(100%); opacity:.6; } }
+  :root:not([data-motion="now"]):not([data-motion="reduced"]) .sheetdlg[open]::backdrop { transition:opacity .3s ease-out; }
+  @starting-style { :root:not([data-motion="now"]):not([data-motion="reduced"]) .sheetdlg[open]::backdrop { opacity:0; } }
+  /* the step you're on grows from a dot into a short bar (state, not decoration) */
+  .qpos span { transition:width .24s cubic-bezier(.23,1,.32,1), background-color .24s ease-out; }
+  .qpos span.here { width:calc(var(--s6) * 1.6); }
+  /* "All chapters", "Why this works", "More": open smoothly where the browser can animate to auto height */
+  :root { interpolate-size:allow-keywords; }
+  :root:not([data-motion="now"]):not([data-motion="reduced"]) details.more::details-content { height:0; overflow:clip; transition:height .32s cubic-bezier(.23,1,.32,1), content-visibility .32s allow-discrete; }
+  :root:not([data-motion="now"]):not([data-motion="reduced"]) details.more[open]::details-content { height:auto; }
+  /* the card you tap becomes the heading of the practice it opens (View Transitions, Flow only) */
+  ::view-transition-group(dw-hero) { animation-duration:.42s; animation-timing-function:cubic-bezier(.32,.72,0,1); }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration:.26s; }
+  @media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation:none !important; } #tabs, body.in-practice #tabs, .qpos span { transition:none; } }
+  :root[data-motion="now"] #tabs, :root[data-motion="now"] body.in-practice #tabs { transition:none; }
   .un-title { font-family:var(--display); font-size:24px; font-weight:500; margin:0; color:var(--ink); }
   /* the unlock is a quiet line under Today's one card */
   .card.unlocked.slim { display:flex; align-items:center; justify-content:space-between; gap:var(--s3); padding:var(--s3) var(--s4); }
@@ -987,7 +1009,7 @@
   </section>
 </main>
 
-<div id="m-pill" class="m-pill" role="group" aria-label="Motion style (preview)" hidden></div>
+<div id="m-pill" class="m-pill" role="group" aria-label="Compare motion directions" hidden></div>
 <nav id="tabs" aria-label="Main">
   <button data-tab="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20h-5.5v-5.5h-5V20H4z"/></svg>Home</button>
   <button data-tab="universe"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-20 12 12)"/><circle cx="12" cy="12" r="2.2"/></svg>Universe</button>

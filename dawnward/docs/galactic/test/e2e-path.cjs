@@ -167,7 +167,8 @@ async function atlasList(p) {
   await c3.addInitScript(() => { if (location.protocol === "about:") return; if (!sessionStorage.getItem("seeded")) { sessionStorage.setItem("seeded", "1");
     localStorage.setItem("dw-progress-v1", JSON.stringify({ unlocked: { knowledge: "2026-11-01" }, celebrated: {} })); } });
   await go(p3, "home");
-  check("with reduced motion the ring is still, but the card is there", (await p3.locator("#e-body .card.unlocked").count()) === 1 && (await p3.locator(".unlock-ring").evaluate((e) => getComputedStyle(e).animationName)) === "none");
+  // the unlock is a quiet line now (user council): with reduced motion it's there, and nothing in it moves
+  check("with reduced motion the unlock line is there, and nothing in it moves", (await p3.locator("#e-body .card.unlocked").count()) === 1 && await p3.locator("#e-body .card.unlocked").evaluate((c) => [c, ...c.querySelectorAll("*")].every((e) => getComputedStyle(e).animationName === "none")));
 
   // ----- small phone -----
   await page.setViewportSize({ width: 320, height: 640 });

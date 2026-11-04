@@ -17,7 +17,8 @@ async function axe(page, label) {
 const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeout: 60000 });
 const go = async (p, hash, wait = 900) => { await p.goto("about:blank"); await p.goto(BASE + "#/" + hash); await ready(p); await p.waitForTimeout(wait); };
 const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).click();
-const tabsShown = (p) => p.evaluate(() => getComputedStyle(document.getElementById("tabs")).display !== "none");
+// the tab bar slides away in focus mode and is then hidden from touch, keyboard and screen readers
+const tabsShown = (p) => p.locator("#tabs").isVisible();
 
 (async () => {
   const browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });

@@ -169,7 +169,8 @@ export function createExplore(store, h) {
       el("h3", { class: "c-title", id: "x-feat" }, m.title),
       el("p", { class: "c-part" }, `${META[m.world].name} · ${m.part.replace(/^Chapter \d+: /, "")}`),
       a ? el("div", { class: "lockbar", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(n), "aria-valuenow": String(at), "aria-label": `${at} of ${n}` }, el("span", { style: `width:${Math.round((at / n) * 100)}%` })) : null,
-      el("button", { class: "primary wide", onclick: () => play(m.id) }, a ? `Continue · ${at} of ${n}` : `Begin · ${m.minutes} min`));
+      // Flow: the card's title becomes the practice's heading (motion.js morph); a plain open everywhere else
+      el("button", { class: "primary wide", onclick: (e) => (h.motion?.morph ? h.motion.morph(e.currentTarget.closest(".x-feature")?.querySelector(".c-title"), () => play(m.id), () => body().querySelector(".s-title")) : play(m.id)) }, a ? `Continue · ${at} of ${n}` : `Begin · ${m.minutes} min`));
   }
 
   // ----- the Discovery Galaxy, as a list that works without any 3D -----

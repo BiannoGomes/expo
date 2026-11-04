@@ -14,7 +14,7 @@ import { createExplore, localStore, remoteStore } from "./explore.js";
 import { createCreative, REALMS } from "./creative.js";
 import "./scope.js";
 import { bank as questionBank } from "./questions.js";
-import { createMotion, PROFILES as MOTIONS } from "./motion.js";
+import { createMotion, PROFILES as MOTIONS, LAB as MOTION_LAB } from "./motion.js";
 import { reminderSheet } from "./remind.js";
 import { observations, weekSummary, OUTCOME_WORDS } from "./noticing.js";
 import { createProgress, facts as pathFacts, PATH, KEY as PATH_KEY } from "./progress.js";
@@ -913,11 +913,12 @@ function main(data, failed) {
   }
   // the motion lab: flip between the three directions anywhere in the app (kept on this device)
   function drawMotionLab() {
-    const seg = el("div", { class: "seg", role: "radiogroup", "aria-label": "Motion style (preview)" }, MOTIONS.map(([k, label]) =>
+    const seg = el("div", { class: "seg", role: "radiogroup", "aria-label": "Motion style" }, MOTIONS.map(([k, label]) =>
       el("button", { role: "radio", "aria-checked": String(motion.profile === k), "data-m": k, onclick: () => { motion.set(k); drawMotionLab(); announce(`Motion: ${label}.`); } }, label)));
-    $("y-motion").replaceChildren(el("p", { class: "quiet small", id: "y-motion-h" }, "Motion style (preview)"), seg);
-    $("m-pill").hidden = motion.profile === "now";
-    $("m-pill").replaceChildren(...MOTIONS.filter(([k]) => k !== "now").map(([k, label]) =>
+    $("y-motion").replaceChildren(el("p", { class: "quiet small", id: "y-motion-h" }, "Motion style: Flow is the default. Calm, Living and Depth are there to compare; Still keeps movement to a minimum."), seg);
+    // the comparison pill is for the lab directions only; Flow and Still are settled choices
+    $("m-pill").hidden = !MOTION_LAB.includes(motion.profile);
+    $("m-pill").replaceChildren(...MOTIONS.filter(([k]) => MOTION_LAB.includes(k)).map(([k, label]) =>
       el("button", { "aria-pressed": String(motion.profile === k), onclick: () => { motion.set(k); drawMotionLab(); announce(`Motion: ${label}.`); } }, label)));
   }
   drawMotionLab();
@@ -1237,7 +1238,7 @@ function main(data, failed) {
       el("p", { class: "c-part" }, `${META[m.world].name} · ${m.part.replace(/^Chapter \d+: /, "")}`),
       pick.step ? el("div", { class: "c-bar", role: "progressbar", "aria-label": "Progress", "aria-valuemin": "0", "aria-valuemax": String(total), "aria-valuenow": String(pick.step), "aria-valuetext": `${pick.step + 1} of ${total}` },
         el("span", { style: `width:${Math.round((100 * pick.step) / total)}%` })) : null,
-      el("button", { class: "primary wide", onclick: () => explore.play(m.id, { from: fromHome }) }, `${pick.resume ? "Continue" : "Begin"} · ${meta}`),
+      el("button", { class: "primary wide", onclick: (e) => motion.morph(e.currentTarget.closest(".nextcard")?.querySelector(".c-title"), () => explore.play(m.id, { from: fromHome }), () => $("x-body")?.querySelector(".s-title")) }, `${pick.resume ? "Continue" : "Begin"} · ${meta}`),
       el("div", { class: "c-row" },
         el("button", { class: "text-btn", onclick: () => explore.open() }, "Choose another"),
         el("button", { class: "text-btn", onclick: () => { try { localStorage.setItem(COMPASS_HIDE, localDay()); } catch {} drawEarth(); $("e-title").focus(); announce("No suggestion today."); } }, "Not today"),

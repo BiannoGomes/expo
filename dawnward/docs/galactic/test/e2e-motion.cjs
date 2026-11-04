@@ -1,6 +1,8 @@
-// The motion lab: three directions (Calm, Living, Depth) you can flip between anywhere, next to today's motion (Now).
-// Now is the default and adds nothing; a choice is kept on this device; arrivals animate only in the chosen direction;
-// nothing is ever left hidden at rest; prefers-reduced-motion turns all of it off; the switcher is accessible.
+// How Dawnward moves (4 Nov 2026): Flow is the default (springs, a card that becomes its practice, sheets you can
+// pull down, a tab bar that steps aside in a practice). The lab directions (Calm, Living, Depth) stay switchable
+// on a pill for comparison; Still adds nothing. A choice is kept on this device; nothing is ever left hidden at
+// rest; prefers-reduced-motion turns all of it off; the switcher is accessible.
+// Runs WITHOUT still.cjs (this is the suite that tests motion).
 // Serve dawnward/experience/dist on :8771 first. Run with NODE_PATH=$(npm root -g).
 const { chromium } = require("playwright");
 const fs = require("fs");
@@ -33,26 +35,57 @@ const pick = async (p, label) => { await p.getByRole("radio", { name: label, exa
 
 (async () => {
   const browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
-  { const nc = browser.newContext.bind(browser); browser.newContext = async (o) => { const c = await nc(o); await c.addInitScript(() => { try { if (location.protocol !== "about:" && !localStorage.getItem("dw-progress-v1")) localStorage.setItem("dw-progress-v1", JSON.stringify({ unlocked: { knowledge: "seed", spiritual: "seed", creative: "seed", ai: "seed", gateway: "seed" }, celebrated: { knowledge: true, spiritual: true, creative: true, ai: true, gateway: true } })); } catch {} }); return c; }; }
+  { const nc = browser.newContext.bind(browser); browser.newContext = async (o) => { const c = await nc(o); await c.addInitScript(() => {
+    // count View Transitions (the Flow morph), without changing what they do
+    if (typeof document.startViewTransition === "function") { const vt = document.startViewTransition.bind(document); window.__vt = 0; document.startViewTransition = (...a) => { window.__vt++; return vt(...a); }; }
+  }); await c.addInitScript(() => { try { if (location.protocol !== "about:" && !localStorage.getItem("dw-progress-v1")) localStorage.setItem("dw-progress-v1", JSON.stringify({ unlocked: { knowledge: "seed", spiritual: "seed", creative: "seed", ai: "seed", gateway: "seed" }, celebrated: { knowledge: true, spiritual: true, creative: true, ai: true, gateway: true } })); } catch {} }); return c; }; }
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
   const errors = []; page.on("pageerror", (e) => errors.push(String(e)));
 
-  // ----- Now (the default) adds nothing -----
+  // ----- Flow (the default) -----
   await go(page, "home");
-  check("Now is the default", (await mode(page)) === "now" && (await kept(page)) === null, String(await mode(page)));
-  check("no motion pill while on Now", await page.locator("#m-pill").isHidden());
+  check("Flow is the default, and nothing needs keeping to have it", (await mode(page)) === "flow" && (await kept(page)) === null, String(await mode(page)));
+  check("no comparison pill on Flow", await page.locator("#m-pill").isHidden());
   let n = 0; for (const t of ["universe", "journey", "learn", "home"]) { await tab(page, t); n += await ours(page); }
-  check("Now: moving between places starts no motion-lab animations", n === 0, String(n));
+  check("Flow: places arrive with motion", n > 0, String(n));
+  await page.waitForTimeout(2200);
+  check("Flow: once landed, nothing is left faded, shifted or blurred", await settled(page));
+  // the card you tap becomes the practice's heading (View Transitions)
+  await go(page, "home", 1000);
+  const vt0 = await page.evaluate(() => window.__vt ?? -1);
+  await page.locator("#e-body .nextcard .primary").click();
+  await page.waitForSelector("#x-body .s-title");
+  await page.waitForTimeout(900);
+  check("Flow: opening a practice from Today is one continuous transition", vt0 >= 0 && (await page.evaluate(() => window.__vt)) === vt0 + 1, `${vt0} → ${await page.evaluate(() => window.__vt)}`);
+  check("…that leaves no transition names behind, and focus on the heading", await page.evaluate(() => ![...document.querySelectorAll("*")].some((e) => e.style?.viewTransitionName) && document.activeElement?.classList.contains("s-title")));
+  check("Flow: the tab bar has stepped aside inside the practice", !(await page.locator("#tabs").isVisible()));
+  const dots = await page.evaluate(() => [...document.querySelectorAll("#x-body .qpos span")].map((e) => Math.round(e.getBoundingClientRect().width)));
+  check("the step you're on is a short bar, the others dots", dots.length > 2 && dots[0] > dots[1], JSON.stringify(dots));
+  await page.locator("#x-body .qhead .back").click(); await page.waitForTimeout(600);
+  check("…and slides back when you leave", await page.locator("#tabs").isVisible());
+  // sheets rise, and can be pulled down
+  await page.getByRole("button", { name: "Set a direction" }).click();
+  await page.waitForTimeout(700);
+  const sheet = page.locator("dialog.sheetdlg[open]");
+  check("a sheet rises into place", (await sheet.count()) === 1 && await sheet.evaluate((d) => { const t = getComputedStyle(d).transform; return t === "none" || t === "matrix(1, 0, 0, 1, 0, 0)"; }) && /transform/.test(await sheet.evaluate((d) => getComputedStyle(d).transitionProperty)));
+  let box = await sheet.boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + 14); await page.mouse.down(); await page.mouse.move(box.x + box.width / 2, box.y + 30, { steps: 3 }); await page.mouse.up();
+  await page.waitForTimeout(700);
+  check("a small pull springs back: the sheet stays", (await sheet.count()) === 1 && await sheet.evaluate((d) => !d.style.transform));
+  box = await sheet.boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + 14); await page.mouse.down(); await page.mouse.move(box.x + box.width / 2, box.y + 14 + box.height * 0.6, { steps: 6 }); await page.mouse.up();
+  await page.waitForTimeout(900);
+  check("pulling it most of the way down dismisses it", (await page.locator("dialog.sheetdlg[open]").count()) === 0);
 
   // ----- the switcher in You › Display -----
   await go(page, "you");
-  const group = page.getByRole("radiogroup", { name: "Motion style (preview)" });
-  check("You › Display has the motion switcher with four choices", (await group.getByRole("radio").count()) === 4, String(await group.getByRole("radio").count()));
-  check("Now is checked to begin with", (await page.getByRole("radio", { name: "Now", exact: true }).getAttribute("aria-checked")) === "true");
+  const group = page.getByRole("radiogroup", { name: "Motion style" });
+  check("You › Display has the motion switcher with five choices", (await group.getByRole("radio").count()) === 5, String(await group.getByRole("radio").count()));
+  check("Flow is checked to begin with", (await page.getByRole("radio", { name: "Flow", exact: true }).getAttribute("aria-checked")) === "true");
   await pick(page, "Living");
   check("choosing Living checks it and is kept on this device", (await page.getByRole("radio", { name: "Living", exact: true }).getAttribute("aria-checked")) === "true" && (await kept(page)) === "living" && (await mode(page)) === "living");
-  check("the pill appears with the three directions", (await page.locator("#m-pill").isVisible()) && (await page.locator("#m-pill button").count()) === 3);
+  check("the comparison pill appears with the three lab directions", (await page.locator("#m-pill").isVisible()) && (await page.locator("#m-pill button").count()) === 3);
   check("the pill marks Living as on", (await page.locator('#m-pill button[aria-pressed="true"]').innerText()).trim() === "Living");
   await axe(page, "You with the motion switcher and pill");
 
@@ -89,14 +122,20 @@ const pick = async (p, label) => { await p.getByRole("radio", { name: label, exa
   check("Done: one star flies to Journey, hidden from screen readers, then is gone", flying === 1 && hidden === "true" && (await page.locator(".m-star").count()) === 0, `${flying} ${hidden}`);
   check("Done: the focus stays on the Done heading", await page.evaluate(() => document.activeElement?.classList.contains("s-title")));
 
-  // ----- it survives a reload; Now turns it all off -----
+  // ----- it survives a reload; Still turns it all off; Flow forgets the choice -----
   await go(page, "journey");
   check("the choice survives a reload", (await mode(page)) === "calm" && (await page.locator("#m-pill").isVisible()));
   await go(page, "you");
-  await pick(page, "Now");
-  check("back to Now: nothing kept, no pill", (await kept(page)) === null && (await mode(page)) === "now" && (await page.locator("#m-pill").isHidden()));
+  await pick(page, "Still");
+  check("Still: kept, no pill", (await kept(page)) === "now" && (await mode(page)) === "now" && (await page.locator("#m-pill").isHidden()));
   n = 0; for (const t of ["universe", "journey"]) { await tab(page, t); n += await ours(page); }
-  check("back to Now: no motion-lab animations", n === 0, String(n));
+  check("Still: no arrivals animate", n === 0, String(n));
+  await go(page, "home", 1000);
+  const vts = await page.evaluate(() => window.__vt ?? 0);
+  await page.locator("#e-body .nextcard .primary").click(); await page.waitForSelector("#x-body .s-title");
+  check("Still: opening a practice is a plain cut, no transition", (await page.evaluate(() => window.__vt ?? 0)) === vts);
+  await go(page, "you"); await pick(page, "Flow");
+  check("back to Flow: nothing kept (it's the default)", (await kept(page)) === null && (await mode(page)) === "flow");
 
   // ----- reduced motion wins over any choice -----
   const rctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
@@ -107,6 +146,11 @@ const pick = async (p, label) => { await p.getByRole("radio", { name: label, exa
   n = 0; for (const t of ["universe", "journey", "learn", "home"]) { await tab(rp, t); n += await ours(rp); }
   check("reduced motion: no motion-lab animations at all", n === 0, String(n));
   check("reduced motion: no star element", (await rp.locator(".m-star").count()) === 0);
+  await go(rp, "home", 1000);
+  const rvt = await rp.evaluate(() => window.__vt ?? 0);
+  await rp.locator("#e-body .nextcard .primary").click(); await rp.waitForSelector("#x-body .s-title");
+  check("reduced motion: no transition when a practice opens", (await rp.evaluate(() => window.__vt ?? 0)) === rvt);
+  check("reduced motion: the tab bar leaves without sliding", await rp.evaluate(() => getComputedStyle(document.getElementById("tabs")).transitionDuration.split(",").every((d) => parseFloat(d) === 0)));
   await rctx.close();
 
   // ----- small phones: the pill fits and never pushes the page sideways -----

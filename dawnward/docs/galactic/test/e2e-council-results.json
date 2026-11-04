@@ -1,0 +1,195 @@
+{
+  "when": "2026-11-04T07:50:31.843Z",
+  "checks": [
+    {
+      "name": "focus mode: no tab bar inside a practice",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "focus mode: one way out at the top, no breadcrumb trail",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the intro says what you'll do, in plain words",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "your own words come at step 2, before any lesson",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the sort shows YOUR thoughts, one per line",
+      "ok": true,
+      "detail": "[\"Should I take the new job?\",\"What if I hate it after a month?\",\"When would I need to tell my manager?\"]"
+    },
+    {
+      "name": "no stranger's thoughts to sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Continue waits until each is sorted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "afterwards: your own count, never a 'reading' of your thoughts or a score",
+      "ok": true,
+      "detail": "Moves forward: 2 · Goes round: 1 /  / There's no right answer here: noticing the difference is the skill. The thoughts that move forward point to something you can find out or do. The ones that go round won't be settled by more thinking."
+    },
+    {
+      "name": "axe: sorting your own thoughts",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the lesson is short: two paragraphs",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the full reading is one tap away, closed by default",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "…and opens to the longer reading",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: the short lesson",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the three questions ask about one of YOUR thoughts that goes round",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Done says what you did",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "focus mode ends when you leave: the tab bar is back",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "beta: Home offers Chapter 2 of 4 next (no members' gate)",
+      "ok": true,
+      "detail": "Beyond Overthinking /  / Mind · Separate facts from assumptions /  / Begin · Chapter 2 of 4 · 8 min / Choose another / Not today / Why this?"
+    },
+    {
+      "name": "…and the step chosen today waits as a quiet row, not a second card",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "beta: Learn shows no Plus labels",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "beta: Chapter 2 opens straight away, no gate",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "beta: You says nothing about plans or membership",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a step chosen before today comes first: one card asks how it went",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "…and it's the only gold button",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a galaxy opening is a quiet line under the card, with no big painting",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Today with one card",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the card opens How did it go?",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Reflect says when noticing can start (0 so far)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "…and counts down honestly (1 so far)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Your week says the same, instead of an empty space",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Your week offers a weekly reminder",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the sheet explains it repeats, and nothing is sent",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it starts on the next Sunday, at 18:00",
+      "ok": true,
+      "detail": "2026-11-08 18:00"
+    },
+    {
+      "name": "axe: the weekly reminder",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the file repeats weekly and opens Your week",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "lines are folded at 75 octets",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "sorting your own thoughts": [],
+    "the short lesson": [],
+    "Today with one card": [],
+    "the weekly reminder": []
+  },
+  "summary": {
+    "total": 36,
+    "failed": 0
+  }
+}

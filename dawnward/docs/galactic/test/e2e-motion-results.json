@@ -1,28 +1,73 @@
 {
-  "when": "2026-11-04T05:58:05.933Z",
+  "when": "2026-11-04T07:49:36.831Z",
   "checks": [
     {
-      "name": "Now is the default",
+      "name": "Flow is the default, and nothing needs keeping to have it",
       "ok": true,
-      "detail": "now"
+      "detail": "flow"
     },
     {
-      "name": "no motion pill while on Now",
+      "name": "no comparison pill on Flow",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "Now: moving between places starts no motion-lab animations",
+      "name": "Flow: places arrive with motion",
       "ok": true,
-      "detail": "0"
+      "detail": "48"
     },
     {
-      "name": "You › Display has the motion switcher with four choices",
+      "name": "Flow: once landed, nothing is left faded, shifted or blurred",
       "ok": true,
-      "detail": "4"
+      "detail": ""
     },
     {
-      "name": "Now is checked to begin with",
+      "name": "Flow: opening a practice from Today is one continuous transition",
+      "ok": true,
+      "detail": "0 → 1"
+    },
+    {
+      "name": "…that leaves no transition names behind, and focus on the heading",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Flow: the tab bar has stepped aside inside the practice",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the step you're on is a short bar, the others dots",
+      "ok": true,
+      "detail": "[38,24,24,24,24,24,24]"
+    },
+    {
+      "name": "…and slides back when you leave",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a sheet rises into place",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a small pull springs back: the sheet stays",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "pulling it most of the way down dismisses it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "You › Display has the motion switcher with five choices",
+      "ok": true,
+      "detail": "5"
+    },
+    {
+      "name": "Flow is checked to begin with",
       "ok": true,
       "detail": ""
     },
@@ -32,7 +77,7 @@
       "detail": ""
     },
     {
-      "name": "the pill appears with the three directions",
+      "name": "the comparison pill appears with the three lab directions",
       "ok": true,
       "detail": ""
     },
@@ -54,7 +99,7 @@
     {
       "name": "Living: arrivals animate",
       "ok": true,
-      "detail": "51 animations over 4 places"
+      "detail": "53 animations over 4 places"
     },
     {
       "name": "Living: once landed, nothing is left faded, shifted or blurred",
@@ -94,7 +139,7 @@
     {
       "name": "Depth: arrivals animate",
       "ok": true,
-      "detail": "72 animations over 4 places"
+      "detail": "77 animations over 4 places"
     },
     {
       "name": "Depth: once landed, nothing is left faded, shifted or blurred",
@@ -127,14 +172,24 @@
       "detail": ""
     },
     {
-      "name": "back to Now: nothing kept, no pill",
+      "name": "Still: kept, no pill",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "back to Now: no motion-lab animations",
+      "name": "Still: no arrivals animate",
       "ok": true,
       "detail": "0"
+    },
+    {
+      "name": "Still: opening a practice is a plain cut, no transition",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "back to Flow: nothing kept (it's the default)",
+      "ok": true,
+      "detail": ""
     },
     {
       "name": "reduced motion: the lab stands down even with Depth chosen",
@@ -148,6 +203,16 @@
     },
     {
       "name": "reduced motion: no star element",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: no transition when a practice opens",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion: the tab bar leaves without sliding",
       "ok": true,
       "detail": ""
     },
@@ -171,7 +236,7 @@
     "You with the motion switcher and pill": []
   },
   "summary": {
-    "total": 33,
+    "total": 46,
     "failed": 0
   }
 }

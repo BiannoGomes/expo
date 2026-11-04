@@ -52,7 +52,8 @@ const noSideScroll = (p) => p.evaluate(() => document.documentElement.scrollWidt
   await page.locator("#earth .primary").click();
   await page.waitForTimeout(600);
   check("the primary action opens the expedition", (await page.evaluate(() => window.__dwHome.state.place)) === "explore");
-  await page.locator('#tabs [data-tab="home"]').click(); await page.waitForTimeout(400);
+  check("focus mode: no tab bar inside the practice, one way back to Home", !(await page.locator("#tabs").isVisible()) && /Home/.test(await page.locator("#x-body .qhead .back").innerText()));
+  await page.locator("#x-body .qhead .back").click(); await page.waitForTimeout(400);
 
   // ---- the direction sheet ----
   await page.getByRole("button", { name: "Set a direction" }).click();
