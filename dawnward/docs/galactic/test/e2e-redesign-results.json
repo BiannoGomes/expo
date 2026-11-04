@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T06:03:35.120Z",
+  "when": "2026-11-04T08:21:50.470Z",
   "checks": [
     {
       "name": "320×568: Home has no sideways scroll",
@@ -132,6 +132,11 @@
       "detail": ""
     },
     {
+      "name": "focus mode: no tab bar inside the practice, one way back to Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "the direction opens in a modal sheet, focus inside",
       "ok": true,
       "detail": ""
@@ -204,7 +209,7 @@
     {
       "name": "the input starts compact and grows as you write",
       "ok": true,
-      "detail": "120px to 236px"
+      "detail": "120px to 231px"
     },
     {
       "name": "the world chip changes the world",
@@ -273,7 +278,7 @@
     "Reflect": []
   },
   "summary": {
-    "total": 53,
+    "total": 54,
     "failed": 0
   }
 }

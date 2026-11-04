@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T06:19:44.046Z",
+  "when": "2026-11-04T08:18:52.053Z",
   "checks": [
     {
       "name": "Learn says Learn once",
@@ -104,7 +104,7 @@
     {
       "name": "You: under 120 words on the first screen",
       "ok": true,
-      "detail": "106"
+      "detail": "113"
     },
     {
       "name": "You: no all-caps labels, no small text",
@@ -112,22 +112,12 @@
       "detail": ""
     },
     {
-      "name": "You: short sections, data and privacy first after what's noticed",
+      "name": "You: short sections, data and privacy first after what's noticed (no plan section in the beta)",
       "ok": true,
-      "detail": "What I've noticed|Your data|Privacy|Your plan|Display"
-    },
-    {
-      "name": "plan details are behind More, and still there",
-      "ok": true,
-      "detail": ""
+      "detail": "What I've noticed|Your data|Privacy|Display"
     },
     {
       "name": "settings, privacy and data actions stay on screen",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "More opens the plan details",
       "ok": true,
       "detail": ""
     },
@@ -193,7 +183,7 @@
     "You": []
   },
   "summary": {
-    "total": 37,
+    "total": 35,
     "failed": 0
   }
 }

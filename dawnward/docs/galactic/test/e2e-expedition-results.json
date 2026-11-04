@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T07:25:28.086Z",
+  "when": "2026-11-04T08:31:49.943Z",
   "checks": [
     {
       "name": "phone: Learn lists the Communication system",
@@ -103,6 +103,11 @@
     },
     {
       "name": "phone: crisis words show support and pause the mission",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone: the support screen never hides the way out: the tab bar is back",
       "ok": true,
       "detail": ""
     },
@@ -232,6 +237,11 @@
       "detail": ""
     },
     {
+      "name": "desktop: the support screen never hides the way out: the tab bar is back",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "desktop: text view lists the practices",
       "ok": true,
       "detail": ""
@@ -261,7 +271,7 @@
     "desktop return to earth": []
   },
   "summary": {
-    "total": 50,
+    "total": 52,
     "failed": 0
   }
 }

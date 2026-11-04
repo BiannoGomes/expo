@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T05:59:39.760Z",
+  "when": "2026-11-04T08:19:22.586Z",
   "checks": [
     {
       "name": "the path lists every galaxy, in the order they open",
@@ -207,7 +207,7 @@
       "detail": ""
     },
     {
-      "name": "with reduced motion the ring is still, but the card is there",
+      "name": "with reduced motion the unlock line is there, and nothing in it moves",
       "ok": true,
       "detail": ""
     },

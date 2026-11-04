@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T07:25:14.032Z",
+  "when": "2026-11-04T08:17:43.507Z",
   "checks": [
     {
       "name": "a newcomer is told what it's for, in plain words, and how long",
@@ -52,6 +52,11 @@
       "detail": ""
     },
     {
+      "name": "no stray \"null\" text in the sheet",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "the sheet shows the reminder mark, and focus lands on its title, not the date field (no picker popping open)",
       "ok": true,
       "detail": ""
@@ -99,7 +104,7 @@
     {
       "name": "Home asks how it went",
       "ok": true,
-      "detail": "Knowledge is open /  / What you've done opened it. It stays open. /  / Go there / Beyond Overthinking /  / Mind · Understand the loop /  / Begin · Chapter 1 of 4 · 8 min / Choose another / Not today / Why this? / How did it go? / Phone in the kitchen, at night; then sleep / Remind me in my calendar / Your worlds / Mind / Body / Soul / Spi | place=earth #/home"
+      "detail": "Beyond Overthinking /  / Mind · Understand the loop /  / Begin · Chapter 1 of 4 · 8 min / Choose another / Not today / Why this? /  / ✦ Knowledge is open / What you've done opened it. It stays open. /  / Go there / How did it go? / Phone in the kitchen, at night; then sleep / Remind me in my calendar / Your worlds / Mind / Body / Soul / S | place=earth #/home"
     },
     {
       "name": "…and offers the calendar reminder there too",
@@ -168,7 +173,7 @@
     "How did it go?": []
   },
   "summary": {
-    "total": 32,
+    "total": 33,
     "failed": 0
   }
 }

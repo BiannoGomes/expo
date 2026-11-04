@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T06:24:22.353Z",
+  "when": "2026-11-04T08:23:26.755Z",
   "checks": [
     {
       "name": "Spiritual Exploration: 4 open, 0 planned",
@@ -37,7 +37,7 @@
       "detail": ""
     },
     {
-      "name": "members' worlds are marked",
+      "name": "beta: no world is marked for members",
       "ok": true,
       "detail": ""
     },
@@ -99,7 +99,7 @@
     {
       "name": "garden draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":240,\"median\":29}"
+      "detail": "{\"n\":240,\"median\":31}"
     },
     {
       "name": "a dream is kept with its title",
@@ -119,7 +119,7 @@
     {
       "name": "dreams draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":119,\"median\":44}"
+      "detail": "{\"n\":107,\"median\":49}"
     },
     {
       "name": "the practice begins with breathing in",
@@ -149,7 +149,7 @@
     {
       "name": "stillness draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":123,\"median\":74}"
+      "detail": "{\"n\":114,\"median\":83}"
     },
     {
       "name": "tapping the Sun in 3D opens its facts",
@@ -179,20 +179,20 @@
     {
       "name": "observatory draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":86,\"median\":74}"
+      "detail": "{\"n\":83,\"median\":78}"
     },
     {
-      "name": "The Sound Sanctuary by link shows the members' gate",
+      "name": "beta: The Sound Sanctuary by link opens, with no members' gate",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "The Discovery Lab by link shows the members' gate",
+      "name": "beta: The Discovery Lab by link opens, with no members' gate",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "The Dream Architect by link shows the members' gate",
+      "name": "beta: The Dream Architect by link opens, with no members' gate",
       "ok": true,
       "detail": ""
     },
@@ -244,7 +244,7 @@
     {
       "name": "architect draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":240,\"median\":19}"
+      "detail": "{\"n\":226,\"median\":19}"
     },
     {
       "name": "a kept place opens again from the gallery",
@@ -264,7 +264,7 @@
     {
       "name": "sanctuary draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":106,\"median\":45}"
+      "detail": "{\"n\":96,\"median\":50}"
     },
     {
       "name": "a star offers an invitation",
@@ -279,7 +279,7 @@
     {
       "name": "cosmos draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":70,\"median\":67}"
+      "detail": "{\"n\":67,\"median\":72}"
     },
     {
       "name": "a moon goes into orbit",
@@ -304,7 +304,7 @@
     {
       "name": "lab draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":240,\"median\":65}"
+      "detail": "{\"n\":240,\"median\":61}"
     },
     {
       "name": "no page or shader errors",
@@ -334,35 +334,35 @@
   "frames": {
     "garden": {
       "n": 240,
-      "median": 29
+      "median": 31
     },
     "dreams": {
-      "n": 119,
-      "median": 44
+      "n": 107,
+      "median": 49
     },
     "stillness": {
-      "n": 123,
-      "median": 74
+      "n": 114,
+      "median": 83
     },
     "observatory": {
-      "n": 86,
-      "median": 74
+      "n": 83,
+      "median": 78
     },
     "architect": {
-      "n": 240,
+      "n": 226,
       "median": 19
     },
     "sanctuary": {
-      "n": 106,
-      "median": 45
+      "n": 96,
+      "median": 50
     },
     "cosmos": {
-      "n": 70,
-      "median": 67
+      "n": 67,
+      "median": 72
     },
     "lab": {
       "n": 240,
-      "median": 65
+      "median": 61
     }
   },
   "summary": {

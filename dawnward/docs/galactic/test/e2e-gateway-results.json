@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T06:26:21.200Z",
+  "when": "2026-11-04T08:32:37.947Z",
   "checks": [
     {
       "name": "phone: the Gateway is open, and says it's imagination, not prediction",
@@ -7,7 +7,7 @@
       "detail": ""
     },
     {
-      "name": "phone: the trail reads Universe › The Quantum Gateway",
+      "name": "phone: one way back, to the Universe (focus mode: no trail, no tab bar)",
       "ok": true,
       "detail": ""
     },
@@ -97,7 +97,7 @@
       "detail": ""
     },
     {
-      "name": "desktop: the trail reads Universe › The Quantum Gateway",
+      "name": "desktop: one way back, to the Universe (focus mode: no trail, no tab bar)",
       "ok": true,
       "detail": ""
     },
@@ -129,7 +129,7 @@
     {
       "name": "desktop: the passage ends by itself in about 2.6 s (plus its fade)",
       "ok": true,
-      "detail": "3220 ms"
+      "detail": "3221 ms"
     },
     {
       "name": "desktop: arrives at A possible you, framed as imagined",
@@ -187,7 +187,7 @@
       "detail": ""
     },
     {
-      "name": "skip: the trail reads Universe › The Quantum Gateway",
+      "name": "skip: one way back, to the Universe (focus mode: no trail, no tab bar)",
       "ok": true,
       "detail": ""
     },
@@ -212,7 +212,7 @@
       "detail": ""
     },
     {
-      "name": "escape: the trail reads Universe › The Quantum Gateway",
+      "name": "escape: one way back, to the Universe (focus mode: no trail, no tab bar)",
       "ok": true,
       "detail": ""
     },
@@ -237,7 +237,7 @@
       "detail": ""
     },
     {
-      "name": "reduced: the trail reads Universe › The Quantum Gateway",
+      "name": "reduced: one way back, to the Universe (focus mode: no trail, no tab bar)",
       "ok": true,
       "detail": ""
     },
@@ -275,7 +275,7 @@
   },
   "timings": {
     "phone.passage_ms": 3221,
-    "desktop.passage_ms": 3220
+    "desktop.passage_ms": 3221
   },
   "summary": {
     "total": 53,

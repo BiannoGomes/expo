@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T06:24:03.865Z",
+  "when": "2026-11-04T08:22:57.772Z",
   "checks": [
     {
       "name": "Learn leads to the Library",
@@ -27,7 +27,7 @@
       "detail": ""
     },
     {
-      "name": "each pack shows what's inside and who it's for",
+      "name": "each pack shows what's inside, with no price labels in the beta",
       "ok": true,
       "detail": ""
     },
@@ -42,12 +42,12 @@
       "detail": ""
     },
     {
-      "name": "a members' pack shows what's inside, honestly, and nothing more",
+      "name": "beta: a members' pack opens for everyone, no gate",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "axe: a members' pack, locked",
+      "name": "axe: a pack, open in the beta",
       "ok": true,
       "detail": ""
     },
@@ -120,7 +120,7 @@
   "axe": {
     "the empty library": [],
     "the library": [],
-    "a members' pack, locked": [],
+    "a pack, open in the beta": [],
     "a members' pack, open": []
   },
   "summary": {

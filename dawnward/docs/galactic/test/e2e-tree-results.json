@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T06:23:22.423Z",
+  "when": "2026-11-04T08:22:19.408Z",
   "checks": [
     {
       "name": "the galaxy is one tree with seven branches, each a button",
@@ -179,7 +179,7 @@
     {
       "name": "knowing draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":110,\"median\":45}"
+      "detail": "{\"n\":106,\"median\":44}"
     },
     {
       "name": "the note appears in the Creation Gallery",
@@ -187,12 +187,12 @@
       "detail": ""
     },
     {
-      "name": "The Hall of the Seven Principles shows the members' gate",
+      "name": "beta: The Hall of the Seven Principles opens with no members' gate",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "The Five Solids shows the members' gate",
+      "name": "beta: The Five Solids opens with no members' gate",
       "ok": true,
       "detail": ""
     },
@@ -259,7 +259,7 @@
     {
       "name": "solids draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":152,\"median\":37}"
+      "detail": "{\"n\":155,\"median\":35}"
     },
     {
       "name": "no page or shader errors",
@@ -282,16 +282,16 @@
       "median": 17
     },
     "knowing": {
-      "n": 110,
-      "median": 45
+      "n": 106,
+      "median": 44
     },
     "hall": {
       "n": 219,
       "median": 24
     },
     "solids": {
-      "n": 152,
-      "median": 37
+      "n": 155,
+      "median": 35
     }
   },
   "summary": {

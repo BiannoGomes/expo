@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T06:07:19.611Z",
+  "when": "2026-11-04T08:24:57.329Z",
   "checks": [
     {
       "name": "#/universe/creative opens Creative Worlds",
@@ -17,7 +17,7 @@
       "detail": "The Infinite Door | The Floating Kingdom | The Living Forest | The Dream Architect | The Time Garden"
     },
     {
-      "name": "the Living Forest is marked for members",
+      "name": "beta: the Living Forest is open to everyone, not marked for members",
       "ok": true,
       "detail": ""
     },
@@ -62,7 +62,7 @@
       "detail": ""
     },
     {
-      "name": "four destinations, the forest marked for members",
+      "name": "four destinations, none marked for members in the beta",
       "ok": true,
       "detail": ""
     },
@@ -99,7 +99,7 @@
     {
       "name": "the kingdom draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":151,\"median\":45}"
+      "detail": "{\"n\":220,\"median\":26}"
     },
     {
       "name": "Things here lists all five lanterns",
@@ -132,24 +132,14 @@
       "detail": ""
     },
     {
-      "name": "the forest shows an honest members' gate",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "axe: the members' gate",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "member preview opens the Living Forest",
+      "name": "beta: the Living Forest opens straight away, no members' gate",
       "ok": true,
       "detail": ""
     },
     {
       "name": "the forest draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":62,\"median\":52}"
+      "detail": "{\"n\":85,\"median\":32}"
     },
     {
       "name": "waking a plant is kept",
@@ -206,21 +196,20 @@
     "galaxy page": [],
     "the door": [],
     "the kingdom with its list": [],
-    "the members' gate": [],
     "the forest in words": []
   },
   "frames": {
     "kingdom": {
-      "n": 151,
-      "median": 45
+      "n": 220,
+      "median": 26
     },
     "forest": {
-      "n": 62,
-      "median": 52
+      "n": 85,
+      "median": 32
     }
   },
   "summary": {
-    "total": 40,
+    "total": 38,
     "failed": 0
   }
 }

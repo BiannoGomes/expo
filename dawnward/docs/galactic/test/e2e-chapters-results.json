@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T06:16:42.507Z",
+  "when": "2026-11-04T08:32:18.651Z",
   "checks": [
     {
       "name": "phone: the Compass starts with Beyond Overthinking, Chapter 1 of 4",
@@ -37,7 +37,32 @@
       "detail": ""
     },
     {
-      "name": "phone ch1: the lesson reads in five short paragraphs",
+      "name": "phone ch1: your own words first, before any lesson",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: your three thoughts to sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: Continue waits until all are sorted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: your own count, never marked right or wrong",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: phone sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phone ch1: the lesson is short, the rest one tap away",
       "ok": true,
       "detail": ""
     },
@@ -53,31 +78,6 @@
     },
     {
       "name": "axe: phone lesson",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "phone ch1: six thoughts to sort",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "phone ch1: Continue waits until all are sorted",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "phone ch1: a reading of each, with reasons",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "phone ch1: a different sorting is treated as fair, never wrong",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "axe: phone sort",
       "ok": true,
       "detail": ""
     },
@@ -312,7 +312,32 @@
       "detail": ""
     },
     {
-      "name": "small ch1: the lesson reads in five short paragraphs",
+      "name": "small ch1: your own words first, before any lesson",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: your three thoughts to sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: Continue waits until all are sorted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: your own count, never marked right or wrong",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: small sort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "small ch1: the lesson is short, the rest one tap away",
       "ok": true,
       "detail": ""
     },
@@ -328,31 +353,6 @@
     },
     {
       "name": "axe: small lesson",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "small ch1: six thoughts to sort",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "small ch1: Continue waits until all are sorted",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "small ch1: a reading of each, with reasons",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "small ch1: a different sorting is treated as fair, never wrong",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "axe: small sort",
       "ok": true,
       "detail": ""
     },
@@ -554,14 +554,14 @@
   ],
   "axe": {
     "phone worksheet": [],
-    "phone lesson": [],
     "phone sort": [],
+    "phone lesson": [],
     "phone pause": [],
     "phone lab": [],
     "phone learn": [],
     "small worksheet": [],
-    "small lesson": [],
     "small sort": [],
+    "small lesson": [],
     "small pause": [],
     "small lab": [],
     "small learn": []

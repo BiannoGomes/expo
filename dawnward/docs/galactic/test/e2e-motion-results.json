@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T07:49:36.831Z",
+  "when": "2026-11-04T08:17:57.198Z",
   "checks": [
     {
       "name": "Flow is the default, and nothing needs keeping to have it",
@@ -99,7 +99,7 @@
     {
       "name": "Living: arrivals animate",
       "ok": true,
-      "detail": "53 animations over 4 places"
+      "detail": "57 animations over 4 places"
     },
     {
       "name": "Living: once landed, nothing is left faded, shifted or blurred",
@@ -139,7 +139,7 @@
     {
       "name": "Depth: arrivals animate",
       "ok": true,
-      "detail": "77 animations over 4 places"
+      "detail": "78 animations over 4 places"
     },
     {
       "name": "Depth: once landed, nothing is left faded, shifted or blurred",

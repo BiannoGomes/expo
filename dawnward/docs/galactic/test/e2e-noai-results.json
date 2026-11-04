@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T07:22:33.045Z",
+  "when": "2026-11-04T08:15:53.401Z",
   "checks": [
     {
       "name": "Learn shows nothing planned and no draft labels",
@@ -137,12 +137,7 @@
       "detail": ""
     },
     {
-      "name": "a brand-new journey/milestones prints no stray \"null\"",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "a brand-new you prints no stray \"null\"",
+      "name": "no main screen prints a stray \"null\" for a brand-new person (14 screens)",
       "ok": true,
       "detail": ""
     },
@@ -163,7 +158,7 @@
     "a worksheet being filled in": []
   },
   "summary": {
-    "total": 31,
+    "total": 30,
     "failed": 0
   }
 }

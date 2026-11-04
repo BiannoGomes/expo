@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T07:50:31.843Z",
+  "when": "2026-11-04T08:15:36.069Z",
   "checks": [
     {
       "name": "focus mode: no tab bar inside a practice",
@@ -73,6 +73,11 @@
     },
     {
       "name": "Done says what you did",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "on Done the tab bar is back (you're finished, and the star lands in Journey)",
       "ok": true,
       "detail": ""
     },
@@ -157,6 +162,11 @@
       "detail": ""
     },
     {
+      "name": "…with no stray \"null\" text (found in a screenshot, 4 Nov)",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "it starts on the next Sunday, at 18:00",
       "ok": true,
       "detail": "2026-11-08 18:00"
@@ -189,7 +199,7 @@
     "the weekly reminder": []
   },
   "summary": {
-    "total": 36,
+    "total": 38,
     "failed": 0
   }
 }

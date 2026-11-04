@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T06:25:49.605Z",
+  "when": "2026-11-04T08:25:37.912Z",
   "checks": [
     {
       "name": "address #/home opens earth",
@@ -132,47 +132,22 @@
       "detail": ""
     },
     {
-      "name": "in Mind's Expeditions, Chapter 2 is marked Plus",
+      "name": "in Mind's Expeditions, Chapter 2 is open to everyone in the beta",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "the Compass never offers a members' chapter to a free visitor",
+      "name": "the Compass offers Chapter 2 next",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "a members' chapter shows what's inside, and says plainly membership isn't open yet",
+      "name": "Chapter 2 opens with no members' gate",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "no fake checkout or price on the gate",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "a free alternative is offered",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "axe: gate",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "You › Plan says Free, and how membership will work",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "member preview switches on, on this device only",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "as a member, Chapter 2 is open",
+      "name": "You says nothing about a plan in the beta",
       "ok": true,
       "detail": ""
     },
@@ -229,11 +204,10 @@
   ],
   "axe": {
     "mind expeditions": [],
-    "gate": [],
     "mind progress": []
   },
   "summary": {
-    "total": 45,
+    "total": 40,
     "failed": 0
   }
 }
