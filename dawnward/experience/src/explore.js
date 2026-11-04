@@ -17,6 +17,7 @@ import {
   missionById,
   plannedAction,
   validateAnswer,
+  sortItems,
 } from "../../packages/core/src/expeditions/index.ts";
 
 const KEY = "dw-expeditions-v1";
@@ -118,10 +119,16 @@ export function remoteStore(call) {
  * The Explore view and quest player. `h` holds the page's helpers:
  * { $, el, svg, ICON, META, announce, quiet, longDate, sound, distress, crisisText, showPlace, onDiscoveries, goHomeWith }
  */
+/** Beta: everything open on the phone (no membership talk) until membership is real. */
+export const BETA_ALL_OPEN = true;
+
 export function createExplore(store, h) {
   const { $, el, svg, ICON, META } = h;
   let data = { attempts: [], experiments: [], discoveries: [], gameLayer: true, following: [], plan: "free" };
-  const gateOf = (m) => canPlay(m, data.plan ?? "free", data.attempts);
+  // The beta, on the phone: every chapter, world and pack is open, and nothing mentions a plan.
+  // The membership code stays for later (council verdict, docs/blueprint/2026-11-04-user-council.md).
+  const planNow = () => (store.local && BETA_ALL_OPEN ? "pro" : data.plan ?? "free");
+  const gateOf = (m) => canPlay(m, planNow(), data.attempts);
   const locked = (m) => !gateOf(m).ok;
   const isFollowing = (systemId) => (data.following ?? []).some((f) => f.systemId === systemId);
   async function follow(systemId, on) {
@@ -174,6 +181,7 @@ export function createExplore(store, h) {
     $("x-title")?.focus();
   }
   function draw() {
+    document.body.classList.remove("in-practice");
     setArt(null);
     // Learn's own heading, once; then one featured next step (the only gold button), then everything else
     const kids = [el("h2", { class: "s-title", id: "x-title", tabindex: "-1" }, "Learn"), el("p", { class: "quiet" }, "Explore. Practise. Grow.")];
@@ -362,10 +370,11 @@ export function createExplore(store, h) {
   }
   function frame(m, i, ...kids) {
     setArt(m, m.steps[i]);
+    // focus mode (user council, 4 Nov 2026): inside a practice there's one way out and no tab bar
+    document.body.classList.add("in-practice");
     body().replaceChildren(
       el("div", { class: "qhead" },
-        h.crumbs([...(from?.trail ?? [{ label: "Learn", root: true, go: () => { current = null; from = null; h.quiet(false); draw(); } }]), { label: m.title }]),
-        el("button", { class: "text-btn back", onclick: back }, el("span", { html: svg(ICON.back, 16) }), ` ${from?.label ?? "Learn"}`),
+        el("button", { class: "text-btn back", onclick: back, "aria-label": `Close, back to ${from?.label ?? "Learn"}` }, el("span", { html: svg(ICON.back, 16) }), ` ${from?.label ?? "Learn"}`),
         el("p", { class: "kicker" }, `${META[m.world].name} · ${m.part}`),
         el("p", { class: "qpos", role: "img", "aria-label": `Step ${i + 1} of ${m.steps.length}` }, ...m.steps.map((_, k) => el("span", { class: k < i ? "on" : k === i ? "here" : "" })))),
       ...kids.filter(Boolean));
@@ -383,7 +392,7 @@ export function createExplore(store, h) {
       err.textContent = "";
       const said = !answer ? "" : "text" in answer ? answer.text : "action" in answer ? `${answer.action} ${answer.when}` : "lab" in answer ? [...answer.lab.options, ...answer.lab.values].join(" ") : "";
       if (said && h.distress(said) && store.local) { crisis(h.crisisText); return; }
-      const problem = answer ? validateAnswer(step, answer) : null;
+      const problem = answer ? validateAnswer(step, answer, a.answers) : null;
       if (problem) { err.textContent = problem; return; }
       const r = await store.answer(a, i, answer);
       if (r.crisis) { crisis(r.reply); return; }
@@ -425,6 +434,8 @@ export function createExplore(store, h) {
       const words = step.paragraphs.join(" ").split(/\s+/).length; // read at an unhurried 180 words a minute
       frame(m, i, title, el("p", { class: "quiet" }, `Lesson · about ${Math.max(1, Math.ceil(words / 180))} min to read`),
         el("div", { class: "lesson" }, step.paragraphs.map((t) => el("p", {}, t))),
+        // the longer reading is there for anyone who wants it, one tap away, never in the way
+        step.more?.length ? el("details", { class: "more lesson-more" }, el("summary", {}, "Why this works"), el("div", { class: "lesson" }, step.more.map((t) => el("p", {}, t)))) : null,
         err, el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => { if (canSpeak) speechSynthesis.cancel(); next({ ack: true }); } }, "Continue"), listen));
       return;
     }
@@ -514,18 +525,26 @@ export function createExplore(store, h) {
     }
     if (step.type === "sort") {
       h.quiet(false);
-      const sorted = { ...(prev && "sorted" in prev ? prev.sorted : {}) };
+      const items = sortItems(step, a.answers);
+      const own = !!step.fromStep;
+      const sorted = Object.fromEntries(Object.entries(prev && "sorted" in prev ? prev.sorted : {}).filter(([k]) => items.some((x) => x.id === k)));
       const label = (id) => step.bins.find((b) => b.id === id)?.label ?? "";
       const feedback = el("div", { class: "explain", "aria-live": "polite" });
       const go = el("button", { class: "primary", disabled: true, onclick: () => next({ sorted }) }, "Continue");
       const update = () => {
-        const all = step.items.every((x) => sorted[x.id]);
+        const all = items.every((x) => sorted[x.id]);
         go.disabled = !all;
+        // your own thoughts: no "reading" of them, just what you decided, counted, and the idea behind it
+        if (own) {
+          const n = (b) => items.filter((x) => sorted[x.id] === b).length;
+          feedback.replaceChildren(...(all ? [el("p", { class: "outcome" }, `${step.bins.map((b) => `${b.label}: ${n(b.id)}`).join(" · ")}`), el("p", { class: "quiet" }, step.feedback)] : []));
+          return;
+        }
         feedback.replaceChildren(...(all ? [el("p", { class: "outcome" }, "One way to read them"),
-          el("ul", { class: "readings" }, step.items.map((x) => el("li", {}, el("b", {}, `${x.text} `), el("span", { class: "rb" }, label(x.bin)), el("span", { class: "quiet" }, ` ${x.why}`), sorted[x.id] !== x.bin ? el("span", { class: "quiet small" }, ` You put it in ${label(sorted[x.id])}, and that's a fair reading too if you see it that way.`) : null))),
+          el("ul", { class: "readings" }, items.map((x) => el("li", {}, el("b", {}, `${x.text} `), el("span", { class: "rb" }, label(x.bin)), el("span", { class: "quiet" }, ` ${x.why}`), sorted[x.id] !== x.bin ? el("span", { class: "quiet small" }, ` You put it in ${label(sorted[x.id])}, and that's a fair reading too if you see it that way.`) : null))),
           el("p", { class: "quiet" }, step.feedback)] : []));
       };
-      const rows = step.items.map((x) => {
+      const rows = items.map((x) => {
         const group = el("div", { class: "seg sort-scale", role: "radiogroup", "aria-label": x.text },
           step.bins.map((b) => el("button", { role: "radio", "aria-checked": String(sorted[x.id] === b.id), onclick: (e) => {
             sorted[x.id] = b.id;
@@ -535,7 +554,9 @@ export function createExplore(store, h) {
         return el("div", { class: "lens" }, el("p", { class: "lens-text" }, x.text), group);
       });
       frame(m, i, title, step.body ? el("div", { class: "card event" }, el("p", { class: "lead" }, step.body)) : null,
-        el("p", { class: "lead" }, step.prompt), ...rows, feedback, err, el("div", { class: "actions" }, go));
+        el("p", { class: "lead" }, step.prompt), ...rows,
+        own && !items.length ? el("p", { class: "quiet" }, "Nothing to sort from the last step. That's fine: carry on.") : null,
+        feedback, err, el("div", { class: "actions" }, go));
       update();
       return;
     }
@@ -802,7 +823,7 @@ export function createExplore(store, h) {
     isFollowing, follow,
     /** Opens a chapter's worksheet on its own, from a world's Library. */
     sheet(missionId, back) { const m = missionById(missionId); if (!m?.worksheet) return; h.showPlace("explore"); if (locked(m) && !data.attempts.some((a) => a.missionId === m.id && a.status === "completed")) { from = { label: "Back", go: back }; gate(m); return; } worksheet(m, back); },
-    locked, plan: () => data.plan ?? "free",
+    locked, plan: planNow, beta: () => !!store.local && BETA_ALL_OPEN,
     async setPlan(plan) { const r = await store.setPlan?.(plan); await refresh(); return r; },
     get missions() { return MISSIONS; },
     textSummary() {

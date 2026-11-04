@@ -12,6 +12,8 @@ import {
   missingSteps,
   plannedAction,
   validateAnswer,
+  sortItems,
+  OWN_SORT_MAX,
   type Attempt,
 } from "@dawnward/core";
 
@@ -158,19 +160,40 @@ describe("the Mind lens step", () => {
 
 describe("Beyond Overthinking: lesson and sort steps (drafts)", () => {
   const c1 = missionById("overthinking-1")!, c2 = missionById("overthinking-2")!;
-  const sort1 = c1.steps.find((x) => x.type === "sort")!;
+  // chapter 1 sorts your own thoughts now; the written-items rules are checked on chapter 2's sort
+  const sort1 = c2.steps.find((x) => x.type === "sort")!;
+  const own = c1.steps.find((x) => x.type === "sort")!;
   const all = (st: typeof sort1, bin?: string) => Object.fromEntries(st.items!.map((x) => [x.id, bin ?? x.bin]));
   it("both chapters are marked draft and carry a worksheet", () => {
     for (const m of [c1, c2]) { assert.equal(m.status, "draft"); assert.ok(m.worksheet && m.worksheet.sections.length >= 2); assert.ok(m.safetyNote); }
   });
+  it("chapter 1 starts with your own words: write, then sort YOUR thoughts, then a short why", () => {
+    assert.deepEqual(c1.steps.map((x) => x.type), ["intro", "rehearse", "sort", "lesson", "reflect", "plan", "close"]);
+    assert.equal(own.fromStep, "your-loop");
+    assert.ok(!own.items?.length, "no stranger's thoughts to sort");
+    assert.ok((c1.steps[3].more ?? []).length >= 2, "the full reading is one tap away");
+  });
+  it("an own-words sort takes your lines (or sentences), up to six, and checks against them", () => {
+    const lines = { "your-loop": { text: "Should I take it?\n- What if I hate it?\n2. When would I tell my manager?" } };
+    assert.deepEqual(sortItems(own, lines).map((x) => x.text), ["Should I take it?", "What if I hate it?", "When would I tell my manager?"]);
+    const one = { "your-loop": { text: "Should I go. What if it fails? I need to ask Sam!" } };
+    assert.equal(sortItems(own, one).length, 3, "one line is split into sentences");
+    const many = { "your-loop": { text: Array.from({ length: 9 }, (_, i) => `Thought ${i}`).join("\n") } };
+    assert.equal(sortItems(own, many).length, OWN_SORT_MAX);
+    assert.equal(validateAnswer(own, { sorted: { l0: "round", l1: "forward", l2: "round" } }, lines), null);
+    assert.match(validateAnswer(own, { sorted: { l0: "round" } }, lines)!, /Sort each/, "every one of your thoughts");
+    assert.match(validateAnswer(own, { sorted: { l0: "round", l1: "round", l2: "round", l3: "round" } }, lines)!, /Sort each/, "nothing extra");
+    assert.match(validateAnswer(own, { sorted: { deadline: "forward" } })!, /Sort each/, "without context, only l0…l5 are accepted");
+  });
   it("a sort needs every item in a known bin, and nothing extra", () => {
-    assert.match(validateAnswer(sort1, { sorted: { deadline: "forward" } })!, /Sort each/);
-    assert.match(validateAnswer(sort1, { sorted: { ...all(sort1), deadline: "sideways" } })!, /Sort each/);
+    const k = sort1.items![0].id;
+    assert.match(validateAnswer(sort1, { sorted: { [k]: "forward" } })!, /Sort each/);
+    assert.match(validateAnswer(sort1, { sorted: { ...all(sort1), [k]: "sideways" } })!, /Sort each/);
     assert.match(validateAnswer(sort1, { sorted: { ...all(sort1), extra: "round" } })!, /Sort each/);
     assert.equal(validateAnswer(sort1, { sorted: all(sort1) }), null);
   });
   it("a sort that differs from the suggested reading is still accepted: nothing is scored", () => {
-    assert.equal(validateAnswer(sort1, { sorted: all(sort1, "round") }), null);
+    assert.equal(validateAnswer(sort1, { sorted: all(sort1, sort1.bins![1]!.id) }), null);
   });
   it("chapter 3's pause lasts a minute, is optional, and is only acknowledged, never measured", () => {
     const c3 = missionById("overthinking-3")!;
@@ -213,7 +236,7 @@ describe("Beyond Overthinking: lesson and sort steps (drafts)", () => {
     for (const m of [c1, c2]) {
       let a = beginAttempt(m, `a-${m.id}`);
       for (const [i, s] of m.steps.entries()) {
-        const ans = s.type === "sort" ? { sorted: all(s) } : s.type === "plan" ? { skip: true as const } : s.type === "rehearse" || s.type === "reflect" ? { text: "Words." } : { ack: true as const };
+        const ans = s.type === "sort" ? { sorted: Object.fromEntries(sortItems(s, a.answers).map((x) => [x.id, x.bin ?? "round"])) } : s.type === "plan" ? { skip: true as const } : s.type === "rehearse" || s.type === "reflect" ? { text: "Words." } : { ack: true as const };
         const r = answerStep(m, a, i, ans); assert.ok("attempt" in r, s.id); a = r.attempt;
       }
       const done = completeAttempt(m, a); assert.ok("attempt" in done); events.push(...done.events);

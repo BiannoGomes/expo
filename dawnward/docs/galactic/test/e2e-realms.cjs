@@ -48,7 +48,7 @@ const frames = async (p, name) => { await p.waitForTimeout(2200); results.frames
   }
   check("AI planets that would need an AI service aren't shown", !/needs an AI service/.test(await page.locator(".cw-planets").innerText()));
   await go(page, "universe/spiritual");
-  check("members' worlds are marked", (await page.locator(".cw-planets li", { hasText: "The Sound Sanctuary" }).innerText()).includes("Members"));
+  check("beta: no world is marked for members", !(await page.locator(".cw-planets li", { hasText: "The Sound Sanctuary" }).innerText()).includes("Members"));
   await page.locator('#tabs [data-tab="universe"]').click();
   await page.locator('#a-inner [data-id="knowledge"]').click();
   await page.getByRole("button", { name: "Enter Knowledge" }).click();
@@ -139,7 +139,7 @@ const frames = async (p, name) => { await p.waitForTimeout(2200); results.frames
   // ---- members' worlds without membership: the honest gate, even by link ----
   for (const [hash, name] of [["spiritual/sanctuary", "The Sound Sanctuary"], ["knowledge/lab", "The Discovery Lab"], ["creative/architect", "The Dream Architect"]]) {
     await go(page, hash); await page.waitForTimeout(300);
-    check(`${name} by link shows the members' gate`, /This world is for members/.test(await page.locator("#cw-page").innerText()) && (await page.locator("#cw-title").innerText()) === name);
+    check(`beta: ${name} by link opens, with no members' gate`, !/This world is for members/.test(await page.locator("#cw-page").innerText()));
   }
 
   // ---- the Creation Gallery: read, save, delete ----

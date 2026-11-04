@@ -28,9 +28,9 @@ export interface SortBin {
 export interface SortItem {
   id: string;
   text: string;
-  /** The bin this item is usually read as. Offered as a view, never marked right or wrong. */
-  bin: string;
-  why: string;
+  /** The bin this item is usually read as. Offered as a view, never marked right or wrong. Absent for the person's own lines. */
+  bin?: string;
+  why?: string;
 }
 
 /** A printable worksheet: useful on paper, without the app. */
@@ -51,6 +51,10 @@ export interface Step {
   lenses?: Lens[];
   /** A lesson: short paragraphs, read or listened to. */
   paragraphs?: string[];
+  /** A lesson's longer reading, one tap away ("Why this works"). Never required. */
+  more?: string[];
+  /** A sort of the person's OWN lines, written in this earlier step (one thought per line). No suggested reading. */
+  fromStep?: string;
   bins?: SortBin[];
   /** A guided pause: cues shown one after another, each for its seconds. Never measured. */
   cues?: { text: string; seconds: number }[];
@@ -130,76 +134,72 @@ export const MISSIONS: Mission[] = [
       ],
     },
     steps: [
+      // Your decision first (user council, 4 Nov 2026): you write what's going round, sort YOUR thoughts,
+      // then a short "why", with the full reading one tap away. Your words come at step 2, not step 4.
       {
         id: "intro",
         type: "intro",
         title: "Understand the loop",
-        body: "Overthinking isn't a flaw in you. It's your mind trying to make something uncertain feel certain before you act. In this chapter you'll learn to spot the moment useful thinking turns into a loop, sort some thoughts, and look at one of your own. Nothing here is scored.",
+        body: "Going back and forth on something? In about 8 minutes you'll write down the thoughts that keep coming back, see which ones move you forward and which go round, and choose one next step. Overthinking isn't a flaw in you: it's your mind looking for certainty before you act. Nothing here is scored.",
         required: false,
       },
       {
-        id: "lesson",
-        type: "lesson",
-        title: "The loop",
-        paragraphs: [
-          "Some thinking moves you forward. You find a fact, weigh two options, notice what matters to you, and a next step appears. Other thinking goes round. The same question comes back, nothing new is added, and you end up more tired than when you started.",
-          "The loop usually begins with a question that has no answer yet. What if I choose wrong? What will they think? Your mind replays the situation and rehearses what might happen, looking for certainty. For a moment that feels like progress. Then the doubt returns, and the circle starts again.",
-          "Researchers who study repetitive thinking describe two styles. One is concrete and asks how: what exactly happened, and what could I do next? The other is abstract and asks why: why am I like this, why does this always happen? The first tends to help people solve problems. The second tends to keep them stuck.",
-          "Some uncertainty can't be removed by thinking. You can't know how a choice will turn out before you make it. When thinking stops adding anything, more of it won't bring the certainty you're looking for. That's the moment to notice the loop and step out of it.",
-          "Three questions help you tell which kind of thinking you're in. Is there new information here? Is there a next step I can take? Would thinking about this longer change what I decide? If all three answers are no, you're probably in the loop.",
-        ],
-        required: false,
+        id: "your-loop",
+        type: "rehearse",
+        title: "What's going round?",
+        prompt: "What are you going back and forth on? Write the thoughts that keep coming back about it, one per line, the way they sound in your head. Two to six is plenty.",
+        examples: ["Should I take the new job? / What if I hate it after a month? / When would I need to tell my manager?"],
+        required: true,
       },
       {
         id: "sort",
         type: "sort",
         title: "Forward or round?",
-        body: "Six thoughts someone had while deciding whether to apply for a new job.",
-        prompt: "Sort each one: does it move them forward, or go round?",
+        fromStep: "your-loop",
+        prompt: "For each thought: does it move you forward, or go round? Forward means it can be answered or acted on. Round means it asks for a certainty nobody has yet.",
         bins: [
           { id: "forward", label: "Moves forward" },
           { id: "round", label: "Goes round" },
         ],
-        items: [
-          { id: "deadline", text: "When does the application close?", bin: "forward", why: "A question with an answer. Once it's found, it's done." },
-          { id: "good-enough", text: "What if they think I'm not good enough?", bin: "round", why: "Nobody can answer this before applying, so thinking about it longer won't settle it." },
-          { id: "enjoy", text: "Which parts of the role would I actually enjoy?", bin: "forward", why: "It asks about you, and you can answer it. It adds information." },
-          { id: "always", text: "Why do I always do this to myself?", bin: "round", why: "An abstract why. It tends to bring a judgement, not a next step." },
-          { id: "ask", text: "Who could I ask what the team is like?", bin: "forward", why: "It leads to an action that brings in something new." },
-          { id: "wrong", text: "But what if it all goes wrong anyway?", bin: "round", why: "The loop's favourite question. It comes back however often it's answered." },
-        ],
-        feedback: "The thoughts that move forward can be answered or acted on. The ones that go round ask for a certainty nobody has yet. Your sorting doesn't need to match this. What matters is noticing the difference.",
+        feedback: "There's no right answer here: noticing the difference is the skill. The thoughts that move forward point to something you can find out or do. The ones that go round won't be settled by more thinking.",
         required: true,
       },
       {
-        id: "your-loop",
-        type: "rehearse",
-        title: "Your loop",
-        prompt: "What's a question your mind keeps coming back to at the moment? Write it the way it sounds in your head.",
-        examples: ["What if I've already left it too late to change careers?"],
-        required: true,
+        id: "lesson",
+        type: "lesson",
+        title: "Why some thoughts go round",
+        paragraphs: [
+          "Thinking that moves forward finds a fact, weighs an option or turns up a next step. Thinking that goes round asks the same question again and adds nothing new.",
+          "Three questions tell them apart. Is there new information here? Is there a next step I can take? Would thinking about this longer change what I decide? If all three answers are no, you're in the loop.",
+        ],
+        more: [
+          "The loop usually begins with a question that has no answer yet. What if I choose wrong? What will they think? Your mind replays the situation and rehearses what might happen, looking for certainty. For a moment that feels like progress. Then the doubt returns, and the circle starts again.",
+          "Researchers who study repetitive thinking describe two styles. One is concrete and asks how: what exactly happened, and what could I do next? The other is abstract and asks why: why am I like this, why does this always happen? The first tends to help people solve problems. The second tends to keep them stuck.",
+          "Some uncertainty can't be removed by thinking. You can't know how a choice will turn out before you make it. When thinking stops adding anything, more of it won't bring the certainty you're looking for. That's the moment to notice the loop and step out of it.",
+        ],
+        required: false,
       },
       {
         id: "three-questions",
         type: "reflect",
         title: "The three questions",
-        prompt: "Look at what you wrote. Is there new information in it, a next step, or anything more thinking would change? Write what you notice.",
-        examples: ["No new information. The one step I can take is to look at two courses this week."],
+        prompt: "Pick one thought that goes round. Is there new information in it, a next step, or anything more thinking would change? Write what you notice.",
+        examples: ["\"What if I hate it?\" No new information. The one step I can take is to ask someone on the team what it's really like."],
         required: true,
       },
       {
         id: "apply",
         type: "plan",
-        title: "Try it for real",
-        prompt: "If you want: the next time the loop starts, name it quietly (\"loop\") and ask the three questions. What will you do, and when?",
-        examples: ["Tonight, if I start replaying the meeting: say \"loop\" and ask the three questions."],
+        title: "One next step",
+        prompt: "If you want: one small step for what you're deciding, or for the next time the loop starts. What will you do, and when?",
+        examples: ["Ask Sam what the team is really like, by Friday."],
         required: false,
       },
       {
         id: "close",
         type: "close",
         title: "Done",
-        body: "You've learned to notice the loop. Next in Beyond Overthinking: separating facts from assumptions. Your worksheet, The Loop Check, stays in this chapter whenever you want it.",
+        body: "You sorted your own thoughts and asked one of them the three questions. Next in Beyond Overthinking: separating facts from assumptions. Your worksheet, The Loop Check, stays in this chapter whenever you want it.",
         required: false,
       },
     ],
@@ -1158,9 +1158,16 @@ export function checkCatalog(): string[] {
       if (s.type === "sort") {
         const bins = new Set((s.bins ?? []).map((b) => b.id)), items = s.items ?? [];
         if (bins.size < 2 || bins.size > 3) problems.push(`${m.id}/${s.id}: 2 or 3 bins`);
-        if (items.length < 3 || items.length > 8) problems.push(`${m.id}/${s.id}: 3 to 8 items`);
-        if (new Set(items.map((x) => x.id)).size !== items.length) problems.push(`${m.id}/${s.id}: duplicate item ids`);
-        for (const x of items) if (!bins.has(x.bin)) problems.push(`${m.id}/${s.id}: ${x.id} has an unknown bin`);
+        if (s.fromStep) {
+          // a sort of the person's own lines: it takes them from an earlier writing step, and has no written items
+          const src = m.steps.findIndex((x) => x.id === s.fromStep), here = m.steps.indexOf(s);
+          if (src < 0 || src >= here || !["rehearse", "reflect"].includes(m.steps[src].type)) problems.push(`${m.id}/${s.id}: fromStep must be an earlier writing step`);
+          if (items.length) problems.push(`${m.id}/${s.id}: an own-words sort has no written items`);
+        } else {
+          if (items.length < 3 || items.length > 8) problems.push(`${m.id}/${s.id}: 3 to 8 items`);
+          if (new Set(items.map((x) => x.id)).size !== items.length) problems.push(`${m.id}/${s.id}: duplicate item ids`);
+          for (const x of items) if (!x.bin || !bins.has(x.bin)) problems.push(`${m.id}/${s.id}: ${x.id} has an unknown bin`);
+        }
         if (!s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);
       }
       if ((s.type === "rehearse" || s.type === "reflect" || s.type === "plan") && !s.prompt) problems.push(`${m.id}/${s.id}: needs a prompt`);

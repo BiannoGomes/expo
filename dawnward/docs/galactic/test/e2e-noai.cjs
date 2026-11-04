@@ -134,8 +134,9 @@ const iso = (daysAgo) => { const d = new Date(); d.setDate(d.getDate() - daysAgo
   await np.locator("#e-body .nextcard .primary").click();
   await np.waitForSelector("#x-body .s-title");
   await np.getByRole("button", { name: "Begin" }).click(); await np.waitForTimeout(500);
+  await np.fill("#q-words", "Should I take it?\nWhat if I hate it?");
   await np.getByRole("button", { name: "Continue", exact: true }).click(); await np.waitForTimeout(500);
-  await np.locator('#tabs [data-tab="home"]').click(); await np.waitForTimeout(1200);
+  await np.locator("#x-body .qhead .back").click(); await np.waitForTimeout(1200); // focus mode: the one way out
   const homeBtn = await np.locator("#e-body .nextcard .primary").innerText();
   await np.locator('#tabs [data-tab="learn"]').click(); await np.waitForTimeout(1200);
   const learnBtn = await np.locator("#x-body .x-feature .primary").innerText();

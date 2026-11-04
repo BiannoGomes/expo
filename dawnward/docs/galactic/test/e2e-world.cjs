@@ -78,12 +78,13 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   // ---- play Chapter 1 from the world; the solar system lights from what was saved ----
   await page.getByRole("button", { name: /Chapter 1: Understand the loop/ }).click();
   await page.getByRole("button", { name: "Begin" }).click();
-  await page.getByRole("button", { name: "Continue" }).click();
-  const sorts = page.locator(".sort-scale");
-  for (let k = 0; k < 6; k++) await sorts.nth(k).getByRole("radio").first().click();
-  await page.getByRole("button", { name: "Continue" }).click();
-  await page.fill("#q-words", "What if I've left it too late?");
+  await page.fill("#q-words", "What if I've left it too late?\nWho could I ask?");
   await page.getByRole("button", { name: "Continue", exact: true }).click();
+  const sorts = page.locator(".sort-scale");
+  await sorts.first().waitFor();
+  for (let k = 0; k < 2; k++) await sorts.nth(k).getByRole("radio").first().click();
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByRole("button", { name: "Continue" }).click(); // the short lesson
   await page.fill("#q-words", "No new information there.");
   await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.getByRole("button", { name: "Not this time" }).click();
@@ -95,25 +96,18 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   check("the next chapter is ringed", (await page.locator("svg.solar").first().locator(".next-ring").count()) === 1);
   await shot(page, "mind-expeditions-after");
 
-  // ---- membership: a free visitor sees members' chapters marked, and an honest gate ----
-  check("in Mind's Expeditions, Chapter 2 is marked Plus", /Chapter 2: Separate facts from assumptions[\s\S]*Plus/.test(await page.textContent("#w-panel")));
+  // ---- the beta is all free (user council, 4 Nov 2026): no Plus marks, no gate, no plan talk ----
+  check("in Mind's Expeditions, Chapter 2 is open to everyone in the beta", !/Separate facts from assumptions[^\n]*Plus/.test(await page.textContent("#w-panel")) && /8 min/.test(await page.textContent("#w-panel")));
   await page.goto(BASE + "#/home"); await ready(page);
-  check("the Compass never offers a members' chapter to a free visitor", !/Chapter 2 of 7/.test(await page.textContent("#earth .nextcard")));
+  check("the Compass offers Chapter 2 next", /Chapter 2 of 4/.test(await page.textContent("#earth .nextcard")));
   await page.goto(BASE + "#/learn"); await ready(page);
+  await page.locator('#x-body [aria-labelledby="x-mind-beyond-overthinking"] details summary').click();
   await page.getByRole("button", { name: /Chapter 2: Separate facts from assumptions/ }).click();
-  await page.waitForSelector(".plus-card");
-  const gateText = await page.textContent("#x-body");
-  check("a members' chapter shows what's inside, and says plainly membership isn't open yet", /Dawnward Plus/.test(gateText) && /Separate what you know from what you're guessing/.test(gateText) && /Membership isn't open yet/.test(gateText) && /stay free, always/.test(gateText));
-  check("no fake checkout or price on the gate", !/€|\$|buy now|subscribe now|trial/i.test(gateText));
-  check("a free alternative is offered", (await page.getByRole("button", { name: /^Free now:/ }).count()) === 1);
-  await shot(page, "gate");
-  await axe(page, "gate");
+  await page.waitForSelector("#x-body .s-title");
+  check("Chapter 2 opens with no members' gate", (await page.locator(".plus-card").count()) === 0 && (await page.getByRole("button", { name: "Begin" }).count()) === 1);
   await page.goto(BASE + "#/you"); await ready(page);
-  check("You › Plan says Free, and how membership will work", /Your plan[\s\S]*Free/.test(await page.textContent("#you")) && /reminder before any charge/.test(await page.textContent("#y-plan")));
-  await page.getByRole("button", { name: "Preview as a member" }).click();
-  check("member preview switches on, on this device only", /member preview on this device/.test(await page.textContent("#y-plan")));
+  check("You says nothing about a plan in the beta", !(await page.locator("#y-plan-h").isVisible()) && !/Preview as a member/.test(await page.textContent("#you")));
   await page.goto(BASE + "#/world/mind/expeditions"); await ready(page); await page.waitForTimeout(500);
-  check("as a member, Chapter 2 is open", !/Separate facts from assumptions[^\n]*Plus/.test(await page.textContent("#w-panel")) && /8 min/.test(await page.textContent("#w-panel")));
 
   // ---- Library and Progress show only real things ----
   await page.getByRole("tab", { name: "Library" }).click();

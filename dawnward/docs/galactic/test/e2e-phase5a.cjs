@@ -92,12 +92,9 @@ const measure = (p, rootSel) => p.evaluate((rootSel) => {
   m = await measure(page, "#you");
   check("You: under 120 words on the first screen", m.words < 120, String(m.words));
   check("You: no all-caps labels, no small text", m.caps.length === 0 && m.small.length === 0, [...m.caps, ...m.small].join(" | "));
-  const heads = await page.locator("#you h3").allTextContents();
-  check("You: short sections, data and privacy first after what's noticed", heads.slice(0, 5).join("|") === "What I've noticed|Your data|Privacy|Your plan|Display", heads.join("|"));
-  check("plan details are behind More, and still there", /reminder before any charge/.test(await page.locator("#y-plan").textContent()) && !(await page.locator("#y-plan details").evaluate((d) => d.open)));
+  const heads = await page.locator("#you h3:visible").allTextContents();
+  check("You: short sections, data and privacy first after what's noticed (no plan section in the beta)", heads.slice(0, 4).join("|") === "What I've noticed|Your data|Privacy|Display", heads.join("|"));
   check("settings, privacy and data actions stay on screen", (await page.locator("#y-text").isVisible()) && (await page.locator("#y-game").isVisible()));
-  await page.locator("#y-plan summary").click();
-  check("More opens the plan details", await page.locator("#y-plan details").evaluate((d) => d.open));
   await shot(page, "you");
   await axe(page, "You");
 

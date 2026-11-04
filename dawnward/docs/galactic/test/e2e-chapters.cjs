@@ -62,20 +62,29 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await axe(page, `${name} worksheet`);
     await page.getByRole("button", { name: "Back" }).click();
 
-    // Chapter 1
+    // Chapter 1: your decision first (user council, 4 Nov 2026), then sort YOUR thoughts, then a short why
     await page.getByRole("button", { name: "Begin" }).click();
-    check(`${name} ch1: the lesson reads in five short paragraphs`, (await page.locator(".lesson p").count()) === 5);
+    await page.waitForSelector("#q-words");
+    check(`${name} ch1: your own words first, before any lesson`, (await page.locator(".lesson").count()) === 0 && /going back and forth on/.test(await page.textContent("#x-body")));
+    await page.fill("#q-words", "Should I change careers?\nWhat if I've already left it too late?\nWho could I ask about retraining?");
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
+    const sorts = page.locator(".sort-scale");
+    await sorts.first().waitFor();
+    check(`${name} ch1: your three thoughts to sort`, (await sorts.count()) === 3);
+    check(`${name} ch1: Continue waits until all are sorted`, await page.getByRole("button", { name: "Continue" }).isDisabled());
+    for (let k = 0; k < 3; k++) await sorts.nth(k).getByRole("radio").nth(k === 1 ? 1 : 0).click();
+    const fb = await page.textContent(".explain");
+    check(`${name} ch1: your own count, never marked right or wrong`, /Moves forward: 2/.test(fb) && /Goes round: 1/.test(fb) && !/wrong answer|incorrect|\bscore/i.test(fb));
+    await shot(page, `${name}-sort`);
+    await axe(page, `${name} sort`);
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.locator(".lesson p").first().waitFor();
+    check(`${name} ch1: the lesson is short, the rest one tap away`, (await page.locator("#x-body > .lesson p").count()) === 2 && (await page.locator("details.lesson-more").count()) === 1);
     check(`${name} ch1: Listen is offered`, (await page.getByRole("button", { name: "Listen" }).count()) === 1);
     check(`${name} ch1: no horizontal scroll while reading`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     await shot(page, `${name}-lesson`);
     await axe(page, `${name} lesson`);
     await page.getByRole("button", { name: "Continue" }).click();
-    await playChapter(page, name, 1, { sortAgainst: true });
-    await shot(page, `${name}-sort`);
-    await axe(page, `${name} sort`);
-    await page.getByRole("button", { name: "Continue" }).click();
-    await page.fill("#q-words", "What if I've already left it too late to change careers?");
-    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.fill("#q-words", "No new information. One step: look at two courses this week.");
     await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.getByRole("button", { name: "Not this time" }).click();

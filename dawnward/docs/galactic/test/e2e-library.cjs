@@ -60,14 +60,14 @@ const TEST_PACKS = () => {
   await go(page, "library");
   const lib = await page.locator("#cw-page").innerText();
   check("packs are grouped by where they belong", /SPIRITUAL EXPLORATION|Spiritual Exploration/.test(lib) && /MIND|Mind/.test(lib));
-  check("each pack shows what's inside and who it's for", /Lesson · Film · Listen · Worksheet/.test(lib) && /Members/.test(lib) && /Free/.test(lib));
+  check("each pack shows what's inside, with no price labels in the beta", /Lesson · Film · Listen · Worksheet/.test(lib) && !/Members/.test(lib) && !/\bFree\b/.test(lib));
   await axe(page, "the library");
   await page.screenshot({ path: `${OUT}/l-library.png` });
   await page.locator(".cw-planets button", { hasText: "Test pack: an evening" }).click();
   check("a members' pack has its own address", (await where(page))[1] === "#/library/test-evening");
   const gate = await page.locator("#cw-page").innerText();
-  check("a members' pack shows what's inside, honestly, and nothing more", /This is for members/.test(gate) && /A test film \(film\)/.test(gate) && /isn't open yet/.test(gate) && !(await page.locator("#cw-page video, #cw-page audio").count()));
-  await axe(page, "a members' pack, locked");
+  check("beta: a members' pack opens for everyone, no gate", !/This is for members/.test(gate) && /First test paragraph/.test(gate));
+  await axe(page, "a pack, open in the beta");
   await page.keyboard.press("Escape");
   check("Escape goes back to the library", (await where(page))[1] === "#/library");
   await page.locator(".cw-planets button", { hasText: "a free taster" }).click();

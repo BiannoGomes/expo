@@ -917,7 +917,8 @@ describe("expeditions (Soul · Communication, first slice)", () => {
         assert.equal(partial.statusCode, 422, "a partial sort is refused");
       }
       const answer =
-        step.type === "sort" ? { sorted: Object.fromEntries(step.items.map((x: { id: string }) => [x.id, "round"])) }
+        // chapter 1 sorts your own lines: "My words for your-loop." is one thought, so one item (l0)
+        step.type === "sort" ? { sorted: step.fromStep ? { l0: "round" } : Object.fromEntries(step.items.map((x: { id: string }) => [x.id, "round"])) }
         : step.type === "plan" ? { skip: true }
         : step.type === "rehearse" || step.type === "reflect" ? { text: `My words for ${step.id}.` }
         : { ack: true };

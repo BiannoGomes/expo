@@ -36,7 +36,7 @@ const MOBILE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch
   check("the Universe tab is current", (await page.getAttribute('#tabs [data-tab="universe"]', "aria-current")) === "page");
   const planets = await page.locator(".cw-planets li").allInnerTexts();
   check("five planets, all open now", planets.length === 5 && planets.filter((t) => /Planned/.test(t)).length === 0, planets.map((t) => t.split("\n")[0]).join(" | "));
-  check("the Living Forest is marked for members", /Members/.test(planets[2]));
+  check("beta: the Living Forest is open to everyone, not marked for members", !/Members/.test(planets[2]));
   await shot(page, "galaxy-390");
   await axe(page, "galaxy page");
 
@@ -59,7 +59,7 @@ const MOBILE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch
   check("Skip finishes the sequence and focuses the first door", await page.evaluate(() => document.activeElement?.classList.contains("cw-choice") && getComputedStyle(document.querySelector(".cw-dfoot")).opacity === "1"));
   await shot(page, "door-390");
   await axe(page, "the door");
-  check("four destinations, the forest marked for members", (await page.locator(".cw-choice").count()) === 4 && /Members/.test(await page.locator(".cw-choice.cw-forest").innerText()));
+  check("four destinations, none marked for members in the beta", (await page.locator(".cw-choice").count()) === 4 && !/Members/.test(await page.locator(".cw-choice.cw-forest").innerText()));
 
   // ---- through the door: the Floating Kingdom ----
   await page.locator(".cw-choice.cw-kingdom").click();
@@ -106,11 +106,8 @@ const MOBILE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch
   await page.getByRole("button", { name: "Skip" }).click();
   await page.locator(".cw-choice.cw-forest").click();
   await page.waitForTimeout(300);
-  check("the forest shows an honest members' gate", /This world is for members/.test(await page.locator("#cw-page").innerText()) && /isn't open yet/.test(await page.locator("#cw-page").innerText()));
-  await axe(page, "the members' gate");
-  await page.getByRole("button", { name: "Preview as a member" }).click();
   await page.waitForFunction(() => window.__dwCreative && document.querySelector("#cw-stage canvas"), null, { timeout: 15000 });
-  check("member preview opens the Living Forest", (await where(page))[1] === "#/creative/forest");
+  check("beta: the Living Forest opens straight away, no members' gate", (await where(page))[1] === "#/creative/forest" && !/This world is for members/.test(await page.locator("#cw-page").innerText()));
   await page.mouse.move(195, 600); await page.mouse.move(220, 560, { steps: 4 });
   await page.waitForTimeout(2500);
   results.frames.forest = await page.evaluate(() => window.__dwCreative.frames());

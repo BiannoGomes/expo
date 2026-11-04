@@ -152,6 +152,9 @@ export function createCreative(h) {
   const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch { return false; } h.changed?.(); return true; };
   const locked = (r, id) => RANK[planet(r, id)?.access ?? "free"] > RANK[h.explore.plan()];
+  // the beta: everything is open, so nothing is labelled by price ("Free", "Members")
+  const beta = () => !!h.explore.beta?.();
+  const freeLabel = (access) => (!beta() && access === "free" ? "Free" : "Open");
 
   function route() {
     if (view === "page") return pageKind === "library" ? "#/library" : pageKind === "pack" ? `#/library/${packId}` : `#/${realm}/${pageKind}`;
@@ -201,10 +204,10 @@ export function createCreative(h) {
       if (p.status === "planned") return "Planned";
       if (locked(r, p.id)) return "Members";
       if (CW[p.id]) return `${saved.lit[p.id].length} of ${CW[p.id].things.length}${p.access === "free" ? " · free" : ""}`;
-      if (p.id === "garden") return saved.moments.length ? `${saved.moments.length} growing` : "Free";
-      if (p.id === "dreams") return saved.dreams.length ? `${saved.dreams.length} kept` : "Free";
+      if (p.id === "garden") return saved.moments.length ? `${saved.moments.length} growing` : freeLabel("free");
+      if (p.id === "dreams") return saved.dreams.length ? `${saved.dreams.length} kept` : freeLabel("free");
       if (p.id === "architect") return saved.places.length ? `${saved.places.length} made` : "Open";
-      return p.access === "free" ? "Free" : "Open";
+      return freeLabel(p.access);
     };
     page.replaceChildren(el("div", { class: "ycol" },
       h.crumbs([{ label: "Universe", go: h.toUniverse }, { label: R.name }]),
@@ -495,7 +498,7 @@ export function createCreative(h) {
         el("ul", { class: "cw-planets" }, ps.map((p) => { const lock = locked(r, p.id), been = saved.visited.includes(p.id);
           return el("li", {}, el("button", { class: "row", onclick: () => enter(r, p.id) },
             el("span", { class: "rtext" }, el("span", { class: "rtitle" }, p.name), el("span", { class: "rsub" }, p.line)),
-            el("span", { class: `mmeta${lock ? " plus-tag" : ""}` }, lock ? "Members" : been ? "Explored" : p.access === "free" ? "Free" : "Open"))); })),
+            el("span", { class: `mmeta${lock ? " plus-tag" : ""}` }, lock ? "Members" : been ? "Explored" : freeLabel(p.access)))); })),
         b.planned ? el("p", { class: "quiet small" }, b.planned) : null,
         el("h4", { class: "cw-step" }, "Apply"),
         el("p", { class: "wz-q" }, b.question),
@@ -638,7 +641,7 @@ export function createCreative(h) {
         k.cover ? el("img", { class: "cw-pcover", src: asset(k.cover), alt: "" }) : el("span", { class: "cw-dot cw-pack", "aria-hidden": "true" }),
         el("span", { class: "rtext" }, el("span", { class: "rtitle" }, k.title), el("span", { class: "rsub" }, k.summary),
           el("span", { class: "rsub" }, [...new Set(k.items.map((i) => KIND[i.type]))].join(" · "))),
-        el("span", { class: `mmeta${packLocked(k) ? " plus-tag" : ""}` }, packLocked(k) ? "Members" : k.access === "free" ? "Free" : "Open"))))));
+        el("span", { class: `mmeta${packLocked(k) ? " plus-tag" : ""}` }, packLocked(k) ? "Members" : freeLabel(k.access)))))));
   }
   function library() {
     pageKind = "library"; show("page");
@@ -663,7 +666,7 @@ export function createCreative(h) {
     const lock = packLocked(k), crumbs = h.crumbs([{ label: "Learn", root: true, go: h.toLearn }, { label: "Library", go: library }, { label: k.title }]);
     const head = [crumbs,
       k.cover ? el("img", { class: "cw-pack-hero", src: asset(k.cover), alt: k.coverAlt ?? "" }) : null,
-      el("p", { class: `kicker${lock ? " plus-kicker" : ""}` }, `${k.access === "free" ? "Free" : "Members"} · ${PLACE_NAMES[k.place]}`),
+      el("p", { class: `kicker${lock ? " plus-kicker" : ""}` }, beta() ? PLACE_NAMES[k.place] : `${k.access === "free" ? "Free" : "Members"} · ${PLACE_NAMES[k.place]}`),
       el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, k.title),
       el("p", { class: "lead" }, k.summary)];
     const meta = (it) => [KIND[it.type], it.minutes ? `${it.minutes} min` : null, it.credit].filter(Boolean).join(" · ");

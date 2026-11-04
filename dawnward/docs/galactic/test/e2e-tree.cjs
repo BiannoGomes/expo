@@ -132,7 +132,7 @@ const MOBILE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch
   // ---- members' worlds by link ----
   for (const [hash, name] of [["knowledge/hall", "The Hall of the Seven Principles"], ["knowledge/solids", "The Five Solids"]]) {
     await go(page, hash); await page.waitForTimeout(300);
-    check(`${name} shows the members' gate`, /This world is for members/.test(await page.locator("#cw-page").innerText()));
+    check(`beta: ${name} opens with no members' gate`, !/This world is for members/.test(await page.locator("#cw-page").innerText()));
   }
   await ctx.close();
 

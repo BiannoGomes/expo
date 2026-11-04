@@ -114,3 +114,28 @@ The 10 changes, in order of impact:
 10. **One vocabulary.** "Practices" grouped into "series" (or "chapters"). Retire "Expedition", "Mission" and "Part" from anything people read.
 
 Expected effect, according to the council: from 5.6 to about 7.5 before any new content. Content isn't the bottleneck; the path to it is.
+
+## Round 3: the council votes on what to build first
+Asked "build all 10, or start smaller?", the ten voted:
+- **Maya, Lena, Aisha, Ruth, Jonas, Tom (6 votes):** build what fixes the first 10 minutes and the reason to come back: **1, 2, 3, 5, 7, 8**. Then put it in front of 5 real strangers before touching navigation.
+- **Dev, Marcus (2):** do 4 (three tabs) and 6 (no day-one locks) too, now.
+- **Sam, Priya (2):** 2 first, everything else after testers.
+
+**Tom's closing line:** "Restructuring the tabs on the word of ten imaginary people is how you build the wrong thing twice. Fix the first chapter, then watch real people use it."
+
+**The decision:** slice A (1, 2, 3, 5, 7, 8) now; 4, 6, 9 and 10 after the first real testers.
+
+## What was built (slice A)
+| # | Change | Where |
+|---|---|---|
+| 1 | Chapter 1 opens with "What are you going back and forth on?": you write your thoughts (step 2), then sort **your own** lines (one per line, or one per sentence). There's no "reading" of them, just your own count. The lesson is two paragraphs, with "Why this works" one tap away. | `catalog.ts` (overthinking-1), `engine.ts` (`sortItems`, `fromStep`, `more`), `explore.js` |
+| 2 | Beta, on the phone: every chapter, world and pack is open. There are no Plus or Members labels and no gates, and You has no plan section. The membership code stays for later (`BETA_ALL_OPEN`). | `explore.js`, `home.js`, `creative.js` |
+| 3 | Today shows one card. A step chosen before today comes first ("How did it go?"); otherwise the next chapter. Galaxy-opening news is a quiet line under the card. | `home.js` `drawEarth` |
+| 5 | Focus mode: no tab bar inside a practice, and one way out at the top (no breadcrumb trail). | `explore.js` `frame`, `home.html` |
+| 7 | The honest payoff: "2 more reflections and Dawnward can start noticing what keeps coming up…" on Reflect, Your week and You. | `home.js` `payoffLine` |
+| 8 | The weekly ritual: "Remind me each week" on Your week. It makes a repeating calendar file (next Sunday at 18:00, `RRULE:FREQ=WEEKLY`) that opens Your week. It's made on the phone, and nothing is sent. | `remind.js`, `home.js` |
+
+**Tests:**
+- `docs/galactic/test/e2e-council.cjs` (36 checks).
+- Server unit tests now cover own-words sorts (59), and the integration tests pass (66).
+- The older suites were updated where the behaviour changed on purpose: the Chapter 1 flow, members' gates becoming open in the beta, and the breadcrumbs in practices.

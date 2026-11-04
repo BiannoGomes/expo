@@ -491,7 +491,8 @@ function main(data, failed) {
       el("div", { class: "ed-meta" }, worldBtn, privBtn), chips, privacy,
       ta, status, err,
       el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => save(ta, err, status) }, "Save reflection"), micBtn),
-      anotherBtn);
+      anotherBtn,
+      payoffLine() ? el("p", { class: "quiet small ed-payoff" }, payoffLine()) : null);
     wbody.querySelector(".text-btn.back")?.remove(); // the top bar's back closes the editor: one way back, not two
     wbody.querySelector(".s-title").id = "ed-q";
     quiet(true);
@@ -874,11 +875,14 @@ function main(data, failed) {
     const notes = noticeCards(drawYou);
     // replaceChildren() would print a null as the word "null", so only real nodes go in
     $("y-understand").replaceChildren(...[...notes, themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : null,
-      !notes.length && !themes.length ? el("p", { class: "quiet" }, "Nothing yet. After a few reflections, patterns in your own words appear here: worked out on this phone, from what you wrote, and nothing else.") : null].filter(Boolean));
+      !notes.length && !themes.length ? el("p", { class: "quiet" }, payoffLine() ?? "Nothing stands out yet. Patterns in your own words appear here when something comes up again and again: worked out on this phone, from what you wrote, and nothing else.") : null].filter(Boolean));
     $("y-c-wrap").hidden = !sugs.length;
     $("y-connections").replaceChildren(...sugs.map((s) => connectionCard(s, drawYou)));
     const plan = explore?.plan?.() ?? "free", label = { free: "Free", plus: "Plus", pro: "Pro" }[plan];
-    $("y-plan").replaceChildren(
+    // beta: everything is open and free, so there's no plan to talk about
+    const beta = !!explore?.beta?.();
+    $("y-plan-h").closest("section").hidden = beta;
+    if (!beta) $("y-plan").replaceChildren(
       el("p", { class: "statement" }, data.local && plan !== "free" ? `${label}, as a member preview on this device` : label),
       el("p", { class: "quiet" }, "Your words, memories and Journey are free for good."),
       el("details", { class: "more" }, el("summary", {}, "More"),
@@ -988,6 +992,7 @@ function main(data, failed) {
     } finally { routing = false; }
   }
   function showPlace(p) {
+    document.body.classList.remove("in-practice"); // a practice re-adds it on its first step
     if (p !== "earth") unlockShowing = null;
     state.place = p;
     document.body.dataset.place = p;
@@ -1083,12 +1088,10 @@ function main(data, failed) {
     if (!id) return null;
     if (!unlockShowing) { unlockShowing = id; progress.celebrated(id); }
     const go = () => { if (id === "gateway") explore.play("gateway-1", { from: { label: "Home", go: () => openEarth(), trail: [] } }); else if (REALMS[id]) creative.open(id); else openAtlas(); };
-    return el("section", { class: "card unlocked", role: "status", "aria-labelledby": "un-h" },
-      ART.thresholds[id] ? el("img", { class: "un-art", src: asset(artPath(ART.thresholds[id])), alt: "" }) : null,
-      el("img", { class: "unlock-ring art", src: asset(artPath(ART.ring)), alt: "" }),
-      el("h3", { class: "un-title", id: "un-h" }, `${PATH_NAME[id] ?? "A galaxy"} is open`),
-      el("p", { class: "why" }, "What you've done opened it. It stays open."),
-      el("div", { class: "actions" }, el("button", { class: "ghost", onclick: go }, "Go there")));
+    return el("section", { class: "card unlocked slim", role: "status", "aria-labelledby": "un-h" },
+      el("p", {}, el("span", { class: "un-title", id: "un-h" }, `✦ ${PATH_NAME[id] ?? "A galaxy"} is open`), " ",
+        el("span", { class: "why" }, "What you've done opened it. It stays open.")),
+      el("button", { class: "text-btn", onclick: go }, "Go there"));
   }
 
   // ----- the Universe Atlas: galaxies you can pan, select, zoom toward and enter -----
@@ -1280,7 +1283,19 @@ function main(data, failed) {
     $("e-title").textContent = "Where will you grow today?";
     $("e-crumbs").replaceChildren();
     const dir = direction();
-    const next = !pick
+    // ONE card on Today (user council, 4 Nov 2026): a step you chose before today and haven't told us about
+    // comes first; otherwise the next chapter or suggestion. Everything else is a quiet row underneath.
+    const today0 = new Date(); today0.setHours(0, 0, 0, 0);
+    const due = active.find((x) => x.created_at && new Date(x.created_at) < today0);
+    const waitingToday = due ? [] : active;
+    const next = due
+      ? el("section", { class: "nextcard e-due", "aria-labelledby": "e-due-h" },
+          el("p", { class: "c-part" }, "How did it go?"),
+          el("h3", { class: "c-title", id: "e-due-h" }, due.action),
+          due.when_text ? el("p", { class: "quiet small" }, `You planned: ${due.when_text}`) : null,
+          el("button", { class: "primary wide e-wait", onclick: () => explore.review(due.id) }, "Tell me how it went"),
+          el("p", { class: "quiet small" }, "Done, partly, not yet or changed your mind: every answer counts."))
+      : !pick
       ? null
       : hidden
         ? el("div", { class: "nextcard slim" }, el("p", { class: "quiet" }, "No suggestion today"),
@@ -1289,12 +1304,12 @@ function main(data, failed) {
     const reflectRow = el("button", { class: "row e-reflect", onclick: () => openEditor(state.lastWorld) },
       el("span", { class: "ni", html: svg(ICON.pen, 18) }), el("span", { class: "rtitle" }, "What's on your mind?"), el("span", { class: "rgo", html: svg(ICON.arrow, 16) }));
     // with no next step, writing becomes the one primary action
-    const writeFirst = !pick || hidden ? el("button", { class: "primary wide", onclick: () => openEditor(state.lastWorld) }, "What's on your mind?") : null;
+    const writeFirst = (!pick || hidden) && !due ? el("button", { class: "primary wide", onclick: () => openEditor(state.lastWorld) }, "What's on your mind?") : null;
     $("e-dir").replaceChildren(dir
       ? el("button", { class: "e-dir-line", id: "e-dir-btn", onclick: directionSheet, "aria-label": `Your direction: ${dir.text}. Edit` }, el("span", { class: "e-dir-to" }, "Toward"), ` ${dir.text}`)
       : el("button", { class: "text-btn", id: "e-dir-btn", onclick: directionSheet }, "Set a direction"));
     // a first visit: say what this is for in plain words, how long, and where their words go
-    const newcomer = !data.stars.length && !(ex.attempts ?? []).length && pick && !pick.resume && !hidden && pick.m.systemId === "mind-beyond-overthinking";
+    const newcomer = !due && !data.stars.length && !(ex.attempts ?? []).length && pick && !pick.resume && !hidden && pick.m.systemId === "mind-beyond-overthinking";
     // the question is the title, so the one button stays above the fold on the smallest phones
     if (newcomer) $("e-title").textContent = "Going back and forth on something?";
     $("earth").classList.toggle("newcomer", !!newcomer);
@@ -1303,13 +1318,14 @@ function main(data, failed) {
       `Find one next step in about ${pick.m.minutes} minutes. Stop any time and pick up later. ${data.local ? "What you write stays on this phone." : "What you write stays private."}`) : null;
     $("e-body").replaceChildren(...[
       welcome,
-      celebrateCard(),
       found ? el("div", { class: "card found", role: "status" }, el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
       next,
       writeFirst,
-      active[0] ? el("button", { class: "row e-wait", onclick: () => explore.review(active[0].id) },
-        el("span", { class: "rtext" }, el("span", { class: "rsub" }, "How did it go?"), el("span", { class: "rtitle" }, active[0].action)), el("span", { class: "rgo", html: svg(ICON.arrow, 16) })) : null,
-      active[0] ? el("button", { class: "text-btn e-remind", onclick: (e) => reminderSheet({ el, action: active[0].action, when: active[0].when_text, announce, returnFocus: e.currentTarget, mark: asset(artPath(ART.remind)) }) }, "Remind me in my calendar") : null,
+      // news of a galaxy opening is a quiet line under the one card, not a second card
+      celebrateCard(),
+      waitingToday[0] ? el("button", { class: "row e-wait", onclick: () => explore.review(waitingToday[0].id) },
+        el("span", { class: "rtext" }, el("span", { class: "rsub" }, "How did it go?"), el("span", { class: "rtitle" }, waitingToday[0].action)), el("span", { class: "rgo", html: svg(ICON.arrow, 16) })) : null,
+      waitingToday[0] ? el("button", { class: "text-btn e-remind", onclick: (e) => reminderSheet({ el, action: waitingToday[0].action, when: waitingToday[0].when_text, announce, returnFocus: e.currentTarget, mark: asset(artPath(ART.remind)) }) }, "Remind me in my calendar") : null,
       (() => { const d = new Date().getDay(), w = weekData(); return (d === 0 || d === 1) && !w.empty ? el("button", { class: "row e-week", onclick: () => { state.view = "week"; state.viewPicked = true; openMemories(); } },
         el("span", { class: "rtext" }, el("span", { class: "rsub" }, "Your week"), el("span", { class: "rtitle" }, [plural(w.reflections, "reflection", "reflections"), w.actions.length ? plural(w.actions.length, "step", "steps") : null].filter(Boolean).join(" · "))),
         el("span", { class: "rgo", html: svg(ICON.arrow, 16) })) : null; })(),
@@ -1336,6 +1352,14 @@ function main(data, failed) {
         : el("div", { class: "actions" }, el("button", { class: "ghost", onclick: () => say(o, "right", "Kept.") }, "That's right"), el("button", { class: "text-btn", onclick: () => say(o, "not", "Hidden. It won't come back.") }, "Not quite"))))),
       el("p", { class: "quiet small" }, "Worked out on this phone from what you wrote. Nothing is sent anywhere. These are patterns in your words, not conclusions about you.")];
   }
+  /** Honest promise of the payoff (user council): how many reflections until noticing can start. Null once it can. */
+  function payoffLine() {
+    const n = data.stars.length;
+    if (n >= 3) return null;
+    return n === 0
+      ? "After 3 reflections, Dawnward can start noticing what keeps coming up in your words, worked out on this phone."
+      : `${plural(3 - n, "more reflection", "more reflections")} and Dawnward can start noticing what keeps coming up in your words, worked out on this phone.`;
+  }
   function weekData() { return weekSummary({ stars: data.stars, experiments: explore?.data.experiments ?? [], attempts: explore?.data.attempts ?? [] }); }
   function drawWeek(box) {
     const w = weekData();
@@ -1349,10 +1373,12 @@ function main(data, failed) {
         el("ul", { class: "week-actions" }, w.actions.map((x) => el("li", {}, el("span", { class: "rtitle" }, x.action), el("span", { class: "quiet small" }, x.status === "reviewed" ? (OUTCOME_WORDS[x.outcome] ?? "Told") : "Waiting to hear how it went"))))) : null,
       w.line ? el("section", { "aria-labelledby": "wk-l" }, el("h4", { id: "wk-l", class: "y-h4" }, "A line you wrote"), el("blockquote", { class: "said" }, w.line.quote), el("p", { class: "quiet small" }, longDate(w.line.date))) : null,
       w.question ? el("section", { "aria-labelledby": "wk-q" }, el("h4", { id: "wk-q", class: "y-h4" }, "The question you came back to"), el("p", { class: "said-q" }, w.question.text), el("p", { class: "quiet small" }, `${w.question.times} times this week`)) : null,
-      el("div", { class: "actions no-print" }, typeof window.print === "function" && !w.empty ? el("button", { class: "ghost", onclick: () => { try { window.print(); } catch { announce("Printing isn't available here."); } } }, "Save as PDF") : null));
+      el("div", { class: "actions no-print" }, typeof window.print === "function" && !w.empty ? el("button", { class: "ghost", onclick: () => { try { window.print(); } catch { announce("Printing isn't available here."); } } }, "Save as PDF") : null,
+        // the weekly ritual (user council): a repeating calendar reminder, made on this phone like Remind me
+        el("button", { class: "ghost", id: "wk-remind", onclick: (e) => reminderSheet({ el, action: "Your week", announce, returnFocus: e.currentTarget, mark: asset(artPath(ART.remind)), weekly: true }) }, "Remind me each week")));
     const notes = noticeCards(() => drawWeek(box));
     box.replaceChildren(sheet, el("section", { class: "group", "aria-labelledby": "wk-n" }, el("h3", { id: "wk-n" }, "What I've noticed"),
-      ...(notes.length ? notes : [el("p", { class: "quiet" }, data.stars.length < 3 ? `After ${3 - data.stars.length} more ${3 - data.stars.length === 1 ? "reflection" : "reflections"}, patterns in your own words will start to appear here.` : "Nothing stands out yet. Patterns appear when something comes up again and again.")])));
+      ...(notes.length ? notes : [el("p", { class: "quiet" }, payoffLine() ?? "Nothing stands out yet. Patterns appear when something comes up again and again.")])));
   }
   function drawMiles(box) {
     const ex = explore?.data ?? { experiments: [], discoveries: [] };

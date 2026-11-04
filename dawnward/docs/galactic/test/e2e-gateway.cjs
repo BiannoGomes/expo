@@ -27,7 +27,7 @@ async function toPortal(page, name) {
   check(`${name}: the Gateway is open, and says it's imagination, not prediction`, /Open/.test(panel) && /never a prediction/.test(panel));
   await page.getByRole("button", { name: "Enter the Gateway" }).click();
   await page.waitForSelector("#x-body .s-title");
-  check(`${name}: the trail reads Universe › The Quantum Gateway`, /Universe.*The Quantum Gateway/.test(await page.textContent(".qhead .crumbs")));
+  check(`${name}: one way back, to the Universe (focus mode: no trail, no tab bar)`, /Universe/.test(await page.textContent(".qhead .back")) && (await page.locator(".qhead .crumbs").count()) === 0);
   check(`${name}: opens on the unlit ring (B1)`, /B1/.test(await artSrc(page)) || (await artSrc(page)).startsWith("data:"));
   check(`${name}: says plainly it's not a prediction`, /not a prediction/.test(await page.textContent("#x-body")));
   await page.getByRole("button", { name: "Begin" }).click();

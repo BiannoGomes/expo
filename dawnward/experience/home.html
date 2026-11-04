@@ -666,7 +666,15 @@
   .gx-lock { position:absolute; left:50%; top:6px; transform:translateX(-50%); z-index:1; display:inline-flex; align-items:center; gap:4px; font-size:13px; color:var(--dim); white-space:nowrap; background:rgba(5,7,13,.7); padding:2px 8px; border-radius:var(--r-pill); }
   .alist .row.locked .rtitle { color:var(--dim); }
   .card.unlocked { position:relative; overflow:hidden; display:grid; gap:var(--s2); border-color:var(--edge-strong); }
+  /* focus mode: inside a practice, no tab bar (one way out, at the top) */
+  body.in-practice #tabs { display:none; }
   .un-title { font-family:var(--display); font-size:24px; font-weight:500; margin:0; color:var(--ink); }
+  /* the unlock is a quiet line under Today's one card */
+  .card.unlocked.slim { display:flex; align-items:center; justify-content:space-between; gap:var(--s3); padding:var(--s3) var(--s4); }
+  .card.unlocked.slim p { margin:0; }
+  .card.unlocked.slim .un-title { font-size:19px; }
+  .card.unlocked.slim .why { display:block; font-size:14px; color:var(--dim); }
+  .lesson-more { margin-top:var(--s2); }
   .unlock-ring.art { border:0; box-shadow:none; border-radius:0; width:170px; height:170px; right:-78px; top:-70px; opacity:.8; }
   #atlas:has(#a-list:not([hidden])) { background:linear-gradient(90deg, rgba(5,7,13,.92) 0, rgba(5,7,13,.78) 55%, rgba(5,7,13,.35)), var(--path-art) 70% 30% / cover no-repeat fixed, #05070D; }
   .a-threshold.locked { filter:grayscale(.45) brightness(.6); max-height:130px; }

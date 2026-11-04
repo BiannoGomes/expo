@@ -4,7 +4,7 @@
 //
 // Progress here means places discovered and things done, never a measure of
 // the person (owner decision, 2026-10-31: discoveries only, no XP or levels).
-import { MISSIONS, SYSTEMS, missionById, type Access, type Mission, type Step, type WorldId } from "./catalog.js";
+import { MISSIONS, SYSTEMS, missionById, type Access, type Mission, type SortItem, type Step, type WorldId } from "./catalog.js";
 
 export type AttemptStatus = "in_progress" | "paused" | "completed" | "abandoned";
 export type Answer =
@@ -52,7 +52,24 @@ export function beginAttempt(mission: Mission, id: string): Attempt {
 }
 
 /** A plain-language problem with an answer, or null when it's acceptable. */
-export function validateAnswer(step: Step, answer: unknown): string | null {
+/** How many of a person's own lines a sort takes. */
+export const OWN_SORT_MAX = 6;
+
+/**
+ * The items a sort step shows. Usually its written items; for a sort of the person's own words (`fromStep`),
+ * the thoughts they wrote in that step: one per line, or one per sentence if they wrote a single line.
+ */
+export function sortItems(step: Step, answers: Record<string, unknown> = {}): SortItem[] {
+  if (!step.fromStep) return step.items ?? [];
+  const a = answers[step.fromStep] as { text?: unknown } | undefined;
+  const text = a && typeof a.text === "string" ? a.text.trim() : "";
+  let lines = text.split(/\n+/);
+  if (lines.length < 2) lines = text.split(/(?<=[.?!])\s+/);
+  return lines.map((x) => x.trim().replace(/^(?:[-•*]|\d+[.)])\s+/, "")).filter(Boolean).slice(0, OWN_SORT_MAX)
+    .map((t, i) => ({ id: `l${i}`, text: t.slice(0, 200) }));
+}
+
+export function validateAnswer(step: Step, answer: unknown, answers?: Record<string, unknown>): string | null {
   const a = answer as Record<string, unknown> | null;
   if (!a || typeof a !== "object") return "Nothing was given for this step.";
   if (a.skip === true) return step.required ? "This step needs an answer." : null;
@@ -89,8 +106,14 @@ export function validateAnswer(step: Step, answer: unknown): string | null {
       const r = a.sorted as Record<string, unknown> | undefined;
       const bins = new Set((step.bins ?? []).map((b) => b.id));
       if (!r || typeof r !== "object") return "Sort each one first.";
-      for (const x of step.items ?? []) if (!bins.has(r[x.id] as string)) return "Sort each one first.";
-      if (Object.keys(r).some((k) => !(step.items ?? []).some((x) => x.id === k))) return "Sort each one first.";
+      // own lines: checked against what they wrote when we know it; otherwise only the shape (l0…l5, known bins)
+      if (step.fromStep && !answers) {
+        const ks = Object.keys(r);
+        return ks.every((k) => /^l[0-5]$/.test(k) && bins.has(r[k] as string)) ? null : "Sort each one first.";
+      }
+      const items = step.fromStep ? sortItems(step, answers) : step.items ?? [];
+      for (const x of items) if (!bins.has(r[x.id] as string)) return "Sort each one first.";
+      if (Object.keys(r).some((k) => !items.some((x) => x.id === k))) return "Sort each one first.";
       return null;
     }
     case "rehearse":
@@ -120,7 +143,7 @@ export function answerStep(mission: Mission, attempt: Attempt, stepIndex: number
   const step = mission.steps[stepIndex];
   if (!step) return { error: "No such step.", status: 404 };
   if (stepIndex > attempt.step) return { error: "That step isn't open yet.", status: 409 };
-  const problem = validateAnswer(step, answer);
+  const problem = validateAnswer(step, answer, attempt.answers);
   if (problem) return { error: problem, status: 422 };
   const clean = normalise(step, answer);
   const next: Attempt = {
