@@ -1,10 +1,10 @@
 {
-  "when": "2026-11-04T03:11:28.445Z",
+  "when": "2026-11-04T06:24:22.353Z",
   "checks": [
     {
-      "name": "Spiritual Exploration: 4 open, 1 planned",
+      "name": "Spiritual Exploration: 4 open, 0 planned",
       "ok": true,
-      "detail": "The Temple of Stillness | The Dream Realm | The Sound Sanctuary | The Inner Cosmos | Sacred Traditions"
+      "detail": "The Temple of Stillness | The Dream Realm | The Sound Sanctuary | The Inner Cosmos"
     },
     {
       "name": "axe: Spiritual Exploration page",
@@ -12,9 +12,9 @@
       "detail": ""
     },
     {
-      "name": "Knowledge: 9 open, 2 planned",
+      "name": "Knowledge: 9 open, 0 planned",
       "ok": true,
-      "detail": "The Cosmic Observatory | The Discovery Lab | The Cosmic Calendar | The Flower of Life | The Hall of the Seven Principles | The Five Solids | The Wisdom Library | The Philosophy Temple | The Tree of Life | Inner Knowing | Civilizations"
+      "detail": "The Cosmic Observatory | The Discovery Lab | The Cosmic Calendar | The Flower of Life | The Hall of the Seven Principles | The Five Solids | The Wisdom Library | The Tree of Life | Inner Knowing"
     },
     {
       "name": "axe: Knowledge page",
@@ -22,9 +22,9 @@
       "detail": ""
     },
     {
-      "name": "AI Creation: 1 open, 4 planned",
+      "name": "AI Creation: 1 open, 0 planned",
       "ok": true,
-      "detail": "The Creation Gallery | The Dream Forge | The Architect | Future Self | The Companion Nexus"
+      "detail": "The Creation Gallery"
     },
     {
       "name": "axe: AI Creation page",
@@ -32,7 +32,7 @@
       "detail": ""
     },
     {
-      "name": "AI planets say plainly they need an AI service",
+      "name": "AI planets that would need an AI service aren't shown",
       "ok": true,
       "detail": ""
     },
@@ -99,7 +99,7 @@
     {
       "name": "garden draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":151,\"median\":57}"
+      "detail": "{\"n\":240,\"median\":29}"
     },
     {
       "name": "a dream is kept with its title",
@@ -119,7 +119,7 @@
     {
       "name": "dreams draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":80,\"median\":83}"
+      "detail": "{\"n\":119,\"median\":44}"
     },
     {
       "name": "the practice begins with breathing in",
@@ -149,7 +149,7 @@
     {
       "name": "stillness draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":79,\"median\":100}"
+      "detail": "{\"n\":123,\"median\":74}"
     },
     {
       "name": "tapping the Sun in 3D opens its facts",
@@ -157,7 +157,7 @@
       "detail": ""
     },
     {
-      "name": "facts are marked as a draft awaiting review",
+      "name": "facts are labelled Science, with no draft wording",
       "ok": true,
       "detail": ""
     },
@@ -179,7 +179,7 @@
     {
       "name": "observatory draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":65,\"median\":100}"
+      "detail": "{\"n\":86,\"median\":74}"
     },
     {
       "name": "The Sound Sanctuary by link shows the members' gate",
@@ -244,7 +244,7 @@
     {
       "name": "architect draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":161,\"median\":32}"
+      "detail": "{\"n\":240,\"median\":19}"
     },
     {
       "name": "a kept place opens again from the gallery",
@@ -264,7 +264,7 @@
     {
       "name": "sanctuary draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":81,\"median\":66}"
+      "detail": "{\"n\":106,\"median\":45}"
     },
     {
       "name": "a star offers an invitation",
@@ -279,7 +279,7 @@
     {
       "name": "cosmos draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":53,\"median\":100}"
+      "detail": "{\"n\":70,\"median\":67}"
     },
     {
       "name": "a moon goes into orbit",
@@ -304,7 +304,7 @@
     {
       "name": "lab draws (SwiftShader median frame, ms)",
       "ok": true,
-      "detail": "{\"n\":198,\"median\":100}"
+      "detail": "{\"n\":240,\"median\":65}"
     },
     {
       "name": "no page or shader errors",
@@ -333,36 +333,36 @@
   },
   "frames": {
     "garden": {
-      "n": 151,
-      "median": 57
+      "n": 240,
+      "median": 29
     },
     "dreams": {
-      "n": 80,
-      "median": 83
+      "n": 119,
+      "median": 44
     },
     "stillness": {
-      "n": 79,
-      "median": 100
+      "n": 123,
+      "median": 74
     },
     "observatory": {
-      "n": 65,
-      "median": 100
+      "n": 86,
+      "median": 74
     },
     "architect": {
-      "n": 161,
-      "median": 32
+      "n": 240,
+      "median": 19
     },
     "sanctuary": {
-      "n": 81,
-      "median": 66
+      "n": 106,
+      "median": 45
     },
     "cosmos": {
-      "n": 53,
-      "median": 100
+      "n": 70,
+      "median": 67
     },
     "lab": {
-      "n": 198,
-      "median": 100
+      "n": 240,
+      "median": 65
     }
   },
   "summary": {

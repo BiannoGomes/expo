@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T03:11:07.291Z",
+  "when": "2026-11-04T06:24:03.865Z",
   "checks": [
     {
       "name": "Learn leads to the Library",
@@ -82,7 +82,7 @@
       "detail": ""
     },
     {
-      "name": "an unreviewed draft is labelled",
+      "name": "no \"draft\" label in front of people (review happens before launch)",
       "ok": true,
       "detail": ""
     },

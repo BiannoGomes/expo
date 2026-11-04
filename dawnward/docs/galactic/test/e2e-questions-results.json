@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T03:08:33.627Z",
+  "when": "2026-11-04T06:02:31.324Z",
   "checks": [
     {
       "name": "Body offers its guided question, one tap away",
@@ -159,7 +159,7 @@
     {
       "name": "the question is kept with the words, on this device",
       "ok": true,
-      "detail": "{\"id\":\"m-mw1jfi9d-esxi\",\"world\":\"mind\",\"date\":\"2026-11-04\",\"excerpt\":\"That I'm bad at starting things.\",\"prompt\":\"Is there one everyday thought you would like to examine more closely?\"}"
+      "detail": "{\"id\":\"m-mw1pn7ow-ksnm\",\"world\":\"mind\",\"date\":\"2026-11-04\",\"excerpt\":\"That I'm bad at starting things.\",\"prompt\":\"Is there one everyday thought you would like to examine more closely?\"}"
     },
     {
       "name": "Journey shows the question with the reflection",
@@ -174,7 +174,7 @@
     {
       "name": "saving straight after typing doesn't leak into the next reflection (kept in Soul, no old question)",
       "ok": true,
-      "detail": "{\"id\":\"m-mw1jfkgu-4383\",\"world\":\"soul\",\"date\":\"2026-11-04\",\"excerpt\":\"Lunch with Dad.\"}"
+      "detail": "{\"id\":\"m-mw1pn9w3-ahro\",\"world\":\"soul\",\"date\":\"2026-11-04\",\"excerpt\":\"Lunch with Dad.\"}"
     },
     {
       "name": "and no stale draft is left behind",

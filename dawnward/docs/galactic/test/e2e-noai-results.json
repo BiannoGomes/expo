@@ -1,0 +1,154 @@
+{
+  "when": "2026-11-04T05:55:04.222Z",
+  "checks": [
+    {
+      "name": "Learn shows nothing planned and no draft labels",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Beyond Overthinking counts only its real chapters",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "each series shows one next chapter, with all chapters a tap away",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "two chapters started: one says Continue, the other just Started",
+      "ok": true,
+      "detail": "Beyond OverthinkingMind · 4 chaptersStop going round in circles on important decisions, and find a clearer next step.Follow this expeditionChapter 1: Understand the loopTell the difference between thi"
+    },
+    {
+      "name": "axe: Learn, simplified",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a world shows no planned chapters or pathways",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "AI Creation lists only what's open (no AI studios promised)",
+      "ok": true,
+      "detail": "UniverseAI CreationGalaxy · 1 open, 1 freeAI CreationEverything you've made, in one place.Planets hereThe Creation GalleryEverything you've made in the worlds, "
+    },
+    {
+      "name": "Journey has a Week view",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the week counts what you did, in plain numbers",
+      "ok": true,
+      "detail": "Dawnward · Thursday, October 29 to todayYour week6Reflections0Practices0Steps chosen0Told how it wentYou spent time in Mind, Soul and Body.A line you wroteSlept"
+    },
+    {
+      "name": "it quotes one line you wrote, word for word",
+      "ok": true,
+      "detail": "Slept well for once, and the morning felt calm."
+    },
+    {
+      "name": "it offers Save as PDF",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "noticing: a word you keep coming back to, counted honestly",
+      "ok": true,
+      "detail": "You wrote about “work” in 4 of your 6 reflections. Does that sound right?Nov 3Walked by the river after work.Nov 1Work e"
+    },
+    {
+      "name": "…with your own words as evidence",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "…and a feeling you named, counted, never interpreted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it says plainly that nothing left the phone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: Journey › Week",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "That's right: kept, and it says so",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Not quite: hidden, and it stays hidden after a reload",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "You › What I've noticed shows the same honest patterns",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "the worksheet opens with fields to type into",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Add a row adds a fifth row",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "it says it saved on this phone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "printing shows your answers as text",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "axe: a worksheet being filled in",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Journey lists your worksheet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "reopened after a reload, your answers are back",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Delete everything removes worksheet answers and noticing choices",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "axe": {
+    "Learn, simplified": [],
+    "Journey › Week": [],
+    "a worksheet being filled in": []
+  },
+  "summary": {
+    "total": 28,
+    "failed": 0
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T03:49:40.511Z",
+  "when": "2026-11-04T06:13:01.253Z",
   "url": "http://localhost:8771/home.html",
   "checks": [
     {
@@ -64,13 +64,13 @@
     },
     {
       "name": "desktop: nothing overlaps",
-      "ok": false,
-      "detail": "explore:soul×tabs"
+      "ok": true,
+      "detail": ""
     },
     {
       "name": "desktop: nothing off screen, no sideways scroll",
-      "ok": false,
-      "detail": "explore:body,explore:future"
+      "ok": true,
+      "detail": ""
     },
     {
       "name": "phone: entrance shows on a first visit",
@@ -505,7 +505,7 @@
     {
       "name": "reduced motion: arrival is immediate",
       "ok": true,
-      "detail": "7 ms"
+      "detail": "10 ms"
     }
   ],
   "axe": {
@@ -525,26 +525,26 @@
     "desktop text": []
   },
   "timings": {
-    "phone.ready_ms": 530,
-    "phone.mind_arrival_ms": 791,
+    "phone.ready_ms": 428,
+    "phone.mind_arrival_ms": 797,
     "phone.frames_swiftshader": {
-      "n": 19,
-      "median": 133.29999999999927,
-      "p95": 433.2999999999993,
+      "n": 25,
+      "median": 116.70000000000073,
+      "p95": 250.10000000000036,
       "degraded": false
     },
-    "desktop.ready_ms": 426,
-    "desktop.mind_arrival_ms": 813,
+    "desktop.ready_ms": 455,
+    "desktop.mind_arrival_ms": 766,
     "desktop.frames_swiftshader": {
-      "n": 9,
-      "median": 350,
-      "p95": 516.5999999999985,
+      "n": 8,
+      "median": 350.1000000000058,
+      "p95": 566.7000000000007,
       "degraded": false
     },
-    "reduced.soul_arrival_ms": 7
+    "reduced.soul_arrival_ms": 10
   },
   "summary": {
     "total": 101,
-    "failed": 2
+    "failed": 0
   }
 }

@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T03:06:38.526Z",
+  "when": "2026-11-04T06:19:44.046Z",
   "checks": [
     {
       "name": "Learn says Learn once",
@@ -24,7 +24,7 @@
     {
       "name": "chapter rows run full width, titles on one or two lines",
       "ok": true,
-      "detail": "[{\"full\":0.88,\"lines\":1},{\"full\":0.88,\"lines\":2},{\"full\":0.88,\"lines\":1},{\"full\":0.88,\"lines\":2},{\"full\":0.88,\"lines\":2},{\"full\":0.88,\"lines\":1}]"
+      "detail": "[{\"full\":0.88,\"lines\":1},{\"full\":0.88,\"lines\":1},{\"full\":0.88,\"lines\":2},{\"full\":0.88,\"lines\":1},{\"full\":0.88,\"lines\":2},{\"full\":0.88,\"lines\":1}]"
     },
     {
       "name": "no small or all-caps text on Learn",
@@ -64,7 +64,7 @@
     {
       "name": "search and six world filters sit behind one Filter chip",
       "ok": true,
-      "detail": "4"
+      "detail": "5"
     },
     {
       "name": "Filter opens them, and says it's open",
@@ -104,7 +104,7 @@
     {
       "name": "You: under 120 words on the first screen",
       "ok": true,
-      "detail": "99"
+      "detail": "106"
     },
     {
       "name": "You: no all-caps labels, no small text",

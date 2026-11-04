@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T03:39:53.372Z",
+  "when": "2026-11-04T05:59:39.760Z",
   "checks": [
     {
       "name": "the path lists every galaxy, in the order they open",
@@ -79,7 +79,7 @@
     {
       "name": "#/universe/ai shows the locked AI Creation, not its worlds",
       "ok": true,
-      "detail": "Universe / AI Creation / AI Creation /  / Everything you've made, in one place. The AI s"
+      "detail": "Universe / AI Creation / AI Creation /  / Everything you've made, in one place. /  /  Opens "
     },
     {
       "name": "Future offers its own practice first, not the locked Gateway",

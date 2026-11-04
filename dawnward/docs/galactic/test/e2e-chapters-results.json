@@ -1,8 +1,8 @@
 {
-  "when": "2026-11-04T03:21:59.283Z",
+  "when": "2026-11-04T06:16:42.507Z",
   "checks": [
     {
-      "name": "phone: the Compass starts with Beyond Overthinking, Chapter 1 of 7",
+      "name": "phone: the Compass starts with Beyond Overthinking, Chapter 1 of 4",
       "ok": true,
       "detail": ""
     },
@@ -12,7 +12,7 @@
       "detail": ""
     },
     {
-      "name": "phone: the chapter says it's a draft",
+      "name": "phone: no \"draft\" label in front of people",
       "ok": true,
       "detail": ""
     },
@@ -87,12 +87,12 @@
       "detail": ""
     },
     {
-      "name": "phone ch1: no moon while chapters are still planned",
+      "name": "phone ch1: no moon after just one chapter",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "phone: the Compass now offers Chapter 2 of 7",
+      "name": "phone: the Compass now offers Chapter 2 of 4",
       "ok": true,
       "detail": ""
     },
@@ -132,7 +132,7 @@
       "detail": ""
     },
     {
-      "name": "phone: the Compass offers Chapter 3 of 7, as the expedition you follow",
+      "name": "phone: the Compass offers Chapter 3 of 4, as the expedition you follow",
       "ok": true,
       "detail": ""
     },
@@ -192,12 +192,12 @@
       "detail": ""
     },
     {
-      "name": "phone: Learn lists Beyond Overthinking as 7 chapters",
+      "name": "phone: Learn lists Beyond Overthinking as its 4 real chapters",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "phone: chapters 5 to 7 are marked Planned and can't be opened",
+      "name": "phone: chapters not yet written aren't shown at all",
       "ok": true,
       "detail": ""
     },
@@ -277,7 +277,7 @@
       "detail": ""
     },
     {
-      "name": "small: the Compass starts with Beyond Overthinking, Chapter 1 of 7",
+      "name": "small: the Compass starts with Beyond Overthinking, Chapter 1 of 4",
       "ok": true,
       "detail": ""
     },
@@ -287,7 +287,7 @@
       "detail": ""
     },
     {
-      "name": "small: the chapter says it's a draft",
+      "name": "small: no \"draft\" label in front of people",
       "ok": true,
       "detail": ""
     },
@@ -362,12 +362,12 @@
       "detail": ""
     },
     {
-      "name": "small ch1: no moon while chapters are still planned",
+      "name": "small ch1: no moon after just one chapter",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "small: the Compass now offers Chapter 2 of 7",
+      "name": "small: the Compass now offers Chapter 2 of 4",
       "ok": true,
       "detail": ""
     },
@@ -407,7 +407,7 @@
       "detail": ""
     },
     {
-      "name": "small: the Compass offers Chapter 3 of 7, as the expedition you follow",
+      "name": "small: the Compass offers Chapter 3 of 4, as the expedition you follow",
       "ok": true,
       "detail": ""
     },
@@ -467,12 +467,12 @@
       "detail": ""
     },
     {
-      "name": "small: Learn lists Beyond Overthinking as 7 chapters",
+      "name": "small: Learn lists Beyond Overthinking as its 4 real chapters",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "small: chapters 5 to 7 are marked Planned and can't be opened",
+      "name": "small: chapters not yet written aren't shown at all",
       "ok": true,
       "detail": ""
     },

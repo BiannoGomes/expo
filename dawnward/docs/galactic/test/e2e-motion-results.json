@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T03:05:48.608Z",
+  "when": "2026-11-04T05:58:05.933Z",
   "checks": [
     {
       "name": "Now is the default",
@@ -54,7 +54,7 @@
     {
       "name": "Living: arrivals animate",
       "ok": true,
-      "detail": "47 animations over 4 places"
+      "detail": "51 animations over 4 places"
     },
     {
       "name": "Living: once landed, nothing is left faded, shifted or blurred",
@@ -94,7 +94,7 @@
     {
       "name": "Depth: arrivals animate",
       "ok": true,
-      "detail": "76 animations over 4 places"
+      "detail": "72 animations over 4 places"
     },
     {
       "name": "Depth: once landed, nothing is left faded, shifted or blurred",

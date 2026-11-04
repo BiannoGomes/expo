@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T03:05:29.085Z",
+  "when": "2026-11-04T05:57:46.702Z",
   "checks": [
     {
       "name": "a newcomer is told what it's for, in plain words, and how long",
@@ -99,7 +99,7 @@
     {
       "name": "Home asks how it went",
       "ok": true,
-      "detail": "Knowledge is open /  / What you've done opened it. It stays open. /  / Go there / Beyond Overthinking /  / Mind · Understand the loop /  / Begin · Chapter 1 of 7 · 8 min / Choose another / Not today / Why this? / How did it go? / Phone in the kitchen, at night; then sleep / Remind me in my calendar / Your worlds / Mind / Body / Soul / Spi | place=earth #/home"
+      "detail": "Knowledge is open /  / What you've done opened it. It stays open. /  / Go there / Beyond Overthinking /  / Mind · Understand the loop /  / Begin · Chapter 1 of 4 · 8 min / Choose another / Not today / Why this? / How did it go? / Phone in the kitchen, at night; then sleep / Remind me in my calendar / Your worlds / Mind / Body / Soul / Spi | place=earth #/home"
     },
     {
       "name": "…and offers the calendar reminder there too",

@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-03T21:51:04.867Z",
+  "when": "2026-11-04T06:27:59.912Z",
   "checks": [
     {
       "name": "320x568: Atlas galaxies and names never overlap",
@@ -157,7 +157,7 @@
       "detail": ""
     },
     {
-      "name": "phone: what isn't built yet says so plainly",
+      "name": "phone: AI Creation promises nothing that isn't built",
       "ok": true,
       "detail": ""
     },
@@ -357,7 +357,7 @@
       "detail": ""
     },
     {
-      "name": "desktop: what isn't built yet says so plainly",
+      "name": "desktop: AI Creation promises nothing that isn't built",
       "ok": true,
       "detail": ""
     },
@@ -527,10 +527,10 @@
   "timings": {
     "phone.arrival_fallbacks": 0,
     "phone.webgl_context_lost": 0,
-    "phone.to_first_step_ms": 97,
-    "desktop.arrival_fallbacks": 1,
+    "phone.to_first_step_ms": 110,
+    "desktop.arrival_fallbacks": 0,
     "desktop.webgl_context_lost": 0,
-    "desktop.to_first_step_ms": 222
+    "desktop.to_first_step_ms": 161
   },
   "summary": {
     "total": 102,
