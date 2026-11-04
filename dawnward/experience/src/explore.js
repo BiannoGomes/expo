@@ -390,6 +390,9 @@ export function createExplore(store, h) {
       if (r.error) { err.textContent = r.error; return; }
       try { localStorage.removeItem(DRAFT(a, step.id)); } catch {}
       current.attempt = r.attempt;
+      // keep the shared list in step too, so Home's "Continue · x of y" matches where you really are
+      const k = data.attempts.findIndex((x) => x.id === r.attempt.id);
+      if (k >= 0) data.attempts[k] = r.attempt;
       if (i + 1 < m.steps.length) show(i + 1); else finish();
     };
     const title = el("h2", { class: "s-title", tabindex: "-1" }, step.title);

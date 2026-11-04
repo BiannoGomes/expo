@@ -872,8 +872,9 @@ function main(data, failed) {
   function drawYou() {
     const themes = liveThemes(), sugs = suggestions();
     const notes = noticeCards(drawYou);
-    $("y-understand").replaceChildren(...notes, themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : null,
-      !notes.length && !themes.length ? el("p", { class: "quiet" }, "Nothing yet. After a few reflections, patterns in your own words appear here: worked out on this phone, from what you wrote, and nothing else.") : null);
+    // replaceChildren() would print a null as the word "null", so only real nodes go in
+    $("y-understand").replaceChildren(...[...notes, themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : null,
+      !notes.length && !themes.length ? el("p", { class: "quiet" }, "Nothing yet. After a few reflections, patterns in your own words appear here: worked out on this phone, from what you wrote, and nothing else.") : null].filter(Boolean));
     $("y-c-wrap").hidden = !sugs.length;
     $("y-connections").replaceChildren(...sugs.map((s) => connectionCard(s, drawYou)));
     const plan = explore?.plan?.() ?? "free", label = { free: "Free", plus: "Plus", pro: "Pro" }[plan];
@@ -1380,7 +1381,7 @@ function main(data, failed) {
         return ids.length ? el("section", { class: "group", "aria-labelledby": "mm-ws" }, el("h3", { id: "mm-ws" }, "Your worksheets"),
           el("ul", { class: "memories" }, ids.map((id) => { const m = missionById(id);
             return el("li", {}, el("button", { class: "memory", onclick: () => explore.sheet(id, () => openMemories()) },
-              el("span", { class: "when" }, `${m.title} · ${all[id].savedAt ? shortDate(all[id].savedAt.slice(0, 10)) : ""}`), el("span", { class: "text" }, m.worksheet.title))); }))) : null; })());
+              el("span", { class: "when" }, `${m.title} · ${all[id].savedAt ? shortDate(all[id].savedAt.slice(0, 10)) : ""}`), el("span", { class: "text" }, m.worksheet.title))); }))) : ""; })()); // "" not null: replaceChildren prints null as text
   }
   $("brand").addEventListener("click", (e) => { e.preventDefault(); openEarth(); });
   document.querySelectorAll("#tabs [data-tab]").forEach((b) => b.addEventListener("click", () => {

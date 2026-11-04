@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-04T05:55:04.222Z",
+  "when": "2026-11-04T07:22:33.045Z",
   "checks": [
     {
       "name": "Learn shows nothing planned and no draft labels",
@@ -137,6 +137,21 @@
       "detail": ""
     },
     {
+      "name": "a brand-new journey/milestones prints no stray \"null\"",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "a brand-new you prints no stray \"null\"",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Home's Continue shows the same step as Learn, without a reload",
+      "ok": true,
+      "detail": "home \"Continue · 3 of 7 · 8 min\" · learn \"Continue · 3 of 7\""
+    },
+    {
       "name": "no page errors",
       "ok": true,
       "detail": ""
@@ -148,7 +163,7 @@
     "a worksheet being filled in": []
   },
   "summary": {
-    "total": 28,
+    "total": 31,
     "failed": 0
   }
 }

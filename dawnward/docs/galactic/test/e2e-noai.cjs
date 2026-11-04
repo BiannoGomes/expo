@@ -125,6 +125,24 @@ const iso = (daysAgo) => { const d = new Date(); d.setDate(d.getDate() - daysAgo
   await page.waitForTimeout(500);
   check("Delete everything removes worksheet answers and noticing choices", await page.evaluate(() => !localStorage.getItem("dw-sheets-v1") && !localStorage.getItem("dw-notice-v1")));
 
+  // ----- found by the newcomer walk-through (4 Nov): empty screens and Home's progress -----
+  const fresh = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const np = await fresh.newPage(); np.on("pageerror", (e) => errors.push(String(e)));
+  const strayNull = (p) => p.evaluate(() => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (/^\s*(null|undefined)\s*$/.test(n.textContent) && n.parentElement?.offsetParent) return true; return false; });
+  for (const r of ["journey/milestones", "you"]) { await go(np, r, 1000); check(`a brand-new ${r} prints no stray "null"`, !(await strayNull(np))); }
+  await go(np, "home", 1000);
+  await np.locator("#e-body .nextcard .primary").click();
+  await np.waitForSelector("#x-body .s-title");
+  await np.getByRole("button", { name: "Begin" }).click(); await np.waitForTimeout(500);
+  await np.getByRole("button", { name: "Continue", exact: true }).click(); await np.waitForTimeout(500);
+  await np.locator('#tabs [data-tab="home"]').click(); await np.waitForTimeout(1200);
+  const homeBtn = await np.locator("#e-body .nextcard .primary").innerText();
+  await np.locator('#tabs [data-tab="learn"]').click(); await np.waitForTimeout(1200);
+  const learnBtn = await np.locator("#x-body .x-feature .primary").innerText();
+  const num = (s) => (s.match(/(\d+) of (\d+)/) || []).slice(1).join("/");
+  check("Home's Continue shows the same step as Learn, without a reload", /Continue/.test(homeBtn) && num(homeBtn) === num(learnBtn) && !/^1\//.test(num(homeBtn)), `home "${homeBtn}" · learn "${learnBtn}"`);
+  await fresh.close();
+
   check("no page errors", errors.length === 0, errors.slice(0, 3).join(" | "));
   await browser.close();
   const failed = results.checks.filter((c) => !c.ok).length;
