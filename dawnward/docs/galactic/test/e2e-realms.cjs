@@ -39,14 +39,14 @@ const frames = async (p, name) => { await p.waitForTimeout(2200); results.frames
   const page = await ctx.newPage(); watch(page);
 
   // ---- the three galaxy pages ----
-  for (const [g, open, planned, label] of [["spiritual", 4, 1, "Spiritual Exploration"], ["knowledge", 9, 2, "Knowledge"], ["ai", 1, 4, "AI Creation"]]) {
+  for (const [g, open, planned, label] of [["spiritual", 4, 0, "Spiritual Exploration"], ["knowledge", 9, 0, "Knowledge"], ["ai", 1, 0, "AI Creation"]]) { // only what exists is listed (4 Nov 2026)
     await go(page, `universe/${g}`);
     const rows = await page.locator(".cw-planets li").allInnerTexts();
     check(`${label}: ${open} open, ${planned} planned`, rows.length === open + planned && rows.filter((t) => /Planned/.test(t)).length === planned, rows.map((t) => t.split("\n")[0]).join(" | "));
     await axe(page, `${label} page`);
     await shot(page, `galaxy-${g}`);
   }
-  check("AI planets say plainly they need an AI service", (await page.locator(".cw-planets").innerText()).match(/needs an AI service/g)?.length === 4);
+  check("AI planets that would need an AI service aren't shown", !/needs an AI service/.test(await page.locator(".cw-planets").innerText()));
   await go(page, "universe/spiritual");
   check("members' worlds are marked", (await page.locator(".cw-planets li", { hasText: "The Sound Sanctuary" }).innerText()).includes("Members"));
   await page.locator('#tabs [data-tab="universe"]').click();
@@ -124,7 +124,7 @@ const frames = async (p, name) => { await p.waitForTimeout(2200); results.frames
   const sun = await page.evaluate(() => window.__dwCreative.screenOf("sun"));
   await page.touchscreen.tap(sun.x, sun.y); await page.waitForTimeout(400);
   check("tapping the Sun in 3D opens its facts", /The Sun/.test(await page.locator(".cw-card").innerText()) && /8 minutes/.test(await page.locator(".cw-card").innerText()));
-  check("facts are marked as a draft awaiting review", /Draft · awaiting a reviewer/i.test(await page.locator(".cw-card").innerText()));
+  check("facts are labelled Science, with no draft wording", /Science/.test(await page.locator(".cw-card").innerText()) && !/awaiting a reviewer/i.test(await page.locator(".cw-card").innerText()));
   await page.locator(".cw-card").getByRole("button", { name: "Close" }).click();
   await page.getByRole("button", { name: "Things here" }).click();
   await page.locator("#cw-list button", { hasText: "Earth" }).click();

@@ -88,7 +88,7 @@ const TEST_PACKS = () => {
   const body = await m.locator("#cw-page").innerText();
   check("a member opens the pack by link", /First test paragraph/.test(body) && /Second test paragraph/.test(body));
   check("every item says how it was made", /Written with Claude Opus, reviewed by Bianno/.test(body) && /Animated with Fable/.test(body) && /From Bianno's Skool community/.test(body) && /By Bianno/.test(body));
-  check("an unreviewed draft is labelled", /Draft, not yet reviewed/.test(body));
+  check("no \"draft\" label in front of people (review happens before launch)", !/Draft, not yet reviewed/.test(body));
   check("the film has captions on by default", await m.evaluate(() => { const t = document.querySelector("#cw-page video track"); return !!t && t.kind === "captions" && t.default; }));
   check("the film describes what happens", /What happens: A door opens/.test(body));
   check("the recording has its transcript", await m.evaluate(() => /Breathe in/.test(document.querySelector("#cw-page details")?.textContent ?? "")));

@@ -12,9 +12,11 @@
 import { buildHome } from "./home-scene.js";
 import { createExplore, localStore, remoteStore } from "./explore.js";
 import { createCreative, REALMS } from "./creative.js";
+import "./scope.js";
 import { bank as questionBank } from "./questions.js";
 import { createMotion, PROFILES as MOTIONS } from "./motion.js";
 import { reminderSheet } from "./remind.js";
+import { observations, weekSummary, OUTCOME_WORDS } from "./noticing.js";
 import { createProgress, facts as pathFacts, PATH, KEY as PATH_KEY } from "./progress.js";
 import { MISSIONS, SYSTEMS, WORLD_PLAY, missionById } from "../../packages/core/src/expeditions/index.ts";
 
@@ -360,7 +362,7 @@ function main(data, failed) {
           onclick: () => explore.play(m.id, fromWorld(w)),
         }, el("span", { class: "mstate", "aria-hidden": "true" }, done(m.id) ? "✦" : ""), el("span", { class: "rtext" }, el("span", { class: "rtitle" }, sys.kind === "expedition" ? m.part : m.title), el("span", { class: "rsub" }, sys.kind === "expedition" ? m.objective : m.part)), el("span", { class: "mmeta" }, done(m.id) ? "Done" : explore?.locked?.(m) ? "Plus" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`)))),
           (sys.planned ?? []).map((p, k) => el("li", { class: "planned" }, el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `Chapter ${sys.missionIds.length + k + 1}: ${p.title}`), el("span", { class: "rsub" }, p.line)), el("span", { class: "mmeta" }, "Planned")))))),
-      el("p", { class: "quiet small" }, systems.length ? `Planned next here: ${play.planned.join(", ")}.` : `Planned here: ${play.planned.join(", ")}. Reflection is open now.`),
+      play.planned.length ? el("p", { class: "quiet small" }, systems.length ? `Planned next here: ${play.planned.join(", ")}.` : `Planned here: ${play.planned.join(", ")}. Reflection is open now.`) : null,
       play.planned.some((p) => ART.planned[p]) ? el("ul", { class: "planned-row", "aria-label": "Pathways being written" }, play.planned.filter((p) => ART.planned[p]).map((p) =>
         el("li", {}, el("img", { src: asset(artPath(ART.planned[p])), alt: "" }), el("span", {}, p), el("span", { class: "quiet small" }, "Planned")))) : null);
   }
@@ -376,7 +378,7 @@ function main(data, failed) {
             el("span", { class: "ricon", html: svg(ICON[w], 22) }),
             el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `${m.title}: ${m.part}`), el("span", { class: "rsub" }, open ? `You stopped at step ${open.step + 1} of ${m.steps.length}` : `${m.objective} About ${m.minutes} minutes.`)),
             el("span", { class: "rgo", html: svg(ICON.arrow, 16) }))
-        : el("p", { class: "quiet" }, SYSTEMS.some((x) => x.world === w) ? "Everything written here is done. More is being written." : `Expeditions here are planned: ${play.planned.join(", ")}. Reflection is open now.`));
+        : el("p", { class: "quiet" }, "You've done every practice here. Reflect is always open."));
   }
   // Library: the resources this world's chapters really have
   function worldLibrary(w) {
@@ -749,8 +751,8 @@ function main(data, failed) {
     $("m-tools").hidden = false;
     if (!data.stars.length) { $("m-filterbox").hidden = true; fb.setAttribute("aria-expanded", "false"); }
     const miles = $("m-miles");
-    miles.hidden = state.view !== "miles";
-    if (state.view === "miles") { $("m-zoom").hidden = true; $("m-field").hidden = $("m-list").hidden = true; drawMiles(miles); return; }
+    miles.hidden = state.view !== "miles" && state.view !== "week";
+    if (state.view === "miles" || state.view === "week") { $("m-zoom").hidden = true; $("m-field").hidden = $("m-list").hidden = true; (state.view === "week" ? drawWeek : drawMiles)(miles); return; }
     $("m-zoom").hidden = state.view !== "galaxy";
     $("m-zoom-in").disabled = state.zoom >= 2; $("m-zoom-out").disabled = state.zoom <= 1;
     const field = $("m-field"), list = $("m-list");
@@ -869,7 +871,9 @@ function main(data, failed) {
   }
   function drawYou() {
     const themes = liveThemes(), sugs = suggestions();
-    $("y-understand").replaceChildren(themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : el("p", { class: "quiet" }, "Nothing yet. A pattern appears only when several evenings share something and you confirm it."));
+    const notes = noticeCards(drawYou);
+    $("y-understand").replaceChildren(...notes, themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : null,
+      !notes.length && !themes.length ? el("p", { class: "quiet" }, "Nothing yet. After a few reflections, patterns in your own words appear here: worked out on this phone, from what you wrote, and nothing else.") : null);
     $("y-c-wrap").hidden = !sugs.length;
     $("y-connections").replaceChildren(...sugs.map((s) => connectionCard(s, drawYou)));
     const plan = explore?.plan?.() ?? "free", label = { free: "Free", plus: "Plus", pro: "Pro" }[plan];
@@ -922,7 +926,7 @@ function main(data, failed) {
   let downloads = null;
   window.claude?.use?.("downloads").then((d) => (downloads = d), () => {});
   $("y-export").addEventListener("click", async () => {
-    const json = JSON.stringify({ exported: new Date().toISOString(), memories: data.stars.map(({ id, world, date, excerpt, prompt }) => ({ id, world, date, ...(prompt ? { question: prompt } : {}), words: excerpt })), patterns: data.themes.map(({ id, world, statement, starIds, corrected, rejected }) => ({ id, world, statement, memories: starIds, corrected, rejected })), expeditions: explore?.store.snapshot?.() ?? null, worlds: creative?.snapshot() ?? null, direction: device.read(DIRECTION, null), path: progress?.snapshot() ?? null }, null, 2);
+    const json = JSON.stringify({ exported: new Date().toISOString(), memories: data.stars.map(({ id, world, date, excerpt, prompt }) => ({ id, world, date, ...(prompt ? { question: prompt } : {}), words: excerpt })), patterns: data.themes.map(({ id, world, statement, starIds, corrected, rejected }) => ({ id, world, statement, memories: starIds, corrected, rejected })), expeditions: explore?.store.snapshot?.() ?? null, worlds: creative?.snapshot() ?? null, direction: device.read(DIRECTION, null), path: progress?.snapshot() ?? null, worksheets: explore?.readSheets?.() ?? null }, null, 2);
     const filename = `dawnward-${today()}.json`;
     if (downloads) {
       try { await downloads.save({ filename, data: json }); announce("Saved."); }
@@ -940,7 +944,10 @@ function main(data, failed) {
       el("div", { class: "actions" },
         el("button", { class: "danger", onclick: () => {
           const okA = device.remove(STORE), okB = device.remove(DRAFT), okC = explore ? explore.store.wipe() : true, okD = creative ? creative.wipe() : true, okE = device.remove(DIRECTION) && (progress ? progress.wipe() : device.remove(PATH_KEY));
-          if (!okA || !okB || !okC || !okD || !okE) { box.append(el("p", { class: "error", role: "alert" }, "I couldn't delete everything. Try again.")); return; }
+          // worksheet answers and noticing choices go too; so do unsent practice drafts
+          let okF = device.remove("dw-sheets-v1") && device.remove(NOTICE);
+          try { for (const k of Object.keys(localStorage)) if (k.startsWith("dw-qdraft-")) localStorage.removeItem(k); } catch { okF = false; }
+          if (!okA || !okB || !okC || !okD || !okE || !okF) { box.append(el("p", { class: "error", role: "alert" }, "I couldn't delete everything. Try again.")); return; }
           data.stars = []; data.themes = []; finish(data); explore?.refresh().then(() => { sync(); drawYou(); }); sync(); renderHome(); drawYou(); box.hidden = true; announce("Everything on this device was deleted."); $("y-title").focus();
         } }, "Delete everything"),
         el("button", { class: "ghost", onclick: () => { box.hidden = true; $("y-delete").focus(); } }, "Cancel")));
@@ -961,7 +968,7 @@ function main(data, failed) {
     if (!booted || routing || state.mode === "text" || location.hash === r) return;
     try { if (replace) history.replaceState(null, "", r); else history.pushState(null, "", r); } catch { /* a frame that forbids history: places still work */ }
   }
-  const routeOf = (p) => ({ earth: "#/home", atlas: "#/universe", creative: creative?.route() ?? "#/universe/creative", home: "#/universe/growth", explore: "#/learn", memories: state.view === "miles" ? "#/journey/milestones" : "#/journey", you: "#/you",
+  const routeOf = (p) => ({ earth: "#/home", atlas: "#/universe", creative: creative?.route() ?? "#/universe/creative", home: "#/universe/growth", explore: "#/learn", memories: state.view === "miles" ? "#/journey/milestones" : state.view === "week" ? "#/journey/week" : "#/journey", you: "#/you",
     world: `${worldRoute(state.world)}/${state.wtab?.[state.world] ?? "overview"}` })[p] ?? "#/home";
   function followRoute(hash) {
     const [a, b, c] = hash.replace(/^#\/?/, "").split("/");
@@ -974,7 +981,7 @@ function main(data, failed) {
       else if (a === "universe") openAtlas();
       else if (a === "world" && ORDER.includes(b)) { if (WTABS.includes(c)) state.wtab = { ...(state.wtab ?? {}), [b]: c }; goWorld(b); }
       else if (a === "learn") explore.open();
-      else if (a === "journey") { if (b === "milestones") { state.view = "miles"; state.viewPicked = true; } openMemories(); }
+      else if (a === "journey") { if (b === "milestones") { state.view = "miles"; state.viewPicked = true; } else if (b === "week") { state.view = "week"; state.viewPicked = true; } openMemories(); }
       else if (a === "you") openYou();
       else openEarth();
     } finally { routing = false; }
@@ -1302,6 +1309,9 @@ function main(data, failed) {
       active[0] ? el("button", { class: "row e-wait", onclick: () => explore.review(active[0].id) },
         el("span", { class: "rtext" }, el("span", { class: "rsub" }, "How did it go?"), el("span", { class: "rtitle" }, active[0].action)), el("span", { class: "rgo", html: svg(ICON.arrow, 16) })) : null,
       active[0] ? el("button", { class: "text-btn e-remind", onclick: (e) => reminderSheet({ el, action: active[0].action, when: active[0].when_text, announce, returnFocus: e.currentTarget, mark: asset(artPath(ART.remind)) }) }, "Remind me in my calendar") : null,
+      (() => { const d = new Date().getDay(), w = weekData(); return (d === 0 || d === 1) && !w.empty ? el("button", { class: "row e-week", onclick: () => { state.view = "week"; state.viewPicked = true; openMemories(); } },
+        el("span", { class: "rtext" }, el("span", { class: "rsub" }, "Your week"), el("span", { class: "rtitle" }, [plural(w.reflections, "reflection", "reflections"), w.actions.length ? plural(w.actions.length, "step", "steps") : null].filter(Boolean).join(" · "))),
+        el("span", { class: "rgo", html: svg(ICON.arrow, 16) })) : null; })(),
       el("section", { "aria-labelledby": "e-worlds" },
         el("h3", { id: "e-worlds", class: "e-h" }, "Your worlds"),
         el("div", { class: "wplanets" }, ORDER.map((w) => el("button", { class: `planet-${w}`, onclick: () => goWorld(w), "aria-label": `${META[w].name}: ${META[w].kicker.toLowerCase()}` },
@@ -1309,6 +1319,40 @@ function main(data, failed) {
       writeFirst ? null : reflectRow].filter(Boolean));
   }
   // ----- Journey: milestones, discoveries and the actions you chose -----
+  // ----- Noticing and "Your week": honest patterns from your own words, worked out on this phone (noticing.js) -----
+  const NOTICE = "dw-notice-v1";
+  const noticeFeedback = () => device.read(NOTICE, {}) ?? {};
+  function noticeCards(redraw) {
+    const fb = noticeFeedback();
+    const list = observations({ stars: data.stars, experiments: explore?.data.experiments ?? [] }).filter((o) => fb[o.id] !== "not" && fb[o.id] !== "hide");
+    if (!list.length) return [];
+    const say = (o, v, msg) => { const f = noticeFeedback(); f[o.id] = v; device.write(NOTICE, f); announce(msg); redraw(); };
+    return [el("div", { class: "cards notice" }, list.map((o) => el("article", { class: "card notice-card" },
+      el("p", { class: "statement" }, o.text),
+      o.evidence.length ? el("ul", { class: "notice-ev", "aria-label": "In your words" }, o.evidence.map((e) => el("li", {}, el("span", { class: "when" }, shortDate(e.date)), el("q", {}, e.quote)))) : null,
+      o.noFeedback ? null : fb[o.id] === "right"
+        ? el("p", { class: "quiet small" }, "You said this sounds right.")
+        : el("div", { class: "actions" }, el("button", { class: "ghost", onclick: () => say(o, "right", "Kept.") }, "That's right"), el("button", { class: "text-btn", onclick: () => say(o, "not", "Hidden. It won't come back.") }, "Not quite"))))),
+      el("p", { class: "quiet small" }, "Worked out on this phone from what you wrote. Nothing is sent anywhere. These are patterns in your words, not conclusions about you.")];
+  }
+  function weekData() { return weekSummary({ stars: data.stars, experiments: explore?.data.experiments ?? [], attempts: explore?.data.attempts ?? [] }); }
+  function drawWeek(box) {
+    const w = weekData();
+    const sheet = el("article", { class: "sheet week", "aria-labelledby": "wk-h" },
+      el("p", { class: "kicker" }, `Dawnward · ${longDate(w.from)} to today`),
+      el("h3", { id: "wk-h" }, "Your week"),
+      w.empty ? el("p", { class: "quiet" }, "Nothing yet this week. One reflection or one small step is enough to start.") : el("ul", { class: "evo week-n" },
+        [[w.reflections, "Reflections"], [w.practices, "Practices"], [w.actions.length, "Steps chosen"], [w.told, "Told how it went"]].map(([n, l]) => el("li", {}, el("span", { class: "evo-n" }, String(n)), el("span", { class: "evo-l" }, l)))),
+      w.worlds.length ? el("p", {}, `You spent time in ${w.worlds.length === 1 ? w.worlds[0] : `${w.worlds.slice(0, -1).join(", ")} and ${w.worlds[w.worlds.length - 1]}`}.`) : null,
+      w.actions.length ? el("section", { "aria-labelledby": "wk-a" }, el("h4", { id: "wk-a", class: "y-h4" }, "The steps you chose"),
+        el("ul", { class: "week-actions" }, w.actions.map((x) => el("li", {}, el("span", { class: "rtitle" }, x.action), el("span", { class: "quiet small" }, x.status === "reviewed" ? (OUTCOME_WORDS[x.outcome] ?? "Told") : "Waiting to hear how it went"))))) : null,
+      w.line ? el("section", { "aria-labelledby": "wk-l" }, el("h4", { id: "wk-l", class: "y-h4" }, "A line you wrote"), el("blockquote", { class: "said" }, w.line.quote), el("p", { class: "quiet small" }, longDate(w.line.date))) : null,
+      w.question ? el("section", { "aria-labelledby": "wk-q" }, el("h4", { id: "wk-q", class: "y-h4" }, "The question you came back to"), el("p", { class: "said-q" }, w.question.text), el("p", { class: "quiet small" }, `${w.question.times} times this week`)) : null,
+      el("div", { class: "actions no-print" }, typeof window.print === "function" && !w.empty ? el("button", { class: "ghost", onclick: () => { try { window.print(); } catch { announce("Printing isn't available here."); } } }, "Save as PDF") : null));
+    const notes = noticeCards(() => drawWeek(box));
+    box.replaceChildren(sheet, el("section", { class: "group", "aria-labelledby": "wk-n" }, el("h3", { id: "wk-n" }, "What I've noticed"),
+      ...(notes.length ? notes : [el("p", { class: "quiet" }, data.stars.length < 3 ? `After ${3 - data.stars.length} more ${3 - data.stars.length === 1 ? "reflection" : "reflections"}, patterns in your own words will start to appear here.` : "Nothing stands out yet. Patterns appear when something comes up again and again.")])));
+  }
   function drawMiles(box) {
     const ex = explore?.data ?? { experiments: [], discoveries: [] };
     const disc = [...ex.discoveries].reverse();
@@ -1330,7 +1374,13 @@ function main(data, failed) {
       el("section", { class: "group", "aria-labelledby": "mm-ex" }, el("h3", { id: "mm-ex" }, "Real actions you chose"),
         ex.experiments.length ? el("ul", { class: "memories" }, [...ex.experiments].reverse().map((x) => el("li", {}, el("button", { class: "memory", onclick: () => explore.review(x.id) },
           el("span", { class: "when" }, `${META[x.world]?.name ?? ""} · ${x.status === "reviewed" ? "looked back on" : x.when_text}`), el("span", { class: "text" }, x.action)))))
-          : el("p", { class: "quiet" }, "None yet. Expeditions can end with one small real action, always optional.")));
+          : el("p", { class: "quiet" }, "None yet. Practices can end with one small real action, always optional.")),
+      // worksheets you've filled in, one tap from here
+      (() => { const all = explore?.readSheets?.() ?? {}; const ids = Object.keys(all).filter((id) => missionById(id)?.worksheet);
+        return ids.length ? el("section", { class: "group", "aria-labelledby": "mm-ws" }, el("h3", { id: "mm-ws" }, "Your worksheets"),
+          el("ul", { class: "memories" }, ids.map((id) => { const m = missionById(id);
+            return el("li", {}, el("button", { class: "memory", onclick: () => explore.sheet(id, () => openMemories()) },
+              el("span", { class: "when" }, `${m.title} · ${all[id].savedAt ? shortDate(all[id].savedAt.slice(0, 10)) : ""}`), el("span", { class: "text" }, m.worksheet.title))); }))) : null; })());
   }
   $("brand").addEventListener("click", (e) => { e.preventDefault(); openEarth(); });
   document.querySelectorAll("#tabs [data-tab]").forEach((b) => b.addEventListener("click", () => {

@@ -60,7 +60,7 @@ const MOBILE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch
   check("a branch's place opens its world", (await where(page))[1] === "#/knowledge/calendar");
 
   // ---- the Cosmic Calendar ----
-  check("the calendar is labelled science, and a draft", /Science · Draft, not yet reviewed/i.test(await page.locator("#cw-page .kicker").first().innerText()));
+  check("the calendar is labelled science, with no \"draft\" in front of people", /^Science$/i.test((await page.locator("#cw-page .kicker").first().innerText()).trim()));
   let ev = await page.locator("#cw-events").innerText();
   check("the year starts with the Big Bang on January 1", /January 1\s+The Big Bang/.test(ev));
   check("the Sun and Earth form at the end of August", /August 31\s+The Sun and Earth form|September 1\s+The Sun and Earth form/.test(ev), ev.match(/\w+ \d+\s+The Sun and Earth form/)?.[0]);
@@ -98,7 +98,7 @@ const MOBILE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch
   check("tapping the flower in 3D grows it", /Step 2 of 5: The Seed of Life/.test(await page.locator("#cw-task").innerText()) && (await page.evaluate(() => window.__dwCreative.api.at)) === 1);
   for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Grow" }).click();
   check("it grows to Metatron's Cube, and says what can be traced exactly", /Metatron's Cube/.test(await page.locator("#cw-panel").innerText()) && /only roughly/.test(await page.locator("#cw-panel").innerText()));
-  check("the flower is labelled a wisdom tradition and a draft", /Wisdom tradition · Draft, not yet reviewed/.test(await page.locator("#cw-panel").innerText()));
+  check("the flower is labelled a wisdom tradition, not as a draft", /Wisdom tradition/.test(await page.locator("#cw-panel").innerText()) && !/draft/i.test(await page.locator("#cw-panel").innerText()));
   await page.waitForTimeout(1000);
   await shot(page, "flower");
   await axe(page, "the Flower of Life");

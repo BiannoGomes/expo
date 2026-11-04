@@ -69,9 +69,9 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   check("the section is in the address", (await where(page))[1] === "#/world/mind/expeditions");
   const solar = page.locator("svg.solar").first();
   const label0 = await solar.getAttribute("aria-label");
-  check("the solar system says where you are, in words", /Beyond Overthinking: 0 of 7 chapters done\. Next: Understand the loop\. 3 still being written\./.test(label0), label0);
+  check("the solar system says where you are, in words", /Beyond Overthinking: 0 of 4 chapters done\. Next: Understand the loop\./.test(label0) && !/still being written/.test(label0), label0);
   check("before any chapter, no moon or orbit is lit", (await page.locator("svg.solar .lit").count()) === 0);
-  check("planned chapters are drawn as planned, and listed as Planned", (await page.locator("svg.solar").first().locator(".moon.planned").count()) === 3 && (await page.locator("#w-panel li.planned").count()) === 3);
+  check("chapters not yet written aren't drawn or listed", (await page.locator("svg.solar").first().locator(".moon.planned").count()) === 0 && (await page.locator("#w-panel li.planned").count()) === 0);
   await shot(page, "mind-expeditions-before");
   await axe(page, "mind expeditions");
 
@@ -90,7 +90,7 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   await page.locator("#x-body .found").waitFor();
   await page.goto(BASE + "#/world/mind/expeditions"); await ready(page); await page.waitForTimeout(800);
   const label1 = await page.locator("svg.solar").first().getAttribute("aria-label");
-  check("after Chapter 1 is saved: 1 of 7, and the next is Chapter 2", /1 of 7 chapters done\. Next: Separate facts from assumptions/.test(label1), label1);
+  check("after Chapter 1 is saved: 1 of 4, and the next is Chapter 2", /1 of 4 chapters done\. Next: Separate facts from assumptions/.test(label1), label1);
   check("exactly one moon and its orbit are lit", (await page.locator("svg.solar").first().locator(".moon.lit").count()) === 1 && (await page.locator("svg.solar").first().locator(".orbit.lit").count()) === 1);
   check("the next chapter is ringed", (await page.locator("svg.solar").first().locator(".next-ring").count()) === 1);
   await shot(page, "mind-expeditions-after");
@@ -126,7 +126,7 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   check("its Back returns to Mind", (await where(page))[0] === "world");
   await page.getByRole("tab", { name: "Progress" }).click();
   const prog = await page.textContent("#w-panel");
-  check("Progress counts only saved work: 1 of 7, one discovery", /Beyond Overthinking\s*1 of 7/.test(prog) && /Discoveries\s*1/.test(prog), prog.replace(/\s+/g, " ").slice(0, 200));
+  check("Progress counts only saved work: 1 of 4, one discovery", /Beyond Overthinking\s*1 of 4/.test(prog) && /Discoveries\s*1/.test(prog), prog.replace(/\s+/g, " ").slice(0, 200));
   await shot(page, "mind-progress");
   await axe(page, "mind progress");
 
@@ -135,7 +135,7 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   await page.locator('#a-inner [data-id="ai"]').click();
   const panel = await page.textContent("#a-panel");
   check("AI Creation says some worlds are free", /Open · some worlds are free/i.test(panel));
-  check("AI Creation never presents its AI studios as working", /AI studios are planned/.test(panel) && /needing an AI service/.test(panel) && (await page.locator("#a-panel .primary", { hasText: "Enter AI Creation" }).count()) === 1);
+  check("AI Creation never presents AI studios at all", !/AI studios|needing an AI service/.test(panel) && (await page.locator("#a-panel .primary", { hasText: "Enter AI Creation" }).count()) === 1);
   check("no page errors", errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
 

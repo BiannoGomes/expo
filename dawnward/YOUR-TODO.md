@@ -8,6 +8,8 @@
 - a typecheck of the server and the core package;
 - the server starting and answering `/health`.
 
+> **Update, 4 Nov 2026: no AI.** Dawnward now runs entirely on the phone (see `docs/blueprint/2026-11-04-without-ai.md`). **Steps 1–3 below (Anthropic key, ElevenLabs, Railway) are not needed now.** Keep them for later, only if you ever add optional backup between devices. **What matters now is step 4 (the site, already live on Cloudflare) and step 6 (testers).**
+
 What's left needs your logins. Do them in this order. Keys go **only** into the places named below, never into chat or the repo.
 
 ---

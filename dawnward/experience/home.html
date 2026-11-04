@@ -175,6 +175,7 @@
     .sheet, .sheet * { visibility:visible !important; color:#000 !important; background:none !important; border-color:#999 !important; text-shadow:none !important; }
     .sheet { position:absolute; left:0; top:0; width:100%; border:0; padding:0; }
     .no-print { display:none !important; }
+    .ws-print { display:block !important; white-space:pre-wrap; min-height:1.4em; }
   }
   /* ----- Home: the Daily Compass ----- */
   .e-kick { margin-top:var(--s2); }
@@ -281,6 +282,18 @@
   .wz-try { color:var(--gold); }
   .wz-links a { color:var(--gold); text-decoration:underline; text-underline-offset:3px; display:inline-block; min-height:24px; padding:2px 0; }
   .wz-path { margin:var(--s3) 0; }
+  .ws-print { display:none; }
+  .ws-in { width:100%; min-height:44px; resize:vertical; border:1px solid var(--edge); border-radius:10px; background:rgba(255,255,255,.04); color:var(--ink); padding:var(--s2); font:inherit; font-size:15px; }
+  .ws-scroll { overflow-x:auto; }
+  .ws-table td { vertical-align:top; min-width:140px; }
+  .notice-card .statement { font-size:var(--t-card); }
+  .notice-ev { list-style:none; margin:var(--s2) 0; padding:0; display:grid; gap:var(--s2); }
+  .notice-ev li { display:grid; gap:2px; }
+  .notice-ev .when { font-size:12px; color:var(--dim); }
+  .notice-ev q { font-family:var(--display); font-style:italic; }
+  .sheet.week { display:grid; gap:var(--s3); margin-bottom:var(--s5); }
+  .week-actions { list-style:none; padding:0; margin:0; display:grid; gap:var(--s2); }
+  .week-actions li { display:flex; justify-content:space-between; gap:var(--s3); }
   .x-tiles { display:grid; grid-template-columns:1fr 1fr; gap:var(--s3); margin:var(--s3) 0; }
   .x-tile { min-height:104px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--s2); padding:var(--s3); border-radius:16px; border:1px solid var(--edge); background:rgba(10,14,24,.72); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); color:var(--ink); font-size:var(--t-btn); text-align:center; }
   .x-tile-i { color:var(--gold); display:flex; }
@@ -863,6 +876,7 @@
             <button role="radio" data-v="galaxy" aria-checked="true">Galaxy</button>
             <button role="radio" data-v="list" aria-checked="false">List</button>
             <button role="radio" data-v="miles" aria-checked="false">Milestones</button>
+            <button role="radio" data-v="week" aria-checked="false">Week</button>
           </div>
           <button id="m-filter-btn" class="ed-chip" aria-expanded="false" aria-controls="m-filterbox">Filter</button>
         </div>

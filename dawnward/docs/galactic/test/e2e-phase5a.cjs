@@ -68,7 +68,7 @@ const measure = (p, rootSel) => p.evaluate((rootSel) => {
   check("Journey starts with a plain summary", /^1 reflection/.test(sum), sum);
   check("with one reflection it opens on Milestones, not an empty sky", (await page.locator('#m-views [data-v="miles"]').getAttribute("aria-checked")) === "true" && await page.locator("#m-miles").isVisible());
   const controls = await page.evaluate(() => [...document.querySelectorAll("#memories .mhead button, #memories .mhead input")].filter((e) => e.offsetParent && !e.closest("[hidden]")).length);
-  check("search and six world filters sit behind one Filter chip", (await page.locator("#m-filterbox").isHidden()) && (await page.locator("#m-filter-btn").isVisible()) && controls <= 4, String(controls));
+  check("search and six world filters sit behind one Filter chip", (await page.locator("#m-filterbox").isHidden()) && (await page.locator("#m-filter-btn").isVisible()) && controls <= 5, String(controls)); // 4 views (Galaxy, List, Milestones, Week) + Filter; the six world filters stay folded
   await page.locator("#m-filter-btn").click();
   check("Filter opens them, and says it's open", (await page.locator("#m-filterbox").isVisible()) && (await page.locator("#m-filter-btn").getAttribute("aria-expanded")) === "true");
   await page.locator('#m-filters [data-f="body"]').click();

@@ -103,7 +103,7 @@ export const REALMS = {
   },
   ai: {
     name: "AI Creation", art: "A3",
-    lead: "Everything you've made, in one place. The AI studios are planned.",
+    lead: "Everything you've made, in one place.",
     planets: [
       { id: "gallery", name: "The Creation Gallery", line: "Everything you've made in the worlds, kept on this device.", status: "open", access: "free", page: "gallery" },
       { id: "forge", name: "The Dream Forge", line: "Turn an idea into pictures and stories with AI.", status: "planned", why: NEEDS_AI },
@@ -215,7 +215,7 @@ export function createCreative(h) {
       R.door ? el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => openDoor() }, "Open the Infinite Door")) : null,
       R.tree ? branchTree(r) : null,
       el("h3", { class: "cw-h" }, R.tree ? "Every world on the tree" : "Planets here"),
-      el("ul", { class: "cw-planets" }, R.planets.map((p) => {
+      el("ul", { class: "cw-planets" }, R.planets.filter((p) => p.status !== "planned").map((p) => {
         const lock = p.status === "open" && locked(r, p.id);
         const body = [el("span", { class: `cw-dot cw-${p.id}`, "aria-hidden": "true" }),
           el("span", { class: "rtext" }, el("span", { class: "rtitle" }, p.name), el("span", { class: "rsub" }, p.line),
@@ -544,7 +544,7 @@ export function createCreative(h) {
     };
     page.replaceChildren(el("div", { class: "ycol" },
       h.crumbs([{ label: "Universe", go: h.toUniverse }, { label: "Knowledge", go: () => open("knowledge") }, { label: "The Tree of Life" }]),
-      el("p", { class: "kicker" }, "The map · Draft, not yet reviewed"),
+      el("p", { class: "kicker" }, "The map"),
       el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, "The Tree of Life"),
       ...TREE_LESSON.map((t, i) => el("p", { class: i ? "" : "lead" }, t)),
       treeMap({ label: "The ten spheres of the Tree of Life", node: (f) => ({ title: f.english, sub: f.name, kind: R.planets.find((x) => x.node === f.id)?.kind, go: () => showSphere(f) }) }),
@@ -574,7 +574,7 @@ export function createCreative(h) {
       onclick: (e) => { seg.querySelectorAll("[role=radio]").forEach((x) => x.setAttribute("aria-checked", String(x === e.currentTarget))); draw(v); announce(`${t}.`); } }, t)));
     page.replaceChildren(el("div", { class: "ycol" },
       h.crumbs([{ label: "Universe", go: h.toUniverse }, { label: "Knowledge", go: () => open("knowledge") }, { label: "The Cosmic Calendar" }]),
-      el("p", { class: "kicker" }, "Science · Draft, not yet reviewed"),
+      el("p", { class: "kicker" }, "Science"),
       el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, "The Cosmic Calendar"),
       el("p", { class: "lead" }, "13.8 billion years, squeezed into one year. The Big Bang is January 1. Now is midnight on December 31."),
       seg, bar, list,
@@ -666,7 +666,7 @@ export function createCreative(h) {
       el("p", { class: `kicker${lock ? " plus-kicker" : ""}` }, `${k.access === "free" ? "Free" : "Members"} · ${PLACE_NAMES[k.place]}`),
       el("h2", { class: "s-title", id: "cw-title", tabindex: "-1" }, k.title),
       el("p", { class: "lead" }, k.summary)];
-    const meta = (it) => [KIND[it.type], it.minutes ? `${it.minutes} min` : null, it.credit, it.draft ? "Draft, not yet reviewed" : null].filter(Boolean).join(" · ");
+    const meta = (it) => [KIND[it.type], it.minutes ? `${it.minutes} min` : null, it.credit].filter(Boolean).join(" · ");
     let body;
     if (lock) {
       body = [el("section", { class: "card plus-card", "aria-labelledby": "cw-plus-h" },
@@ -716,7 +716,7 @@ export function describe(d) {
 }
 
 // ================= the experiences, one per planet =================
-const DRAFT = "Draft, not yet reviewed";
+// (content is reviewed before launch; "draft" isn't shown to people: it's our word, not theirs)
 const EXP = {
   // ---- the Flower of Life: grow it one step at a time ----
   flower(x) {
@@ -724,7 +724,7 @@ const EXP = {
     let n = 0;
     const name = el("p", { class: "cw-cue", id: "cw-fname" }), text = el("p", { id: "cw-ftext" });
     const back = el("button", { class: "ghost", onclick: () => go(n - 1) }, "Back"), grow = el("button", { class: "primary", id: "cw-grow", onclick: () => go(n + 1) }, "Grow");
-    x.panel(name, text, el("div", { class: "actions" }, back, grow), el("p", { class: "quiet small" }, `Wisdom tradition · ${DRAFT}`));
+    x.panel(name, text, el("div", { class: "actions" }, back, grow), el("p", { class: "quiet small" }, `Wisdom tradition`));
     const draw = () => {
       name.textContent = `${n + 1}. ${FLOWER[n].name}`; text.textContent = FLOWER[n].text;
       back.disabled = n === 0; grow.disabled = n === FLOWER.length - 1;
@@ -743,12 +743,12 @@ const EXP = {
     x.task("Five perfect solids, and a star at the centre.");
     x.hint("Drag to look around. Tap a shape.");
     x.things(SOLIDS.map((o) => ({ id: o.id, title: o.name, sub: o.counts, meta: "Look" })));
-    x.tool("About", () => x.card(`Science and tradition · ${DRAFT}`, "Why only five?", ...SOLIDS_INTRO.map((t) => el("p", {}, t)), el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => x.close() }, "Close"))));
+    x.tool("About", () => x.card(`Science and tradition`, "Why only five?", ...SOLIDS_INTRO.map((t) => el("p", {}, t)), el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => x.close() }, "Close"))));
     return {
       pick(id) {
         const o = SOLIDS.find((y) => y.id === id); if (!o) return;
         x.quietHint(); x.scene?.api.select(id); x.sound.chime?.(523.25);
-        x.card(`Science and tradition · ${DRAFT}`, o.name, el("p", { class: "rtitle" }, o.counts), el("p", {}, o.text),
+        x.card(`Science and tradition`, o.name, el("p", { class: "rtitle" }, o.counts), el("p", {}, o.text),
           el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => { x.scene?.api.select(null); x.close(); } }, "Close")));
       },
       words() { x.hint("Choose a shape from the list."); },
@@ -762,7 +762,7 @@ const EXP = {
       x.task(`Seven principles. ${read().length} of 7 read.`);
       x.things(PRINCIPLES.map((p, i) => ({ id: `p-${i}`, title: `${i + 1}. ${p.name}`, sub: p.axiom.split(";")[0] + ".", icon: `img/art/PR-${i + 1}.webp`, meta: read().includes(i) ? "Read" : "Open", on: read().includes(i) })));
     };
-    const about = () => x.card(`Wisdom tradition · ${DRAFT}`, "Where these come from", el("p", {}, HALL_INTRO), el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => x.close() }, "Close")));
+    const about = () => x.card(`Wisdom tradition`, "Where these come from", el("p", {}, HALL_INTRO), el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => x.close() }, "Close")));
     x.tool("About", about);
     x.hint("Drag to look around. Tap a pillar to open its principle.");
     draw();
@@ -770,7 +770,7 @@ const EXP = {
       const p = PRINCIPLES[i]; if (!p) return;
       x.quietHint(); x.scene?.api.select(i); x.scene?.api.light(i, true); x.sound.chime?.([261.63, 293.66, 329.63, 392, 440, 523.25, 587.33][i]);
       if (!read().includes(i)) { x.saved.principles = [...read(), i]; x.save(); draw(); }
-      x.card(`Principle ${i + 1} of 7 · Wisdom tradition · ${DRAFT}`, p.name,
+      x.card(`Principle ${i + 1} of 7 · Wisdom tradition`, p.name,
         el("img", { class: "cw-emblem big", src: x.asset(`img/art/PR-${i + 1}.webp`), alt: "" }),
         el("blockquote", { class: "cw-axiom" }, el("p", {}, p.axiom), el("cite", {}, "The Kybalion, 1908")),
         el("p", {}, p.means), el("p", { class: "rtitle" }, "Try it"), el("p", {}, p.practise),
@@ -811,7 +811,7 @@ const EXP = {
     }
     const list = () => x.things([...notes()].reverse().map((n) => ({ id: n.id, title: clip(n.question), sub: `${day(n.at)}${n.felt ? ` · felt ${n.felt.toLowerCase()}` : ""}`, meta: "Read" })));
     x.panel(holder, el("p", { class: "quiet small" }, KNOWING_NOTE[2]));
-    x.tool("About", () => x.card(`Practice · ${DRAFT}`, "About inner knowing", ...KNOWING_NOTE.map((t) => el("p", {}, t)), el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => x.close() }, "Close"))));
+    x.tool("About", () => x.card(`Practice`, "About inner knowing", ...KNOWING_NOTE.map((t) => el("p", {}, t)), el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => x.close() }, "Close"))));
     x.hint("Follow the steps below. Tap the crown to begin.");
     list(); draw();
     return {
@@ -1019,7 +1019,7 @@ const EXP = {
       pick(id) {
         const f = FACTS[id]; if (!f) return;
         x.quietHint(); x.scene?.api.select(id);
-        x.card("Draft · awaiting a reviewer's check", f[0], el("p", {}, f[1]), el("ul", { class: "cw-facts" }, f[2].map((t) => el("li", {}, t))),
+        x.card("Science", f[0], el("p", {}, f[1]), el("ul", { class: "cw-facts" }, f[2].map((t) => el("li", {}, t))),
           el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => { x.scene?.api.select(null); x.close(); } }, "Close")));
       },
       words() { x.hint("Choose the Sun or a planet from the list."); },

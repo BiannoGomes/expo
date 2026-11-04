@@ -60,7 +60,7 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     await page.waitForTimeout(500);
     check(`${name}: Dawnward opens on Home`, (await place(page)) === "earth" && (await page.locator('#tabs [data-tab="home"][aria-current="page"]').count()) === 1);
     const comp = await page.textContent("#earth .nextcard");
-    check(`${name}: the Compass offers a first expedition`, /Beyond Overthinking/.test(comp) && /Begin · Chapter 1 of 7 · 8 min/.test(comp));
+    check(`${name}: the Compass offers a first expedition`, /Beyond Overthinking/.test(comp) && /Begin · Chapter 1 of 4 · 8 min/.test(comp));
     await page.locator("#earth .c-why summary").click();
     check(`${name}: the Compass says why`, /short first expedition/.test(await page.textContent("#earth .c-why")) && /never on what you write/.test(await page.textContent("#earth .c-why")));
     check(`${name}: one primary action on Home`, (await page.locator("#earth .primary").count()) === 1);
@@ -85,7 +85,7 @@ const ready = (p) => p.waitForFunction(() => window.__dwHomeReady, null, { timeo
     // AI Creation opens for its gallery, and says plainly its AI studios aren't built
     await page.locator('#a-inner [data-id="ai"]').click();
     const ai = await page.textContent("#a-panel");
-    check(`${name}: what isn't built yet says so plainly`, /AI studios are planned/.test(ai) && /Planned, needing an AI service/.test(ai) && (await page.locator("#a-panel .primary", { hasText: "Enter AI Creation" }).count()) === 1);
+    check(`${name}: AI Creation promises nothing that isn't built`, !/AI studios|needing an AI service|Planned/.test(ai) && /Creation Gallery/.test(ai) && (await page.locator("#a-panel .primary", { hasText: "Enter AI Creation" }).count()) === 1);
     await page.getByRole("button", { name: "Back to the Universe" }).click();
 
     // keyboard: select Personal Growth with Enter, move toward it, enter

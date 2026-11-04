@@ -58,7 +58,7 @@ export function localStore(device) {
       const r = completeAttempt(m, current);
       if ("error" in r) return r;
       return tx(() => {
-        s.attempts[attempt.missionId] = r.attempt;
+        s.attempts[attempt.missionId] = { ...r.attempt, completed_at: new Date().toISOString() }; // "Your week" counts it
         const events = [...r.events];
         const plan = plannedAction(m, r.attempt);
         let experiment = null;
@@ -196,31 +196,39 @@ export function createExplore(store, h) {
           el("span", { class: "rtext" }, el("span", { class: "rtitle" }, x.action), el("span", { class: "rsub" }, `You planned: ${x.when_text}`)),
           el("span", { class: "rgo", html: svg(ICON.arrow, 16) })))));
     }
+    // each series: where you are, and ONE clear next chapter; every chapter is one tap away under "All chapters"
     for (const sys of SYSTEMS) {
       const ms = sys.missionIds.map(missionById);
+      const isDone = (m) => data.attempts.some((x) => x.missionId === m.id && x.status === "completed");
+      const cur = ms.find((m) => !isDone(m)), d = ms.filter(isDone).length, series = sys.kind === "expedition";
+      const rowFor = (m, primaryRow) => {
+        const a = attemptFor(m.id), done = isDone(m);
+        const pl = !done && h.missionLock?.(m), lock = !done && !a && !pl && locked(m);
+        // only the chapter you're on says "Continue"; another one you opened says "Started"
+        const state = done ? "✦ Done" : pl ? "Opens later" : lock ? "Plus" : a ? (primaryRow ? `Continue · step ${Math.min(a.step + 1, m.steps.length)} of ${m.steps.length}` : "Started") : `${m.minutes} min`;
+        return el("li", {}, el("button", { class: `mission${done ? " done" : ""}${lock || pl ? " locked" : ""}${primaryRow ? " current" : ""}`, onclick: () => play(m.id), "aria-label": `${m.title}, ${m.part}. ${m.objective} ${pl ? `Opens when you: ${pl.need}` : lock ? "Part of Dawnward Plus." : `${state.replace("✦ ", "")}.`}` },
+          el("span", { class: "rtext" }, el("span", { class: "rtitle" }, series ? m.part : m.title), el("span", { class: "rsub" }, m.objective),
+            el("span", { class: "mmeta mline" }, state)),
+          el("span", { class: "rgo", html: svg(ICON.arrow, 16) })));
+      };
       kids.push(el("section", { class: "group system", "aria-labelledby": `x-${sys.id}` },
         ART.systems[sys.id] ? el("img", { class: "sys-planet", src: h.asset(artPath(ART.systems[sys.id])), alt: "" }) : null,
         el("h3", { id: `x-${sys.id}`, class: "sys-title" }, sys.title),
-        el("p", { class: "sys-meta" }, `${META[sys.world].name}${sys.kind === "expedition" ? ` · ${sys.missionIds.length + (sys.planned?.length ?? 0)} chapters` : ""}`),
+        el("p", { class: "sys-meta" }, `${META[sys.world].name}${series ? ` · ${ms.length} chapters${d ? ` · ${d} done` : ""}` : ""}`),
         el("p", { class: "quiet" }, sys.objective),
-        sys.kind === "expedition" ? el("div", { class: "actions" }, followButton(sys, () => { draw(); body().querySelector(`[aria-labelledby="x-${sys.id}"] .follow`)?.focus(); })) : null,
-        el("ul", { class: "missions" }, ms.map((m) => {
-          const a = attemptFor(m.id), done = a?.status === "completed" || data.attempts.some((x) => x.missionId === m.id && x.status === "completed");
-          const pl = !done && h.missionLock?.(m), lock = !done && !a && !pl && locked(m);
-          const state = done ? "Done" : pl ? "Opens later" : a ? "In progress" : lock ? "Plus" : `${m.minutes} min${m.status === "draft" ? " · draft" : ""}`;
-          return el("li", {}, el("button", { class: `mission${done ? " done" : ""}${lock || pl ? " locked" : ""}`, onclick: () => play(m.id), "aria-label": `${m.title}, ${m.part}. ${m.objective} ${pl ? `Opens when you: ${pl.need}` : lock ? "Part of Dawnward Plus." : `${state}.`}` },
-            el("span", { class: "rtext" }, el("span", { class: "rtitle" }, m.part), el("span", { class: "rsub" }, m.objective),
-              el("span", { class: "mmeta mline" }, done ? "✦ Done" : state)),
-            el("span", { class: "rgo", html: svg(ICON.arrow, 16) })));
-        }), (sys.planned ?? []).map((p, k) => el("li", { class: "planned" },
-          el("span", { class: "rtext" }, el("span", { class: "rtitle" }, `Chapter ${sys.missionIds.length + k + 1}: ${p.title}`), el("span", { class: "rsub" }, p.line)),
-          el("span", { class: "mmeta" }, "Planned"))))));
+        series ? el("div", { class: "actions" }, followButton(sys, () => { draw(); body().querySelector(`[aria-labelledby="x-${sys.id}"] .follow`)?.focus(); })) : null,
+        series
+          ? [cur ? el("ul", { class: "missions" }, rowFor(cur, true)) : el("p", { class: "quiet" }, `All ${ms.length} chapters done.`),
+             el("details", { class: "more" }, el("summary", {}, `All ${ms.length} chapters`), el("ul", { class: "missions" }, ms.map((m) => rowFor(m, false)))),
+             // the worksheets, reachable any time (not only at a chapter's start or end)
+             ms.some((m) => m.worksheet && !locked(m)) ? el("div", { class: "ws-links" }, el("p", { class: "quiet small" }, "Worksheets to fill in"),
+               ...ms.filter((m) => m.worksheet && !locked(m)).map((m) => el("button", { class: "text-btn", onclick: () => worksheet(m, () => { draw(); $("x-title")?.focus(); }) }, m.worksheet.title))) : null]
+          : el("ul", { class: "missions" }, ms.map((m) => rowFor(m, false)))));
     }
     kids.push(el("section", { class: "group", "aria-labelledby": "x-lib" }, el("h3", { id: "x-lib" }, "Library"),
       el("button", { class: "row", onclick: () => h.openLibrary?.() },
         el("span", { class: "rtext" }, el("span", { class: "rtitle" }, "Lessons, audio & films"), el("span", { class: "rsub" }, "From Bianno")),
         el("span", { class: "rgo", html: svg(ICON.arrow, 16) }))));
-    kids.push(el("p", { class: "quiet" }, "More solar systems will arrive in each world, one at a time and carefully written."));
     body().replaceChildren(...kids);
   }
 
@@ -387,7 +395,7 @@ export function createExplore(store, h) {
     const title = el("h2", { class: "s-title", tabindex: "-1" }, step.title);
     if (step.type === "intro") {
       h.quiet(false);
-      frame(m, i, title, m.status === "draft" ? el("p", { class: "draft-tag" }, "Draft: not yet reviewed") : null, el("p", { class: "lead" }, step.body),
+      frame(m, i, title, el("p", { class: "lead" }, step.body),
         el("p", { class: "quiet" }, `${m.objective} About ${m.minutes} min.`),
         m.worksheet ? el("p", { class: "quiet" }, "Includes a worksheet to print or keep: ", el("button", { class: "text-btn", onclick: () => worksheet(m, () => show(i)) }, m.worksheet.title)) : null,
         m.safetyNote ? el("p", { class: "quiet safety" }, m.safetyNote) : null,
@@ -651,22 +659,50 @@ export function createExplore(store, h) {
   }
 
   // ----- worksheets: readable here, printable on paper -----
+  // ----- worksheets: filled in here, saved on this phone as you type, printable or saved as PDF with your answers -----
+  const SHEETS = "dw-sheets-v1";
+  const readSheets = () => { try { return JSON.parse(localStorage.getItem(SHEETS) || "{}"); } catch { return {}; } };
+  /** Answers for one worksheet: { [sectionIndex]: string[][] (a table) | string (lines) } */
+  function sheetAnswers(id) { return readSheets()[id] ?? {}; }
   function worksheet(m, back) {
     setArt(null);
     const w = m.worksheet;
     const head = ART.missions[m.id]?.header;
+    const ans = sheetAnswers(m.id);
+    const status = el("p", { class: "quiet small no-print", role: "status", "aria-live": "polite" }, Object.keys(ans).length ? "Your answers are back." : "");
+    let timer = null;
+    const save = () => { clearTimeout(timer); timer = setTimeout(() => {
+      const all = readSheets(); all[m.id] = { ...ans, savedAt: new Date().toISOString() };
+      try { localStorage.setItem(SHEETS, JSON.stringify(all)); status.textContent = "Saved on this phone."; } catch { status.textContent = "Couldn't save on this device. Copy your answers somewhere safe."; }
+    }, 300); };
+    // a field that types like a textarea, and prints as plain text (textareas print badly)
+    const field = (value, label, onChange, rows = 2) => {
+      const out = el("span", { class: "ws-print" }, value);
+      const ta = el("textarea", { class: "ws-in no-print", rows: String(rows), "aria-label": label, maxlength: "1000" });
+      ta.value = value;
+      ta.addEventListener("input", () => { out.textContent = ta.value; onChange(ta.value); save(); });
+      return [ta, out];
+    };
+    const tableFor = (sec, k) => {
+      const rows = Array.isArray(ans[k]) ? ans[k] : Array.from({ length: sec.rows ?? 3 }, () => sec.columns.map(() => ""));
+      ans[k] = rows;
+      const tbody = el("tbody");
+      const drawRows = () => tbody.replaceChildren(...rows.map((r, ri) => el("tr", {}, sec.columns.map((c, ci) => el("td", {}, ...field(r[ci] ?? "", `${c}, row ${ri + 1}`, (v) => { r[ci] = v; }))))));
+      drawRows();
+      return [el("div", { class: "ws-scroll" }, el("table", { class: "ws-table" }, el("thead", {}, el("tr", {}, sec.columns.map((c) => el("th", { scope: "col" }, c)))), tbody)),
+        el("button", { class: "text-btn no-print", onclick: () => { rows.push(sec.columns.map(() => "")); drawRows(); save(); tbody.lastChild?.querySelector("textarea")?.focus(); } }, "Add a row")];
+    };
     const sheet = el("article", { class: "sheet", "aria-labelledby": "ws-title" },
       head ? el("img", { class: "ws-art no-print", src: h.asset(artPath(head)), alt: "" }) : null,
       el("p", { class: "kicker" }, `Dawnward · ${m.title} · ${m.part}`),
       el("h2", { id: "ws-title", class: "s-title", tabindex: "-1" }, w.title),
       el("p", { class: "lead" }, w.intro),
-      ...w.sections.map((sec) => el("section", { class: "ws-sec" }, el("h3", {}, sec.heading),
+      el("p", { class: "quiet small no-print" }, "Fill it in here. It saves on this phone as you type, and prints or saves as a PDF with your answers."),
+      ...w.sections.map((sec, k) => el("section", { class: "ws-sec" }, el("h3", {}, sec.heading),
         sec.items ? el("ol", { class: "ws-items" }, sec.items.map((t) => el("li", {}, t)))
-        : sec.columns
-          ? el("table", { class: "ws-table" }, el("thead", {}, el("tr", {}, sec.columns.map((c) => el("th", { scope: "col" }, c)))),
-              el("tbody", {}, Array.from({ length: sec.rows ?? 3 }, () => el("tr", {}, sec.columns.map(() => el("td", {}, ""))))))
-          : el("div", { class: "ws-lines", "aria-hidden": "true" }, Array.from({ length: sec.lines ?? 2 }, () => el("span", {}))))),
-      m.status === "draft" ? el("p", { class: "quiet small" }, "Draft: not yet reviewed.") : null);
+        : sec.columns ? tableFor(sec, k)
+        : field(typeof ans[k] === "string" ? ans[k] : "", sec.heading, (v) => { ans[k] = v; }, Math.max(2, sec.lines ?? 2)))),
+      status);
     body().replaceChildren(
       el("div", { class: "actions no-print" },
         el("button", { class: "text-btn back", onclick: back }, el("span", { html: svg(ICON.back, 16) }), " Back"),
@@ -758,7 +794,7 @@ export function createExplore(store, h) {
   }
 
   return {
-    store, open, refresh, play, review,
+    store, open, refresh, play, review, sheetAnswers, readSheets,
     get data() { return data; },
     isFollowing, follow,
     /** Opens a chapter's worksheet on its own, from a world's Library. */

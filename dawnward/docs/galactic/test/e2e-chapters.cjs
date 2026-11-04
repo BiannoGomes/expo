@@ -2,8 +2,8 @@
 // Serve dawnward/experience/dist on :8771 first. Run with NODE_PATH=$(npm root -g).
 // Home's Compass → Chapter 1 (draft tag, worksheet, lesson with Listen, sort that
 // accepts a different reading, your loop, the three questions, plan skipped) →
-// star → Home suggests Chapter 2 and says why → Chapter 2 → Learn lists 7 chapters,
-// 5 planned. axe on every new screen.
+// star → Home suggests Chapter 2 and says why → Chapter 2 → Learn lists 4 chapters,
+// only the real chapters are shown. axe on every new screen.
 const { chromium } = require("playwright");
 // members' content is tested as a member (the gates themselves are tested in e2e-world.cjs)
 const MEMBER = () => { const k = "dw-expeditions-v1"; if (!localStorage.getItem(k)) localStorage.setItem(k, JSON.stringify({ plan: "plus" })); };
@@ -46,11 +46,11 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.waitForTimeout(400);
 
     const comp = await page.textContent("#earth .nextcard");
-    check(`${name}: the Compass starts with Beyond Overthinking, Chapter 1 of 7`, /Beyond Overthinking/.test(comp) && /Chapter 1 of 7/.test(comp));
+    check(`${name}: the Compass starts with Beyond Overthinking, Chapter 1 of 4`, /Beyond Overthinking/.test(comp) && /Chapter 1 of 4/.test(comp));
     check(`${name}: Home never offers Chapter 2 before Chapter 1`, !/Chapter 2/.test(await page.textContent("#earth")));
     await page.locator("#earth .nextcard .primary").click();
-    await page.waitForSelector("#x-body .draft-tag");
-    check(`${name}: the chapter says it's a draft`, /Draft: not yet reviewed/.test(await page.textContent("#x-body")));
+    await page.waitForSelector("#x-body .s-title");
+    check(`${name}: no "draft" label in front of people`, !/draft/i.test(await page.textContent("#x-body")));
     check(`${name}: the safety note is there`, /findahelpline\.com/.test(await page.textContent("#x-body")));
 
     // the worksheet, before starting
@@ -81,13 +81,13 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.getByRole("button", { name: "Not this time" }).click();
     await page.locator("#x-body .found").waitFor();
     check(`${name} ch1: a star for the chapter, and the worksheet offered again`, /A star: Beyond Overthinking/.test(await page.textContent("#x-body")) && (await page.getByRole("button", { name: "Worksheet: The Loop Check" }).count()) === 1);
-    check(`${name} ch1: no moon while chapters are still planned`, !/moon/i.test(await page.textContent("#x-body")));
+    check(`${name} ch1: no moon after just one chapter`, !/moon/i.test(await page.textContent("#x-body")));
     await page.getByRole("button", { name: "Go home", exact: true }).first().click();
     await page.waitForTimeout(300);
 
     // the Compass moves on, and says why
     const comp2 = await page.textContent("#earth .nextcard");
-    check(`${name}: the Compass now offers Chapter 2 of 7`, /Separate facts from assumptions/.test(comp2) && /Chapter 2 of 7/.test(comp2));
+    check(`${name}: the Compass now offers Chapter 2 of 4`, /Separate facts from assumptions/.test(comp2) && /Chapter 2 of 4/.test(comp2));
     await page.locator("#earth .c-why summary").click();
     check(`${name}: and says it's the next part of what you began`, /next part of Beyond Overthinking/.test(await page.textContent("#earth .c-why")));
 
@@ -114,7 +114,7 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.getByRole("button", { name: "Go home", exact: true }).first().click();
     await page.waitForTimeout(300);
     const comp3 = await page.textContent("#earth .nextcard");
-    check(`${name}: the Compass offers Chapter 3 of 7, as the expedition you follow`, /Practise a pause/.test(comp3) && /Chapter 3 of 7/.test(comp3));
+    check(`${name}: the Compass offers Chapter 3 of 4, as the expedition you follow`, /Practise a pause/.test(comp3) && /Chapter 3 of 4/.test(comp3));
     await page.locator("#earth .c-why summary").click();
     check(`${name}: and says why: you chose to follow it`, /You chose to follow Beyond Overthinking/.test(await page.textContent("#earth .c-why")));
 
@@ -150,8 +150,8 @@ async function playChapter(page, name, n, { sortAgainst = false } = {}) {
     await page.locator('#tabs [data-tab="learn"]').click();
     await page.waitForTimeout(300);
     const learn = await page.textContent("#x-body");
-    check(`${name}: Learn lists Beyond Overthinking as 7 chapters`, /Mind · 7 chapters/.test(learn));
-    check(`${name}: chapters 5 to 7 are marked Planned and can't be opened`, (await page.locator("#x-body li.planned").count()) === 3 && (await page.locator("#x-body li.planned button").count()) === 0);
+    check(`${name}: Learn lists Beyond Overthinking as its 4 real chapters`, /Mind · 4 chapters/.test(learn));
+    check(`${name}: chapters not yet written aren't shown at all`, (await page.locator("#x-body li.planned").count()) === 0 && !/Planned/.test(learn));
     const stopBtn = page.getByRole("button", { name: "Following · stop" });
     check(`${name}: Learn shows you're following, as a pressed toggle`, (await stopBtn.getAttribute("aria-pressed")) === "true");
     await stopBtn.click();
