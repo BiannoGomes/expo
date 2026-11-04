@@ -74,7 +74,8 @@ export function reminderSheet({ el, action, when, announce, returnFocus, mark, w
     close();
     announce?.("Calendar file saved. Open it to add the reminder to your calendar.");
   };
-  dlg.append(
+  // append() prints null as the word "null", so only real nodes go in
+  dlg.append(...[
     mark ? el("img", { class: "rm-mark", src: mark, alt: "" }) : null,
     el("h2", { id: "rm-h", class: "s-title", tabindex: "-1" }, weekly ? "Your week, every week" : "Remind me"),
     el("p", { class: "quiet small" }, weekly ? "A few quiet minutes once a week to look back. Choose the first one; it repeats on that day and time." : "Choose when you'd like a gentle reminder."),
@@ -84,7 +85,7 @@ export function reminderSheet({ el, action, when, announce, returnFocus, mark, w
     el("div", { class: "rm-row" }, el("span", { class: "rm-i", html: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>' }), el("label", { for: "rm-time" }, "Time"), time),
     err,
     el("div", { class: "actions" }, el("button", { class: "primary", onclick: save }, "Save to my calendar"), el("button", { class: "ghost", onclick: close }, "Cancel")),
-    el("p", { class: "quiet small" }, `This makes a calendar file on your device. Nothing is sent anywhere; your calendar app keeps it${weekly ? ", and you can stop it there any time" : ""}.`));
+    el("p", { class: "quiet small" }, `This makes a calendar file on your device. Nothing is sent anywhere; your calendar app keeps it${weekly ? ", and you can stop it there any time" : ""}.`)].filter(Boolean));
   dlg.addEventListener("close", () => dlg.remove());
   document.body.append(dlg);
   dlg.showModal();

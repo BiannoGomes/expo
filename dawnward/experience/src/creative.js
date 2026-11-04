@@ -541,9 +541,9 @@ export function createCreative(h) {
     const showSphere = (f) => {
       const p = R.planets.find((x) => x.node === f.id);
       detail.hidden = false;
-      detail.replaceChildren(el("p", { class: "kicker" }, `${f.name} · ${f.english}`), el("h3", { class: "cw-ititle" }, f.meaning),
+      detail.replaceChildren(...[el("p", { class: "kicker" }, `${f.name} · ${f.english}`), el("h3", { class: "cw-ititle" }, f.meaning),
         p ? el("p", {}, `Here: ${p.name}. ${p.line}`) : null,
-        p && p.status === "open" && p.id !== "tree" ? el("div", { class: "actions" }, el("button", { class: "ghost", onclick: () => enter("knowledge", p.id) }, `Go to ${p.name}`)) : null);
+        p && p.status === "open" && p.id !== "tree" ? el("div", { class: "actions" }, el("button", { class: "ghost", onclick: () => enter("knowledge", p.id) }, `Go to ${p.name}`)) : null].filter(Boolean));
     };
     page.replaceChildren(el("div", { class: "ycol" },
       h.crumbs([{ label: "Universe", go: h.toUniverse }, { label: "Knowledge", go: () => open("knowledge") }, { label: "The Tree of Life" }]),

@@ -128,8 +128,12 @@ const iso = (daysAgo) => { const d = new Date(); d.setDate(d.getDate() - daysAgo
   // ----- found by the newcomer walk-through (4 Nov): empty screens and Home's progress -----
   const fresh = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const np = await fresh.newPage(); np.on("pageerror", (e) => errors.push(String(e)));
-  const strayNull = (p) => p.evaluate(() => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (/^\s*(null|undefined)\s*$/.test(n.textContent) && n.parentElement?.offsetParent) return true; return false; });
-  for (const r of ["journey/milestones", "you"]) { await go(np, r, 1000); check(`a brand-new ${r} prints no stray "null"`, !(await strayNull(np))); }
+  // append(null) makes a text node that is just "null" (or "nullnull"): look for exactly that
+  const strayNull = (p) => p.evaluate(() => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (/^\s*(null|undefined)+\s*$/.test(n.textContent) && n.parentElement?.offsetParent) return true; return false; });
+  // every main screen, brand new: DOM append() prints a missing part as the word "null" (found 3 times, 4 Nov)
+  const nullOn = [];
+  for (const r of ["home", "universe", "universe/growth", "world/mind/overview", "world/mind/expeditions", "world/mind/library", "world/mind/progress", "learn", "journey", "journey/milestones", "journey/week", "you", "knowledge/wisdom", "library"]) { await go(np, r, 1000); if (await strayNull(np)) nullOn.push(r); }
+  check(`no main screen prints a stray "null" for a brand-new person (14 screens)`, nullOn.length === 0, nullOn.join(", "));
   await go(np, "home", 1000);
   await np.locator("#e-body .nextcard .primary").click();
   await np.waitForSelector("#x-body .s-title");

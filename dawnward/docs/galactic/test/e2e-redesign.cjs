@@ -88,6 +88,8 @@ const noSideScroll = (p) => p.evaluate(() => document.documentElement.scrollWidt
   const h0 = await page.evaluate(() => document.getElementById("words").offsetHeight);
   await page.fill("#words", "One.\nTwo.\nThree.\nFour.\nFive.\nSix.\nSeven lines of a longer evening.");
   await page.locator("#words").dispatchEvent("input");
+  // the box grows over a 120 ms height transition: measure once it has settled, not mid-way
+  await page.waitForFunction((h) => document.getElementById("words").offsetHeight > h, h0, { timeout: 3000 }).catch(() => {});
   const h1 = await page.evaluate(() => document.getElementById("words").offsetHeight);
   check("the input starts compact and grows as you write", h0 < 140 && h1 > h0, `${h0}px to ${h1}px`);
   await page.getByRole("button", { name: /World: Mind/ }).click();

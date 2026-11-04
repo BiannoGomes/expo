@@ -74,6 +74,7 @@ const tabsShown = (p) => p.locator("#tabs").isVisible();
     await cont(page);
     await page.waitForFunction(() => /Done/.test(document.querySelector("#x-body .s-title")?.textContent ?? ""), null, { timeout: 20000 });
     check("Done says what you did", /You sorted your own thoughts/.test(await page.locator("#x-body").innerText()));
+    check("on Done the tab bar is back (you're finished, and the star lands in Journey)", await tabsShown(page));
     // leaving the practice brings the tab bar back
     await page.getByRole("button", { name: "Go home", exact: true }).first().click().catch(async () => { await go(page, "home"); });
     await page.waitForTimeout(800);
@@ -139,6 +140,7 @@ const tabsShown = (p) => p.locator("#tabs").isVisible();
     await btn.click();
     const dlg = page.getByRole("dialog", { name: "Your week, every week" });
     check("the sheet explains it repeats, and nothing is sent", (await dlg.count()) === 1 && /repeats on that day and time/.test(await dlg.innerText()) && /Nothing is sent anywhere/.test(await dlg.innerText()));
+    check("…with no stray \"null\" text (found in a screenshot, 4 Nov)", !/\bnull/.test(await dlg.innerText()));
     const d = await page.inputValue("#rm-date"), t = await page.inputValue("#rm-time");
     check("it starts on the next Sunday, at 18:00", new Date(`${d}T12:00:00`).getDay() === 0 && t === "18:00", `${d} ${t}`);
     await axe(page, "the weekly reminder");

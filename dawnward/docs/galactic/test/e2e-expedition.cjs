@@ -129,6 +129,7 @@ const store = (p) => p.evaluate(() => JSON.parse(localStorage.getItem("dw-expedi
     await page.fill("#q-words", "I want to end my life");
     await page.getByRole("button", { name: "Continue", exact: true }).click();
     check(`${name}: crisis words show support and pause the mission`, /You matter more than any practice/.test(await page.textContent("#x-body")) && (await store(page)).attempts["bridge-2"].status === "paused");
+    check(`${name}: the support screen never hides the way out: the tab bar is back`, await page.locator("#tabs").isVisible());
 
     // text view lists the practices
     await page.locator('#tabs [data-tab="home"]').click(); await page.locator("#to-you").click();

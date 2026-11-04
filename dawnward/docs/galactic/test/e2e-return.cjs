@@ -57,6 +57,7 @@ const cont = (p) => p.getByRole("button", { name: "Continue", exact: true }).cli
   const dlg = page.getByRole("dialog", { name: "Remind me" });
   check("a sheet asks for the day and time, defaulting to tomorrow at 9", (await dlg.count()) === 1 && (await page.inputValue("#rm-time")) === "09:00" && /^\d{4}-\d{2}-\d{2}$/.test(await page.inputValue("#rm-date")));
   check("it says nothing is sent anywhere", /Nothing is sent anywhere/.test(await dlg.innerText()));
+  check("no stray \"null\" text in the sheet", !/\bnull/.test(await dlg.innerText()));
   check("the sheet shows the reminder mark, and focus lands on its title, not the date field (no picker popping open)", await page.evaluate(() => { const m = document.querySelector(".rm-mark"); return !!m && m.complete && m.naturalWidth > 0 && document.activeElement?.id === "rm-h"; }));
   await axe(page, "the Remind me sheet");
   await page.fill("#rm-date", "2026-11-10"); await page.fill("#rm-time", "21:30");

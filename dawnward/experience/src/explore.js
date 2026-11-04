@@ -372,7 +372,8 @@ export function createExplore(store, h) {
   function frame(m, i, ...kids) {
     setArt(m, m.steps[i]);
     // focus mode (user council, 4 Nov 2026): inside a practice there's one way out and no tab bar
-    document.body.classList.add("in-practice");
+    // …but the closing step (Done) brings the tab bar back: the star flies into Journey, and you're finished
+    document.body.classList.toggle("in-practice", i < m.steps.length - 1);
     body().replaceChildren(
       el("div", { class: "qhead" },
         el("button", { class: "text-btn back", onclick: back, "aria-label": `Close, back to ${from?.label ?? "Learn"}` }, el("span", { html: svg(ICON.back, 16) }), ` ${from?.label ?? "Learn"}`),
@@ -649,6 +650,7 @@ export function createExplore(store, h) {
   }
 
   async function finish() {
+    document.body.classList.remove("in-practice"); // focus mode is for practice steps only: the tab bar comes back
     const { mission: m } = current;
     const closeStep = m.steps[m.steps.length - 1];
     frame(m, m.steps.length - 1, el("h2", { class: "s-title", tabindex: "-1" }, closeStep.title), el("p", { class: "quiet", role: "status" }, "Keeping it…"));
@@ -690,6 +692,7 @@ export function createExplore(store, h) {
   /** Answers for one worksheet: { [sectionIndex]: string[][] (a table) | string (lines) } */
   function sheetAnswers(id) { return readSheets()[id] ?? {}; }
   function worksheet(m, back) {
+    document.body.classList.remove("in-practice"); // focus mode is for practice steps only: the tab bar comes back
     setArt(null);
     const w = m.worksheet;
     const head = ART.missions[m.id]?.header;
@@ -744,10 +747,11 @@ export function createExplore(store, h) {
 
   // ----- members' pieces: say what's inside, say honestly that membership isn't open yet -----
   function gate(m) {
+    document.body.classList.remove("in-practice"); // focus mode is for practice steps only: the tab bar comes back
     h.quiet(false);
     setArt(m, { type: "intro", id: "intro" });
     const free = MISSIONS.find((x) => !locked(x) && x.id !== m.id && !data.attempts.some((a) => a.missionId === x.id && a.status === "completed"));
-    body().replaceChildren(
+    body().replaceChildren(...[
       el("div", { class: "qhead" },
         h.crumbs([...(from?.trail ?? [{ label: "Learn", root: true, go: () => { from = null; draw(); } }]), { label: m.title }]),
         el("button", { class: "text-btn back", onclick: () => { const f = from; from = null; f ? f.go() : draw(); } }, el("span", { html: svg(ICON.back, 16) }), ` ${from?.label ?? "Learn"}`)),
@@ -763,12 +767,13 @@ export function createExplore(store, h) {
       el("div", { class: "actions" },
         store.local ? el("button", { class: "primary", onclick: async () => { await store.setPlan("plus"); await refresh(); h.announce("Member preview on, on this device only."); play(m.id, { from }); } }, "Preview as a member") : null,
         free ? el("button", { class: "ghost", onclick: () => play(free.id, { from }) }, `Free now: ${free.title}`) : null),
-      store.local ? el("p", { class: "quiet small" }, "Member preview is for seeing what members get. It changes nothing but what this device shows, and you can switch it off in You.") : null);
+      store.local ? el("p", { class: "quiet small" }, "Member preview is for seeing what members get. It changes nothing but what this device shows, and you can switch it off in You.") : null].filter(Boolean));
     $("x-title").focus();
     $("explore").scrollTop = 0;
   }
 
   function crisis(text) {
+    document.body.classList.remove("in-practice"); // focus mode is for practice steps only: the tab bar comes back
     setArt(null);
     h.quiet(false);
     if (current?.attempt?.status === "in_progress") store.exit(current.attempt);
@@ -781,6 +786,7 @@ export function createExplore(store, h) {
 
   // ----- coming back: how did the real action go? Any outcome counts -----
   function review(experimentId) {
+    document.body.classList.remove("in-practice"); // focus mode is for practice steps only: the tab bar comes back
     const x = data.experiments.find((e) => e.id === experimentId);
     if (!x) return;
     // four outcomes, all counting the same (2 Nov review: not yet, and changing your mind, are real answers)
@@ -809,10 +815,10 @@ export function createExplore(store, h) {
         await refresh();
         h.onDiscoveries(data, r.discoveries ?? []);
         const found = (r.discoveries ?? [])[0];
-        body().replaceChildren(...head("Thank you for coming back", null, () => { draw(); $("x-title")?.focus(); }),
+        body().replaceChildren(...[...head("Thank you for coming back", null, () => { draw(); $("x-title")?.focus(); }),
           el("p", { class: "lead" }, { didnt: "Not doing it is information too. Next time, notice what got in the way.", notyet: "Not yet is fine. It's here whenever you're ready.", changed: "Changing your mind is a real decision too. Knowing that is worth something." }[outcome] ?? "You tried something real. That's the part that changes things."),
           found && data.gameLayer ? el("div", { class: "card found" }, el("p", { class: "kicker" }, "Discovered"), el("p", { class: "statement" }, found.title), el("p", { class: "why" }, found.why)) : null,
-          el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => h.goEarth(found ?? null) }, "Go home"), el("button", { class: "ghost", onclick: () => { draw(); $("x-title")?.focus(); } }, "Back to Explore")));
+          el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => h.goEarth(found ?? null) }, "Go home"), el("button", { class: "ghost", onclick: () => { draw(); $("x-title")?.focus(); } }, "Back to Explore"))].filter(Boolean));
         $("x-title")?.focus();
       } }, "Save")));
     $("x-title")?.focus();

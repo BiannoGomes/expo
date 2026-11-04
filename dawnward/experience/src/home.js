@@ -303,13 +303,13 @@ function main(data, failed) {
       if (d) { e.preventDefault(); pick(tabs[(k + d + tabs.length) % tabs.length][0], true); }
     } }, tabs.map(([id, label]) => el("button", { role: "tab", id: `w-tab-${id}`, "aria-selected": String(id === cur), "aria-controls": "w-panel", tabindex: id === cur ? "0" : "-1", onclick: () => pick(id, true) }, label)));
     const nx = worldNextMission(w);
-    wbody.replaceChildren(
+    wbody.replaceChildren(...[
       el("h2", { class: "w-q", id: "w-q", tabindex: "-1" }, META[w].q),
       el("button", { class: "primary wide", onclick: () => openEditor(w) }, "Begin reflection"),
       nx ? el("button", { class: "row w-next", onclick: () => explore.play(nx.id, fromWorld(w)) },
         el("span", { class: "rtext" }, el("span", { class: "rtitle" }, nx.title), el("span", { class: "rsub" }, `${nx.part.replace(/^Chapter \d+: /, "")} · ${nx.minutes} min`)),
         el("span", { class: "rgo", html: svg(ICON.arrow, 16) })) : null,
-      bar, panel);
+      bar, panel].filter(Boolean));
     document.body.classList.remove("sheet-open");
   }
   /** This world's next open chapter, if there is one: the expedition you can start here and now. */
@@ -668,7 +668,7 @@ function main(data, failed) {
     if (!t) return;
     if (state.place !== "world" || state.world !== t.world) { goWorld(t.world, { then: () => openPattern(id) }); return; }
     const box = el("div", { class: "review" });
-    const draw = () => box.replaceChildren(
+    const draw = () => box.replaceChildren(...[
       el("p", { class: "kicker" }, "What you said"),
       el("ul", { class: "quotes" }, t.starIds.map((sid) => { const s = starById(sid); return el("li", { class: "quote" }, el("span", { class: "when" }, `${META[s.world].name} · ${longDate(s.date)}`), el("q", {}, s.excerpt)); })),
       el("p", { class: "kicker" }, `What it might mean · ${t.forming ? "Still forming" : CONFIDENCE[t.confidence] ?? ""}`),
@@ -679,7 +679,7 @@ function main(data, failed) {
       el("div", { class: "actions" },
         el("button", { class: "ghost", onclick: () => { t.accepted = true; persist(); announce("Kept as it is."); draw(); box.querySelector("button")?.focus(); } }, "That's right"),
         el("button", { class: "ghost", onclick: () => correct(t, box, draw) }, "Correct it"),
-        el("button", { class: "danger", onclick: () => reject(t, box, draw) }, "That's not right")));
+        el("button", { class: "danger", onclick: () => reject(t, box, draw) }, "That's not right"))].filter(Boolean));
     draw();
     sheet(t.corrected ?? t.statement, `${META[t.world].name} · what I understand`, box);
     if (ctx) ctx.setSelection({ litIds: new Set(t.starIds), selId: null, litThemes: new Set([t.id]) });
@@ -818,7 +818,7 @@ function main(data, failed) {
     drawMemories();
     const themes = s.themeIds.map(themeById).filter((t) => t && !t.rejected);
     const panel = $("m-detail");
-    panel.replaceChildren(
+    panel.replaceChildren(...[
       el("div", { class: "m-detail-head" }, el("p", { class: "kicker" }, `${META[s.world].name} · ${longDate(s.date)}`),
         el("button", { class: "icon-btn", "aria-label": "Close this memory", html: svg('<path d="M6 6l12 12M18 6 6 18"/>', 18), onclick: closeMemory })),
       el("h2", { class: "sr", id: "md-h", tabindex: "-1" }, `Memory from ${longDate(s.date)}`),
@@ -827,7 +827,7 @@ function main(data, failed) {
       themes.length ? el("div", { class: "cards" }, themes.map(patternCard)) : el("p", { class: "quiet" }, "Not linked to anything yet."),
       el("div", { class: "actions" },
         el("button", { class: "ghost", onclick: () => goWorld(s.world) }, `Open ${META[s.world].name}`),
-        data.local ? el("button", { class: "danger", onclick: () => deleteMemory(s.id) }, "Delete") : null));
+        data.local ? el("button", { class: "danger", onclick: () => deleteMemory(s.id) }, "Delete") : null)].filter(Boolean));
     panel.hidden = false;
     $("md-h").focus();
   }
@@ -882,7 +882,7 @@ function main(data, failed) {
     // beta: everything is open and free, so there's no plan to talk about
     const beta = !!explore?.beta?.();
     $("y-plan-h").closest("section").hidden = beta;
-    if (!beta) $("y-plan").replaceChildren(
+    if (!beta) $("y-plan").replaceChildren(...[
       el("p", { class: "statement" }, data.local && plan !== "free" ? `${label}, as a member preview on this device` : label),
       el("p", { class: "quiet" }, "Your words, memories and Journey are free for good."),
       el("details", { class: "more" }, el("summary", {}, "More"),
@@ -890,7 +890,7 @@ function main(data, failed) {
         el("p", { class: "quiet" }, "Membership isn't open yet. It opens after the beta, with a reminder before any charge and one-tap cancel. Your own words are never behind it.")),
       data.local ? el("div", { class: "actions" }, el("button", { class: "ghost", id: "y-member", "aria-pressed": String(plan !== "free"),
         onclick: async () => { await explore.setPlan(plan === "free" ? "plus" : "free"); drawYou(); renderHome(); announce(plan === "free" ? "Member preview on." : "Member preview off."); $("y-member").focus(); } },
-        plan === "free" ? "Preview as a member" : "Member preview on · switch off")) : null);
+        plan === "free" ? "Preview as a member" : "Member preview on · switch off")) : null].filter(Boolean));
     $("y-data-line").textContent = data.local
       ? `${plural(data.stars.length, "memory", "memories")} kept on this device, and nowhere else.`
       : `${plural(data.stars.length, "memory", "memories")} in your Dawnward.`;
@@ -1151,16 +1151,16 @@ function main(data, failed) {
     if (!field.hidden && b) inner.style.transform = `translate(${Math.round(inner.clientWidth / 2 - b.offsetLeft)}px, ${Math.round(inner.clientHeight * 0.42 - b.offsetTop)}px) scale(1.3)`;
     const panel = $("a-panel");
     if (lk) {
-      panel.replaceChildren(
+      panel.replaceChildren(...[
         ART.thresholds[g.id] ? el("img", { class: "a-threshold locked", src: asset(artPath(ART.thresholds[g.id])), alt: "" }) : null,
         el("h2", { class: "s-title", id: "a-name", tabindex: "-1" }, g.name),
         el("p", { class: "lead" }, g.tag),
         lockCard(lk),
         el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => goNext(lk.next) }, nextLabel(lk.next)),
-          el("button", { class: "ghost", onclick: () => { resetAtlas(); inner.querySelector(`[data-id="${g.id}"]`)?.focus(); } }, "Back to the Universe")));
+          el("button", { class: "ghost", onclick: () => { resetAtlas(); inner.querySelector(`[data-id="${g.id}"]`)?.focus(); } }, "Back to the Universe"))].filter(Boolean));
       panel.hidden = false; $("a-name").focus({ preventScroll: true }); return;
     }
-    panel.replaceChildren(
+    panel.replaceChildren(...[
       ART.thresholds[g.id] ? el("img", { class: "a-threshold", src: asset(artPath(ART.thresholds[g.id])), alt: "" }) : null,
       el("p", { class: "kicker" }, g.open ? (g.id === "gateway" ? "Open · free once, then for members" : REALMS[g.id] ? "Open · some worlds are free" : "Open") : g.access === "plus" ? "Preview · not open yet · for members" : "Preview · not open yet"),
       el("h2", { class: "s-title", id: "a-name", tabindex: "-1" }, g.name),
@@ -1171,7 +1171,7 @@ function main(data, failed) {
         g.id === "earth" ? el("button", { class: "primary", onclick: () => openEarth() }, "Return to Earth") : null,
         g.id === "gateway" ? el("button", { class: "primary", onclick: () => explore.play("gateway-1", { from: { label: "Universe", go: () => openAtlas(), trail: [] } }) }, "Enter the Gateway") : null,
         REALMS[g.id] ? el("button", { class: "primary", onclick: () => creative.open(g.id) }, `Enter ${g.name}`) : null,
-        el("button", { class: "ghost", onclick: () => { resetAtlas(); inner.querySelector(`[data-id="${g.id}"]`)?.focus(); } }, "Back to the Universe")));
+        el("button", { class: "ghost", onclick: () => { resetAtlas(); inner.querySelector(`[data-id="${g.id}"]`)?.focus(); } }, "Back to the Universe"))].filter(Boolean));
     panel.hidden = false;
     $("a-name").focus({ preventScroll: true });
   }

@@ -101,8 +101,8 @@ const shot = (p, n) => p.screenshot({ path: `${OUT}/w-${n}.png`, timeout: 90000 
   await page.goto(BASE + "#/home"); await ready(page);
   check("the Compass offers Chapter 2 next", /Chapter 2 of 4/.test(await page.textContent("#earth .nextcard")));
   await page.goto(BASE + "#/learn"); await ready(page);
-  await page.locator('#x-body [aria-labelledby="x-mind-beyond-overthinking"] details summary').click();
-  await page.getByRole("button", { name: /Chapter 2: Separate facts from assumptions/ }).click();
+  // with Chapter 1 done, Chapter 2 is the series' one next chapter
+  await page.locator('#x-body [aria-labelledby="x-mind-beyond-overthinking"] .mission.current', { hasText: "Separate facts from assumptions" }).click();
   await page.waitForSelector("#x-body .s-title");
   check("Chapter 2 opens with no members' gate", (await page.locator(".plus-card").count()) === 0 && (await page.getByRole("button", { name: "Begin" }).count()) === 1);
   await page.goto(BASE + "#/you"); await ready(page);
